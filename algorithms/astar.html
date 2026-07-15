@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A* 探索の可視化デモ。通行コストはマップ上で直接編集。" />
+  <title>A* 探索 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header">
+    <div class="container container-wide header-inner">
+      <a href="../index.html" class="logo">
+        <span class="logo-mark">◆</span>
+        Game Algo Lab
+      </a>
+      <nav class="nav" aria-label="メイン">
+        <a href="../index.html" class="nav-link">ホーム</a>
+        <a href="bfs.html" class="nav-link">BFS</a>
+        <a href="dfs.html" class="nav-link">DFS</a>
+        <a href="dijkstra.html" class="nav-link">ダイクストラ</a>
+        <a href="best-first.html" class="nav-link">最良優先</a>
+        <a href="astar.html" class="nav-link is-active">A*</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb">
+        <a href="../index.html">ホーム</a> / A* 探索
+      </p>
+      <h1>A* 探索</h1>
+      <p class="page-header-lead">
+        <strong>f = g + h</strong> で展開（ダイクストラの g ＋ 最良優先の h）。
+        初期地図は <code>js/maps/astar-map.js</code>。
+      </p>
+    </div>
+
+    <details class="lesson-details">
+      <summary>このデモで学ぶこと・地図の記号</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li><strong>g</strong> … 実経路コスト（ダイクストラ側）</li>
+          <li><strong>h</strong> … ゴールまでの見積り（最良優先側）</li>
+          <li><strong>f = g + h</strong> … オープンから最小を展開</li>
+          <li>前トピック: <a href="dijkstra.html">ダイクストラ</a> / <a href="best-first.html">最良優先</a></li>
+          <li>記号: <code>S</code> <code>G</code> <code>#</code> <code>.</code> <code>0</code> <code>1</code> <code>2</code> <code>n</code></li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="demo-workspace">
+      <div class="demo-game-group">
+        <div class="demo-board">
+          <div class="canvas-panel">
+            <canvas id="grid-canvas" width="560" height="560" aria-label="A*探索グリッド"></canvas>
+            <div class="legend">
+              <span><i class="swatch swatch-start"></i>S</span>
+              <span><i class="swatch swatch-goal"></i>G</span>
+              <span><i class="swatch swatch-frontier"></i>オープン</span>
+              <span><i class="swatch swatch-visited"></i>クローズド</span>
+              <span><i class="swatch swatch-path"></i>経路</span>
+              <span><i class="swatch swatch-wall"></i>壁</span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="controls-panel demo-controls">
+          <div class="controls-toolbar">
+            <div class="controls-toolbar-main">
+              <div class="controls-group">
+                <span class="controls-label">操作</span>
+                <div class="control-row">
+                  <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+                  <button type="button" id="btn-step" class="btn btn-ghost">1ステップ</button>
+                  <button type="button" id="btn-reset" class="btn btn-ghost">再読込</button>
+                </div>
+              </div>
+
+              <div class="controls-group controls-group-speed">
+                <label class="controls-label" for="speed">速度</label>
+                <input type="range" id="speed" min="50" max="400" value="150" step="25" />
+              </div>
+
+              <div class="controls-group controls-group-info">
+                <span class="controls-label">式</span>
+                <span class="field-label controls-info" id="h-info">—</span>
+              </div>
+            </div>
+
+            <div class="controls-group controls-group-paint">
+              <span class="controls-label">コスト</span>
+              <div id="paint-tools" class="paint-tools" role="group" aria-label="コストと壁">
+                <button type="button" class="paint-btn" data-paint="-1" aria-pressed="false">-1</button>
+                <button type="button" class="paint-btn" data-paint="0" aria-pressed="false">0</button>
+                <button type="button" class="paint-btn is-active" data-paint="1" aria-pressed="true">1</button>
+                <button type="button" class="paint-btn" data-paint="2" aria-pressed="false">2</button>
+                <button type="button" class="paint-btn paint-wall" data-paint="wall" aria-pressed="false">壁</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="status" class="status-log" role="status">準備完了</div>
+          <div id="result-compare" class="result-compare" hidden></div>
+        </aside>
+      </div>
+
+      <section class="ds-section ds-section-workspace" aria-labelledby="ds-heading">
+        <h2 id="ds-heading">データ構造のようす</h2>
+        <p class="section-lead section-lead-compact">
+          オープン / クローズド / 親ポインタ（デモとの完全一致は不要）
+        </p>
+        <div id="ds-panels" class="ds-panels"></div>
+
+        <div class="ds-block ds-parent-block" id="ds-parent-block" data-parent-map>
+          <div class="ds-title">親ポインタ（経路復元用） <span class="ds-type">Dictionary</span></div>
+          <div class="ds-tabs" role="tablist" aria-label="親ポインタの表示切替">
+            <button type="button" class="ds-tab is-active" role="tab" data-parent-tab="list" aria-selected="true" id="tab-parent-list">リスト</button>
+            <button type="button" class="ds-tab" role="tab" data-parent-tab="tree" aria-selected="false" id="tab-parent-tree">ツリー</button>
+          </div>
+          <p class="ds-caption ds-parent-root" id="ds-parent-root"></p>
+          <div class="ds-tab-panel" data-parent-panel="list" id="ds-parent-list" role="tabpanel" aria-labelledby="tab-parent-list"></div>
+          <div class="ds-tab-panel" data-parent-panel="tree" id="ds-parent-tree" role="tabpanel" aria-labelledby="tab-parent-tree" hidden></div>
+        </div>
+      </section>
+    </div>
+
+    <section class="code-section" aria-labelledby="csharp-heading">
+      <h2 id="csharp-heading">C# 実装例</h2>
+      <div class="code-toolbar">
+        <p class="code-meta">ファイル: <code>samples/AStarExample.cs</code></p>
+      </div>
+      <pre class="code-block" id="csharp-sample"><code>// 読み込み中…</code></pre>
+      <p class="code-note">
+        <code>f = g + h</code> 最小のノードから展開する例です。
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container container-wide">
+      <p>
+        <a href="../index.html">← トピック一覧</a>
+        ·
+        <a href="dijkstra.html">ダイクストラ</a>
+        ·
+        <a href="best-first.html">最良優先</a>
+      </p>
+    </div>
+  </footer>
+
+  <script type="module" src="../js/astar.js"></script>
+</body>
+</html>

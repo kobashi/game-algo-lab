@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ゲームプログラミングのアルゴリズムを、可視化とインタラクションで学ぶ教材" />
+  <title>Game Algo Lab — ゲームアルゴリズム可視化教材</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-mark">◆</span>
+        Game Algo Lab
+      </a>
+      <nav class="nav" aria-label="メイン">
+        <a href="index.html" class="nav-link is-active">ホーム</a>
+        <a href="#topics" class="nav-link">トピック</a>
+        <a href="#about" class="nav-link">この教材について</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <p class="hero-eyebrow">Interactive Learning</p>
+        <h1>ゲームプログラミングの<br />アルゴリズムを「動かしながら」学ぶ</h1>
+        <p class="hero-lead">
+          経路探索・衝突判定・ステートマシンなど、ゲーム実装で頻出するアルゴリズムを
+          ビジュアルと操作で直感的に理解する教材です。
+        </p>
+        <a href="#topics" class="btn btn-primary">トピックを見る</a>
+      </div>
+    </section>
+
+    <section id="topics" class="section">
+      <div class="container">
+        <h2 class="section-title">学習トピック</h2>
+        <p class="section-desc">各トピックは可視化デモと短い解説で構成されています。</p>
+
+        <div class="card-grid" id="topic-list">
+          <!-- トピックカードは js/main.js から描画（今後追加しやすい構造） -->
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="section section-alt">
+      <div class="container">
+        <h2 class="section-title">この教材について</h2>
+        <div class="about-grid">
+          <div class="about-item">
+            <h3>可視化</h3>
+            <p>アルゴリズムの内部状態をステップ表示し、「今何が起きているか」を追いやすくします。</p>
+          </div>
+          <div class="about-item">
+            <h3>インタラクティブ</h3>
+            <p>パラメータ変更・再生・一時停止・リセットなど、自分のペースで操作できます。</p>
+          </div>
+          <div class="about-item">
+            <h3>GitHub Pages</h3>
+            <p>静的サイトとして公開できる構成です。ブラウザだけで動作します。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Game Algo Lab — Game Programming Algorithm Visualizer</p>
+      <p class="footer-note">GitHub Pages 公開想定の学習教材プロジェクト</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js" type="module"></script>
+</body>
+</html>
