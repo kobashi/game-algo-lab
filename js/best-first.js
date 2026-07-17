@@ -26,6 +26,7 @@ import {
   createGridOps,
   applyParsedMap,
   drawPathfindingGrid,
+  drawScorePair,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -333,24 +334,22 @@ function draw() {
       ctx.textBaseline = "middle";
 
       if (scored && !st) {
-        ctx.fillStyle = darkText ? "#1a1208" : COLORS.text;
-        ctx.font = "bold 12px ui-monospace, SFMono-Regular, Menlo, monospace";
-        ctx.fillText(String(h), px + cell / 2, py + cell / 2 - 6);
-        ctx.font = "9px ui-monospace, SFMono-Regular, Menlo, monospace";
-        ctx.fillStyle = darkText ? "rgba(26, 18, 8, 0.72)" : COLORS.textMuted;
-        ctx.fillText("h", px + cell / 2, py + cell / 2 + 8);
+        drawScorePair(ctx, { px, py, cell }, h, "h", {
+          dark: darkText,
+          colors: COLORS,
+        });
       } else if (!st && !gl) {
         ctx.fillStyle = COLORS.textMuted;
         ctx.font = "11px ui-monospace, SFMono-Regular, Menlo, monospace";
         ctx.fillText(String(costs[y][x]), px + cell / 2, py + cell / 2);
       } else if (st) {
-        ctx.fillStyle = "#0a1018";
-        ctx.font = "bold 11px sans-serif";
-        ctx.fillText("S", px + cell / 2, py + cell / 2 - 5);
-        if (h !== null) {
-          ctx.font = "9px ui-monospace, SFMono-Regular, Menlo, monospace";
-          ctx.fillText(`h${h}`, px + cell / 2, py + cell / 2 + 9);
-        }
+        drawScorePair(
+          ctx,
+          { px, py, cell },
+          "S",
+          h !== null ? `h${h}` : "",
+          { dark: true, colors: COLORS }
+        );
       } else if (gl && !scored) {
         ctx.fillStyle = "#1a100c";
         ctx.font = "bold 11px sans-serif";

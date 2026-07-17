@@ -64,6 +64,12 @@ Project/
 
 新規トピック: [docs/templates/TOPIC_SCAFFOLD.md](docs/templates/TOPIC_SCAFFOLD.md)  
 
+共通基盤の健全性チェック:
+
+```bash
+python3 scripts/smoke-platform.py
+```
+
 ## GitHub Pages への公開
 
 1. GitHub にリポジトリを作成し、このフォルダを push  

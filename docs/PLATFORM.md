@@ -97,7 +97,14 @@ docs/templates/            # SPEC / スキャフォールド
 | 経路探索（BFS〜A*） | playback・塗り・グリッド下地・C# **済み**（`drawScorePair` は BFS/Dijkstra で使用） |
 | AABB / FSM | status・playback・C# **済み** |
 
-Phase B の主要項目は完了。任意の続き: A*/最良優先への `drawScorePair` 適用、ユニットテスト。
+Phase B の主要項目は完了。
+
+### スモークテスト
+
+```bash
+python3 scripts/smoke-platform.py
+# Node がある場合は続けて scripts/smoke-platform.mjs も実行される
+```
 ---
 
 ## 3. 学習体験の統一
