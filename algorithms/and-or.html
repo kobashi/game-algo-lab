@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AND-OR 探索の可視化。OR（どれか1つ）と AND（すべて）でゲーム木を読み切る。" />
+  <title>AND-OR 探索 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header">
+    <div class="container container-wide header-inner">
+      <a href="../index.html" class="logo">
+        <span class="logo-mark">◆</span>
+        Game Algo Lab
+      </a>
+      <nav class="nav" aria-label="メイン">
+        <a href="../index.html" class="nav-link">ホーム</a>
+        <a href="astar.html" class="nav-link">A*</a>
+        <a href="and-or.html" class="nav-link is-active">AND-OR</a>
+        <a href="dfs.html" class="nav-link">DFS</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb">
+        <a href="../index.html">ホーム</a> / ゲーム木 / AND-OR 探索
+      </p>
+      <h1>AND-OR 探索</h1>
+      <p class="page-header-lead">
+        ゲーム木の入口。<strong>OR</strong>＝どれか1つ成功、<strong>AND</strong>＝すべて成功。
+        終端まで読み切って「解があるか」を判定します。木の定義は
+        <code>js/maps/and-or-tree.js</code>。
+      </p>
+    </div>
+
+    <details class="lesson-details">
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li><strong>OR 節点</strong>（角丸・青系）: プレイヤーの選択。子の<strong>どれか1つ</strong>が真なら真</li>
+          <li><strong>AND 節点</strong>（菱形寄り・紫系）: 必須条件や「全分岐」。子が<strong>すべて</strong>真なら真</li>
+          <li><strong>終端</strong>: あらかじめ成功（真）または失敗（偽）が決まっている葉</li>
+          <li>探索は深さ優先・子は左から右。OR で1つ成功した時点で残りは読まない</li>
+          <li>次の Min-Max は「数値付きの max/min」として、この AND/OR の拡張と捉えられる</li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="demo-workspace">
+      <div class="demo-game-group">
+        <div class="demo-board">
+          <div class="canvas-panel tree-panel">
+            <div id="tree-viewport" class="tree-viewport" aria-label="AND-OR ゲーム木">
+              <svg id="tree-svg" class="andor-svg" role="img" aria-labelledby="tree-title">
+                <title id="tree-title">AND-OR ゲーム木</title>
+              </svg>
+            </div>
+            <div class="legend">
+              <span><i class="swatch swatch-or"></i>OR</span>
+              <span><i class="swatch swatch-and"></i>AND</span>
+              <span><i class="swatch swatch-leaf-t"></i>終端・真</span>
+              <span><i class="swatch swatch-leaf-f"></i>終端・偽</span>
+              <span><i class="swatch swatch-frontier"></i>評価中</span>
+              <span><i class="swatch swatch-path"></i>真（確定）</span>
+              <span><i class="swatch swatch-wall"></i>偽（確定）</span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="controls-panel demo-controls">
+          <div class="controls-toolbar">
+            <div class="controls-toolbar-main">
+              <div class="controls-group">
+                <span class="controls-label">操作</span>
+                <div class="control-row">
+                  <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+                  <button type="button" id="btn-step" class="btn btn-ghost">1ステップ</button>
+                  <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+                </div>
+              </div>
+
+              <div class="controls-group controls-group-speed">
+                <label class="controls-label" for="speed">速度</label>
+                <input type="range" id="speed" min="50" max="500" value="200" step="25" />
+              </div>
+            </div>
+
+            <div class="controls-group controls-group-paint andor-formula">
+              <span class="controls-label">式</span>
+              <code class="formula-code">OR = ∃ 子が真 / AND = ∀ 子が真</code>
+            </div>
+          </div>
+
+          <div id="status" class="status-log" role="status">準備完了</div>
+          <div id="result-compare" class="result-compare" hidden></div>
+        </aside>
+      </div>
+
+      <section class="ds-section ds-section-workspace" aria-labelledby="ds-heading">
+        <h2 id="ds-heading">データ構造のようす</h2>
+        <p class="section-lead section-lead-compact">
+          コールスタック（再帰 Solve） / 確定した真偽
+        </p>
+        <div id="ds-panels" class="ds-panels"></div>
+      </section>
+    </div>
+
+    <section class="code-section" aria-labelledby="csharp-heading">
+      <h2 id="csharp-heading">C# 実装例</h2>
+      <div class="code-toolbar">
+        <p class="code-meta">ファイル: <code>samples/AndOrExample.cs</code></p>
+      </div>
+      <pre class="code-block" id="csharp-sample"><code>// 読み込み中…</code></pre>
+      <p class="code-note">
+        <code>Solve</code> の再帰がコールスタックに対応します。OR は早期 true、AND は早期 false で打ち切れます。
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container container-wide">
+      <p>
+        <a href="../index.html">← トピック一覧</a>
+        ·
+        <a href="dfs.html">DFS（再帰の感覚）</a>
+        ·
+        <span class="footer-muted">次: Min-Max 探索（準備中）</span>
+      </p>
+    </div>
+  </footer>
+
+  <script type="module" src="../js/and-or.js"></script>
+</body>
+</html>

@@ -48,10 +48,10 @@ const TOPICS = [
     id: "and-or",
     title: "AND-OR 探索",
     description:
-      "ゲーム木の入口。AND/OR 節点で局面をモデル化し、終局まで読み切る探索を学ぶ。",
+      "ゲーム木の入口。OR（どれか1つ）と AND（すべて）で終局まで読み切る。",
     href: "algorithms/and-or.html",
     badge: "ゲーム木",
-    ready: false,
+    ready: true,
   },
   {
     id: "minimax",

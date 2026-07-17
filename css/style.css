@@ -1716,3 +1716,123 @@ img {
   font-size: 0.85rem;
   color: var(--text-muted);
 }
+
+/* ===== AND-OR / ゲーム木 ===== */
+.tree-panel {
+  overflow: auto;
+}
+
+.tree-viewport {
+  width: 100%;
+  min-height: 280px;
+  overflow: auto;
+  background: #0a0e14;
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
+.andor-svg {
+  display: block;
+  max-width: none;
+  margin: 0 auto;
+  font-family: var(--font);
+}
+
+.andor-edge {
+  stroke: #3d4f66;
+  stroke-width: 2;
+  fill: none;
+}
+
+.andor-edge.is-proof {
+  stroke: #f2cc8f;
+  stroke-width: 2.5;
+}
+
+.andor-node rect {
+  stroke: var(--border);
+  stroke-width: 1.5;
+  fill: #1a2433;
+}
+
+.andor-node.kind-or rect {
+  fill: rgba(91, 159, 212, 0.18);
+  stroke: #5b9fd4;
+}
+
+.andor-node.kind-and rect {
+  fill: rgba(167, 139, 250, 0.16);
+  stroke: #a78bfa;
+}
+
+.andor-node.leaf-true rect {
+  fill: rgba(107, 203, 143, 0.2);
+  stroke: #6bcb8f;
+}
+
+.andor-node.leaf-false rect {
+  fill: rgba(224, 122, 95, 0.18);
+  stroke: #e07a5f;
+}
+
+.andor-node.is-active rect {
+  stroke: #f2cc8f;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 6px rgba(242, 204, 143, 0.35));
+}
+
+.andor-node.is-true rect {
+  fill: rgba(242, 204, 143, 0.22);
+  stroke: #f2cc8f;
+}
+
+.andor-node.is-false:not(.is-active) rect {
+  fill: rgba(61, 79, 102, 0.85);
+  stroke: #5a6d85;
+  opacity: 0.92;
+}
+
+.andor-kind,
+.andor-label {
+  fill: var(--text);
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
+.andor-kind {
+  font-size: 10px;
+  font-weight: 700;
+  fill: var(--text-muted);
+}
+
+.andor-label {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.swatch-or {
+  background: #5b9fd4;
+}
+
+.swatch-and {
+  background: #a78bfa;
+}
+
+.swatch-leaf-t {
+  background: #6bcb8f;
+}
+
+.swatch-leaf-f {
+  background: #e07a5f;
+}
+
+.andor-formula .formula-code {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.footer-muted {
+  color: var(--text-muted);
+}

@@ -39,6 +39,7 @@
 | 3 | ダイクストラ | `algorithms/dijkstra.html` | `js/maps/dijkstra-map.js` | `DijkstraExample.cs` | 優先度 = g |
 | 4 | 最良優先 | `algorithms/best-first.html` | `js/maps/best-first-map.js` | `BestFirstExample.cs` | 優先度 = h |
 | 5 | A* | `algorithms/astar.html` | `js/maps/astar-map.js` | `AStarExample.cs` | f = g + h |
+| 6 | AND-OR | `algorithms/and-or.html` | `js/maps/and-or-tree.js` | `AndOrExample.cs` | OR=∃ / AND=∀。ゲーム木入口 |
 
 共通:
 
@@ -50,15 +51,24 @@
 
 ---
 
-## メニューのみ（ready: false）
+## ゲーム木
 
-ゲーム木（この順で SPEC → 実装）:
+| 順 | トピック | 状態 |
+|----|----------|------|
+| 1 | AND-OR | **ready** — `algorithms/and-or.html` / `js/and-or.js` / `js/maps/and-or-tree.js` / `samples/AndOrExample.cs` / SPEC |
+| 2 | Min-Max | メニューのみ（次に着手） |
+| 3 | α-β | メニューのみ |
+| 4 | モンテカルロ | メニューのみ |
+| 5 | 多腕バンディット | メニューのみ |
 
-1. AND-OR → 2. Min-Max → 3. α-β → 4. モンテカルロ → 5. 多腕バンディット  
-
-その他: AABB、ステートマシン  
+その他 ready:false: AABB、ステートマシン  
 
 定義: `js/main.js` の `TOPICS` ＋ `docs/topics/CATALOG.md`
+
+### AND-OR メモ
+- OR = どれか1つ真、AND = すべて真、葉 = 固定真偽  
+- 深さ優先・左から右。正規ルート(AND)が成功すると根 OR が打ち切り（強引・秘密は未評価になり得る）  
+- 木の編集: `js/maps/and-or-tree.js`
 
 ---
 
