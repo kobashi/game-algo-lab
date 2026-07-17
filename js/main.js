@@ -75,10 +75,10 @@ const TOPICS = [
     id: "monte-carlo",
     title: "モンテカルロ法",
     description:
-      "ランダムシミュレーションで局面を評価する。完全読み切りが難しい木への応用を学ぶ。",
+      "ランダムプレイアウトの平均で評価。全部読む Min-Max との違いを学ぶ。",
     href: "algorithms/monte-carlo.html",
     badge: "ゲーム木",
-    ready: false,
+    ready: true,
   },
   {
     id: "multi-armed-bandit",

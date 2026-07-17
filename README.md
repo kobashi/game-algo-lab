@@ -90,7 +90,8 @@ Project/
 | AND-OR 探索 | **実装済** — `algorithms/and-or.html` |
 | Min-Max 探索 | **実装済** — `algorithms/minimax.html` |
 | α-β 法 | **実装済** — `algorithms/alpha-beta.html` |
-| モンテカルロ → 多腕バンディット | メニューのみ |
+| モンテカルロ法 | **実装済** — `algorithms/monte-carlo.html` |
+| 多腕バンディット | メニューのみ |
 
 | カテゴリ | トピック | 状態 |
 |----------|----------|------|

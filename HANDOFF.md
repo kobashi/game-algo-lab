@@ -42,6 +42,7 @@
 | 6 | AND-OR | `algorithms/and-or.html` | `js/maps/and-or-tree.js` | `AndOrExample.cs` | OR=∃ / AND=∀。ゲーム木入口 |
 | 7 | Min-Max | `algorithms/minimax.html` | `js/maps/minimax-tree.js` | `MinimaxExample.cs` | MAX/MIN・数値評価。枝刈りなし |
 | 8 | α-β | `algorithms/alpha-beta.html` | `js/maps/alpha-beta-tree.js` | `AlphaBetaExample.cs` | α/β 窓で枝刈り。値は Min-Max と同じ |
+| 9 | モンテカルロ | `algorithms/monte-carlo.html` | `js/maps/monte-carlo-tree.js` | `MonteCarloExample.cs` | 乱択プレイアウト平均。Min-Max と不一致 |
 
 共通:
 
@@ -60,8 +61,8 @@
 | 1 | AND-OR | **ready** — `algorithms/and-or.html` / SPEC |
 | 2 | Min-Max | **ready** — `algorithms/minimax.html` / SPEC |
 | 3 | α-β | **ready** — `algorithms/alpha-beta.html` / SPEC |
-| 4 | モンテカルロ | メニューのみ（次に着手） |
-| 5 | 多腕バンディット | メニューのみ |
+| 4 | モンテカルロ | **ready** — `algorithms/monte-carlo.html` / SPEC |
+| 5 | 多腕バンディット | メニューのみ（次に着手） |
 
 その他 ready:false: AABB、ステートマシン  
 
@@ -82,6 +83,12 @@
 - 手 B に葉 B3=99 を置き、B2=2 のあと α カットで B3 未評価  
 - 葉訪問 6 / 全葉 7、根 v=4 は Min-Max と同じ  
 - 木: `js/maps/alpha-beta-tree.js`
+
+### モンテカルロ メモ
+- プレイアウト: 各節点で子を一様ランダム → 葉スコア平均  
+- 真の乱択 EV ≈ 5.833、Min-Max = 4（一致しないのが教材ポイント）  
+- 1ステップ=経路1マス、再生=1ティック1プレイアウト  
+- 木: `js/maps/monte-carlo-tree.js`
 
 ---
 

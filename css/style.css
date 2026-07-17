@@ -1896,3 +1896,38 @@ img {
     rgba(0, 0, 0, 0.25) 4px
   );
 }
+
+/* モンテカルロ */
+.andor-node.is-on-path rect {
+  stroke: #f2cc8f;
+  stroke-width: 2;
+}
+
+.andor-node.is-visited-mc:not(.is-active):not(.is-on-path) rect {
+  stroke: rgba(91, 159, 212, 0.7);
+}
+
+.mc-params {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  width: 100%;
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--border);
+}
+
+.mc-params .controls-label {
+  margin: 0;
+}
+
+.mc-num {
+  width: 4.2rem;
+  padding: 0.25rem 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8rem;
+}
