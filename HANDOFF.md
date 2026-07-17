@@ -43,6 +43,7 @@
 | 7 | Min-Max | `algorithms/minimax.html` | `js/maps/minimax-tree.js` | `MinimaxExample.cs` | MAX/MIN・数値評価。枝刈りなし |
 | 8 | α-β | `algorithms/alpha-beta.html` | `js/maps/alpha-beta-tree.js` | `AlphaBetaExample.cs` | α/β 窓で枝刈り。値は Min-Max と同じ |
 | 9 | モンテカルロ | `algorithms/monte-carlo.html` | `js/maps/monte-carlo-tree.js` | `MonteCarloExample.cs` | 乱択プレイアウト平均。Min-Max と不一致 |
+| 10 | 多腕バンディット | `algorithms/multi-armed-bandit.html` | `js/maps/bandit-config.js` | `MultiArmedBanditExample.cs` | ε-greedy / UCB1・リグレット |
 
 共通:
 
@@ -62,7 +63,7 @@
 | 2 | Min-Max | **ready** — `algorithms/minimax.html` / SPEC |
 | 3 | α-β | **ready** — `algorithms/alpha-beta.html` / SPEC |
 | 4 | モンテカルロ | **ready** — `algorithms/monte-carlo.html` / SPEC |
-| 5 | 多腕バンディット | メニューのみ（次に着手） |
+| 5 | 多腕バンディット | **ready** — `algorithms/multi-armed-bandit.html` / SPEC（シリーズ完了） |
 
 その他 ready:false: AABB、ステートマシン  
 
@@ -89,6 +90,12 @@
 - 真の乱択 EV ≈ 5.833、Min-Max = 4（一致しないのが教材ポイント）  
 - 1ステップ=経路1マス、再生=1ティック1プレイアウト  
 - 木: `js/maps/monte-carlo-tree.js`
+
+### 多腕バンディット メモ
+- ベルヌーイ腕、最適は腕 D (μ=0.8)  
+- ε-greedy / UCB1、累積リグレット Σ(μ*−μ_a)  
+- 真の μ 表示トグルあり  
+- 設定: `js/maps/bandit-config.js`
 
 ---
 

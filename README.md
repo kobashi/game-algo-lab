@@ -91,7 +91,7 @@ Project/
 | Min-Max 探索 | **実装済** — `algorithms/minimax.html` |
 | α-β 法 | **実装済** — `algorithms/alpha-beta.html` |
 | モンテカルロ法 | **実装済** — `algorithms/monte-carlo.html` |
-| 多腕バンディット | メニューのみ |
+| 多腕バンディット | **実装済** — `algorithms/multi-armed-bandit.html` |
 
 | カテゴリ | トピック | 状態 |
 |----------|----------|------|

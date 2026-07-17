@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="モンテカルロ法の可視化。ランダムプレイアウト平均で局面を評価する。" />
-  <title>モンテカルロ法 — Game Algo Lab</title>
+  <meta name="description" content="多腕バンディットの可視化。ε-greedy と UCB1 で探索と活用のトレードオフを学ぶ。" />
+  <title>多腕バンディット — Game Algo Lab</title>
   <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body class="topic-body">
@@ -16,9 +16,9 @@
       </a>
       <nav class="nav" aria-label="メイン">
         <a href="../index.html" class="nav-link">ホーム</a>
+        <a href="monte-carlo.html" class="nav-link">モンテカルロ</a>
+        <a href="multi-armed-bandit.html" class="nav-link is-active">バンディット</a>
         <a href="alpha-beta.html" class="nav-link">α-β</a>
-        <a href="monte-carlo.html" class="nav-link is-active">モンテカルロ</a>
-        <a href="minimax.html" class="nav-link">Min-Max</a>
       </nav>
     </div>
   </header>
@@ -26,13 +26,13 @@
   <main class="container container-wide topic-main">
     <div class="page-header page-header-compact">
       <p class="breadcrumb">
-        <a href="../index.html">ホーム</a> / ゲーム木 / モンテカルロ法
+        <a href="../index.html">ホーム</a> / ゲーム木 / 多腕バンディット
       </p>
-      <h1>モンテカルロ法</h1>
+      <h1>多腕バンディット</h1>
       <p class="page-header-lead">
-        木を全部読まず、<strong>ランダムプレイアウト</strong>を繰り返して平均スコアで評価する。
-        Min-Max の「最善前提」とは別の量になる。木は
-        <code>js/maps/monte-carlo-tree.js</code>。
+        複数の「腕」から毎回1本だけ引き、<strong>探索と活用</strong>をバランスする。
+        MCTS で「次にどの子を試すか」と同じ構造。設定は
+        <code>js/maps/bandit-config.js</code>。
       </p>
     </div>
 
@@ -40,10 +40,11 @@
       <summary>このデモで学ぶこと</summary>
       <div class="lesson-box lesson-box-nested">
         <ul>
-          <li><strong>プレイアウト</strong>: 根から葉まで、各節点で子を一様ランダムに選ぶ</li>
-          <li><strong>推定値</strong>: 葉スコアの平均。試行 N を増やすと乱択の真の期待値に近づく</li>
-          <li><strong>Min-Max 値</strong>（この木では 4）は最善同士の読み。乱択 EV（約 5.83）とは一致しない</li>
-          <li>全部読むのが難しい大きな木への入口。次は「どの枝を多く試すか」（多腕バンディット）</li>
+          <li>各腕は未知の成功確率 μ（ベルヌーイ報酬 0/1）</li>
+          <li><strong>活用</strong>: いま一番よさそうな腕を引く / <strong>探索</strong>: 他も試す</li>
+          <li><strong>ε-greedy</strong>: 確率 ε でランダム、否则 経験平均最大</li>
+          <li><strong>UCB1</strong>: μ̂ + √(2 ln t / n) — 引いていない・不確実な腕にボーナス</li>
+          <li><strong>累積リグレット</strong>: 毎回 (最適 μ* − 選んだ腕の μ) を足したもの（小さいほどよい）</li>
         </ul>
       </div>
     </details>
@@ -51,19 +52,8 @@
     <div class="demo-workspace">
       <div class="demo-game-group">
         <div class="demo-board">
-          <div class="canvas-panel tree-panel">
-            <div id="tree-viewport" class="tree-viewport" aria-label="モンテカルロ用ゲーム木">
-              <svg id="tree-svg" class="andor-svg mm-svg" role="img" aria-labelledby="tree-title">
-                <title id="tree-title">モンテカルロ ゲーム木</title>
-              </svg>
-            </div>
-            <div class="legend">
-              <span><i class="swatch swatch-or"></i>MAX</span>
-              <span><i class="swatch swatch-and"></i>MIN</span>
-              <span><i class="swatch swatch-leaf-t"></i>葉スコア</span>
-              <span><i class="swatch swatch-path"></i>今回の経路</span>
-              <span><i class="swatch swatch-frontier"></i>現在位置</span>
-            </div>
+          <div class="canvas-panel bandit-panel">
+            <div id="bandit-board" class="bandit-board" aria-label="多腕バンディットの腕"></div>
           </div>
         </div>
 
@@ -81,15 +71,26 @@
 
               <div class="controls-group controls-group-speed">
                 <label class="controls-label" for="speed">速度</label>
-                <input type="range" id="speed" min="30" max="400" value="100" step="10" />
+                <input type="range" id="speed" min="20" max="300" value="60" step="10" />
               </div>
             </div>
 
-            <div class="controls-group controls-group-paint mc-params">
-              <label class="controls-label" for="target-n">目標N</label>
-              <input type="number" id="target-n" class="mc-num" min="5" max="500" value="50" step="5" />
+            <div class="controls-group controls-group-paint mc-params bandit-params">
+              <label class="controls-label" for="policy">方策</label>
+              <select id="policy" class="bandit-select">
+                <option value="eps">ε-greedy</option>
+                <option value="ucb1">UCB1</option>
+              </select>
+              <label class="controls-label" for="epsilon">ε</label>
+              <input type="number" id="epsilon" class="mc-num" min="0" max="1" value="0.15" step="0.05" />
+              <label class="controls-label" for="target-n">目標t</label>
+              <input type="number" id="target-n" class="mc-num" min="10" max="1000" value="100" step="10" />
               <label class="controls-label" for="seed">シード</label>
-              <input type="number" id="seed" class="mc-num" min="1" max="99999" value="42" step="1" />
+              <input type="number" id="seed" class="mc-num" min="1" max="99999" value="7" step="1" />
+              <label class="bandit-check">
+                <input type="checkbox" id="show-true" />
+                真の μ を表示
+              </label>
             </div>
           </div>
 
@@ -101,7 +102,7 @@
       <section class="ds-section ds-section-workspace" aria-labelledby="ds-heading">
         <h2 id="ds-heading">データ構造のようす</h2>
         <p class="section-lead section-lead-compact">
-          プレイアウト経路 / 推定値と理論値 / 初手の分布
+          統計・各腕の推定・直近の報酬列
         </p>
         <div id="ds-panels" class="ds-panels"></div>
       </section>
@@ -110,11 +111,11 @@
     <section class="code-section" aria-labelledby="csharp-heading">
       <h2 id="csharp-heading">C# 実装例</h2>
       <div class="code-toolbar">
-        <p class="code-meta">ファイル: <code>samples/MonteCarloExample.cs</code></p>
+        <p class="code-meta">ファイル: <code>samples/MultiArmedBanditExample.cs</code></p>
       </div>
       <pre class="code-block" id="csharp-sample"><code>// 読み込み中…</code></pre>
       <p class="code-note">
-        <code>Playout</code> が1回の乱択シミュレーション、<code>Estimate</code> がその平均です。
+        選択ロジックだけを切り出しています。実際のゲームでは報酬がプレイアウト結果などに置き換わります。
       </p>
     </section>
   </main>
@@ -124,15 +125,13 @@
       <p>
         <a href="../index.html">← トピック一覧</a>
         ·
-        <a href="minimax.html">Min-Max</a>
+        <a href="monte-carlo.html">モンテカルロ（前段）</a>
         ·
-        <a href="alpha-beta.html">α-β</a>
-        ·
-        <a href="multi-armed-bandit.html">次: 多腕バンディット</a>
+        <span class="footer-muted">ゲーム木シリーズ完了</span>
       </p>
     </div>
   </footer>
 
-  <script type="module" src="../js/monte-carlo.js"></script>
+  <script type="module" src="../js/multi-armed-bandit.js"></script>
 </body>
 </html>

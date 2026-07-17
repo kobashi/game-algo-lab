@@ -84,10 +84,10 @@ const TOPICS = [
     id: "multi-armed-bandit",
     title: "多腕バンディット",
     description:
-      "探索と活用のトレードオフ。複数の腕（選択肢）から報酬を最大化する方策を学ぶ。",
+      "探索と活用。ε-greedy / UCB1。MCTS の腕選択の基礎。",
     href: "algorithms/multi-armed-bandit.html",
     badge: "ゲーム木",
-    ready: false,
+    ready: true,
   },
   {
     id: "collision",

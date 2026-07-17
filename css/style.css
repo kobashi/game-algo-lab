@@ -1931,3 +1931,153 @@ img {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.8rem;
 }
+
+/* 多腕バンディット */
+.bandit-panel {
+  overflow: auto;
+}
+
+.bandit-board {
+  background: #0a0e14;
+  border-radius: 8px;
+  padding: 0.75rem 1rem 1rem;
+  min-height: 280px;
+}
+
+.bandit-legend-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.bandit-legend-row .swatch {
+  display: inline-block;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 2px;
+  margin-right: 0.25rem;
+  vertical-align: -0.1em;
+}
+
+.bandit-arms {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.bandit-arm {
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(30, 40, 54, 0.65);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.bandit-arm.is-last {
+  border-color: #f2cc8f;
+  box-shadow: 0 0 0 1px rgba(242, 204, 143, 0.35);
+}
+
+.bandit-arm.is-optimal {
+  border-color: rgba(107, 203, 143, 0.55);
+}
+
+.bandit-arm-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+
+.bandit-arm-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.bandit-arm-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.bandit-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.bandit-bar-track {
+  position: relative;
+  height: 1.15rem;
+  background: rgba(15, 20, 25, 0.9);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(45, 58, 77, 0.8);
+}
+
+.bandit-bar {
+  height: 100%;
+  border-radius: 3px;
+  min-width: 0;
+  transition: width 0.2s ease;
+}
+
+.bandit-bar-est {
+  background: linear-gradient(90deg, #3d7aad, #5b9fd4);
+}
+
+.bandit-bar-true {
+  background: linear-gradient(90deg, #c4a35a, #f2cc8f);
+}
+
+.bandit-bar-n {
+  background: linear-gradient(90deg, #6b5b95, #a78bfa);
+}
+
+.bandit-bar-label {
+  position: absolute;
+  inset: 0 0.4rem 0 0.4rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.68rem;
+  color: rgba(232, 238, 246, 0.9);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.65);
+  pointer-events: none;
+}
+
+.bandit-last-reward {
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.bandit-last-reward strong {
+  color: #f2cc8f;
+}
+
+.bandit-select {
+  padding: 0.25rem 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.8rem;
+}
+
+.bandit-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.bandit-params {
+  row-gap: 0.45rem;
+}
