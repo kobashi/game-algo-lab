@@ -156,12 +156,21 @@ createPlayback({
 
 ### 2.6 登録
 
-- `js/main.js` … `TOPICS` に `id`, `title`, `description`, `href`, `badge`, `category`, `ready`
-- `docs/topics/CATALOG.md`
+- `js/main.js` … `TOPICS` に `id`, `title`, `description`, `href`, `badge`, `category`, `ready`, **`maturity`**
+- `docs/topics/CATALOG.md` … ready・**成熟度**・改訂メモ
 - 完了時 `HANDOFF.md` を短く更新
 
-詳細雛形: **`docs/templates/TOPIC_SCAFFOLD.md`**（重複を避け、迷ったらこちらを開く）。
+**成熟度**（`docs/topics/MATURITY.md`）:
 
+| コード | 表示 | いつ |
+|--------|------|------|
+| `oneshot` | 一発未調整 | 初回実装のまま |
+| `revised` | 改訂・調整 | 教材・機能の意図した改訂後 |
+| `stable` | 安定版 | 授業据え置き決定後（破壊的変更を避ける） |
+
+新規は通常 `oneshot`。基盤寄せだけなら oneshot のまま可。
+
+詳細雛形: **`docs/templates/TOPIC_SCAFFOLD.md`**。
 ---
 
 ## 3. 共通基盤（platform）変更

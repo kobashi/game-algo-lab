@@ -2,10 +2,12 @@
  * トップページ: 学習トピック一覧をカテゴリ別に描画
  * 新しいアルゴリズムを追加するときは TOPICS に1件足すだけでOK
  * @see docs/PLATFORM.md
- * @see docs/templates/TOPIC_SCAFFOLD.md
+ * @see docs/topics/CATALOG.md
+ * @see docs/topics/MATURITY.md
  */
 
 /**
+ * @typedef {'oneshot' | 'revised' | 'stable'} Maturity
  * @typedef {{
  *   id: string,
  *   title: string,
@@ -14,6 +16,7 @@
  *   badge: string,
  *   category: string,
  *   ready: boolean,
+ *   maturity: Maturity,
  * }} Topic
  */
 
@@ -25,6 +28,13 @@ const CATEGORY_ORDER = [
   "設計パターン",
 ];
 
+/** @type {Record<Maturity, string>} */
+const MATURITY_LABEL = {
+  oneshot: "一発未調整",
+  revised: "改訂・調整",
+  stable: "安定版",
+};
+
 /** @type {Topic[]} */
 const TOPICS = [
   {
@@ -35,6 +45,7 @@ const TOPICS = [
     badge: "経路探索",
     category: "経路探索",
     ready: true,
+    maturity: "revised",
   },
   {
     id: "dfs",
@@ -44,6 +55,7 @@ const TOPICS = [
     badge: "経路探索",
     category: "経路探索",
     ready: true,
+    maturity: "revised",
   },
   {
     id: "dijkstra",
@@ -53,6 +65,7 @@ const TOPICS = [
     badge: "経路探索",
     category: "経路探索",
     ready: true,
+    maturity: "revised",
   },
   {
     id: "best-first",
@@ -62,6 +75,7 @@ const TOPICS = [
     badge: "経路探索",
     category: "経路探索",
     ready: true,
+    maturity: "revised",
   },
   {
     id: "astar",
@@ -71,6 +85,7 @@ const TOPICS = [
     badge: "経路探索",
     category: "経路探索",
     ready: true,
+    maturity: "revised",
   },
   {
     id: "and-or",
@@ -81,6 +96,7 @@ const TOPICS = [
     badge: "ゲーム木",
     category: "ゲーム木",
     ready: true,
+    maturity: "oneshot",
   },
   {
     id: "minimax",
@@ -91,6 +107,7 @@ const TOPICS = [
     badge: "ゲーム木",
     category: "ゲーム木",
     ready: true,
+    maturity: "oneshot",
   },
   {
     id: "alpha-beta",
@@ -101,6 +118,7 @@ const TOPICS = [
     badge: "ゲーム木",
     category: "ゲーム木",
     ready: true,
+    maturity: "oneshot",
   },
   {
     id: "monte-carlo",
@@ -111,6 +129,7 @@ const TOPICS = [
     badge: "ゲーム木",
     category: "ゲーム木",
     ready: true,
+    maturity: "oneshot",
   },
   {
     id: "multi-armed-bandit",
@@ -121,6 +140,7 @@ const TOPICS = [
     badge: "ゲーム木",
     category: "ゲーム木",
     ready: true,
+    maturity: "oneshot",
   },
   {
     id: "collision",
@@ -131,6 +151,7 @@ const TOPICS = [
     badge: "物理・判定",
     category: "物理・判定",
     ready: true,
+    maturity: "revised",
   },
   {
     id: "fsm",
@@ -141,6 +162,7 @@ const TOPICS = [
     badge: "設計パターン",
     category: "設計パターン",
     ready: true,
+    maturity: "oneshot",
   },
 ];
 
@@ -150,10 +172,24 @@ const TOPICS = [
 function createCard(topic) {
   const card = document.createElement("article");
   card.className = topic.ready ? "card" : "card is-coming-soon";
+  if (topic.maturity) {
+    card.dataset.maturity = topic.maturity;
+  }
+
+  const badgeRow = document.createElement("div");
+  badgeRow.className = "card-badge-row";
 
   const badge = document.createElement("span");
   badge.className = "card-badge";
   badge.textContent = topic.badge;
+
+  const maturity = document.createElement("span");
+  maturity.className = `card-maturity card-maturity-${topic.maturity || "oneshot"}`;
+  maturity.textContent = MATURITY_LABEL[topic.maturity] || topic.maturity || "";
+  maturity.title =
+    "一発未調整 / 改訂・調整 / 安定版 — 定義は docs/topics/MATURITY.md";
+
+  badgeRow.append(badge, maturity);
 
   const title = document.createElement("h3");
   title.textContent = topic.title;
@@ -161,7 +197,7 @@ function createCard(topic) {
   const desc = document.createElement("p");
   desc.textContent = topic.description;
 
-  card.append(badge, title, desc);
+  card.append(badgeRow, title, desc);
 
   if (topic.ready) {
     const link = document.createElement("a");

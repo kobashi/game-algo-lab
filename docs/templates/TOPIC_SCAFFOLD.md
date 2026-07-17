@@ -14,6 +14,7 @@
 | id | `spatial-hash`（英小文字・ハイフン） |
 | カテゴリ | 経路探索 / ゲーム木 / 物理・判定 / 設計パターン / 新規 |
 | UI 型 | `pathfinding` / `game-tree` / `explain`（非マップ説明） |
+| **成熟度** | 新規は通常 `oneshot`（[MATURITY.md](../topics/MATURITY.md)） |
 | 学習目標 | 3 つ以内 |
 
 ---
@@ -142,10 +143,11 @@ loadTextSample("../samples/XxxExample.cs", document.getElementById("csharp-sampl
 
 ## 4. 登録
 
-1. `js/main.js` の `TOPICS` に1件（`category` / `badge` / `ready`）  
-2. `docs/topics/CATALOG.md` に1行  
-3. 完成後 `ready: true`  
-4. `HANDOFF.md` を短く更新  
+1. `js/main.js` の `TOPICS` に1件（`category` / `badge` / `ready` / **`maturity`**）  
+2. `docs/topics/CATALOG.md` に1行（成熟度・改訂メモ）  
+3. 完成後 `ready: true`。初回は通常 **`maturity: "oneshot"`**  
+4. 改訂したら CATALOG を **調整 (`revised`)** に上げ、メモを1行  
+5. `HANDOFF.md` を短く更新  
 
 ---
 

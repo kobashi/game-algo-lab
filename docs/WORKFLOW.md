@@ -74,15 +74,18 @@ chore: .gitignore 更新
       ↓
 ⑥ main へマージ → ready: true
       ↓
-⑦ HANDOFF / CATALOG / README を更新
+⑦ HANDOFF / CATALOG / README を更新（**成熟度**も CATALOG と `TOPICS.maturity` を揃える）
 ```
+
+成熟度（一発 / 調整 / 安定）の定義: [topics/MATURITY.md](./topics/MATURITY.md)。  
+改訂を入れたら `oneshot` → `revised`。授業据え置きなら `stable`。
 
 ### ⑤ の最低確認
 
 - [ ] ローカル `http.server` でトップ → デモが開く  
 - [ ] 再生・1ステップ・リセットが動く  
 - [ ] モバイル幅でも操作が使える  
-- [ ] `TOPICS` の `ready` / `category` と実ページが一致  
+- [ ] `TOPICS` の `ready` / `category` / **`maturity`** と CATALOG・実ページが一致  
 - [ ] PLATFORM の用語・レイアウトから大きく外れていない  
 - [ ] ステータス・再生・乱数・木レイアウト等を **platform に寄せた**（コピペ増殖していない）  
 

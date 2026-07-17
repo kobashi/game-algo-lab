@@ -6,7 +6,9 @@
 | カテゴリ | pathfinding / game-tree / physics / patterns / （その他） |
 | 著者 | |
 | 状態 | draft / review / approved / implemented |
+| **成熟度** | `oneshot`（一発未調整）/ `revised`（改訂・調整）/ `stable`（安定）— 定義は [MATURITY.md](../topics/MATURITY.md) |
 | 作成日 | YYYY-MM-DD |
+| 最終改訂 | YYYY-MM-DD（なければ —） |
 | 依存 | 先に学んでおくトピック id（なければ —） |
 
 ---
