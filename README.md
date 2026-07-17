@@ -50,14 +50,19 @@ Project/
 ├── index.html
 ├── algorithms/       # 各デモ HTML
 ├── css/style.css     # 共通スタイル
-├── js/               # デモ + maps/ + ds-viz + map-format + main
+├── js/
+│   ├── platform/     # ★ 共通基盤（再生・乱数・木レイアウト等）
+│   ├── maps/         # 初期データ
+│   ├── ds-viz.js / map-format.js / main.js
+│   └── <topic>.js    # トピック固有
 ├── samples/          # C# 実装例
-├── docs/             # 方針・仕様・分業・カタログ
-├── scripts/          # GitHub 公開など
+├── docs/             # 方針・仕様・スキャフォールド
+├── scripts/
 ├── HANDOFF.md
-├── README.md
-└── .gitignore
+└── README.md
 ```
+
+新規トピック: [docs/templates/TOPIC_SCAFFOLD.md](docs/templates/TOPIC_SCAFFOLD.md)  
 
 ## GitHub Pages への公開
 

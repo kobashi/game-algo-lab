@@ -38,10 +38,14 @@
     <section id="topics" class="section">
       <div class="container">
         <h2 class="section-title">学習トピック</h2>
-        <p class="section-desc">各トピックは可視化デモと短い解説で構成されています。</p>
+        <p class="section-desc">
+          カテゴリ別に並びます。追加手順は
+          <code>docs/templates/TOPIC_SCAFFOLD.md</code>、共通 API は
+          <code>js/platform/</code> を参照。
+        </p>
 
-        <div class="card-grid" id="topic-list">
-          <!-- トピックカードは js/main.js から描画（今後追加しやすい構造） -->
+        <div id="topic-list">
+          <!-- カテゴリ見出し + カードは js/main.js から描画 -->
         </div>
       </div>
     </section>

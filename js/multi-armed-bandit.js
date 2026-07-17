@@ -9,10 +9,15 @@ import {
   bestArmIndex,
 } from "./maps/bandit-config.js";
 import { setPanel, renderSet } from "./ds-viz.js";
+import {
+  createStatus,
+  createResultPanel,
+  loadTextSample,
+  mulberry32,
+  randomIndex,
+} from "./platform/index.js";
 
 const boardEl = document.getElementById("bandit-board");
-const statusEl = document.getElementById("status");
-const resultEl = document.getElementById("result-compare");
 const dsPanels = document.getElementById("ds-panels");
 const btnPlay = document.getElementById("btn-play");
 const btnStep = document.getElementById("btn-step");
@@ -24,6 +29,9 @@ const epsilonEl = document.getElementById("epsilon");
 const policyEl = document.getElementById("policy");
 const showTrueEl = document.getElementById("show-true");
 const csharpSample = document.getElementById("csharp-sample");
+
+const setStatus = createStatus(document.getElementById("status"));
+const resultPanel = createResultPanel(document.getElementById("result-compare"));
 
 /** @type {{ id: string, label: string, mean: number }[]} */
 let arms = [];
@@ -50,34 +58,7 @@ let rng = Math.random;
 
 const RECENT_MAX = 16;
 
-function setStatus(msg) {
-  if (statusEl) statusEl.textContent = msg;
-}
 
-function hideResult() {
-  if (resultEl) {
-    resultEl.hidden = true;
-    resultEl.innerHTML = "";
-  }
-}
-
-function showResult(html) {
-  if (!resultEl) return;
-  resultEl.hidden = false;
-  resultEl.innerHTML = html;
-}
-
-function makeRng(seed) {
-  let a = seed >>> 0;
-  if (a === 0) a = 1;
-  return function () {
-    a |= 0;
-    a = (a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
 
 function targetN() {
   return Math.max(1, Number(targetEl?.value) || BANDIT_CONFIG.defaultSteps);
@@ -121,7 +102,7 @@ function resetState() {
   lastMode = "";
 
   const seed = Number(seedEl?.value) || BANDIT_CONFIG.defaultSeed;
-  rng = makeRng(seed);
+  rng = mulberry32(seed);
 
   if (epsilonEl && !epsilonEl.dataset.touched) {
     epsilonEl.value = String(BANDIT_CONFIG.defaultEpsilon);
@@ -130,7 +111,7 @@ function resetState() {
     targetEl.value = String(BANDIT_CONFIG.defaultSteps);
   }
 
-  hideResult();
+  resultPanel.hide();
   setStatus(
     `準備完了 — ${k} 本の腕、方策 ${policy() === "ucb1" ? "UCB1" : "ε-greedy"}、目標 ${targetN()} 回`
   );
@@ -169,7 +150,7 @@ function selectArm() {
   // ε-greedy
   if (rng() < epsilon()) {
     lastMode = "explore";
-    return Math.floor(rng() * k);
+    return randomIndex(rng, k);
   }
   lastMode = "exploit";
   // 未引き優先
@@ -233,7 +214,7 @@ function finishRun() {
   const bi = optIndex();
   const bestPulls = pulls[bi];
   const totalReward = rewardSum.reduce((a, b) => a + b, 0);
-  showResult(`
+  resultPanel.show(`
     <h3>結果（多腕バンディット）</h3>
     <ul>
       <li><strong>試行</strong>: ${totalPulls}</li>
@@ -389,17 +370,7 @@ function togglePlay() {
   else stopAuto();
 }
 
-async function loadCsharp() {
-  if (!csharpSample) return;
-  try {
-    const res = await fetch("../samples/MultiArmedBanditExample.cs");
-    if (!res.ok) throw new Error(String(res.status));
-    csharpSample.textContent = await res.text();
-  } catch {
-    csharpSample.textContent =
-      "// samples/MultiArmedBanditExample.cs を読み込めませんでした。";
-  }
-}
+
 
 btnPlay?.addEventListener("click", togglePlay);
 btnStep?.addEventListener("click", () => {
@@ -438,4 +409,8 @@ if (targetEl) targetEl.value = String(BANDIT_CONFIG.defaultSteps);
 if (epsilonEl) epsilonEl.value = String(BANDIT_CONFIG.defaultEpsilon);
 
 resetState();
-loadCsharp();
+loadTextSample(
+  "../samples/MultiArmedBanditExample.cs",
+  csharpSample,
+  "// samples/MultiArmedBanditExample.cs を読み込めませんでした。"
+);

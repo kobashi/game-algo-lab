@@ -3,19 +3,30 @@
  * - OR: 子のいずれかが真 → 真（早期打ち切り）
  * - AND: すべての子が真 → 真（1つ偽で早期打ち切り）
  * - 深さ優先・左から右、コールスタックでステップ実行
+ * 共通基盤: js/platform/*
  */
 import { INITIAL_TREE } from "./maps/and-or-tree.js";
 import { setPanel, renderCallStack, renderSet } from "./ds-viz.js";
+import {
+  createStatus,
+  createResultPanel,
+  createPlayback,
+  loadTextSample,
+  layoutTree as layoutTreeShared,
+  applySvgSize,
+  escapeXml,
+} from "./platform/index.js";
 
 const svg = document.getElementById("tree-svg");
-const statusEl = document.getElementById("status");
-const resultEl = document.getElementById("result-compare");
 const dsPanels = document.getElementById("ds-panels");
 const btnPlay = document.getElementById("btn-play");
 const btnStep = document.getElementById("btn-step");
 const btnReset = document.getElementById("btn-reset");
 const speedEl = document.getElementById("speed");
 const csharpSample = document.getElementById("csharp-sample");
+
+const setStatus = createStatus(document.getElementById("status"));
+const resultPanel = createResultPanel(document.getElementById("result-compare"));
 
 /** @typedef {'or'|'and'|'leaf'} Kind */
 /** @typedef {{ id: string, label: string, kind: Kind, value?: boolean, children: string[] }} Node */
@@ -41,30 +52,13 @@ let proofEdges = new Set();
  */
 let callStack = [];
 
-let running = false;
 let finished = false;
-let timerId = null;
 let stepCount = 0;
 
-/** レイアウト座標 */
+/** レイアウト座標 @type {Record<string, {x:number,y:number}>} */
 let layout = {};
-
-function setStatus(msg) {
-  if (statusEl) statusEl.textContent = msg;
-}
-
-function hideResult() {
-  if (resultEl) {
-    resultEl.hidden = true;
-    resultEl.innerHTML = "";
-  }
-}
-
-function showResult(html) {
-  if (!resultEl) return;
-  resultEl.hidden = false;
-  resultEl.innerHTML = html;
-}
+let NODE_W = 108;
+let NODE_H = 44;
 
 function cloneTree(src) {
   rootId = src.rootId;
@@ -91,9 +85,9 @@ function resetState() {
     result[id] = null;
   }
   callStack = [{ id: rootId, childIndex: 0, phase: "enter" }];
-  hideResult();
+  resultPanel.hide();
   setStatus("準備完了 — 再生または 1ステップで Solve(根) を開始");
-  layoutTree();
+  relayout();
   draw();
   updateDs();
 }
@@ -109,66 +103,19 @@ function kindLabel(kind) {
   return "葉";
 }
 
-// ----- レイアウト（再帰的な水平配置） -----
-const NODE_W = 108;
-const NODE_H = 44;
-const GAP_X = 18;
-const GAP_Y = 72;
-const PAD = 28;
-
-function subtreeWidth(id) {
-  const n = nodes[id];
-  if (!n.children.length) return NODE_W;
-  let w = 0;
-  n.children.forEach((cid, i) => {
-    w += subtreeWidth(cid);
-    if (i < n.children.length - 1) w += GAP_X;
+// ----- レイアウト（platform/tree-layout） -----
+function relayout() {
+  const packed = layoutTreeShared(nodes, rootId, {
+    nodeWidth: 108,
+    nodeHeight: 44,
+    gapX: 18,
+    gapY: 72,
+    pad: 28,
   });
-  return Math.max(NODE_W, w);
-}
-
-function place(id, xLeft, depth) {
-  const n = nodes[id];
-  const w = subtreeWidth(id);
-  const cx = xLeft + w / 2;
-  const cy = PAD + depth * GAP_Y + NODE_H / 2;
-  layout[id] = { x: cx, y: cy, w: NODE_W, h: NODE_H };
-
-  if (!n.children.length) return;
-  let x = xLeft;
-  const total = subtreeWidth(id);
-  // 中央寄せ: 子の合計幅が NODE_W より大きい場合はそのまま、狭い葉だけのときは中央
-  const childrenSpan = n.children.reduce(
-    (s, cid, i) => s + subtreeWidth(cid) + (i ? GAP_X : 0),
-    0
-  );
-  if (childrenSpan < total) {
-    x = xLeft + (total - childrenSpan) / 2;
-  }
-  for (const cid of n.children) {
-    const cw = subtreeWidth(cid);
-    place(cid, x, depth + 1);
-    x += cw + GAP_X;
-  }
-}
-
-function layoutTree() {
-  layout = {};
-  const tw = subtreeWidth(rootId);
-  place(rootId, PAD, 0);
-  const height = PAD * 2 + maxDepth(rootId) * GAP_Y + NODE_H;
-  const width = tw + PAD * 2;
-  if (svg) {
-    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-    svg.setAttribute("width", String(width));
-    svg.setAttribute("height", String(height));
-  }
-}
-
-function maxDepth(id) {
-  const n = nodes[id];
-  if (!n.children.length) return 0;
-  return 1 + Math.max(...n.children.map(maxDepth));
+  layout = packed.layout;
+  NODE_W = packed.nodeWidth;
+  NODE_H = packed.nodeHeight;
+  applySvgSize(svg, packed.width, packed.height);
 }
 
 // ----- 描画 -----
@@ -225,14 +172,6 @@ function draw() {
   svg.innerHTML = `<g class="andor-edges">${edges.join("")}</g><g class="andor-nodes">${nodeEls.join("")}</g>`;
 }
 
-function escapeXml(s) {
-  return String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
 function updateDs() {
   if (!dsPanels) return;
   const frames = callStack.map((f) => {
@@ -275,7 +214,7 @@ function finishRoot() {
   // 証明経路: 根から真の子を辿る（簡易ハイライト）
   markProof(rootId);
   draw();
-  showResult(`
+  resultPanel.show(`
     <h3>結果（AND-OR）</h3>
     <ul>
       <li><strong>根の判定</strong>: ${ok ? "真 — 解あり（クリア戦略が存在する）" : "偽 — 解なし"}</li>
@@ -433,56 +372,24 @@ function stepOnce() {
   return false;
 }
 
+const playback = createPlayback({
+  btnPlay: /** @type {HTMLButtonElement | null} */ (btnPlay),
+  speedEl: /** @type {HTMLInputElement | null} */ (speedEl),
+  onTick: () => stepOnce(),
+  defaultDelayMs: 200,
+});
+
 function stopAuto() {
-  running = false;
-  if (btnPlay) btnPlay.textContent = "再生";
-  if (timerId !== null) {
-    clearTimeout(timerId);
-    timerId = null;
-  }
+  playback.stop();
 }
 
-function scheduleNext() {
-  if (!running) return;
-  const delay = Number(speedEl?.value) || 200;
-  timerId = setTimeout(() => {
-    if (!running) return;
-    const cont = stepOnce();
-    if (cont) scheduleNext();
-    else stopAuto();
-  }, delay);
-}
-
-function togglePlay() {
-  if (finished) {
-    loadInitial();
-  }
-  if (running) {
-    stopAuto();
-    return;
-  }
-  running = true;
-  if (btnPlay) btnPlay.textContent = "一時停止";
-  // すぐ1手
-  if (stepOnce()) scheduleNext();
-  else stopAuto();
-}
-
-async function loadCsharp() {
-  if (!csharpSample) return;
-  try {
-    const res = await fetch("../samples/AndOrExample.cs");
-    if (!res.ok) throw new Error(String(res.status));
-    csharpSample.textContent = await res.text();
-  } catch {
-    csharpSample.textContent =
-      "// samples/AndOrExample.cs を読み込めませんでした。";
-  }
-}
-
-btnPlay?.addEventListener("click", togglePlay);
+btnPlay?.addEventListener("click", () => {
+  playback.toggle(() => {
+    if (finished) loadInitial();
+  });
+});
 btnStep?.addEventListener("click", () => {
-  if (running) stopAuto();
+  playback.stop();
   if (finished) loadInitial();
   stepOnce();
 });
@@ -492,4 +399,8 @@ btnReset?.addEventListener("click", () => {
 });
 
 loadInitial();
-loadCsharp();
+loadTextSample(
+  "../samples/AndOrExample.cs",
+  csharpSample,
+  "// samples/AndOrExample.cs を読み込めませんでした。"
+);

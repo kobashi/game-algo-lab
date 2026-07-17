@@ -2,8 +2,11 @@
 
 最終更新: 2026-07-17
 
-全トピックで揃える **見た目・操作・ファイル配置・用語**。  
-新しいデモを足す人は、ここを満たすことを目標にする（アルゴリズム固有の部分だけが差分になる）。
+全トピックで揃える **見た目・操作・ファイル配置・用語** と、  
+**共有コード（`js/platform`）** の境界。  
+新しいデモはアルゴリズム差分だけを書き、基盤は再利用する。
+
+スキャフォールド: [templates/TOPIC_SCAFFOLD.md](./templates/TOPIC_SCAFFOLD.md)
 
 ---
 
@@ -22,20 +25,57 @@
 ## 2. ディレクトリ規約
 
 ```
-algorithms/<id>.html     # デモページ
-js/<id>.js               # デモロジック（ES module）
-js/maps/<id>-map.js      # 初期データ（経路探索系）※トピック種別に応じて置き場を SPEC で決めてよい
+algorithms/<id>.html       # デモページ
+js/<id>.js                 # トピック固有ロジックのみ
+js/platform/               # ★ 共通基盤（dom / playback / rng / tree-layout …）
+js/ds-viz.js               # データ構造パネル共通
+js/map-format.js           # 経路探索グリッド地図パーサ
+js/maps/                   # 初期データ（地図・木・設定）
+js/main.js                 # トップの TOPICS（category 付き）
 samples/<PascalCase>Example.cs
-css/style.css            # 共通スタイル（トピック専用 CSS は最小限）
-js/ds-viz.js             # データ構造パネル共通
-js/map-format.js         # グリッド地図パーサ（経路探索系）
-js/main.js               # トップの TOPICS 定義
-docs/topics/<id>/SPEC.md # トピック仕様（実装前に作成）
+css/style.css              # 共通スタイル
+docs/topics/<id>/SPEC.md
+docs/templates/            # SPEC / スキャフォールド
 ```
 
 - **id**: 英小文字・ハイフン（例: `alpha-beta`, `best-first`）  
-- トップへの掲載: `js/main.js` の `TOPICS` に1件。未完成は `ready: false`
+- トップ掲載: `js/main.js` の `TOPICS`（`category` / `badge` / `ready`）  
+- 未完成は `ready: false`
 
+### 層の責務（分離の原則）
+
+| 層 | 置いてよいもの | 置いてはいけないもの |
+|----|----------------|----------------------|
+| `js/platform/*` | 複数トピックで使う UI 制御・乱数・木レイアウト | 特定アルゴリズムの step 本体 |
+| `js/ds-viz.js` | Queue/Stack/木など **表示部品** | 探索アルゴリズム |
+| `js/map-format.js` | 地図記号のパース | 描画・再生ループ |
+| `js/<id>.js` | そのトピックの状態・step・draw | ステータス更新や PRNG の再実装 |
+| `css/style.css` | 共有トークン・レイアウト | （巨大なトピック専用はコメント区切りで可） |
+
+**新規トピックで「また同じコードを書きそう」→ まず platform に API を足す。**
+
+### `js/platform` の API（概要）
+
+| export | 用途 |
+|--------|------|
+| `createStatus` | `#status` への1行ログ |
+| `createResultPanel` | 結果 HTML の show/hide |
+| `loadTextSample` | C# 等のテキスト fetch |
+| `createPlayback` | 再生 / 一時停止 / 速度付き onTick |
+| `mulberry32` / `randomIndex` | シード付き乱数 |
+| `layoutTree` / `applySvgSize` | ゲーム木の水平配置 |
+| `escapeHtml` / `escapeXml` | エスケープ |
+
+詳細: [js/platform/README.md](../js/platform/README.md)
+
+### 移行状況（段階的）
+
+| 領域 | platform 利用 |
+|------|----------------|
+| ゲーム木（AND-OR / Min-Max / α-β / MC） | レイアウト・status・playback・C# 読込など **済み** |
+| 多腕バンディット | rng・status・C# **済み** |
+| 経路探索（BFS…） | 未移行（次の候補: playback / C# / ペイント共通化） |
+| AABB / FSM | 未移行（次の候補: status / C# / playback） |
 ---
 
 ## 3. 学習体験の統一
@@ -149,11 +189,22 @@ docs/topics/<id>/SPEC.md # トピック仕様（実装前に作成）
 
 ## 9. プラットフォーム変更の扱い
 
-`css/style.css` / `ds-viz.js` / `map-format.js` / レイアウト骨格を変える PR は:
+`css/style.css` / `js/platform/*` / `ds-viz.js` / `map-format.js` / レイアウト骨格を変える PR は:
 
 1. 既存の `ready: true` デモを壊さない  
-2. 本ドキュメントを同じ PR で更新する  
+2. 本ドキュメントと `js/platform/README.md` を同じ PR で更新する  
 3. WORKFLOW の「基盤変更」チェックを通す  
+4. 可能なら **1 デモを先に載せ替えてから** 他へ広げる  
+
+---
+
+## 10. 新規トピックの最短パス
+
+1. [templates/TOPIC_SCAFFOLD.md](./templates/TOPIC_SCAFFOLD.md) に沿ってファイル作成  
+2. SPEC を書く → UI 型（pathfinding / game-tree / explain）を決める  
+3. `platform` + 必要なら `ds-viz` / `map-format` を import  
+4. `TOPICS` + CATALOG 登録（最初は `ready: false` でも可）  
+5. 動作確認後 `ready: true`
 
 ---
 
@@ -162,3 +213,4 @@ docs/topics/<id>/SPEC.md # トピック仕様（実装前に作成）
 | 日付 | 内容 |
 |------|------|
 | 2026-07-17 | 初版（経路探索実績を一般化。複数ゴールを明記） |
+| 2026-07-17 | `js/platform` 分離、層の責務、スキャフォールド、移行状況を追加 |

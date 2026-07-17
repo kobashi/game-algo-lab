@@ -9,10 +9,18 @@ import {
   TRUE_RANDOM_EV,
 } from "./maps/monte-carlo-tree.js";
 import { setPanel, renderCallStack, renderSet } from "./ds-viz.js";
+import {
+  createStatus,
+  createResultPanel,
+  loadTextSample,
+  mulberry32,
+  randomIndex,
+  layoutTree as layoutTreeShared,
+  applySvgSize,
+  escapeXml,
+} from "./platform/index.js";
 
 const svg = document.getElementById("tree-svg");
-const statusEl = document.getElementById("status");
-const resultEl = document.getElementById("result-compare");
 const dsPanels = document.getElementById("ds-panels");
 const btnPlay = document.getElementById("btn-play");
 const btnStep = document.getElementById("btn-step");
@@ -21,6 +29,9 @@ const speedEl = document.getElementById("speed");
 const seedEl = document.getElementById("seed");
 const targetEl = document.getElementById("target-n");
 const csharpSample = document.getElementById("csharp-sample");
+
+const setStatus = createStatus(document.getElementById("status"));
+const resultPanel = createResultPanel(document.getElementById("result-compare"));
 
 /** @typedef {'max'|'min'|'leaf'} Kind */
 /** @typedef {{ id: string, label: string, kind: Kind, score?: number, children: string[] }} Node */
@@ -56,40 +67,9 @@ const GAP_Y = 76;
 const PAD = 28;
 const RECENT_MAX = 12;
 
-function setStatus(msg) {
-  if (statusEl) statusEl.textContent = msg;
-}
-
-function hideResult() {
-  if (resultEl) {
-    resultEl.hidden = true;
-    resultEl.innerHTML = "";
-  }
-}
-
-function showResult(html) {
-  if (!resultEl) return;
-  resultEl.hidden = false;
-  resultEl.innerHTML = html;
-}
-
-/** mulberry32 */
-function makeRng(seed) {
-  let a = seed >>> 0;
-  if (a === 0) a = 1;
-  return function () {
-    a |= 0;
-    a = (a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
 function pickChild(id) {
   const ch = nodes[id].children;
-  const i = Math.floor(rng() * ch.length);
-  return ch[Math.min(i, ch.length - 1)];
+  return ch[randomIndex(rng, ch.length)];
 }
 
 function cloneTree(src) {
@@ -134,13 +114,13 @@ function resetState() {
   for (const cid of nodes[rootId]?.children ?? []) firstMoveCount[cid] = 0;
 
   const seed = Number(seedEl?.value) || 42;
-  rng = makeRng(seed);
+  rng = mulberry32(seed);
 
-  hideResult();
+  resultPanel.hide();
   setStatus(
     `準備完了 — シード ${seed}。1ステップでプレイアウトを進め、目標 ${targetN()} 回`
   );
-  layoutTree();
+  relayout();
   draw();
   updateDs();
 }
@@ -150,63 +130,16 @@ function loadInitial() {
   resetState();
 }
 
-// ----- レイアウト（minimax と同型） -----
-function subtreeWidth(id) {
-  const n = nodes[id];
-  if (!n.children.length) return NODE_W;
-  let w = 0;
-  n.children.forEach((cid, i) => {
-    w += subtreeWidth(cid);
-    if (i < n.children.length - 1) w += GAP_X;
+function relayout() {
+  const packed = layoutTreeShared(nodes, rootId, {
+    nodeWidth: NODE_W,
+    nodeHeight: NODE_H,
+    gapX: GAP_X,
+    gapY: GAP_Y,
+    pad: PAD,
   });
-  return Math.max(NODE_W, w);
-}
-
-function place(id, xLeft, depth) {
-  const n = nodes[id];
-  const w = subtreeWidth(id);
-  const cx = xLeft + w / 2;
-  const cy = PAD + depth * GAP_Y + NODE_H / 2;
-  layout[id] = { x: cx, y: cy };
-  if (!n.children.length) return;
-  let x = xLeft;
-  const childrenSpan = n.children.reduce(
-    (s, cid, i) => s + subtreeWidth(cid) + (i ? GAP_X : 0),
-    0
-  );
-  if (childrenSpan < w) x = xLeft + (w - childrenSpan) / 2;
-  for (const cid of n.children) {
-    const cw = subtreeWidth(cid);
-    place(cid, x, depth + 1);
-    x += cw + GAP_X;
-  }
-}
-
-function maxDepth(id) {
-  const n = nodes[id];
-  if (!n.children.length) return 0;
-  return 1 + Math.max(...n.children.map(maxDepth));
-}
-
-function layoutTree() {
-  layout = {};
-  const tw = subtreeWidth(rootId);
-  place(rootId, PAD, 0);
-  const height = PAD * 2 + maxDepth(rootId) * GAP_Y + NODE_H;
-  const width = tw + PAD * 2;
-  if (svg) {
-    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-    svg.setAttribute("width", String(width));
-    svg.setAttribute("height", String(height));
-  }
-}
-
-function escapeXml(s) {
-  return String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+  layout = packed.layout;
+  applySvgSize(svg, packed.width, packed.height);
 }
 
 function pathEdgeSet() {
@@ -333,7 +266,7 @@ function finishBatch() {
     est === null ? "—" : Math.abs(est - TRUE_RANDOM_EV).toFixed(3);
   const errMm =
     est === null ? "—" : Math.abs(est - MINIMAX_ROOT).toFixed(3);
-  showResult(`
+  resultPanel.show(`
     <h3>結果（モンテカルロ評価）</h3>
     <ul>
       <li><strong>試行回数 N</strong>: ${trials}</li>
@@ -483,17 +416,7 @@ function togglePlay() {
   else stopAuto();
 }
 
-async function loadCsharp() {
-  if (!csharpSample) return;
-  try {
-    const res = await fetch("../samples/MonteCarloExample.cs");
-    if (!res.ok) throw new Error(String(res.status));
-    csharpSample.textContent = await res.text();
-  } catch {
-    csharpSample.textContent =
-      "// samples/MonteCarloExample.cs を読み込めませんでした。";
-  }
-}
+
 
 btnPlay?.addEventListener("click", togglePlay);
 btnStep?.addEventListener("click", () => {
@@ -511,4 +434,8 @@ targetEl?.addEventListener("change", () => {
 });
 
 loadInitial();
-loadCsharp();
+loadTextSample(
+  "../samples/MonteCarloExample.cs",
+  csharpSample,
+  "// samples/MonteCarloExample.cs を読み込めませんでした。"
+);

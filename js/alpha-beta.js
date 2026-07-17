@@ -1,21 +1,30 @@
 /**
  * α-β 法デモ
- * - Min-Max と同じ値を返す
- * - MAX で v≥β → β カット、MIN で v≤α → α カット
- * - 刈られた節点を可視化
+ * - Min-Max と同じ値、α/β で枝刈り
+ * - 共通基盤: js/platform/*
  */
 import { INITIAL_TREE, FULL_LEAF_COUNT } from "./maps/alpha-beta-tree.js";
 import { setPanel, renderCallStack, renderSet } from "./ds-viz.js";
+import {
+  createStatus,
+  createResultPanel,
+  createPlayback,
+  loadTextSample,
+  layoutTree as layoutTreeShared,
+  applySvgSize,
+  escapeXml,
+} from "./platform/index.js";
 
 const svg = document.getElementById("tree-svg");
-const statusEl = document.getElementById("status");
-const resultEl = document.getElementById("result-compare");
 const dsPanels = document.getElementById("ds-panels");
 const btnPlay = document.getElementById("btn-play");
 const btnStep = document.getElementById("btn-step");
 const btnReset = document.getElementById("btn-reset");
 const speedEl = document.getElementById("speed");
 const csharpSample = document.getElementById("csharp-sample");
+
+const setStatus = createStatus(document.getElementById("status"));
+const resultPanel = createResultPanel(document.getElementById("result-compare"));
 
 /** @typedef {'max'|'min'|'leaf'} Kind */
 /** @typedef {{ id: string, label: string, kind: Kind, score?: number, children: string[] }} Node */
@@ -53,36 +62,14 @@ let cutCount = 0;
  */
 let callStack = [];
 
-let running = false;
 let finished = false;
-let timerId = null;
 let stepCount = 0;
+/** @type {Record<string, {x:number,y:number}>} */
 let layout = {};
-
-const NODE_W = 100;
-const NODE_H = 52;
-const GAP_X = 14;
-const GAP_Y = 78;
-const PAD = 28;
+let NODE_W = 100;
+let NODE_H = 52;
 const NEG_INF = -1e9;
 const POS_INF = 1e9;
-
-function setStatus(msg) {
-  if (statusEl) statusEl.textContent = msg;
-}
-
-function hideResult() {
-  if (resultEl) {
-    resultEl.hidden = true;
-    resultEl.innerHTML = "";
-  }
-}
-
-function showResult(html) {
-  if (!resultEl) return;
-  resultEl.hidden = false;
-  resultEl.innerHTML = html;
-}
 
 function fmtBound(x) {
   if (x <= NEG_INF / 2) return "−∞";
@@ -137,9 +124,9 @@ function resetState() {
       cut: null,
     },
   ];
-  hideResult();
+  resultPanel.hide();
   setStatus("準備完了 — α=−∞, β=+∞ で AlphaBeta(根) を開始");
-  layoutTree();
+  relayout();
   draw();
   updateDs();
 }
@@ -149,62 +136,18 @@ function loadInitial() {
   resetState();
 }
 
-function subtreeWidth(id) {
-  const n = nodes[id];
-  if (!n.children.length) return NODE_W;
-  let w = 0;
-  n.children.forEach((cid, i) => {
-    w += subtreeWidth(cid);
-    if (i < n.children.length - 1) w += GAP_X;
+function relayout() {
+  const packed = layoutTreeShared(nodes, rootId, {
+    nodeWidth: 100,
+    nodeHeight: 52,
+    gapX: 14,
+    gapY: 78,
+    pad: 28,
   });
-  return Math.max(NODE_W, w);
-}
-
-function place(id, xLeft, depth) {
-  const n = nodes[id];
-  const w = subtreeWidth(id);
-  const cx = xLeft + w / 2;
-  const cy = PAD + depth * GAP_Y + NODE_H / 2;
-  layout[id] = { x: cx, y: cy };
-  if (!n.children.length) return;
-  let x = xLeft;
-  const childrenSpan = n.children.reduce(
-    (s, cid, i) => s + subtreeWidth(cid) + (i ? GAP_X : 0),
-    0
-  );
-  if (childrenSpan < w) x = xLeft + (w - childrenSpan) / 2;
-  for (const cid of n.children) {
-    const cw = subtreeWidth(cid);
-    place(cid, x, depth + 1);
-    x += cw + GAP_X;
-  }
-}
-
-function maxDepth(id) {
-  const n = nodes[id];
-  if (!n.children.length) return 0;
-  return 1 + Math.max(...n.children.map(maxDepth));
-}
-
-function layoutTree() {
-  layout = {};
-  const tw = subtreeWidth(rootId);
-  place(rootId, PAD, 0);
-  const height = PAD * 2 + maxDepth(rootId) * GAP_Y + NODE_H;
-  const width = tw + PAD * 2;
-  if (svg) {
-    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-    svg.setAttribute("width", String(width));
-    svg.setAttribute("height", String(height));
-  }
-}
-
-function escapeXml(s) {
-  return String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+  layout = packed.layout;
+  NODE_W = packed.nodeWidth;
+  NODE_H = packed.nodeHeight;
+  applySvgSize(svg, packed.width, packed.height);
 }
 
 function nodeClass(id) {
@@ -331,7 +274,7 @@ function finishRoot() {
   const move = bestChild[rootId]
     ? nodes[bestChild[rootId]].label
     : "—";
-  showResult(`
+  resultPanel.show(`
     <h3>結果（α-β 法）</h3>
     <ul>
       <li><strong>根の評価値 v</strong>: ${v}（素の Min-Max と同じ）</li>
@@ -511,52 +454,24 @@ function stepOnce() {
   return false;
 }
 
+const playback = createPlayback({
+  btnPlay: /** @type {HTMLButtonElement | null} */ (btnPlay),
+  speedEl: /** @type {HTMLInputElement | null} */ (speedEl),
+  onTick: () => stepOnce(),
+  defaultDelayMs: 200,
+});
+
 function stopAuto() {
-  running = false;
-  if (btnPlay) btnPlay.textContent = "再生";
-  if (timerId !== null) {
-    clearTimeout(timerId);
-    timerId = null;
-  }
+  playback.stop();
 }
 
-function scheduleNext() {
-  if (!running) return;
-  const delay = Number(speedEl?.value) || 200;
-  timerId = setTimeout(() => {
-    if (!running) return;
-    if (stepOnce()) scheduleNext();
-    else stopAuto();
-  }, delay);
-}
-
-function togglePlay() {
-  if (finished) loadInitial();
-  if (running) {
-    stopAuto();
-    return;
-  }
-  running = true;
-  if (btnPlay) btnPlay.textContent = "一時停止";
-  if (stepOnce()) scheduleNext();
-  else stopAuto();
-}
-
-async function loadCsharp() {
-  if (!csharpSample) return;
-  try {
-    const res = await fetch("../samples/AlphaBetaExample.cs");
-    if (!res.ok) throw new Error(String(res.status));
-    csharpSample.textContent = await res.text();
-  } catch {
-    csharpSample.textContent =
-      "// samples/AlphaBetaExample.cs を読み込めませんでした。";
-  }
-}
-
-btnPlay?.addEventListener("click", togglePlay);
+btnPlay?.addEventListener("click", () => {
+  playback.toggle(() => {
+    if (finished) loadInitial();
+  });
+});
 btnStep?.addEventListener("click", () => {
-  if (running) stopAuto();
+  playback.stop();
   if (finished) loadInitial();
   stepOnce();
 });
@@ -566,4 +481,8 @@ btnReset?.addEventListener("click", () => {
 });
 
 loadInitial();
-loadCsharp();
+loadTextSample(
+  "../samples/AlphaBetaExample.cs",
+  csharpSample,
+  "// samples/AlphaBetaExample.cs を読み込めませんでした。"
+);

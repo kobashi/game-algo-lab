@@ -2082,6 +2082,28 @@ img {
   row-gap: 0.45rem;
 }
 
+/* ===== トップ: カテゴリ別トピック ===== */
+.topic-category {
+  margin-bottom: 1.75rem;
+}
+
+.topic-category-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.topic-category-grid {
+  /* .card-grid を継承利用 */
+}
+
+#topic-list:not(:has(.topic-category)) {
+  /* 旧単一グリッド互換は不要（常にカテゴリ描画） */
+}
+
 /* ===== AABB 説明特化レイアウト（経路探索マップを使わない） ===== */
 .aabb-lesson {
   margin-top: 0.5rem;
