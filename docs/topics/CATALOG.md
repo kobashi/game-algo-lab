@@ -25,7 +25,7 @@
 |----|----------|-------|------------|------|
 | `and-or` | AND-OR 探索 | ✅ | `algorithms/and-or.html` | [SPEC](./and-or/SPEC.md) |
 | `minimax` | Min-Max 探索 | ✅ | `algorithms/minimax.html` | [SPEC](./minimax/SPEC.md) |
-| `alpha-beta` | α-β 法 | ❌ | `algorithms/alpha-beta.html` | 未作成 |
+| `alpha-beta` | α-β 法 | ✅ | `algorithms/alpha-beta.html` | [SPEC](./alpha-beta/SPEC.md) |
 | `monte-carlo` | モンテカルロ法 | ❌ | `algorithms/monte-carlo.html` | 未作成 |
 | `multi-armed-bandit` | 多腕バンディット | ❌ | `algorithms/multi-armed-bandit.html` | 未作成 |
 

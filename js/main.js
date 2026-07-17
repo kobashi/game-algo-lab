@@ -66,10 +66,10 @@ const TOPICS = [
     id: "alpha-beta",
     title: "α-β 法",
     description:
-      "Min-Max に枝刈りを加える。α・β 境界で不要な探索を省略する。",
+      "Min-Max に α・β 窓を付け、答えに効かない枝を刈る。",
     href: "algorithms/alpha-beta.html",
     badge: "ゲーム木",
-    ready: false,
+    ready: true,
   },
   {
     id: "monte-carlo",

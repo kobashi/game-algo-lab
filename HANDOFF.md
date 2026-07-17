@@ -41,6 +41,7 @@
 | 5 | A* | `algorithms/astar.html` | `js/maps/astar-map.js` | `AStarExample.cs` | f = g + h |
 | 6 | AND-OR | `algorithms/and-or.html` | `js/maps/and-or-tree.js` | `AndOrExample.cs` | OR=∃ / AND=∀。ゲーム木入口 |
 | 7 | Min-Max | `algorithms/minimax.html` | `js/maps/minimax-tree.js` | `MinimaxExample.cs` | MAX/MIN・数値評価。枝刈りなし |
+| 8 | α-β | `algorithms/alpha-beta.html` | `js/maps/alpha-beta-tree.js` | `AlphaBetaExample.cs` | α/β 窓で枝刈り。値は Min-Max と同じ |
 
 共通:
 
@@ -58,8 +59,8 @@
 |----|----------|------|
 | 1 | AND-OR | **ready** — `algorithms/and-or.html` / SPEC |
 | 2 | Min-Max | **ready** — `algorithms/minimax.html` / SPEC |
-| 3 | α-β | メニューのみ（次に着手） |
-| 4 | モンテカルロ | メニューのみ |
+| 3 | α-β | **ready** — `algorithms/alpha-beta.html` / SPEC |
+| 4 | モンテカルロ | メニューのみ（次に着手） |
 | 5 | 多腕バンディット | メニューのみ |
 
 その他 ready:false: AABB、ステートマシン  
@@ -75,6 +76,12 @@
 - MAX = max 子、MIN = min 子、葉 = score  
 - **枝刈りなし**（全子評価）。答え: A=3, B=2, C=4 → 根 v=4（手 C）  
 - 木: `js/maps/minimax-tree.js`
+
+### α-β メモ
+- 根: α=−∞, β=+∞。MAX で v≥β → βカット、MIN で v≤α → αカット  
+- 手 B に葉 B3=99 を置き、B2=2 のあと α カットで B3 未評価  
+- 葉訪問 6 / 全葉 7、根 v=4 は Min-Max と同じ  
+- 木: `js/maps/alpha-beta-tree.js`
 
 ---
 

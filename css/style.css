@@ -1865,3 +1865,34 @@ img {
 .andor-node.kind-leaf .mm-score {
   fill: var(--text);
 }
+
+/* α-β 枝刈り */
+.andor-node.is-pruned rect {
+  fill: rgba(61, 79, 102, 0.55) !important;
+  stroke: #5a6d85 !important;
+  stroke-dasharray: 4 3;
+  opacity: 0.75;
+}
+
+.andor-node.is-pruned .andor-label,
+.andor-node.is-pruned .mm-score,
+.andor-node.is-pruned .andor-kind {
+  fill: #8a9bb0;
+}
+
+.andor-edge.is-pruned-edge {
+  stroke: #5a6d85;
+  stroke-dasharray: 5 4;
+  opacity: 0.7;
+}
+
+.swatch-pruned {
+  background: #5a6d85;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.25) 2px,
+    rgba(0, 0, 0, 0.25) 4px
+  );
+}

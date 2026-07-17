@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Min-Max 探索の可視化。MAX/MIN と局面評価値でゲーム木を読む。" />
-  <title>Min-Max 探索 — Game Algo Lab</title>
+  <meta name="description" content="α-β 法の可視化。Min-Max に α・β 窓の枝刈りを加える。" />
+  <title>α-β 法 — Game Algo Lab</title>
   <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body class="topic-body">
@@ -16,9 +16,9 @@
       </a>
       <nav class="nav" aria-label="メイン">
         <a href="../index.html" class="nav-link">ホーム</a>
+        <a href="minimax.html" class="nav-link">Min-Max</a>
+        <a href="alpha-beta.html" class="nav-link is-active">α-β</a>
         <a href="and-or.html" class="nav-link">AND-OR</a>
-        <a href="minimax.html" class="nav-link is-active">Min-Max</a>
-        <a href="alpha-beta.html" class="nav-link">α-β</a>
       </nav>
     </div>
   </header>
@@ -26,13 +26,12 @@
   <main class="container container-wide topic-main">
     <div class="page-header page-header-compact">
       <p class="breadcrumb">
-        <a href="../index.html">ホーム</a> / ゲーム木 / Min-Max 探索
+        <a href="../index.html">ホーム</a> / ゲーム木 / α-β 法
       </p>
-      <h1>Min-Max 探索</h1>
+      <h1>α-β 法</h1>
       <p class="page-header-lead">
-        <strong>MAX</strong>（自分）は評価を最大化、<strong>MIN</strong>（相手）は最小化する。
-        葉の数値を吸い上げて最善手を決める。木は
-        <code>js/maps/minimax-tree.js</code>。
+        Min-Max に <strong>α（下限）・β（上限）</strong> の窓を付け、答えに効かない枝を刈る。
+        返す値は Min-Max と同じ。木は <code>js/maps/alpha-beta-tree.js</code>。
       </p>
     </div>
 
@@ -40,11 +39,11 @@
       <summary>このデモで学ぶこと</summary>
       <div class="lesson-box lesson-box-nested">
         <ul>
-          <li><strong>MAX</strong>（青系）: 自分の手番。子の評価の<strong>最大</strong>を取る</li>
-          <li><strong>MIN</strong>（紫系）: 相手の手番。子の評価の<strong>最小</strong>を取る（自分に厳しく）</li>
-          <li><strong>葉</strong>: 終端局面の評価値（大きいほど自分に有利）</li>
-          <li>AND-OR の真偽が「数値の優劣」に拡張された形と捉えられる</li>
-          <li>このデモは<strong>枝刈りなし</strong>。不要な枝を切るのは次の <strong>α-β 法</strong></li>
+          <li><strong>α</strong>: MAX がこれまで確保した評価の下限（これ以上は少なくとも取れる）</li>
+          <li><strong>β</strong>: MIN が確保した上限（これ以上は相手が許さない）</li>
+          <li><strong>β カット</strong>: MAX で v ≥ β → 親の MIN がこの枝を選ばないので残り不要</li>
+          <li><strong>α カット</strong>: MIN で v ≤ α → 親の MAX がこの枝を選ばないので残り不要</li>
+          <li>初期木では手 B の葉「相手ε(刈)=99」が α カットで読まれない</li>
         </ul>
       </div>
     </details>
@@ -53,17 +52,18 @@
       <div class="demo-game-group">
         <div class="demo-board">
           <div class="canvas-panel tree-panel">
-            <div id="tree-viewport" class="tree-viewport" aria-label="Min-Max ゲーム木">
+            <div id="tree-viewport" class="tree-viewport" aria-label="α-β ゲーム木">
               <svg id="tree-svg" class="andor-svg mm-svg" role="img" aria-labelledby="tree-title">
-                <title id="tree-title">Min-Max ゲーム木</title>
+                <title id="tree-title">α-β ゲーム木</title>
               </svg>
             </div>
             <div class="legend">
               <span><i class="swatch swatch-or"></i>MAX</span>
               <span><i class="swatch swatch-and"></i>MIN</span>
-              <span><i class="swatch swatch-leaf-t"></i>葉（評価）</span>
+              <span><i class="swatch swatch-leaf-t"></i>葉</span>
               <span><i class="swatch swatch-frontier"></i>評価中</span>
               <span><i class="swatch swatch-path"></i>最善枝</span>
+              <span><i class="swatch swatch-pruned"></i>刈られた</span>
             </div>
           </div>
         </div>
@@ -87,8 +87,8 @@
             </div>
 
             <div class="controls-group controls-group-paint andor-formula">
-              <span class="controls-label">式</span>
-              <code class="formula-code">MAX = max 子 / MIN = min 子</code>
+              <span class="controls-label">窓</span>
+              <code class="formula-code">α ≤ 真の値 ≤ β の外は刈る</code>
             </div>
           </div>
 
@@ -100,7 +100,7 @@
       <section class="ds-section ds-section-workspace" aria-labelledby="ds-heading">
         <h2 id="ds-heading">データ構造のようす</h2>
         <p class="section-lead section-lead-compact">
-          コールスタック（再帰 Minimax） / 確定した評価値 v
+          コールスタック（α・β 付き） / 確定 v / 刈られた節点
         </p>
         <div id="ds-panels" class="ds-panels"></div>
       </section>
@@ -109,11 +109,11 @@
     <section class="code-section" aria-labelledby="csharp-heading">
       <h2 id="csharp-heading">C# 実装例</h2>
       <div class="code-toolbar">
-        <p class="code-meta">ファイル: <code>samples/MinimaxExample.cs</code></p>
+        <p class="code-meta">ファイル: <code>samples/AlphaBetaExample.cs</code></p>
       </div>
       <pre class="code-block" id="csharp-sample"><code>// 読み込み中…</code></pre>
       <p class="code-note">
-        葉まで降りて数値を返し、MAX/MIN で吸い上げます。α・β による打ち切りはまだありません。
+        <code>v &gt;= beta</code> と <code>v &lt;= alpha</code> で打ち切る以外は Min-Max と同じ構造です。
       </p>
     </section>
   </main>
@@ -123,13 +123,13 @@
       <p>
         <a href="../index.html">← トピック一覧</a>
         ·
-        <a href="and-or.html">AND-OR（前段）</a>
+        <a href="minimax.html">Min-Max（前段）</a>
         ·
-        <a href="alpha-beta.html">次: α-β 法</a>
+        <span class="footer-muted">次: モンテカルロ法（準備中）</span>
       </p>
     </div>
   </footer>
 
-  <script type="module" src="../js/minimax.js"></script>
+  <script type="module" src="../js/alpha-beta.js"></script>
 </body>
 </html>
