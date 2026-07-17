@@ -20,7 +20,7 @@ import {
   createPlayback,
   loadTextSample,
   bindMapPaint,
-  mountSiteHeaderFromDataset,
+  mountTopicShellFromDataset,
   PF,
   PF_COLORS,
   createGridOps,
@@ -28,7 +28,7 @@ import {
   drawPathfindingGrid,
 } from "./platform/index.js";
 
-mountSiteHeaderFromDataset();
+mountTopicShellFromDataset();
 
 const COLS = PF.COLS;
 const ROWS = PF.ROWS;

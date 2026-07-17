@@ -20,15 +20,16 @@ import {
   createPlayback,
   loadTextSample,
   bindMapPaint,
-  mountSiteHeaderFromDataset,
+  mountTopicShellFromDataset,
   PF,
   PF_COLORS,
   createGridOps,
   applyParsedMap,
   drawPathfindingGrid,
+  drawScorePair,
 } from "./platform/index.js";
 
-mountSiteHeaderFromDataset();
+mountTopicShellFromDataset();
 
 const COLS = PF.COLS;
 const ROWS = PF.ROWS;
@@ -234,27 +235,29 @@ function draw() {
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       if (explored) {
-        ctx.fillStyle = onPathOrGoal ? "#1a1208" : COLORS.text;
-        ctx.font = "bold 13px ui-monospace, SFMono-Regular, Menlo, monospace";
-        ctx.fillText(String(hop), px + cell / 2, py + cell / 2 - 5);
-        ctx.font = "10px ui-monospace, SFMono-Regular, Menlo, monospace";
-        ctx.fillStyle = onPathOrGoal
-          ? "rgba(26, 18, 8, 0.7)"
-          : COLORS.textMuted;
-        ctx.fillText(`c${pc}`, px + cell / 2, py + cell / 2 + 9);
+        drawScorePair(
+          ctx,
+          { px, py, cell },
+          hop,
+          `c${pc}`,
+          { dark: onPathOrGoal, colors: COLORS }
+        );
       } else if (!st && !gl) {
         ctx.fillStyle = COLORS.textMuted;
         ctx.font = "11px ui-monospace, SFMono-Regular, Menlo, monospace";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
         ctx.fillText(String(costs[y][x]), px + cell / 2, py + cell / 2);
       } else if (st) {
-        ctx.fillStyle = "#0a1018";
-        ctx.font = "bold 11px sans-serif";
-        ctx.fillText("S", px + cell / 2, py + cell / 2 - 4);
-        ctx.font = "9px ui-monospace, SFMono-Regular, Menlo, monospace";
-        ctx.fillText("0·c0", px + cell / 2, py + cell / 2 + 9);
+        drawScorePair(ctx, { px, py, cell }, "S", "0·c0", {
+          dark: true,
+          colors: COLORS,
+        });
       } else if (gl) {
         ctx.fillStyle = "#1a100c";
         ctx.font = "bold 11px sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
         ctx.fillText("G", px + cell / 2, py + cell / 2);
       }
     },

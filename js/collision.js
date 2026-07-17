@@ -7,10 +7,10 @@ import {
   createStatus,
   createPlayback,
   loadTextSample,
-  mountSiteHeaderFromDataset,
+  mountTopicShellFromDataset,
 } from "./platform/index.js";
 
-mountSiteHeaderFromDataset();
+mountTopicShellFromDataset();
 
 const canvas = document.getElementById("aabb-canvas");
 const ctx = canvas?.getContext("2d");

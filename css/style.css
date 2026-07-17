@@ -2082,6 +2082,25 @@ img {
   row-gap: 0.45rem;
 }
 
+/* 共通フッター（topic-shell が生成） */
+.site-footer-links {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.5rem;
+  align-items: center;
+}
+
+.site-footer-links a {
+  white-space: nowrap;
+}
+
+.site-footer .footer-muted {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
 /* ===== トップ: カテゴリ別トピック ===== */
 .topic-category {
   margin-bottom: 1.75rem;

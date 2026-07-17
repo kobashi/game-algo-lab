@@ -33,9 +33,14 @@ export {
   applyParsedMap,
   drawPathfindingGrid,
   drawDefaultCellLabel,
+  drawScorePair,
 } from "./pathfinding-grid.js";
 export {
   NAV_GROUPS,
+  FOOTER_RELATED,
+  FOOTER_NOTES,
   mountSiteHeader,
+  mountSiteFooter,
   mountSiteHeaderFromDataset,
+  mountTopicShellFromDataset,
 } from "./topic-shell.js";

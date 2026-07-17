@@ -212,3 +212,27 @@ export function drawDefaultCellLabel(ctx, info, cost, colors = PF_COLORS) {
   ctx.font = "11px ui-monospace, SFMono-Regular, Menlo, monospace";
   ctx.fillText(String(cost), px + cell / 2, py + cell / 2);
 }
+
+/**
+ * 探索済みセルの「大 + 小」2 段ラベル（BFS の hop/c、Dijkstra の g など）
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {{ px: number, py: number, cell: number }} box
+ * @param {string|number} main
+ * @param {string} [sub]
+ * @param {{ dark?: boolean, colors?: typeof PF_COLORS }} [opts]
+ */
+export function drawScorePair(ctx, box, main, sub, opts = {}) {
+  const { px, py, cell } = box;
+  const colors = opts.colors ?? PF_COLORS;
+  const dark = !!opts.dark;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = dark ? "#1a1208" : colors.text;
+  ctx.font = "bold 12px ui-monospace, SFMono-Regular, Menlo, monospace";
+  ctx.fillText(String(main), px + cell / 2, py + cell / 2 - (sub ? 6 : 0));
+  if (sub != null && sub !== "") {
+    ctx.font = "9px ui-monospace, SFMono-Regular, Menlo, monospace";
+    ctx.fillStyle = dark ? "rgba(26, 18, 8, 0.72)" : colors.textMuted;
+    ctx.fillText(String(sub), px + cell / 2, py + cell / 2 + 8);
+  }
+}

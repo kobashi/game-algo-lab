@@ -76,6 +76,7 @@ import { parseMap } from "./map-format.js";
       <pre class="code-block" id="csharp-sample"><code>// 読み込み中…</code></pre>
     </section>
   </main>
+  <footer class="site-footer" id="site-footer" data-note="任意"></footer>
   <script type="module" src="../js/<id>.js"></script>
 </body>
 </html>
@@ -104,10 +105,10 @@ import {
   createResultPanel,
   createPlayback,
   loadTextSample,
-  mountSiteHeaderFromDataset,
+  mountTopicShellFromDataset,
 } from "./platform/index.js";
 
-mountSiteHeaderFromDataset();
+mountTopicShellFromDataset();
 
 const setStatus = createStatus(document.getElementById("status"));
 const result = createResultPanel(document.getElementById("result-compare"));

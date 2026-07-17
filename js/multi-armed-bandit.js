@@ -15,10 +15,10 @@ import {
   loadTextSample,
   mulberry32,
   randomIndex,
-  mountSiteHeaderFromDataset,
+  mountTopicShellFromDataset,
 } from "./platform/index.js";
 
-mountSiteHeaderFromDataset();
+mountTopicShellFromDataset();
 
 const boardEl = document.getElementById("bandit-board");
 const dsPanels = document.getElementById("ds-panels");

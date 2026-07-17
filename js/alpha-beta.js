@@ -13,10 +13,10 @@ import {
   layoutTree as layoutTreeShared,
   applySvgSize,
   escapeXml,
-  mountSiteHeaderFromDataset,
+  mountTopicShellFromDataset,
 } from "./platform/index.js";
 
-mountSiteHeaderFromDataset();
+mountTopicShellFromDataset();
 
 const svg = document.getElementById("tree-svg");
 const dsPanels = document.getElementById("ds-panels");

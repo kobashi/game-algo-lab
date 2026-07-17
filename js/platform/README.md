@@ -11,7 +11,7 @@
 | `tree-layout.js` | ゲーム木の水平レイアウト |
 | `grid-paint.js` | 経路探索マップの塗り（`bindMapPaint` 等） |
 | `pathfinding-grid.js` | グリッド幾何・下地描画（`drawPathfindingGrid`） |
-| `topic-shell.js` | 共通ヘッダー／ナビ（`mountSiteHeaderFromDataset`） |
+| `topic-shell.js` | 共通ヘッダー／フッター（`mountTopicShellFromDataset`） |
 | `index.js` | 上記の一括 export |
 
 経路探索の再生待ち時間はスライダーが大きいほど速いため  
@@ -70,6 +70,19 @@ createPlayback({
   delayFromSpeed: (v) => 450 - v,
   onTick: () => stepOnce(),
 });
+```
+
+HTML シェル:
+
+```html
+<header class="site-header" id="site-header" data-nav="pathfinding" data-active="bfs"></header>
+<!-- … main … -->
+<footer class="site-footer" id="site-footer" data-note="任意の注記"></footer>
+```
+
+```js
+import { mountTopicShellFromDataset } from "./platform/index.js";
+mountTopicShellFromDataset(); // ヘッダー + フッター
 ```
 
 経路探索・ゲーム木・説明特化 UI の違いは `docs/PLATFORM.md` を参照。

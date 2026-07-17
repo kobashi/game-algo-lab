@@ -1,11 +1,12 @@
 /**
- * トピックページ共通シェル（ヘッダー・ナビ）
- * HTML にビルド不要でマウントする。
+ * トピックページ共通シェル（ヘッダー・ナビ・フッター）
+ * ビルド不要。HTML の data 属性からマウントする。
  *
- * 使い方:
- *   <header class="site-header" id="site-header" data-nav="pathfinding" data-active="bfs"></header>
- *   import { mountSiteHeaderFromDataset } from "./platform/topic-shell.js";
- *   mountSiteHeaderFromDataset();
+ * @example
+ * <header class="site-header" id="site-header" data-nav="pathfinding" data-active="bfs"></header>
+ * <footer class="site-footer" id="site-footer"></footer>
+ * import { mountTopicShellFromDataset } from "./platform/index.js";
+ * mountTopicShellFromDataset();
  */
 
 /**
@@ -43,10 +44,61 @@ export const NAV_GROUPS = {
 };
 
 /**
+ * フッターの「関連リンク」（active id ごと）
+ * @type {Record<string, { href: string, label: string }[]>}
+ */
+export const FOOTER_RELATED = {
+  bfs: [{ href: "dfs.html", label: "DFS と比較" }],
+  dfs: [
+    { href: "bfs.html", label: "BFS と比較" },
+    { href: "dijkstra.html", label: "ダイクストラへ" },
+  ],
+  dijkstra: [
+    { href: "best-first.html", label: "最良優先へ" },
+    { href: "astar.html", label: "A* へ" },
+  ],
+  "best-first": [
+    { href: "dijkstra.html", label: "ダイクストラへ" },
+    { href: "astar.html", label: "A* へ" },
+  ],
+  astar: [
+    { href: "dijkstra.html", label: "ダイクストラ" },
+    { href: "best-first.html", label: "最良優先" },
+  ],
+  "and-or": [{ href: "minimax.html", label: "次: Min-Max" }],
+  minimax: [
+    { href: "and-or.html", label: "AND-OR（前段）" },
+    { href: "alpha-beta.html", label: "次: α-β" },
+  ],
+  "alpha-beta": [
+    { href: "minimax.html", label: "Min-Max（前段）" },
+    { href: "monte-carlo.html", label: "次: モンテカルロ" },
+  ],
+  "monte-carlo": [
+    { href: "minimax.html", label: "Min-Max" },
+    { href: "alpha-beta.html", label: "α-β" },
+    { href: "multi-armed-bandit.html", label: "次: バンディット" },
+  ],
+  bandit: [
+    { href: "monte-carlo.html", label: "モンテカルロ（前段）" },
+  ],
+  collision: [{ href: "fsm.html", label: "FSM" }],
+  fsm: [{ href: "collision.html", label: "AABB" }],
+};
+
+/** ナビ group ごとのフッター注記（data-note 未指定時） */
+export const FOOTER_NOTES = {
+  pathfinding: "経路探索シリーズ",
+  "game-tree": "ゲーム木シリーズ",
+  explain: "説明特化 UI · 経路探索マップは使いません",
+  default: "",
+};
+
+/**
  * @param {object} opts
  * @param {HTMLElement | null} opts.root
- * @param {string} [opts.nav]  NAV_GROUPS のキー
- * @param {string} [opts.active]  現在ページ id
+ * @param {string} [opts.nav]
+ * @param {string} [opts.active]
  * @param {string} [opts.homeHref]
  */
 export function mountSiteHeader(opts) {
@@ -79,7 +131,51 @@ export function mountSiteHeader(opts) {
   `;
 }
 
-/** `#site-header` の data-nav / data-active からマウント */
+/**
+ * @param {object} opts
+ * @param {HTMLElement | null} opts.root
+ * @param {string} [opts.active]
+ * @param {string} [opts.nav]
+ * @param {string} [opts.note]  明示注記（優先）
+ * @param {string} [opts.topicsHref]
+ */
+export function mountSiteFooter(opts) {
+  const {
+    root,
+    active = "",
+    nav = "default",
+    note = "",
+    topicsHref = "../index.html",
+  } = opts;
+  if (!root) return;
+
+  const related = FOOTER_RELATED[active] ?? [];
+  const parts = [
+    `<a href="${topicsHref}">← トピック一覧</a>`,
+    ...related.map((r) => `<a href="${r.href}">${r.label}</a>`),
+  ];
+
+  const noteText =
+    note ||
+    root.dataset.note ||
+    FOOTER_NOTES[nav] ||
+    "";
+
+  root.innerHTML = `
+    <div class="container container-wide">
+      <p class="site-footer-links">
+        ${parts.join("\n        ·\n        ")}
+      </p>
+      ${
+        noteText
+          ? `<p class="footer-muted">${noteText}</p>`
+          : ""
+      }
+    </div>
+  `;
+}
+
+/** `#site-header` の data-nav / data-active からヘッダーのみ */
 export function mountSiteHeaderFromDataset() {
   const root = document.getElementById("site-header");
   if (!root) return;
@@ -88,4 +184,23 @@ export function mountSiteHeaderFromDataset() {
     nav: root.dataset.nav || "default",
     active: root.dataset.active || "",
   });
+}
+
+/** ヘッダー + フッターをまとめてマウント（推奨） */
+export function mountTopicShellFromDataset() {
+  const header = document.getElementById("site-header");
+  const nav = header?.dataset.nav || "default";
+  const active = header?.dataset.active || "";
+
+  mountSiteHeaderFromDataset();
+
+  const footer = document.getElementById("site-footer");
+  if (footer) {
+    mountSiteFooter({
+      root: footer,
+      active,
+      nav,
+      note: footer.dataset.note || "",
+    });
+  }
 }

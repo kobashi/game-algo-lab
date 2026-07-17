@@ -8,10 +8,10 @@ import {
   createStatus,
   createPlayback,
   loadTextSample,
-  mountSiteHeaderFromDataset,
+  mountTopicShellFromDataset,
 } from "./platform/index.js";
 
-mountSiteHeaderFromDataset();
+mountTopicShellFromDataset();
 
 const svg = document.getElementById("fsm-svg");
 const eventButtons = document.getElementById("event-buttons");
