@@ -17,8 +17,11 @@
 - **受講生**: C# → `samples/*.cs`  
 - **ローカル**: `cd ~/Project && python3 -m http.server 8080` → http://localhost:8080  
 - **Git**: 既定ブランチ `main`。運用は `docs/WORKFLOW.md`  
-- **共通基盤**: `js/platform/`（dom / playback / rng / tree-layout）。新規トピックはここを import  
+- **共通基盤**: `js/platform/`（dom / playback / rng / tree-layout / **grid-paint**）  
+  - 経路探索は `bindMapPaint` + `delayFromSpeed: (v) => 450 - v`  
+  - 全 ready デモは status / C# / 再生を platform 利用  
 - **追加手順**: `docs/templates/TOPIC_SCAFFOLD.md`  
+
 
 
 ---
