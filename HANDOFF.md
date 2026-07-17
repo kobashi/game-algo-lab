@@ -159,11 +159,13 @@
 
 ## Git / 公開
 
-- ローカルに Git 履歴あり。リモート push は **`gh auth login` 後**  
-- 試作公開: `./scripts/publish-github.sh game-algo-lab v0.9.0`  
-  - Pages: `main` / root  
-  - Release: **v0.9.0 試作版（prerelease）** — `RELEASE_NOTES_v0.9.0.md`  
-- 旧ローカルタグ `v1.0.0` は初期リリース準備用。現行の試作は **v0.9.0**  
+- リモート: `https://github.com/kobashi/game-algo-lab`（アカウント: kobashi）  
+- **GitHub Pages（試作運用中）**: https://kobashi.github.io/game-algo-lab/  
+  - Source: `main` / `/ (root)`  
+- **Release 試作版**: https://github.com/kobashi/game-algo-lab/releases/tag/v0.9.0  
+  - タグ `v0.9.0`（prerelease）— `RELEASE_NOTES_v0.9.0.md`  
+- 再公開: `./scripts/publish-github.sh game-algo-lab v0.9.0`（または新タグ）  
+- 旧ローカルタグ `v1.0.0` は初期準備用。正式版は別途 `v1.0.0` を切り直す想定  
 
 ---
 
