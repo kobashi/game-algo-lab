@@ -34,7 +34,8 @@ git commit -m "feat(your-topic): 概要"
 
 | やりたいこと | 読む文書 |
 |--------------|----------|
-| 今後の方針（カテゴリ・基盤・分業） | [docs/ROADMAP.md](docs/ROADMAP.md) |
+| **計画の正本**（構想・第1〜5期） | [docs/interactive_game_programming_material_plan.docx](docs/interactive_game_programming_material_plan.docx)（策定 2026年7月） |
+| 方針要約・実装対応・バックログ | [docs/ROADMAP.md](docs/ROADMAP.md) |
 | UI・ファイル配置の共通ルール | [docs/PLATFORM.md](docs/PLATFORM.md) |
 | ブランチ・PR・実装手順 | [docs/WORKFLOW.md](docs/WORKFLOW.md) |
 | トピック一覧と状態 | [docs/topics/CATALOG.md](docs/topics/CATALOG.md) |

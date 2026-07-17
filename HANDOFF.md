@@ -5,7 +5,7 @@
 
 新セッション開始時の指示例:
 
-> `~/Project` の Game Algo Lab を続ける。引き継ぎは `HANDOFF.md` と `docs/ROADMAP.md` を読んで。
+> `~/Project` の Game Algo Lab を続ける。引き継ぎは `HANDOFF.md` と `docs/ROADMAP.md` を読んで。計画の正本は `docs/interactive_game_programming_material_plan.docx`（策定 2026年7月）。
 
 ---
 
@@ -43,8 +43,8 @@
 - **E2E**（ブラウザ自動操作テスト）— いまは `python3 scripts/smoke-platform.py` + 手動  
 - **i18n**（多言語 UI）— 当面は日本語固定  
 
-詳細・意図は [docs/ROADMAP.md](docs/ROADMAP.md) の「今後の課題（バックログ）」を正とする。  
-索引: [docs/README.md](docs/README.md)
+計画の正本: [docs/interactive_game_programming_material_plan.docx](docs/interactive_game_programming_material_plan.docx)（**策定 2026年7月**）。  
+実装対応・バックログは [docs/ROADMAP.md](docs/ROADMAP.md)。索引: [docs/README.md](docs/README.md)
 
 ---
 
@@ -177,4 +177,5 @@
 
 - 新トピックは **SPEC を先に**（`docs/templates/SPEC.md`）  
 - 共通 CSS / ds-viz / map-format を変えたら PLATFORM を更新  
-- `interactive_game_programming_material_plan.docx` は Git 対象外（`.gitignore`）  
+- 計画の正本 `docs/interactive_game_programming_material_plan.docx` は **Git 管理**（`docs/**/*.docx` のみ許可）。ルートの同名ファイルは下書き扱いで ignore  
+- 方針変更は正本 Docx を更新し `docs/ROADMAP.md` を同期  

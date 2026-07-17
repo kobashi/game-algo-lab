@@ -107,7 +107,8 @@ chore: .gitignore 更新
 
 | 種類 | 場所 |
 |------|------|
-| 方針・ロードマップ | `docs/ROADMAP.md` |
+| **計画の正本**（構想・期分け） | `docs/interactive_game_programming_material_plan.docx`（策定 2026年7月） |
+| 方針・ロードマップ（md 要約・進捗） | `docs/ROADMAP.md` |
 | 共通仕様 | `docs/PLATFORM.md` |
 | 本ファイル | `docs/WORKFLOW.md` |
 | トピック一覧 | `docs/topics/CATALOG.md` |

@@ -8,7 +8,11 @@ dist/
 .env
 .env.*
 
-# ローカル用の巨大バイナリ・下書き（仕様は docs/ に書く）
+# ローカル用の巨大バイナリ・下書き（仕様の正は docs/）
 *.docx
 *.pptx
 *.xlsx
+# 計画の正本など、docs 配下の文書は GitHub から参照できるようにする
+!docs/**/*.docx
+!docs/**/*.pptx
+!docs/**/*.xlsx

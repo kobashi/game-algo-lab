@@ -18,7 +18,8 @@ metadata:
 開始時は必ず読む（存在すれば）:
 
 1. `HANDOFF.md`
-2. `docs/ROADMAP.md`（バックログ含む）
+2. `docs/ROADMAP.md`（正本要約・実装対応・バックログ）  
+   — 計画の正本: `docs/interactive_game_programming_material_plan.docx`（策定 2026年7月）
 3. 作業対象に応じ `docs/PLATFORM.md` / `docs/WORKFLOW.md` / `docs/templates/TOPIC_SCAFFOLD.md`
 
 ローカルパス想定: リポジトリ root（例: `~/Project`）。
@@ -269,7 +270,8 @@ E2E フレームワークは導入しない（バックログ）。
 | パス | 内容 |
 |------|------|
 | `HANDOFF.md` | セッション引き継ぎ・実装一覧 |
-| `docs/ROADMAP.md` | 方針・フェーズ・**E2E/i18n バックログ** |
+| `docs/interactive_game_programming_material_plan.docx` | **計画の正本**（策定 2026年7月） |
+| `docs/ROADMAP.md` | 正本要約・実装対応・**E2E/i18n バックログ** |
 | `docs/PLATFORM.md` | 共通仕様・platform 層 |
 | `docs/WORKFLOW.md` | Git・分業 |
 | `docs/topics/CATALOG.md` | トピック状態 |
