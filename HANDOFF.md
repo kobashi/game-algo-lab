@@ -22,6 +22,7 @@
   - **シェル**: `mountTopicShellFromDataset()`（`#site-header` + `#site-footer`）  
   - 経路探索再生: `delayFromSpeed: (v) => 450 - v`  
 - **追加手順**: `docs/templates/TOPIC_SCAFFOLD.md`  
+- **健全性**: `python3 scripts/smoke-platform.py`  
 
 
 
