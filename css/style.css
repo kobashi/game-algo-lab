@@ -2385,6 +2385,203 @@ img {
   margin-top: 0.25rem;
 }
 
+.aabb-verdict-agree {
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: ui-monospace, Menlo, monospace;
+  color: #6bcb8f;
+}
+
+.aabb-verdict-agree[data-ok="0"] {
+  color: #e07a5f;
+}
+
+.aabb-mode-tabs {
+  display: flex;
+  gap: 0.3rem;
+  margin-bottom: 0.75rem;
+}
+
+.aabb-mode-tab {
+  flex: 1;
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-muted);
+  border-radius: 6px;
+  padding: 0.35rem 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.aabb-mode-tab.is-active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.aabb-eq-live {
+  margin: 0.4rem 0 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: ui-monospace, Menlo, monospace;
+}
+
+.aabb-dual {
+  margin-top: 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem 1rem;
+}
+
+.aabb-dual-lead {
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.aabb-dual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+}
+
+@media (max-width: 800px) {
+  .aabb-dual-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.aabb-method {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem;
+  background: var(--bg);
+  transition: opacity 0.2s ease, border-color 0.2s ease;
+}
+
+.aabb-method.is-dim {
+  opacity: 0.42;
+}
+
+.aabb-method-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.aabb-method-head h3 {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.aabb-method-result {
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(61, 79, 102, 0.5);
+  color: var(--text-muted);
+}
+
+.aabb-method-result[data-on="1"] {
+  background: rgba(107, 203, 143, 0.2);
+  color: #6bcb8f;
+}
+
+.aabb-method-result[data-on="0"] {
+  background: rgba(224, 122, 95, 0.15);
+  color: #e07a5f;
+}
+
+.aabb-method-desc {
+  margin: 0 0 0.55rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.aabb-sep-note {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.72rem;
+  color: #f2cc8f;
+}
+
+.aabb-snippet {
+  margin: 0.55rem 0 0;
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  background: #0a0e14;
+  border: 1px solid var(--border);
+  font-size: 0.7rem;
+  line-height: 1.45;
+  color: #d6e0ec;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+.aabb-complexity {
+  margin-top: 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem 1rem;
+}
+
+.aabb-complexity-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.aabb-complexity-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  min-width: 36rem;
+}
+
+.aabb-complexity-table th,
+.aabb-complexity-table td {
+  border: 1px solid var(--border);
+  padding: 0.4rem 0.5rem;
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.4;
+}
+
+.aabb-complexity-table thead th {
+  background: var(--bg);
+  color: var(--text);
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+.aabb-complexity-table tbody th {
+  background: var(--bg);
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--text-muted);
+}
+
+.aabb-complexity-notes {
+  margin: 0.75rem 0 0;
+  padding-left: 1.2rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.aabb-complexity-notes code {
+  font-size: 0.85em;
+}
+
 /* ===== ステートマシン（説明特化・非マップ） ===== */
 .fsm-lesson {
   margin-top: 0.5rem;

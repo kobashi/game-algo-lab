@@ -12,10 +12,11 @@
 
 ## 1. 学習目標
 
-1. AABB（軸平行バウンディングボックス）が **min/max または 位置+サイズ** で表せると説明できる  
-2. 衝突 ⇔ **X 軸上で区間が重なり、かつ Y 軸上でも重なる** と説明できる  
-3. 2D の重なりを、**軸投影（1D）** に分解して判定する流れを追える  
-4. ゲームでの用途（キャラと壁・弾と敵の粗い判定）を挙げられる  
+1. AABB が **min/max** で表せると説明できる  
+2. **A. ポジティブ（重なり）** と **B. ネガティブ（分離）** の2通りで実装できる  
+3. 両者がド・モルガンで同値であること、結果が一致することを確認できる  
+4. 比較回数・論理演算・早期 return など **複雑度の目安** を並べて議論できる  
+5. 2D を **軸投影（1D）** に分解して判定する流れを追える  
 
 ---
 
@@ -34,22 +35,37 @@
 
 ---
 
-## 3. アルゴリズム
+## 3. アルゴリズム（2 通り + 早期 return）
 
-矩形 A, B（軸平行）:
+境界は **inclusive**（接したら当たり）。
 
-```
-overlapX = A.maxX > B.minX && A.minX < B.maxX
-overlapY = A.maxY > B.minY && A.minY < B.maxY
-colliding = overlapX && overlapY
-```
-
-（境界を「触れたら当たり」にするか「厳密内部」にするかは教材では `>` / `<` の開区間寄り。実装は `>` と `<` で接点を当たりにしない／または `>=` `<=` で接点も当たり。ゲームでは inclusive が一般的なので **inclusive** を採用）
+### A. ポジティブ（重なり判定）
 
 ```
 overlapX = A.maxX >= B.minX && A.minX <= B.maxX
 overlapY = A.maxY >= B.minY && A.minY <= B.maxY
+return overlapX && overlapY
 ```
+
+### B. ネガティブ（分離判定）
+
+```
+separatedX = A.maxX < B.minX || A.minX > B.maxX
+separatedY = A.maxY < B.minY || A.minY > B.maxY
+return !(separatedX || separatedY)
+```
+
+### B′ 早期 return（実装でよく見る形）
+
+```
+if (A.maxX < B.minX) return false
+if (A.minX > B.maxX) return false
+if (A.maxY < B.minY) return false
+if (A.minY > B.maxY) return false
+return true
+```
+
+ド・モルガンより A ⇔ B ⇔ B′（同一の inclusive 定義下）。
 
 ---
 

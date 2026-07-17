@@ -31,7 +31,8 @@
       <h1>AABB 衝突判定</h1>
       <p class="page-header-lead">
         軸に平行な矩形（AABB）同士の当たり判定。
-        <strong>地図探索ではなく</strong>、2D ステージと <strong>X/Y 軸への投影</strong>で「なぜその式か」を見せます。
+        <strong>重なり判定（ポジティブ）</strong>と<strong>分離判定（ネガティブ）</strong>の2通りを並べ、
+        結果の一致と<strong>コードの複雑度</strong>を比較する教材です（経路マップは使いません）。
       </p>
     </div>
 
@@ -39,10 +40,11 @@
       <summary>このデモで学ぶこと</summary>
       <div class="lesson-box lesson-box-nested">
         <ul>
-          <li><strong>AABB</strong> = Axis-Aligned Bounding Box。回転しない矩形の粗い当たり範囲</li>
-          <li>衝突 ⇔ <strong>X で区間が重なり</strong> かつ <strong>Y でも重なる</strong></li>
-          <li>下の投影レールは、2D の問題を 1D の区間問題に分解した図</li>
-          <li>ゲームではキャラ・弾・トリガーの一次判定によく使う（精密判定の前段）</li>
+          <li><strong>AABB</strong> = 軸平行バウンディングボックス</li>
+          <li><strong>A. ポジティブ</strong>: overlapX ∧ overlapY（重なりを積み上げる）</li>
+          <li><strong>B. ネガティブ</strong>: ¬(separatedX ∨ separatedY)（分離していなければ衝突）</li>
+          <li>ド・モルガンで同値。早期 return 版はゲーム実装でよく使われる</li>
+          <li>下の表で比較回数・論理演算・分岐の目安を比較できる</li>
         </ul>
       </div>
     </details>
@@ -82,38 +84,21 @@
           </div>
         </section>
 
-        <!-- 右: 判定パネル -->
+        <!-- 右: 操作 -->
         <aside class="aabb-side" aria-labelledby="judge-heading">
-          <h2 id="judge-heading" class="aabb-block-title">判定の組み立て</h2>
+          <h2 id="judge-heading" class="aabb-block-title">操作</h2>
 
           <div class="aabb-verdict" id="verdict" data-state="no">
-            <span class="aabb-verdict-label">結果</span>
+            <span class="aabb-verdict-label">両方式の結果（常に一致）</span>
             <span class="aabb-verdict-value" id="verdict-text">非衝突</span>
+            <span class="aabb-verdict-agree" id="verdict-agree">A ≡ B</span>
           </div>
 
-          <ol class="aabb-checklist" id="checklist">
-            <li data-step="x" class="aabb-check-item">
-              <span class="aabb-check-mark" id="check-x">?</span>
-              <div>
-                <strong>① X 軸で重なるか</strong>
-                <code>A.maxX ≥ B.minX かつ A.minX ≤ B.maxX</code>
-              </div>
-            </li>
-            <li data-step="y" class="aabb-check-item">
-              <span class="aabb-check-mark" id="check-y">?</span>
-              <div>
-                <strong>② Y 軸で重なるか</strong>
-                <code>A.maxY ≥ B.minY かつ A.minY ≤ B.maxY</code>
-              </div>
-            </li>
-            <li data-step="and" class="aabb-check-item">
-              <span class="aabb-check-mark" id="check-and">?</span>
-              <div>
-                <strong>③ 両方真なら衝突</strong>
-                <code>colliding = overlapX &amp;&amp; overlapY</code>
-              </div>
-            </li>
-          </ol>
+          <div class="aabb-mode-tabs" role="tablist" aria-label="説明ステップの焦点">
+            <button type="button" class="aabb-mode-tab is-active" data-focus="both" role="tab" aria-selected="true">両方</button>
+            <button type="button" class="aabb-mode-tab" data-focus="positive" role="tab" aria-selected="false">A 重なり</button>
+            <button type="button" class="aabb-mode-tab" data-focus="negative" role="tab" aria-selected="false">B 分離</button>
+          </div>
 
           <div class="aabb-numbers" id="aabb-numbers"></div>
 
@@ -145,16 +130,120 @@
           <div id="status" class="status-log" role="status">準備完了 — 矩形をドラッグするか、プリセットを選んでください</div>
         </aside>
       </div>
+
+      <!-- 2 通りの判定を並べて比較 -->
+      <section class="aabb-dual" aria-labelledby="dual-heading">
+        <h2 id="dual-heading" class="aabb-block-title">2 通りの判定ロジック</h2>
+        <p class="aabb-dual-lead">
+          同じ入力に対し、A と B は<strong>常に同じ真偽</strong>を返します（境界 inclusive の定義を揃えた場合）。
+          違いは「何を肯定するか」と、実装したときの読みやすさ・早期打ち切りのしやすさです。
+        </p>
+        <div class="aabb-dual-grid">
+          <article class="aabb-method" id="method-positive" data-method="positive">
+            <header class="aabb-method-head">
+              <h3>A. ポジティブ（重なり判定）</h3>
+              <span class="aabb-method-result" id="pos-result">—</span>
+            </header>
+            <p class="aabb-method-desc">「両軸で重なっている」ことを積み上げる。</p>
+            <ol class="aabb-checklist" id="checklist-pos">
+              <li data-step="px" class="aabb-check-item">
+                <span class="aabb-check-mark" id="check-px">?</span>
+                <div>
+                  <strong>① overlapX</strong>
+                  <code>A.maxX ≥ B.minX ∧ A.minX ≤ B.maxX</code>
+                </div>
+              </li>
+              <li data-step="py" class="aabb-check-item">
+                <span class="aabb-check-mark" id="check-py">?</span>
+                <div>
+                  <strong>② overlapY</strong>
+                  <code>A.maxY ≥ B.minY ∧ A.minY ≤ B.maxY</code>
+                </div>
+              </li>
+              <li data-step="pand" class="aabb-check-item">
+                <span class="aabb-check-mark" id="check-pand">?</span>
+                <div>
+                  <strong>③ 衝突</strong>
+                  <code>return overlapX &amp;&amp; overlapY</code>
+                </div>
+              </li>
+            </ol>
+            <pre class="aabb-snippet" id="snippet-pos"></pre>
+          </article>
+
+          <article class="aabb-method" id="method-negative" data-method="negative">
+            <header class="aabb-method-head">
+              <h3>B. ネガティブ（分離判定）</h3>
+              <span class="aabb-method-result" id="neg-result">—</span>
+            </header>
+            <p class="aabb-method-desc">「どちらかの軸で分離していれば非衝突」。¬(分離X ∨ 分離Y)。</p>
+            <ol class="aabb-checklist" id="checklist-neg">
+              <li data-step="nx" class="aabb-check-item">
+                <span class="aabb-check-mark" id="check-nx">?</span>
+                <div>
+                  <strong>① separatedX</strong>
+                  <code>A.maxX &lt; B.minX ∨ A.minX &gt; B.maxX</code>
+                  <span class="aabb-sep-note" id="sep-x-note"></span>
+                </div>
+              </li>
+              <li data-step="ny" class="aabb-check-item">
+                <span class="aabb-check-mark" id="check-ny">?</span>
+                <div>
+                  <strong>② separatedY</strong>
+                  <code>A.maxY &lt; B.minY ∨ A.minY &gt; B.maxY</code>
+                  <span class="aabb-sep-note" id="sep-y-note"></span>
+                </div>
+              </li>
+              <li data-step="nand" class="aabb-check-item">
+                <span class="aabb-check-mark" id="check-nand">?</span>
+                <div>
+                  <strong>③ 衝突</strong>
+                  <code>return !(separatedX || separatedY)</code>
+                </div>
+              </li>
+            </ol>
+            <pre class="aabb-snippet" id="snippet-neg"></pre>
+          </article>
+        </div>
+      </section>
+
+      <!-- 複雑度比較 -->
+      <section class="aabb-complexity" aria-labelledby="complexity-heading">
+        <h2 id="complexity-heading" class="aabb-block-title">コード複雑度の比較（教材用メトリクス）</h2>
+        <p class="aabb-dual-lead">
+          「どちらが正しいか」ではなく、<strong>どう書くと読みやすいか・早期 return しやすいか</strong>を議論するための目安です。
+          数値はデモ内の実装に対応した静的カウントです。
+        </p>
+        <div class="aabb-complexity-scroll">
+          <table class="aabb-complexity-table" id="complexity-table">
+            <thead>
+              <tr>
+                <th>指標</th>
+                <th>A ポジティブ<br />（重なり AND）</th>
+                <th>B ネガティブ<br />（分離 + NOT）</th>
+                <th>B′ 早期 return<br />（分離を順に）</th>
+              </tr>
+            </thead>
+            <tbody id="complexity-body"></tbody>
+          </table>
+        </div>
+        <ul class="aabb-complexity-notes">
+          <li>比較回数はいずれも 4（各軸 2）。違いは論理の組み立てと制御構造。</li>
+          <li>ド・モルガン: <code>overlapX ∧ overlapY</code> ⇔ <code>¬(separatedX ∨ separatedY)</code> ⇔ <code>¬separatedX ∧ ¬separatedY</code></li>
+          <li>B′ は「分かった時点で return false」ができ、平均的な比較回数を減らせる（最悪は 4 のまま）。</li>
+          <li id="live-agree-note">実行時: 現在の矩形では A と B の結果は…</li>
+        </ul>
+      </section>
     </div>
 
     <section class="code-section" aria-labelledby="csharp-heading">
-      <h2 id="csharp-heading">C# 実装例</h2>
+      <h2 id="csharp-heading">C# 実装例（2 通り + 早期 return）</h2>
       <div class="code-toolbar">
         <p class="code-meta">ファイル: <code>samples/AabbExample.cs</code></p>
       </div>
       <pre class="code-block" id="csharp-sample"><code>// 読み込み中…</code></pre>
       <p class="code-note">
-        本質は4つの比較だけです。デモのチェックリスト①②③と同じ構造です。
+        <code>IntersectsPositive</code> / <code>IntersectsNegative</code> / <code>IntersectsNegativeEarlyOut</code> を比較してください。
       </p>
     </section>
   </main>

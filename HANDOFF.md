@@ -71,7 +71,8 @@
 | トピック | 状態 |
 |----------|------|
 | AABB | **ready** — `algorithms/collision.html` / `js/collision.js` / `samples/AabbExample.cs` |
-|  | **説明特化 UI**（2D ドラッグ + X/Y 投影レール + 判定チェックリスト）。経路マップ不使用 |
+|  | **2 通り**: A ポジティブ（重なり AND）/ B ネガティブ（分離 OR+NOT）/ B′ 早期 return |
+|  | 結果一致のライブ確認 + 複雑度比較表。2D + 軸投影。経路マップ不使用 |
 
 ### 設計パターン
 | トピック | 状態 |

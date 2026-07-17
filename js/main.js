@@ -93,7 +93,7 @@ const TOPICS = [
     id: "collision",
     title: "AABB 衝突判定",
     description:
-      "軸投影で「X と Y の両方で重なる」を可視化。経路探索マップは使いません。",
+      "重なり判定と分離判定の2通りを実装比較。軸投影と複雑度表付き。",
     href: "algorithms/collision.html",
     badge: "物理・判定",
     ready: true,

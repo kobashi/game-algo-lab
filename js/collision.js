@@ -1,25 +1,21 @@
 /**
  * AABB 衝突判定デモ（説明特化 UI）
- * - 2D ステージで矩形をドラッグ
- * - X/Y 軸投影で 1D 区間の重なりを同時表示
- * - 判定チェックリストをライブ／ステップでハイライト
- * ※ 経路探索マップは使わない
+ * - A: ポジティブ（重なり判定）overlapX ∧ overlapY
+ * - B: ネガティブ（分離判定）¬(separatedX ∨ separatedY)
+ * - B′: 早期 return 版（複雑度比較用）
+ * 経路探索マップは使わない
  */
 
 const canvas = document.getElementById("aabb-canvas");
 const ctx = canvas?.getContext("2d");
 const projX = document.getElementById("proj-x");
 const projY = document.getElementById("proj-y");
-const ctxX = projX?.getContext("2d");
-const ctxY = projY?.getContext("2d");
 
 const statusEl = document.getElementById("status");
 const storyEl = document.getElementById("aabb-story");
 const verdictEl = document.getElementById("verdict");
 const verdictText = document.getElementById("verdict-text");
-const checkX = document.getElementById("check-x");
-const checkY = document.getElementById("check-y");
-const checkAnd = document.getElementById("check-and");
+const verdictAgree = document.getElementById("verdict-agree");
 const formulaX = document.getElementById("formula-x");
 const formulaY = document.getElementById("formula-y");
 const badgeX = document.getElementById("proj-x-badge");
@@ -30,8 +26,19 @@ const btnPlay = document.getElementById("btn-play");
 const btnStep = document.getElementById("btn-step");
 const btnReset = document.getElementById("btn-reset");
 const speedEl = document.getElementById("speed");
+const posResult = document.getElementById("pos-result");
+const negResult = document.getElementById("neg-result");
+const snippetPos = document.getElementById("snippet-pos");
+const snippetNeg = document.getElementById("snippet-neg");
+const complexityBody = document.getElementById("complexity-body");
+const liveAgreeNote = document.getElementById("live-agree-note");
+const sepXNote = document.getElementById("sep-x-note");
+const sepYNote = document.getElementById("sep-y-note");
+const methodPos = document.getElementById("method-positive");
+const methodNeg = document.getElementById("method-negative");
 
 /** @typedef {{ x: number, y: number, w: number, h: number, color: string, label: string }} Box */
+/** @typedef {{ minX: number, minY: number, maxX: number, maxY: number }} Bounds */
 
 /** @type {Box} */
 let boxA = { x: 80, y: 120, w: 110, h: 80, color: "#5b9fd4", label: "A プレイヤー" };
@@ -42,36 +49,42 @@ const PAD = 8;
 const MIN_SIZE = 36;
 const HANDLE = 10;
 
-/** @type {null | { which: 'A'|'B', mode: 'move'|'resize', ox: number, oy: number, start: Box }} */
+/** @type {null | { which: 'A'|'B', mode: 'move'|'resize', ox: number, oy: number }} */
 let drag = null;
 
-/** ステップ説明: 0=通常ライブ, 1=X強調, 2=Y強調, 3=結論 */
+/**
+ * 説明ステップ:
+ * 0=ライブ全体
+ * ポジティブ: 1=overlapX, 2=overlapY, 3=AND
+ * ネガティブ: 4=separatedX, 5=separatedY, 6=NOT OR
+ */
 let explainStep = 0;
+/** @type {'both'|'positive'|'negative'} */
+let focusMode = "both";
 let running = false;
 let timerId = null;
-/** 自動デモ用 */
 let demoT = 0;
 
 const PRESETS = {
   apart: {
     A: { x: 60, y: 100, w: 100, h: 90 },
     B: { x: 380, y: 180, w: 120, h: 90 },
-    story: "離れている — どちらの軸でも区間が重ならない（または片方だけ）。",
+    story: "離れている — 少なくとも1軸で分離（ネガティブが効きやすい例）。",
   },
   overlap: {
     A: { x: 200, y: 130, w: 120, h: 100 },
     B: { x: 260, y: 160, w: 140, h: 110 },
-    story: "交差 — X も Y も区間が重なり、2D で重なり領域ができる。",
+    story: "交差 — 両軸で重なる。ポジティブの AND が両方 true。",
   },
   touch: {
     A: { x: 120, y: 140, w: 100, h: 80 },
     B: { x: 220, y: 140, w: 100, h: 80 },
-    story: "辺が接する — 境界を含む判定（≥ ≤）では衝突あり。",
+    story: "辺が接する — inclusive（≥≤）では衝突。分離は厳密 < >。",
   },
   contain: {
     A: { x: 220, y: 140, w: 80, h: 70 },
     B: { x: 180, y: 110, w: 200, h: 160 },
-    story: "包含 — 小さい矩形が完全に内側。両軸で重なるので衝突。",
+    story: "包含 — 小さい方が内側。両軸で重なるので衝突。",
   },
 };
 
@@ -79,6 +92,75 @@ const INITIAL = {
   A: { x: 80, y: 120, w: 110, h: 80 },
   B: { x: 320, y: 160, w: 140, h: 100 },
 };
+
+/** 教材用: 静的複雑度メトリクス（実装に対応） */
+const COMPLEXITY = [
+  {
+    metric: "考え方",
+    pos: "重なりを肯定して AND",
+    neg: "分離を肯定して OR → NOT",
+    early: "分離を1つずつ調べ早期 false",
+  },
+  {
+    metric: "比較演算（境界）",
+    pos: "4（各軸 2）",
+    neg: "4（各軸 2）",
+    early: "最大 4（短絡で 1〜4）",
+  },
+  {
+    metric: "論理演算子",
+    pos: "&& ×3（軸内2 + 軸間1）",
+    neg: "|| ×2 + ! ×1",
+    early: "なし（if 連鎖）",
+  },
+  {
+    metric: "分岐 / return",
+    pos: "1 return",
+    neg: "1 return",
+    early: "return 最大 5（false×4 + true）",
+  },
+  {
+    metric: "実行行数目安*",
+    pos: "3 行",
+    neg: "3 行",
+    early: "5 行",
+  },
+  {
+    metric: "サイクロマチック目安**",
+    pos: "1 + 条件3 ≈ 4",
+    neg: "1 + 条件3 ≈ 4",
+    early: "1 + 分岐4 ≈ 5",
+  },
+  {
+    metric: "早期打ち切り",
+    pos: "&& の短絡のみ",
+    neg: "|| の短絡のみ",
+    early: "明示的（分離で即 false）",
+  },
+  {
+    metric: "読みやすさ（主観）",
+    pos: "定義に素直（衝突とは重なり）",
+    neg: "分離軸の発想（物理・SAT に近い）",
+    early: "ゲーム実装でよく見る形",
+  },
+];
+
+const SNIPPET_POS = `// A. ポジティブ（重なり）
+bool overlapX = a.MaxX >= b.MinX && a.MinX <= b.MaxX;
+bool overlapY = a.MaxY >= b.MinY && a.MinY <= b.MaxY;
+return overlapX && overlapY;`;
+
+const SNIPPET_NEG = `// B. ネガティブ（分離）
+bool sepX = a.MaxX < b.MinX || a.MinX > b.MaxX;
+bool sepY = a.MaxY < b.MinY || a.MinY > b.MaxY;
+return !(sepX || sepY);
+
+// B′ 早期 return
+if (a.MaxX < b.MinX) return false;
+if (a.MinX > b.MaxX) return false;
+if (a.MaxY < b.MinY) return false;
+if (a.MinY > b.MaxY) return false;
+return true;`;
 
 function setStatus(msg) {
   if (statusEl) statusEl.textContent = msg;
@@ -93,12 +175,68 @@ function bounds(box) {
   };
 }
 
-function testCollision(a, b) {
-  const A = bounds(a);
-  const B = bounds(b);
+// ========== 2 通りの核ロジック（教材の本体） ==========
+
+/**
+ * A. ポジティブ: 重なり判定
+ * @param {Bounds} A
+ * @param {Bounds} B
+ */
+function intersectsPositive(A, B) {
   const overlapX = A.maxX >= B.minX && A.minX <= B.maxX;
   const overlapY = A.maxY >= B.minY && A.minY <= B.maxY;
-  return { overlapX, overlapY, colliding: overlapX && overlapY, A, B };
+  return {
+    overlapX,
+    overlapY,
+    colliding: overlapX && overlapY,
+  };
+}
+
+/**
+ * B. ネガティブ: 分離していなければ衝突
+ * @param {Bounds} A
+ * @param {Bounds} B
+ */
+function intersectsNegative(A, B) {
+  const separatedX = A.maxX < B.minX || A.minX > B.maxX;
+  const separatedY = A.maxY < B.minY || A.minY > B.maxY;
+  return {
+    separatedX,
+    separatedY,
+    colliding: !(separatedX || separatedY),
+  };
+}
+
+/**
+ * B′ 早期 return（比較用・実行結果は B と同じ）
+ * @param {Bounds} A
+ * @param {Bounds} B
+ */
+function intersectsNegativeEarlyOut(A, B) {
+  if (A.maxX < B.minX) return false;
+  if (A.minX > B.maxX) return false;
+  if (A.maxY < B.minY) return false;
+  if (A.minY > B.maxY) return false;
+  return true;
+}
+
+function evaluate() {
+  const A = bounds(boxA);
+  const B = bounds(boxB);
+  const pos = intersectsPositive(A, B);
+  const neg = intersectsNegative(A, B);
+  const early = intersectsNegativeEarlyOut(A, B);
+  return {
+    A,
+    B,
+    ...pos,
+    separatedX: neg.separatedX,
+    separatedY: neg.separatedY,
+    positive: pos.colliding,
+    negative: neg.colliding,
+    early,
+    agree: pos.colliding === neg.colliding && neg.colliding === early,
+  };
 }
 
 function clampBox(box) {
@@ -129,22 +267,20 @@ function resetBoxes() {
   Object.assign(boxB, INITIAL.B);
   if (storyEl) {
     storyEl.textContent =
-      "青 = プレイヤーの当たり判定、橙 = 障害物。ドラッグで動かして交差を観察。";
+      "青 = プレイヤー、橙 = 障害物。A（重なり）と B（分離）の2通りで同じ結果になるか確認。";
   }
   setStatus("リセットしました");
   refresh();
 }
 
-// ----- 描画: 2D ステージ -----
+// ----- 描画 -----
 function drawStage() {
   if (!ctx || !canvas) return;
   const W = canvas.width;
   const H = canvas.height;
-  const { overlapX, overlapY, colliding, A, B } = testCollision(boxA, boxB);
+  const t = evaluate();
 
   ctx.clearRect(0, 0, W, H);
-
-  // グリッド背景（探索マップではなく方眼紙）
   ctx.fillStyle = "#0a0e14";
   ctx.fillRect(0, 0, W, H);
   ctx.strokeStyle = "rgba(45, 58, 77, 0.55)";
@@ -162,18 +298,16 @@ function drawStage() {
     ctx.stroke();
   }
 
-  // 軸ヒント
   ctx.fillStyle = "#6a7d94";
   ctx.font = "11px sans-serif";
   ctx.fillText("X →", W - 36, H - 10);
   ctx.fillText("Y ↓", 8, 16);
 
-  // 重なり領域
-  if (colliding) {
-    const ox = Math.max(A.minX, B.minX);
-    const oy = Math.max(A.minY, B.minY);
-    const ow = Math.min(A.maxX, B.maxX) - ox;
-    const oh = Math.min(A.maxY, B.maxY) - oy;
+  if (t.positive) {
+    const ox = Math.max(t.A.minX, t.B.minX);
+    const oy = Math.max(t.A.minY, t.B.minY);
+    const ow = Math.min(t.A.maxX, t.B.maxX) - ox;
+    const oh = Math.min(t.A.maxY, t.B.maxY) - oy;
     ctx.fillStyle = "rgba(242, 204, 143, 0.35)";
     ctx.fillRect(ox, oy, ow, oh);
     ctx.strokeStyle = "#f2cc8f";
@@ -186,28 +320,21 @@ function drawStage() {
     ctx.fillText("重なり", ox + 4, oy + 14);
   }
 
-  drawBox(boxA, explainStep === 1 || explainStep === 2 ? 0.95 : 1);
-  drawBox(boxB, explainStep === 1 || explainStep === 2 ? 0.95 : 1);
+  drawBox(boxA, 1);
+  drawBox(boxB, 1);
 
-  // 投影ガイド線（ステップ中）
-  if (explainStep === 1) {
-    drawVGuides(A, B);
-  }
-  if (explainStep === 2) {
-    drawHGuides(A, B);
-  }
+  if (explainStep === 1 || explainStep === 4) drawVGuides(t.A, t.B);
+  if (explainStep === 2 || explainStep === 5) drawHGuides(t.A, t.B);
 
-  // 状態バッジ
-  ctx.font = "bold 13px sans-serif";
-  ctx.fillStyle = colliding ? "#6bcb8f" : "#9aabbf";
+  ctx.font = "bold 12px sans-serif";
+  ctx.fillStyle = t.positive ? "#6bcb8f" : "#9aabbf";
   ctx.fillText(
-    colliding ? "● 衝突中 (overlapX ∧ overlapY)" : "○ 非衝突",
+    t.positive
+      ? "● 衝突  A≡B  (重なり AND ／ ¬分離)"
+      : "○ 非衝突  A≡B",
     12,
     H - 14
   );
-
-  void overlapX;
-  void overlapY;
 }
 
 function drawBox(box, alpha) {
@@ -219,13 +346,9 @@ function drawBox(box, alpha) {
   ctx.lineWidth = 2.5;
   ctx.fillRect(box.x, box.y, box.w, box.h);
   ctx.strokeRect(box.x, box.y, box.w, box.h);
-
-  // ラベル
   ctx.fillStyle = box.color;
   ctx.font = "bold 12px sans-serif";
   ctx.fillText(box.label, box.x + 6, box.y + 16);
-
-  // 角 min / max
   ctx.font = "10px ui-monospace, Menlo, monospace";
   ctx.fillStyle = "#c5d0dc";
   ctx.fillText(
@@ -233,13 +356,6 @@ function drawBox(box, alpha) {
     box.x + 4,
     box.y + box.h - 6
   );
-  ctx.fillText(
-    `max(${Math.round(box.x + box.w)},${Math.round(box.y + box.h)})`,
-    box.x + box.w - 88,
-    box.y + 14
-  );
-
-  // リサイズハンドル
   ctx.fillStyle = "#e8eef6";
   ctx.fillRect(box.x + box.w - HANDLE, box.y + box.h - HANDLE, HANDLE, HANDLE);
   ctx.restore();
@@ -273,15 +389,14 @@ function drawHGuides(A, B) {
   ctx.setLineDash([]);
 }
 
-// ----- 投影レール -----
 function drawProjection1D(c, isX) {
-  if (!c) return;
+  if (!c || !canvas) return;
   const g = c.getContext("2d");
   if (!g) return;
   const W = c.width;
   const H = c.height;
-  const { A, B, overlapX, overlapY } = testCollision(boxA, boxB);
-  const overlap = isX ? overlapX : overlapY;
+  const t = evaluate();
+  const overlap = isX ? t.overlapX : t.overlapY;
 
   g.clearRect(0, 0, W, H);
   g.fillStyle = "#0a0e14";
@@ -289,13 +404,10 @@ function drawProjection1D(c, isX) {
 
   const margin = 24;
   const trackY = H / 2;
-  const worldMin = 0;
   const worldMax = isX ? canvas.width : canvas.height;
-  const scale = (W - margin * 2) / (worldMax - worldMin);
+  const scale = (W - margin * 2) / worldMax;
+  const toPx = (v) => margin + v * scale;
 
-  const toPx = (v) => margin + (v - worldMin) * scale;
-
-  // 軸線
   g.strokeStyle = "#3d4f66";
   g.lineWidth = 2;
   g.beginPath();
@@ -303,17 +415,14 @@ function drawProjection1D(c, isX) {
   g.lineTo(W - margin, trackY);
   g.stroke();
 
-  const a0 = isX ? A.minX : A.minY;
-  const a1 = isX ? A.maxX : A.maxY;
-  const b0 = isX ? B.minX : B.minY;
-  const b1 = isX ? B.maxX : B.maxY;
+  const a0 = isX ? t.A.minX : t.A.minY;
+  const a1 = isX ? t.A.maxX : t.A.maxY;
+  const b0 = isX ? t.B.minX : t.B.minY;
+  const b1 = isX ? t.B.maxX : t.B.maxY;
 
-  // 区間 A
   drawInterval(g, toPx(a0), toPx(a1), trackY - 10, boxA.color, "A");
-  // 区間 B
   drawInterval(g, toPx(b0), toPx(b1), trackY + 6, boxB.color, "B");
 
-  // 重なり区間
   if (overlap) {
     const o0 = Math.max(a0, b0);
     const o1 = Math.min(a1, b1);
@@ -340,70 +449,6 @@ function drawInterval(g, x0, x1, y, color, label) {
   g.fillText(label, x0 + 2, y - 2);
 }
 
-// ----- UI パネル -----
-function updatePanels() {
-  const { overlapX, overlapY, colliding, A, B } = testCollision(boxA, boxB);
-
-  if (verdictEl && verdictText) {
-    verdictEl.dataset.state = colliding ? "yes" : "no";
-    verdictText.textContent = colliding ? "衝突している" : "非衝突";
-  }
-
-  setMark(checkX, overlapX, explainStep === 1);
-  setMark(checkY, overlapY, explainStep === 2);
-  setMark(checkAnd, colliding, explainStep === 3);
-
-  document.querySelectorAll(".aabb-check-item").forEach((el) => {
-    const step = el.getAttribute("data-step");
-    el.classList.toggle(
-      "is-focus",
-      (step === "x" && explainStep === 1) ||
-        (step === "y" && explainStep === 2) ||
-        (step === "and" && explainStep === 3)
-    );
-    el.classList.toggle(
-      "is-pass",
-      (step === "x" && overlapX) ||
-        (step === "y" && overlapY) ||
-        (step === "and" && colliding)
-    );
-    el.classList.toggle(
-      "is-fail",
-      (step === "x" && !overlapX) ||
-        (step === "y" && !overlapY) ||
-        (step === "and" && !colliding)
-    );
-  });
-
-  if (badgeX) {
-    badgeX.textContent = overlapX ? "重なる" : "重ならない";
-    badgeX.dataset.on = overlapX ? "1" : "0";
-  }
-  if (badgeY) {
-    badgeY.textContent = overlapY ? "重なる" : "重ならない";
-    badgeY.dataset.on = overlapY ? "1" : "0";
-  }
-
-  if (formulaX) {
-    formulaX.textContent = `overlapX = (${fmt(A.maxX)} ≥ ${fmt(B.minX)}) ∧ (${fmt(A.minX)} ≤ ${fmt(B.maxX)}) → ${overlapX}`;
-  }
-  if (formulaY) {
-    formulaY.textContent = `overlapY = (${fmt(A.maxY)} ≥ ${fmt(B.minY)}) ∧ (${fmt(A.minY)} ≤ ${fmt(B.maxY)}) → ${overlapY}`;
-  }
-
-  if (numbersEl) {
-    numbersEl.innerHTML = `
-      <table class="aabb-table">
-        <thead><tr><th></th><th>minX</th><th>minY</th><th>maxX</th><th>maxY</th></tr></thead>
-        <tbody>
-          <tr class="row-a"><td>A</td><td>${fmt(A.minX)}</td><td>${fmt(A.minY)}</td><td>${fmt(A.maxX)}</td><td>${fmt(A.maxY)}</td></tr>
-          <tr class="row-b"><td>B</td><td>${fmt(B.minX)}</td><td>${fmt(B.minY)}</td><td>${fmt(B.maxX)}</td><td>${fmt(B.maxY)}</td></tr>
-        </tbody>
-      </table>
-    `;
-  }
-}
-
 function setMark(el, ok, focus) {
   if (!el) return;
   el.textContent = ok ? "✓" : "✗";
@@ -412,8 +457,163 @@ function setMark(el, ok, focus) {
   el.classList.toggle("focus", focus);
 }
 
+function setItemFocus(listRoot, stepAttr, active) {
+  if (!listRoot) return;
+  listRoot.querySelectorAll(".aabb-check-item").forEach((el) => {
+    el.classList.toggle("is-focus", active && el.getAttribute("data-step") === stepAttr);
+  });
+}
+
 function fmt(n) {
   return String(Math.round(n));
+}
+
+function updatePanels() {
+  const t = evaluate();
+
+  if (verdictEl && verdictText) {
+    verdictEl.dataset.state = t.positive ? "yes" : "no";
+    verdictText.textContent = t.positive ? "衝突している" : "非衝突";
+  }
+  if (verdictAgree) {
+    verdictAgree.textContent = t.agree ? "A ≡ B ≡ B′" : "⚠ 不一致（定義を確認）";
+    verdictAgree.dataset.ok = t.agree ? "1" : "0";
+  }
+
+  // ポジティブ
+  setMark(document.getElementById("check-px"), t.overlapX, explainStep === 1);
+  setMark(document.getElementById("check-py"), t.overlapY, explainStep === 2);
+  setMark(document.getElementById("check-pand"), t.positive, explainStep === 3);
+  setItemFocus(document.getElementById("checklist-pos"), "px", explainStep === 1);
+  setItemFocus(document.getElementById("checklist-pos"), "py", explainStep === 2);
+  setItemFocus(document.getElementById("checklist-pos"), "pand", explainStep === 3);
+  document.querySelectorAll("#checklist-pos .aabb-check-item").forEach((el) => {
+    const step = el.getAttribute("data-step");
+    const pass =
+      (step === "px" && t.overlapX) ||
+      (step === "py" && t.overlapY) ||
+      (step === "pand" && t.positive);
+    el.classList.toggle("is-pass", pass);
+    el.classList.toggle("is-fail", !pass);
+  });
+
+  // ネガティブ（分離が true = 非衝突側）
+  // マーク: 分離していれば「分離✓」だが教材では真偽をそのまま
+  setMark(document.getElementById("check-nx"), !t.separatedX, explainStep === 4);
+  setMark(document.getElementById("check-ny"), !t.separatedY, explainStep === 5);
+  setMark(document.getElementById("check-nand"), t.negative, explainStep === 6);
+  // 注: check-nx shows !separatedX (overlap on X) as ok for "not separated"
+  // For pedagogy of negative path, also show separated truth in notes
+  if (sepXNote) {
+    sepXNote.textContent = t.separatedX
+      ? " → 分離している（X だけで非衝突にできる）"
+      : " → 分離していない（X では切れない）";
+  }
+  if (sepYNote) {
+    sepYNote.textContent = t.separatedY
+      ? " → 分離している（Y だけで非衝突にできる）"
+      : " → 分離していない（Y では切れない）";
+  }
+  setItemFocus(document.getElementById("checklist-neg"), "nx", explainStep === 4);
+  setItemFocus(document.getElementById("checklist-neg"), "ny", explainStep === 5);
+  setItemFocus(document.getElementById("checklist-neg"), "nand", explainStep === 6);
+  document.querySelectorAll("#checklist-neg .aabb-check-item").forEach((el) => {
+    const step = el.getAttribute("data-step");
+    let pass = false;
+    if (step === "nx") pass = !t.separatedX;
+    if (step === "ny") pass = !t.separatedY;
+    if (step === "nand") pass = t.negative;
+    el.classList.toggle("is-pass", pass);
+    el.classList.toggle("is-fail", !pass);
+  });
+
+  if (posResult) {
+    posResult.textContent = t.positive ? "衝突" : "非衝突";
+    posResult.dataset.on = t.positive ? "1" : "0";
+  }
+  if (negResult) {
+    negResult.textContent = t.negative ? "衝突" : "非衝突";
+    negResult.dataset.on = t.negative ? "1" : "0";
+  }
+
+  if (badgeX) {
+    badgeX.textContent = t.overlapX ? "重なる / 非分離" : "重ならない / 分離";
+    badgeX.dataset.on = t.overlapX ? "1" : "0";
+  }
+  if (badgeY) {
+    badgeY.textContent = t.overlapY ? "重なる / 非分離" : "重ならない / 分離";
+    badgeY.dataset.on = t.overlapY ? "1" : "0";
+  }
+
+  if (formulaX) {
+    formulaX.textContent =
+      `overlapX=${t.overlapX}  ·  separatedX=${t.separatedX}  ` +
+      `(${fmt(t.A.maxX)}≥${fmt(t.B.minX)} ∧ ${fmt(t.A.minX)}≤${fmt(t.B.maxX)})`;
+  }
+  if (formulaY) {
+    formulaY.textContent =
+      `overlapY=${t.overlapY}  ·  separatedY=${t.separatedY}  ` +
+      `(${fmt(t.A.maxY)}≥${fmt(t.B.minY)} ∧ ${fmt(t.A.minY)}≤${fmt(t.B.maxY)})`;
+  }
+
+  if (numbersEl) {
+    numbersEl.innerHTML = `
+      <table class="aabb-table">
+        <thead><tr><th></th><th>minX</th><th>minY</th><th>maxX</th><th>maxY</th></tr></thead>
+        <tbody>
+          <tr class="row-a"><td>A</td><td>${fmt(t.A.minX)}</td><td>${fmt(t.A.minY)}</td><td>${fmt(t.A.maxX)}</td><td>${fmt(t.A.maxY)}</td></tr>
+          <tr class="row-b"><td>B</td><td>${fmt(t.B.minX)}</td><td>${fmt(t.B.minY)}</td><td>${fmt(t.B.maxX)}</td><td>${fmt(t.B.maxY)}</td></tr>
+        </tbody>
+      </table>
+      <p class="aabb-eq-live">A(pos)=<strong>${t.positive}</strong> · B(neg)=<strong>${t.negative}</strong> · B′=<strong>${t.early}</strong> · ${
+      t.agree ? "一致 ✓" : "不一致"
+    }</p>
+    `;
+  }
+
+  if (snippetPos) snippetPos.textContent = SNIPPET_POS;
+  if (snippetNeg) snippetNeg.textContent = SNIPPET_NEG;
+
+  if (liveAgreeNote) {
+    liveAgreeNote.textContent = t.agree
+      ? `実行時: 現在の矩形では A・B・B′ の結果はすべて ${t.positive}（一致）。`
+      : "実行時: 結果が一致しません。境界条件の定義を確認してください。";
+  }
+
+  // フォーカス強調
+  methodPos?.classList.toggle(
+    "is-dim",
+    focusMode === "negative" || (explainStep >= 4 && explainStep <= 6)
+  );
+  methodNeg?.classList.toggle(
+    "is-dim",
+    focusMode === "positive" || (explainStep >= 1 && explainStep <= 3)
+  );
+  if (focusMode === "both" && explainStep === 0) {
+    methodPos?.classList.remove("is-dim");
+    methodNeg?.classList.remove("is-dim");
+  }
+  if (explainStep >= 1 && explainStep <= 3) {
+    methodPos?.classList.remove("is-dim");
+    methodNeg?.classList.add("is-dim");
+  }
+  if (explainStep >= 4 && explainStep <= 6) {
+    methodNeg?.classList.remove("is-dim");
+    methodPos?.classList.add("is-dim");
+  }
+}
+
+function renderComplexityTable() {
+  if (!complexityBody) return;
+  complexityBody.innerHTML = COMPLEXITY.map(
+    (row) => `
+    <tr>
+      <th scope="row">${row.metric}</th>
+      <td>${row.pos}</td>
+      <td>${row.neg}</td>
+      <td>${row.early}</td>
+    </tr>`
+  ).join("");
 }
 
 function refresh() {
@@ -423,7 +623,7 @@ function refresh() {
   updatePanels();
 }
 
-// ----- ポインタ操作 -----
+// ----- ポインタ -----
 function canvasPos(e) {
   const rect = canvas.getBoundingClientRect();
   const sx = canvas.width / rect.width;
@@ -452,20 +652,13 @@ function onPointerDown(e) {
   stopAuto();
   explainStep = 0;
   const { x, y } = canvasPos(e);
-  // B を優先して手前感（後から描画している方）
   const order = [
     { which: "B", box: boxB },
     { which: "A", box: boxA },
   ];
   for (const o of order) {
     if (hitHandle(o.box, x, y)) {
-      drag = {
-        which: o.which,
-        mode: "resize",
-        ox: x,
-        oy: y,
-        start: { ...o.box },
-      };
+      drag = { which: o.which, mode: "resize", ox: x, oy: y };
       canvas.setPointerCapture?.(e.pointerId);
       return;
     }
@@ -477,7 +670,6 @@ function onPointerDown(e) {
         mode: "move",
         ox: x - o.box.x,
         oy: y - o.box.y,
-        start: { ...o.box },
       };
       canvas.setPointerCapture?.(e.pointerId);
       return;
@@ -497,44 +689,50 @@ function onPointerMove(e) {
     box.h = y - box.y;
   }
   clampBox(box);
-  const { colliding } = testCollision(boxA, boxB);
+  const t = evaluate();
   setStatus(
-    `${drag.which} を${drag.mode === "move" ? "移動" : "リサイズ"}中… ` +
-      (colliding ? "→ 衝突" : "→ 非衝突")
+    `${drag.which} 編集中… A=${t.positive} B=${t.negative}` +
+      (t.agree ? "（一致）" : "（不一致）")
   );
   refresh();
 }
 
 function onPointerUp(e) {
-  if (drag) {
-    drag = null;
-    try {
-      canvas.releasePointerCapture?.(e.pointerId);
-    } catch {
-      /* ignore */
-    }
-    setStatus("ドラッグ終了 — 投影とチェックリストを確認");
+  if (!drag) return;
+  drag = null;
+  try {
+    canvas.releasePointerCapture?.(e.pointerId);
+  } catch {
+    /* ignore */
   }
+  setStatus("ドラッグ終了 — 下の A/B ロジックと複雑度表を確認");
 }
 
-// ----- 判定ステップ / 自動デモ -----
+// ----- ステップ説明 -----
 function stepExplain() {
   stopAuto();
-  explainStep = (explainStep % 3) + 1;
-  const { overlapX, overlapY, colliding } = testCollision(boxA, boxB);
-  if (explainStep === 1) {
-    setStatus(
-      `① X 軸: overlapX = ${overlapX}（投影レールと縦ガイドを見てください）`
-    );
-  } else if (explainStep === 2) {
-    setStatus(
-      `② Y 軸: overlapY = ${overlapY}（投影レールと横ガイドを見てください）`
-    );
+  if (focusMode === "positive") {
+    explainStep = explainStep >= 1 && explainStep < 3 ? explainStep + 1 : 1;
+  } else if (focusMode === "negative") {
+    explainStep = explainStep >= 4 && explainStep < 6 ? explainStep + 1 : 4;
   } else {
-    setStatus(
-      `③ 結論: colliding = ${overlapX} ∧ ${overlapY} = ${colliding}`
-    );
+    // both: 1→2→3→4→5→6→0
+    if (explainStep === 0) explainStep = 1;
+    else if (explainStep >= 6) explainStep = 0;
+    else explainStep += 1;
   }
+
+  const t = evaluate();
+  const msgs = {
+    0: "ライブ表示",
+    1: `A① overlapX = ${t.overlapX}`,
+    2: `A② overlapY = ${t.overlapY}`,
+    3: `A③ return overlapX && overlapY → ${t.positive}`,
+    4: `B① separatedX = ${t.separatedX}`,
+    5: `B② separatedY = ${t.separatedY}`,
+    6: `B③ return !(sepX || sepY) → ${t.negative}`,
+  };
+  setStatus(msgs[explainStep] ?? "");
   refresh();
 }
 
@@ -548,16 +746,14 @@ function stopAuto() {
 }
 
 function demoFrame() {
-  // 障害物は固定、プレイヤーが往復して交差
   demoT += 0.035;
-  const base = 80 + Math.sin(demoT) * 160 + 80;
-  boxA.x = base;
+  boxA.x = 80 + Math.sin(demoT) * 160 + 80;
   boxA.y = 120 + Math.cos(demoT * 0.7) * 40;
   clampBox(boxA);
   explainStep = 0;
-  const { colliding } = testCollision(boxA, boxB);
+  const t = evaluate();
   setStatus(
-    `自動デモ中… プレイヤーが移動 ${colliding ? "【衝突】" : "【非衝突】"}`
+    `自動デモ… 衝突=${t.positive}（A≡B: ${t.agree ? "yes" : "no"}）`
   );
   refresh();
 }
@@ -613,13 +809,28 @@ document.querySelectorAll("[data-preset]").forEach((btn) => {
   });
 });
 
-// キャンバスの CSS 幅に合わせた描画解像度（ぼやけ防止は簡易）
-function fitCanvas() {
-  // 固定論理サイズを維持（ドラッグ座標と一致）
-  refresh();
-}
+document.querySelectorAll("[data-focus]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    focusMode = /** @type {'both'|'positive'|'negative'} */ (
+      btn.getAttribute("data-focus") || "both"
+    );
+    document.querySelectorAll("[data-focus]").forEach((b) => {
+      const on = b === btn;
+      b.classList.toggle("is-active", on);
+      b.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    explainStep = 0;
+    setStatus(
+      focusMode === "positive"
+        ? "焦点: A ポジティブ（重なり）—「判定を1段」で ①→②→③"
+        : focusMode === "negative"
+          ? "焦点: B ネガティブ（分離）—「判定を1段」で ①→②→③"
+          : "焦点: 両方 —「判定を1段」で A のあと B"
+    );
+    refresh();
+  });
+});
 
-window.addEventListener("resize", fitCanvas);
-
+renderComplexityTable();
 resetBoxes();
 loadCsharp();
