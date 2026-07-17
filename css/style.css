@@ -1836,3 +1836,32 @@ img {
 .footer-muted {
   color: var(--text-muted);
 }
+
+/* Min-Max（AND-OR 木スタイルを拡張） */
+.andor-node.kind-max rect {
+  fill: rgba(91, 159, 212, 0.18);
+  stroke: #5b9fd4;
+}
+
+.andor-node.kind-min rect {
+  fill: rgba(167, 139, 250, 0.16);
+  stroke: #a78bfa;
+}
+
+.andor-node.is-valued:not(.is-active) rect {
+  stroke-width: 2;
+}
+
+.mm-score {
+  fill: #f2cc8f;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
+.andor-node.kind-leaf .mm-score {
+  fill: var(--text);
+}

@@ -57,10 +57,10 @@ const TOPICS = [
     id: "minimax",
     title: "Min-Max 探索",
     description:
-      "局面評価あり。最大・最小プレーヤが交互に指すゲーム木の評価を学ぶ。",
+      "MAX/MIN と局面評価値。相手も最善を取る前提で木を読む。",
     href: "algorithms/minimax.html",
     badge: "ゲーム木",
-    ready: false,
+    ready: true,
   },
   {
     id: "alpha-beta",

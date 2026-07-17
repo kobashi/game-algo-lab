@@ -40,6 +40,7 @@
 | 4 | 最良優先 | `algorithms/best-first.html` | `js/maps/best-first-map.js` | `BestFirstExample.cs` | 優先度 = h |
 | 5 | A* | `algorithms/astar.html` | `js/maps/astar-map.js` | `AStarExample.cs` | f = g + h |
 | 6 | AND-OR | `algorithms/and-or.html` | `js/maps/and-or-tree.js` | `AndOrExample.cs` | OR=∃ / AND=∀。ゲーム木入口 |
+| 7 | Min-Max | `algorithms/minimax.html` | `js/maps/minimax-tree.js` | `MinimaxExample.cs` | MAX/MIN・数値評価。枝刈りなし |
 
 共通:
 
@@ -55,9 +56,9 @@
 
 | 順 | トピック | 状態 |
 |----|----------|------|
-| 1 | AND-OR | **ready** — `algorithms/and-or.html` / `js/and-or.js` / `js/maps/and-or-tree.js` / `samples/AndOrExample.cs` / SPEC |
-| 2 | Min-Max | メニューのみ（次に着手） |
-| 3 | α-β | メニューのみ |
+| 1 | AND-OR | **ready** — `algorithms/and-or.html` / SPEC |
+| 2 | Min-Max | **ready** — `algorithms/minimax.html` / SPEC |
+| 3 | α-β | メニューのみ（次に着手） |
 | 4 | モンテカルロ | メニューのみ |
 | 5 | 多腕バンディット | メニューのみ |
 
@@ -67,8 +68,13 @@
 
 ### AND-OR メモ
 - OR = どれか1つ真、AND = すべて真、葉 = 固定真偽  
-- 深さ優先・左から右。正規ルート(AND)が成功すると根 OR が打ち切り（強引・秘密は未評価になり得る）  
-- 木の編集: `js/maps/and-or-tree.js`
+- 深さ優先・左から右。正規ルート(AND)が成功すると根 OR が打ち切り  
+- 木: `js/maps/and-or-tree.js`
+
+### Min-Max メモ
+- MAX = max 子、MIN = min 子、葉 = score  
+- **枝刈りなし**（全子評価）。答え: A=3, B=2, C=4 → 根 v=4（手 C）  
+- 木: `js/maps/minimax-tree.js`
 
 ---
 

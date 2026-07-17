@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="AND-OR 探索の可視化。OR（どれか1つ）と AND（すべて）でゲーム木を読み切る。" />
-  <title>AND-OR 探索 — Game Algo Lab</title>
+  <meta name="description" content="Min-Max 探索の可視化。MAX/MIN と局面評価値でゲーム木を読む。" />
+  <title>Min-Max 探索 — Game Algo Lab</title>
   <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body class="topic-body">
@@ -16,9 +16,9 @@
       </a>
       <nav class="nav" aria-label="メイン">
         <a href="../index.html" class="nav-link">ホーム</a>
-        <a href="astar.html" class="nav-link">A*</a>
-        <a href="and-or.html" class="nav-link is-active">AND-OR</a>
-        <a href="minimax.html" class="nav-link">Min-Max</a>
+        <a href="and-or.html" class="nav-link">AND-OR</a>
+        <a href="minimax.html" class="nav-link is-active">Min-Max</a>
+        <a href="../index.html#topics" class="nav-link">一覧</a>
       </nav>
     </div>
   </header>
@@ -26,13 +26,13 @@
   <main class="container container-wide topic-main">
     <div class="page-header page-header-compact">
       <p class="breadcrumb">
-        <a href="../index.html">ホーム</a> / ゲーム木 / AND-OR 探索
+        <a href="../index.html">ホーム</a> / ゲーム木 / Min-Max 探索
       </p>
-      <h1>AND-OR 探索</h1>
+      <h1>Min-Max 探索</h1>
       <p class="page-header-lead">
-        ゲーム木の入口。<strong>OR</strong>＝どれか1つ成功、<strong>AND</strong>＝すべて成功。
-        終端まで読み切って「解があるか」を判定します。木の定義は
-        <code>js/maps/and-or-tree.js</code>。
+        <strong>MAX</strong>（自分）は評価を最大化、<strong>MIN</strong>（相手）は最小化する。
+        葉の数値を吸い上げて最善手を決める。木は
+        <code>js/maps/minimax-tree.js</code>。
       </p>
     </div>
 
@@ -40,11 +40,11 @@
       <summary>このデモで学ぶこと</summary>
       <div class="lesson-box lesson-box-nested">
         <ul>
-          <li><strong>OR 節点</strong>（角丸・青系）: プレイヤーの選択。子の<strong>どれか1つ</strong>が真なら真</li>
-          <li><strong>AND 節点</strong>（菱形寄り・紫系）: 必須条件や「全分岐」。子が<strong>すべて</strong>真なら真</li>
-          <li><strong>終端</strong>: あらかじめ成功（真）または失敗（偽）が決まっている葉</li>
-          <li>探索は深さ優先・子は左から右。OR で1つ成功した時点で残りは読まない</li>
-          <li>次の Min-Max は「数値付きの max/min」として、この AND/OR の拡張と捉えられる</li>
+          <li><strong>MAX</strong>（青系）: 自分の手番。子の評価の<strong>最大</strong>を取る</li>
+          <li><strong>MIN</strong>（紫系）: 相手の手番。子の評価の<strong>最小</strong>を取る（自分に厳しく）</li>
+          <li><strong>葉</strong>: 終端局面の評価値（大きいほど自分に有利）</li>
+          <li>AND-OR の真偽が「数値の優劣」に拡張された形と捉えられる</li>
+          <li>このデモは<strong>枝刈りなし</strong>。不要な枝を切るのは次の <strong>α-β 法</strong></li>
         </ul>
       </div>
     </details>
@@ -53,19 +53,17 @@
       <div class="demo-game-group">
         <div class="demo-board">
           <div class="canvas-panel tree-panel">
-            <div id="tree-viewport" class="tree-viewport" aria-label="AND-OR ゲーム木">
-              <svg id="tree-svg" class="andor-svg" role="img" aria-labelledby="tree-title">
-                <title id="tree-title">AND-OR ゲーム木</title>
+            <div id="tree-viewport" class="tree-viewport" aria-label="Min-Max ゲーム木">
+              <svg id="tree-svg" class="andor-svg mm-svg" role="img" aria-labelledby="tree-title">
+                <title id="tree-title">Min-Max ゲーム木</title>
               </svg>
             </div>
             <div class="legend">
-              <span><i class="swatch swatch-or"></i>OR</span>
-              <span><i class="swatch swatch-and"></i>AND</span>
-              <span><i class="swatch swatch-leaf-t"></i>終端・真</span>
-              <span><i class="swatch swatch-leaf-f"></i>終端・偽</span>
+              <span><i class="swatch swatch-or"></i>MAX</span>
+              <span><i class="swatch swatch-and"></i>MIN</span>
+              <span><i class="swatch swatch-leaf-t"></i>葉（評価）</span>
               <span><i class="swatch swatch-frontier"></i>評価中</span>
-              <span><i class="swatch swatch-path"></i>真（確定）</span>
-              <span><i class="swatch swatch-wall"></i>偽（確定）</span>
+              <span><i class="swatch swatch-path"></i>最善枝</span>
             </div>
           </div>
         </div>
@@ -90,7 +88,7 @@
 
             <div class="controls-group controls-group-paint andor-formula">
               <span class="controls-label">式</span>
-              <code class="formula-code">OR = ∃ 子が真 / AND = ∀ 子が真</code>
+              <code class="formula-code">MAX = max 子 / MIN = min 子</code>
             </div>
           </div>
 
@@ -102,7 +100,7 @@
       <section class="ds-section ds-section-workspace" aria-labelledby="ds-heading">
         <h2 id="ds-heading">データ構造のようす</h2>
         <p class="section-lead section-lead-compact">
-          コールスタック（再帰 Solve） / 確定した真偽
+          コールスタック（再帰 Minimax） / 確定した評価値 v
         </p>
         <div id="ds-panels" class="ds-panels"></div>
       </section>
@@ -111,11 +109,11 @@
     <section class="code-section" aria-labelledby="csharp-heading">
       <h2 id="csharp-heading">C# 実装例</h2>
       <div class="code-toolbar">
-        <p class="code-meta">ファイル: <code>samples/AndOrExample.cs</code></p>
+        <p class="code-meta">ファイル: <code>samples/MinimaxExample.cs</code></p>
       </div>
       <pre class="code-block" id="csharp-sample"><code>// 読み込み中…</code></pre>
       <p class="code-note">
-        <code>Solve</code> の再帰がコールスタックに対応します。OR は早期 true、AND は早期 false で打ち切れます。
+        葉まで降りて数値を返し、MAX/MIN で吸い上げます。α・β による打ち切りはまだありません。
       </p>
     </section>
   </main>
@@ -125,13 +123,13 @@
       <p>
         <a href="../index.html">← トピック一覧</a>
         ·
-        <a href="dfs.html">DFS（再帰の感覚）</a>
+        <a href="and-or.html">AND-OR（前段）</a>
         ·
-        <a href="minimax.html">次: Min-Max 探索</a>
+        <span class="footer-muted">次: α-β 法（準備中）</span>
       </p>
     </div>
   </footer>
 
-  <script type="module" src="../js/and-or.js"></script>
+  <script type="module" src="../js/minimax.js"></script>
 </body>
 </html>
