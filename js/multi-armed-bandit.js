@@ -1,8 +1,8 @@
 /**
  * 多腕バンディットデモ
- * - ベルヌーイ腕、ε-greedy / UCB1
- * - 累積リグレット（期待）μ* - μ_a
+ * 共通基盤: js/platform/*
  */
+
 import {
   BANDIT_CONFIG,
   bestMean,
@@ -15,7 +15,10 @@ import {
   loadTextSample,
   mulberry32,
   randomIndex,
+  mountSiteHeaderFromDataset,
 } from "./platform/index.js";
+
+mountSiteHeaderFromDataset();
 
 const boardEl = document.getElementById("bandit-board");
 const dsPanels = document.getElementById("ds-panels");

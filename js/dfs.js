@@ -21,11 +21,19 @@ import {
   createPlayback,
   loadTextSample,
   bindMapPaint,
+  mountSiteHeaderFromDataset,
+  PF,
+  PF_COLORS,
+  createGridOps,
+  applyParsedMap,
+  drawPathfindingGrid,
 } from "./platform/index.js";
 
-const COLS = 14;
-const ROWS = 14;
-const CELL = 40;
+mountSiteHeaderFromDataset();
+
+const COLS = PF.COLS;
+const ROWS = PF.ROWS;
+const CELL = PF.CELL;
 
 /** 探索方向: 右 → 下 → 左 → 上（袋小路に入りやすい順） */
 const DIRS = [
@@ -44,18 +52,16 @@ const Mark = {
 };
 
 const COLORS = {
-  empty: "#0a0e14",
-  wall: "#3d4f66",
-  start: "#6bcb8f",
-  goal: "#e07a5f",
+  ...PF_COLORS,
   onPath: "#2a4a6b",
   dead: "#3a3038",
-  path: "#f2cc8f",
   current: "#5b9fd4",
-  grid: "#1a222d",
-  text: "#e8eef6",
-  textMuted: "rgba(232, 238, 246, 0.55)",
 };
+const grid = createGridOps(COLS, ROWS);
+const { key, inBounds } = grid;
+function isWalkable(x, y) {
+  return grid.isWalkable(x, y, walls);
+}
 
 const canvas = document.getElementById("grid-canvas");
 const ctx = canvas.getContext("2d");
@@ -100,17 +106,8 @@ let stepCount = 0;
 let maxStackDepth = 0;
 let backtrackCount = 0;
 
-function key(x, y) {
-  return `${x},${y}`;
-}
 
-function inBounds(x, y) {
-  return x >= 0 && x < COLS && y >= 0 && y < ROWS;
-}
 
-function isWalkable(x, y) {
-  return inBounds(x, y) && !walls[y][x];
-}
 
 function isStart(x, y) {
   return x === start.x && y === start.y;
@@ -121,16 +118,11 @@ function isGoal(x, y) {
 }
 
 function loadInitialMap() {
-  const map = parseMap(INITIAL_MAP);
-  if (map.cols !== COLS || map.rows !== ROWS) {
-    throw new Error(
-      `dfs-map.js のサイズは ${COLS}x${ROWS} にしてください（現在 ${map.cols}x${map.rows}）`
-    );
-  }
-  costs = map.costs.map((row) => row.slice());
-  walls = map.walls.map((row) => row.slice());
-  start = { ...map.start };
-  goals = map.goals.map((g) => ({ ...g }));
+  const applied = applyParsedMap(parseMap(INITIAL_MAP), COLS, ROWS, "dfs-map.js");
+  costs = applied.costs;
+  walls = applied.walls;
+  start = applied.start;
+  goals = applied.goals;
   foundGoal = null;
 }
 

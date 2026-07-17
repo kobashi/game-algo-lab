@@ -58,7 +58,8 @@ import { parseMap } from "./map-format.js";
   <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body class="topic-body">
-  <header class="site-header">…ロゴ・ナビ…</header>
+  <!-- data-nav: pathfinding | game-tree | explain | default -->
+  <header class="site-header" id="site-header" data-nav="explain" data-active="your-id"></header>
   <main class="container container-wide topic-main">
     <div class="page-header page-header-compact">
       <p class="breadcrumb">…</p>
@@ -103,7 +104,10 @@ import {
   createResultPanel,
   createPlayback,
   loadTextSample,
+  mountSiteHeaderFromDataset,
 } from "./platform/index.js";
+
+mountSiteHeaderFromDataset();
 
 const setStatus = createStatus(document.getElementById("status"));
 const result = createResultPanel(document.getElementById("result-compare"));

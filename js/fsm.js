@@ -1,14 +1,17 @@
 /**
  * ステートマシンデモ（説明特化 UI）
- * - SVG 状態図、イベントボタン、遷移表、履歴
  * 共通基盤: js/platform
  */
+
 import { FSM_CONFIG, transitionKey } from "./maps/fsm-config.js";
 import {
   createStatus,
   createPlayback,
   loadTextSample,
+  mountSiteHeaderFromDataset,
 } from "./platform/index.js";
+
+mountSiteHeaderFromDataset();
 
 const svg = document.getElementById("fsm-svg");
 const eventButtons = document.getElementById("event-buttons");

@@ -20,11 +20,19 @@ import {
   createPlayback,
   loadTextSample,
   bindMapPaint,
+  mountSiteHeaderFromDataset,
+  PF,
+  PF_COLORS,
+  createGridOps,
+  applyParsedMap,
+  drawPathfindingGrid,
 } from "./platform/index.js";
 
-const COLS = 14;
-const ROWS = 14;
-const CELL = 40;
+mountSiteHeaderFromDataset();
+
+const COLS = PF.COLS;
+const ROWS = PF.ROWS;
+const CELL = PF.CELL;
 
 const Mark = {
   NONE: 0,
@@ -33,24 +41,15 @@ const Mark = {
   PATH: 3,
 };
 
-const COLORS = {
-  empty: "#0a0e14",
-  wall: "#3d4f66",
-  start: "#6bcb8f",
-  goal: "#e07a5f",
-  closed: "#2a4a6b",
-  open: "#5b9fd4",
-  path: "#f2cc8f",
-  grid: "#1a222d",
-  text: "#e8eef6",
-  textMuted: "rgba(232, 238, 246, 0.55)",
-  costTint: {
-    [-1]: "rgba(107, 203, 143, 0.22)",
-    0: "rgba(91, 159, 212, 0.18)",
-    1: "transparent",
-    2: "rgba(224, 122, 95, 0.28)",
-  },
-};
+const COLORS = PF_COLORS;
+const grid = createGridOps(COLS, ROWS);
+const { key, inBounds } = grid;
+function isWalkable(x, y) {
+  return grid.isWalkable(x, y, walls);
+}
+function neighbors(x, y) {
+  return grid.neighbors(x, y, walls);
+}
 
 const canvas = document.getElementById("grid-canvas");
 const ctx = canvas.getContext("2d");
@@ -98,33 +97,9 @@ let finished = false;
 let found = false;
 let expandCount = 0;
 
-function key(x, y) {
-  return `${x},${y}`;
-}
 
-function inBounds(x, y) {
-  return x >= 0 && x < COLS && y >= 0 && y < ROWS;
-}
 
-function isWalkable(x, y) {
-  return inBounds(x, y) && !walls[y][x];
-}
 
-function neighbors(x, y) {
-  const dirs = [
-    [1, 0],
-    [-1, 0],
-    [0, 1],
-    [0, -1],
-  ];
-  const result = [];
-  for (const [dx, dy] of dirs) {
-    const nx = x + dx;
-    const ny = y + dy;
-    if (isWalkable(nx, ny)) result.push({ x: nx, y: ny });
-  }
-  return result;
-}
 
 function isStart(x, y) {
   return x === start.x && y === start.y;
@@ -197,16 +172,11 @@ function clearScores() {
 
 /** js/maps/best-first-map.js の INITIAL_MAP から読み込む */
 function loadInitialMap() {
-  const map = parseMap(INITIAL_MAP);
-  if (map.cols !== COLS || map.rows !== ROWS) {
-    throw new Error(
-      `best-first-map.js のサイズは ${COLS}x${ROWS} にしてください（現在 ${map.cols}x${map.rows}）`
-    );
-  }
-  costs = map.costs.map((row) => row.slice());
-  walls = map.walls.map((row) => row.slice());
-  start = { ...map.start };
-  goals = map.goals.map((g) => ({ ...g }));
+  const applied = applyParsedMap(parseMap(INITIAL_MAP), COLS, ROWS, "best-first-map.js");
+  costs = applied.costs;
+  walls = applied.walls;
+  start = applied.start;
+  goals = applied.goals;
   foundGoal = null;
 }
 
@@ -338,78 +308,57 @@ function cellFillColor(x, y) {
 }
 
 function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  for (let y = 0; y < ROWS; y++) {
-    for (let x = 0; x < COLS; x++) {
-      const px = x * CELL;
-      const py = y * CELL;
-
-      ctx.fillStyle = cellFillColor(x, y);
-      ctx.fillRect(px, py, CELL, CELL);
-
-      if (
-        !walls[y][x] &&
-        !isStart(x, y) &&
-        !isGoal(x, y) &&
-        marks[y][x] === Mark.NONE
-      ) {
-        const tint = COLORS.costTint[costs[y][x]];
-        if (tint && tint !== "transparent") {
-          ctx.fillStyle = tint;
-          ctx.fillRect(px, py, CELL, CELL);
-        }
-      }
-
-      ctx.strokeStyle = COLORS.grid;
-      ctx.strokeRect(px + 0.5, py + 0.5, CELL - 1, CELL - 1);
-
-      if (walls[y][x]) continue;
-
+  drawPathfindingGrid({
+    ctx,
+    cols: COLS,
+    rows: ROWS,
+    cell: CELL,
+    colors: COLORS,
+    walls,
+    costs,
+    marks,
+    markNone: Mark.NONE,
+    isStart,
+    isGoal,
+    fillColor: cellFillColor,
+    onCell: ({ x, y, px, py, cell, isWall, isStart: st, isGoal: gl }) => {
+      if (isWall) return;
       const g = gScore[y][x];
       const h = hScore[y][x];
       const f = fScore[y][x];
       const scored = g !== null;
       const onPath = marks[y][x] === Mark.PATH;
-      const darkText = onPath || isStart(x, y) || (isGoal(x, y) && scored);
+      const darkText = onPath || st || (gl && scored);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
 
-      if (scored && !isStart(x, y)) {
+      if (scored && !st) {
         ctx.fillStyle = darkText ? "#1a1208" : COLORS.text;
         ctx.font = "bold 12px ui-monospace, SFMono-Regular, Menlo, monospace";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(String(h), px + CELL / 2, py + CELL / 2 - 6);
-
+        ctx.fillText(String(h), px + cell / 2, py + cell / 2 - 6);
         ctx.font = "9px ui-monospace, SFMono-Regular, Menlo, monospace";
-        ctx.fillStyle = darkText
-          ? "rgba(26, 18, 8, 0.72)"
-          : COLORS.textMuted;
-        ctx.fillText(`g${g}`, px + CELL / 2, py + CELL / 2 + 8);
-      } else if (!isStart(x, y) && !isGoal(x, y)) {
+        ctx.fillStyle = darkText ? "rgba(26, 18, 8, 0.72)" : COLORS.textMuted;
+        ctx.fillText("h", px + cell / 2, py + cell / 2 + 8);
+      } else if (!st && !gl) {
         ctx.fillStyle = COLORS.textMuted;
         ctx.font = "11px ui-monospace, SFMono-Regular, Menlo, monospace";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(String(costs[y][x]), px + CELL / 2, py + CELL / 2);
-      } else if (isStart(x, y)) {
+        ctx.fillText(String(costs[y][x]), px + cell / 2, py + cell / 2);
+      } else if (st) {
         ctx.fillStyle = "#0a1018";
         ctx.font = "bold 11px sans-serif";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText("S", px + CELL / 2, py + CELL / 2 - 5);
+        ctx.fillText("S", px + cell / 2, py + cell / 2 - 5);
         if (h !== null) {
           ctx.font = "9px ui-monospace, SFMono-Regular, Menlo, monospace";
-          ctx.fillText(`h${h}`, px + CELL / 2, py + CELL / 2 + 9);
+          ctx.fillText(`h${h}`, px + cell / 2, py + cell / 2 + 9);
         }
-      } else if (isGoal(x, y) && !scored) {
+      } else if (gl && !scored) {
         ctx.fillStyle = "#1a100c";
         ctx.font = "bold 11px sans-serif";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText("G", px + CELL / 2, py + CELL / 2);
+        ctx.fillText("G", px + cell / 2, py + cell / 2);
       }
-    }
-  }
+
+    },
+  });
 }
 
 function getPathCells() {

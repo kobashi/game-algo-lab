@@ -1,8 +1,8 @@
 /**
  * Min-Max 探索デモ
- * - MAX: 子の最大値 / MIN: 子の最小値 / 葉: 固定スコア
- * - 枝刈りなし。共通基盤: js/platform/*
+ * 共通基盤: js/platform/*
  */
+
 import { INITIAL_TREE } from "./maps/minimax-tree.js";
 import { setPanel, renderCallStack, renderSet } from "./ds-viz.js";
 import {
@@ -13,7 +13,10 @@ import {
   layoutTree as layoutTreeShared,
   applySvgSize,
   escapeXml,
+  mountSiteHeaderFromDataset,
 } from "./platform/index.js";
+
+mountSiteHeaderFromDataset();
 
 const svg = document.getElementById("tree-svg");
 const dsPanels = document.getElementById("ds-panels");

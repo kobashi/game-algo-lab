@@ -1,13 +1,16 @@
 /**
  * AABB 衝突判定デモ（説明特化 UI）
- * - A: ポジティブ / B: ネガティブ / B′: 早期 return
  * 共通基盤: js/platform
  */
+
 import {
   createStatus,
   createPlayback,
   loadTextSample,
+  mountSiteHeaderFromDataset,
 } from "./platform/index.js";
+
+mountSiteHeaderFromDataset();
 
 const canvas = document.getElementById("aabb-canvas");
 const ctx = canvas?.getContext("2d");

@@ -1,8 +1,8 @@
 /**
  * α-β 法デモ
- * - Min-Max と同じ値、α/β で枝刈り
- * - 共通基盤: js/platform/*
+ * 共通基盤: js/platform/*
  */
+
 import { INITIAL_TREE, FULL_LEAF_COUNT } from "./maps/alpha-beta-tree.js";
 import { setPanel, renderCallStack, renderSet } from "./ds-viz.js";
 import {
@@ -13,7 +13,10 @@ import {
   layoutTree as layoutTreeShared,
   applySvgSize,
   escapeXml,
+  mountSiteHeaderFromDataset,
 } from "./platform/index.js";
+
+mountSiteHeaderFromDataset();
 
 const svg = document.getElementById("tree-svg");
 const dsPanels = document.getElementById("ds-panels");

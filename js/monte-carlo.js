@@ -1,8 +1,8 @@
 /**
  * モンテカルロ評価デモ
- * - 根から葉まで子を一様ランダムに選ぶプレイアウト
- * - 葉スコアの平均で局面を推定（最善前提の Min-Max とは別物）
+ * 共通基盤: js/platform/*
  */
+
 import {
   INITIAL_TREE,
   MINIMAX_ROOT,
@@ -18,7 +18,10 @@ import {
   layoutTree as layoutTreeShared,
   applySvgSize,
   escapeXml,
+  mountSiteHeaderFromDataset,
 } from "./platform/index.js";
+
+mountSiteHeaderFromDataset();
 
 const svg = document.getElementById("tree-svg");
 const dsPanels = document.getElementById("ds-panels");

@@ -1,10 +1,9 @@
 /**
  * AND-OR 探索デモ
- * - OR: 子のいずれかが真 → 真（早期打ち切り）
- * - AND: すべての子が真 → 真（1つ偽で早期打ち切り）
- * - 深さ優先・左から右、コールスタックでステップ実行
+ * - OR / AND / 葉、深さ優先、コールスタック
  * 共通基盤: js/platform/*
  */
+
 import { INITIAL_TREE } from "./maps/and-or-tree.js";
 import { setPanel, renderCallStack, renderSet } from "./ds-viz.js";
 import {
@@ -15,7 +14,10 @@ import {
   layoutTree as layoutTreeShared,
   applySvgSize,
   escapeXml,
+  mountSiteHeaderFromDataset,
 } from "./platform/index.js";
+
+mountSiteHeaderFromDataset();
 
 const svg = document.getElementById("tree-svg");
 const dsPanels = document.getElementById("ds-panels");

@@ -26,3 +26,16 @@ export {
   paintMapCell,
   bindMapPaint,
 } from "./grid-paint.js";
+export {
+  PF,
+  PF_COLORS,
+  createGridOps,
+  applyParsedMap,
+  drawPathfindingGrid,
+  drawDefaultCellLabel,
+} from "./pathfinding-grid.js";
+export {
+  NAV_GROUPS,
+  mountSiteHeader,
+  mountSiteHeaderFromDataset,
+} from "./topic-shell.js";

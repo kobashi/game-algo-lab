@@ -64,20 +64,34 @@ docs/templates/            # SPEC / スキャフォールド
 | `createPlayback` | 再生 / 一時停止 / 速度付き onTick |
 | `mulberry32` / `randomIndex` | シード付き乱数 |
 | `layoutTree` / `applySvgSize` | ゲーム木の水平配置 |
+| `bindMapPaint` 等 | 経路探索の塗り |
+| `drawPathfindingGrid` / `createGridOps` | グリッド下地・幾何 |
+| `mountSiteHeaderFromDataset` | 共通ヘッダー（`#site-header` の data 属性） |
 | `escapeHtml` / `escapeXml` | エスケープ |
 
 詳細: [js/platform/README.md](../js/platform/README.md)
+
+### ヘッダー HTML 規約
+
+```html
+<header class="site-header" id="site-header" data-nav="pathfinding" data-active="bfs"></header>
+```
+
+`data-nav`: `pathfinding` | `game-tree` | `explain` | `default`  
+`data-active`: ナビ内の現在 id  
+
+各デモ JS の先頭で `mountSiteHeaderFromDataset()` を呼ぶ。
 
 ### 移行状況（段階的）
 
 | 領域 | platform 利用 |
 |------|----------------|
-| ゲーム木（AND-OR / Min-Max / α-β / MC） | layout・status・playback・C# など **済み** |
-| 多腕バンディット | rng・status・C# **済み** |
-| 経路探索（BFS〜A*） | playback（`delayFromSpeed`）・status・C#・**`bindMapPaint`** **済み** |
+| 全 ready デモ | 共通ヘッダー **済み** |
+| ゲーム木 / MC / バンディット | layout・status・playback・C# 等 **済み** |
+| 経路探索（BFS〜A*） | playback・塗り・**グリッド下地/幾何**・C# **済み** |
 | AABB / FSM | status・playback・C# **済み** |
 
-残タスク例: 経路探索の盤面描画共通化、HTML ヘッダー共有化。
+残タスク例: 経路探索のスコア描画コールバックのさらなる共通化、フッター共有。
 ---
 
 ## 3. 学習体験の統一
