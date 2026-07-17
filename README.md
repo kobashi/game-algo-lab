@@ -72,17 +72,24 @@ python3 scripts/smoke-platform.py
 
 ブラウザ E2E や i18n（多言語）は **今後の課題**（未着手）。方針は [docs/ROADMAP.md](docs/ROADMAP.md) を参照。
 
-## GitHub Pages への公開
+## GitHub Pages への公開（試作版）
 
-1. GitHub にリポジトリを作成し、このフォルダを push  
-2. **Settings → Pages** → branch `main`、folder `/ (root)`  
+静的サイトのため **Source = `main` ブランチ / `/ (root)`** で公開します。
+
+1. GitHub にログインしたうえでリポジトリを push  
+2. **Settings → Pages** → Deploy from a branch → `main` / `/ (root)`  
 3. 数分後に `https://<ユーザー名>.github.io/<リポジトリ名>/`
 
-ログイン済みの `gh` がある場合:
+### 一括公開（推奨）
 
 ```bash
-./scripts/publish-github.sh game-algo-lab
+export PATH="$HOME/.local/bin:$PATH"
+gh auth login -h github.com -p https -w   # 未ログイン時
+./scripts/publish-github.sh game-algo-lab v0.9.0
 ```
+
+- リポジトリ作成（未作成時）・`main` push・Pages 有効化・**試作 Release（prerelease）** を行います  
+- 現行の試作タグ: **`v0.9.0`**（リリースノート: `RELEASE_NOTES_v0.9.0.md`）
 
 ## 実装済みトピック（経路探索）
 
