@@ -2,91 +2,102 @@
 
 ゲームプログラミングのアルゴリズムを、**可視化**と**インタラクティブ操作**で学ぶ教材サイトです。
 
-GitHub Pages での公開を前提に、ビルド不要の静的サイト（HTML / CSS / JavaScript）で構成しています。
+GitHub Pages での公開を前提に、ビルド不要の静的サイト（HTML / CSS / JavaScript）で構成しています。  
+開発・拡張の方針と分業の進め方は **`docs/`** にまとめています。
 
 ## できること
 
-- 経路探索（BFS）などのアルゴリズムをステップ実行・再生で観察
-- グリッド上の壁を編集して挙動の違いを確認
-- トピックを増やしながら教材を拡張
-
-## フォルダ構成
-
-```
-Project/
-├── index.html
-├── algorithms/     # bfs, dfs, dijkstra, best-first, astar
-├── css/style.css
-├── js/             # デモ本体 + maps/ + ds-viz.js
-├── samples/        # C# 実装例
-├── HANDOFF.md      # セッション引き継ぎ
-├── .gitignore
-└── README.md
-```
+- 経路探索（BFS → A* など）をステップ実行・再生で観察
+- グリッド上のコスト・壁・**複数ゴール**を編集して挙動を確認
+- トピックをカテゴリ単位で増やし、共通 UI で統一感を保つ
 
 ## ローカルで見る
-
-ターミナルでプロジェクト直下に移動し、簡易サーバーを起動します（ES modules を使うため、`file://` 直接開きは非推奨）。
 
 ```bash
 cd ~/Project
 python3 -m http.server 8080
 ```
 
-ブラウザで http://localhost:8080 を開いてください。
+ブラウザで http://localhost:8080 を開いてください（ES modules のため `file://` は非推奨）。
 
-## GitHub Pages への公開（概要）
+## Git で管理する
 
-1. GitHub に新しいリポジトリを作成
-2. このフォルダを push
-3. リポジトリの **Settings → Pages**
-4. Source を **Deploy from a branch**、branch を `main`、folder を `/ (root)` に設定
-5. 数分後に `https://<ユーザー名>.github.io/<リポジトリ名>/` で公開
+このディレクトリは Git リポジトリです（既定ブランチ: `main`）。
 
-リポジトリ名を `username.github.io` にすると、ルート URL で公開できます。
+```bash
+git status
+git checkout -b topic/your-topic   # トピック作業例
+# 編集後
+git add -A
+git commit -m "feat(your-topic): 概要"
+```
 
-## 実装済みトピック
+| やりたいこと | 読む文書 |
+|--------------|----------|
+| 今後の方針（カテゴリ・基盤・分業） | [docs/ROADMAP.md](docs/ROADMAP.md) |
+| UI・ファイル配置の共通ルール | [docs/PLATFORM.md](docs/PLATFORM.md) |
+| ブランチ・PR・実装手順 | [docs/WORKFLOW.md](docs/WORKFLOW.md) |
+| トピック一覧と状態 | [docs/topics/CATALOG.md](docs/topics/CATALOG.md) |
+| 新トピックの仕様の書き方 | [docs/templates/SPEC.md](docs/templates/SPEC.md) |
+| セッション引き継ぎ | [HANDOFF.md](HANDOFF.md) |
+
+**新トピックの標準フロー**: カタログ登録（`ready: false`）→ SPEC → 実装ブランチ → チェックリスト → `ready: true`。
+
+## フォルダ構成
+
+```
+Project/
+├── index.html
+├── algorithms/       # 各デモ HTML
+├── css/style.css     # 共通スタイル
+├── js/               # デモ + maps/ + ds-viz + map-format + main
+├── samples/          # C# 実装例
+├── docs/             # 方針・仕様・分業・カタログ
+├── scripts/          # GitHub 公開など
+├── HANDOFF.md
+├── README.md
+└── .gitignore
+```
+
+## GitHub Pages への公開
+
+1. GitHub にリポジトリを作成し、このフォルダを push  
+2. **Settings → Pages** → branch `main`、folder `/ (root)`  
+3. 数分後に `https://<ユーザー名>.github.io/<リポジトリ名>/`
+
+ログイン済みの `gh` がある場合:
+
+```bash
+./scripts/publish-github.sh game-algo-lab
+```
+
+## 実装済みトピック（経路探索）
 
 | トピック | 内容 |
 |---------|------|
 | 幅優先探索 (BFS) | 歩数最少。Queue で広げる |
 | 深さ優先探索 (DFS) | 再帰で深く潜る。コールスタックとバックトラック |
-| ダイクストラ法 | 優先度 = g。コスト最少（A* のコスト側） |
-| 最良優先探索 | 優先度 = h。見積りのみ（A* のヒューリスティック側） |
-| A* 探索 | f = g + h。上記2つを統合 |
+| ダイクストラ法 | 優先度 = g。コスト最少 |
+| 最良優先探索 | 優先度 = h。見積りのみ |
+| A* 探索 | f = g + h |
+
+地図: ゴール `G` は **複数可**（いずれかに到達で成功）。ペイントの **G** で追加・削除。
 
 ## メニュー掲載・実装予定
 
-| 順 | トピック | 内容 | 状態 |
-|----|----------|------|------|
-| 1 | AND-OR 探索 | ゲーム木の入口。AND/OR、終局読み切り | メニューのみ |
-| 2 | Min-Max 探索 | 局面評価あり。最大・最小プレーヤ | メニューのみ |
-| 3 | α-β 法 | Min-Max の枝刈り（α・β） | メニューのみ |
-| 4 | モンテカルロ法 | ランダムシミュレーションによる評価 | メニューのみ |
-| 5 | 多腕バンディット | 探索と活用のトレードオフ | メニューのみ |
-| — | AABB 衝突判定 | 矩形の当たり判定 | メニューのみ |
-| — | ステートマシン | キャラクター状態遷移 | メニューのみ |
+| カテゴリ | トピック | 状態 |
+|----------|----------|------|
+| ゲーム木 | AND-OR → Min-Max → α-β → モンテカルロ → 多腕バンディット | メニューのみ |
+| 物理・判定 | AABB 衝突判定 | メニューのみ |
+| 設計パターン | ステートマシン | メニューのみ |
+
+詳細は [docs/topics/CATALOG.md](docs/topics/CATALOG.md)。
 
 ## 初期地図の編集
 
-エディタで次のファイルを開いて `INITIAL_MAP` を書き換えてください（14×14、各行同じ文字数）。
+エディタで `js/maps/*-map.js` の `INITIAL_MAP` を編集（行の文字数を揃える）。
 
-| デモ | ファイル |
-|------|----------|
-| BFS | `js/maps/bfs-map.js` |
-| DFS | `js/maps/dfs-map.js` |
-| ダイクストラ | `js/maps/dijkstra-map.js` |
-| 最良優先 | `js/maps/best-first-map.js` |
-| A* | `js/maps/astar-map.js` |
-
-記号: `S` スタート / `G` ゴール / `#` 壁 / `.` コスト1 / `0` `1` `2` / `n` コスト-1
-
-保存後、ブラウザを再読み込みします。「地図を再読込」は同じファイル内容をメモリに載せ直します（未保存のエディタ変更は反映されません）。
-
-新しいデモを足す手順:
-
-1. `algorithms/xxx.html` と `js/xxx.js` を追加
-2. `js/main.js` の `TOPICS` 配列に1件追加（`ready: true`）
+記号: `S` スタート / `G` ゴール（複数可） / `#` 壁 / `.` コスト1 / `0` `1` `2` / `n` コスト-1
 
 ## ライセンス
 
