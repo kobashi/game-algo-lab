@@ -8,12 +8,13 @@
 
 import {
   MATURITY_ORDER,
-  MATURITY_LABEL,
   MATURITY_HINT,
-  TOPIC_MATURITY,
+  TOPIC_META,
+  resolveTopicMeta,
   countByMaturity,
   createMaturityBadge,
 } from "./platform/maturity.js";
+import { CURRICULUM_OUTLINE } from "./curriculum-outline.js";
 
 /**
  * @typedef {'oneshot' | 'revised' | 'stable'} Maturity
@@ -172,10 +173,19 @@ const TOPICS = [
  * @param {Topic} topic
  */
 function createCard(topic) {
-  const maturityCode = topic.maturity || TOPIC_MATURITY[topic.id] || "oneshot";
+  const meta =
+    resolveTopicMeta(topic.id) ||
+    TOPIC_META[topic.id] || {
+      maturity: topic.maturity || "oneshot",
+      revisions: 0,
+      updated: "",
+    };
+  const maturityCode = meta.maturity;
   const card = document.createElement("article");
   card.className = topic.ready ? "card" : "card is-coming-soon";
   card.dataset.maturity = maturityCode;
+  card.dataset.revisions = String(meta.revisions);
+  if (meta.updated) card.dataset.updated = meta.updated;
 
   const badgeRow = document.createElement("div");
   badgeRow.className = "card-badge-row";
@@ -184,7 +194,7 @@ function createCard(topic) {
   badge.className = "card-badge";
   badge.textContent = topic.badge;
 
-  const maturity = createMaturityBadge(maturityCode);
+  const maturity = createMaturityBadge(meta);
   if (maturity) badgeRow.append(badge, maturity);
   else badgeRow.append(badge);
 
@@ -279,7 +289,7 @@ function renderMaturityLegend() {
   const note = document.createElement("p");
   note.className = "maturity-legend-note";
   note.innerHTML =
-    "カード右上のラベルと同じです。定義の詳細はリポジトリの <code>docs/topics/MATURITY.md</code>。";
+    "各カードには成熟度に加え <strong>修正回数</strong> と <strong>更新日</strong> を表示します（定義: <code>docs/topics/MATURITY.md</code>）。";
 
   root.replaceChildren(title, list, note);
 }
@@ -315,5 +325,91 @@ function renderTopics() {
   root.replaceChildren(fragment);
 }
 
+/**
+ * ROADMAP の企画中トピックを「見出しのみ」掲載（デモ・リンクなし）
+ */
+function renderCurriculumOutline() {
+  const root = document.getElementById("curriculum-outline");
+  if (!root) return;
+
+  const fragment = document.createDocumentFragment();
+  let itemCount = 0;
+
+  for (const cat of CURRICULUM_OUTLINE) {
+    itemCount += cat.items.length;
+
+    const section = document.createElement("section");
+    section.className = "curriculum-category";
+    section.setAttribute("aria-labelledby", `curriculum-${cat.id}`);
+
+    const head = document.createElement("div");
+    head.className = "curriculum-category-head";
+
+    const h3 = document.createElement("h3");
+    h3.className = "curriculum-category-title";
+    h3.id = `curriculum-${cat.id}`;
+    h3.textContent = cat.title;
+
+    const badges = document.createElement("div");
+    badges.className = "curriculum-category-badges";
+
+    const planned = document.createElement("span");
+    planned.className = "curriculum-badge curriculum-badge-planned";
+    planned.textContent = "企画中";
+
+    badges.append(planned);
+    if (cat.phase) {
+      const phase = document.createElement("span");
+      phase.className = "curriculum-badge curriculum-badge-phase";
+      phase.textContent = cat.phase;
+      badges.append(phase);
+    }
+
+    head.append(h3, badges);
+
+    if (cat.blurb) {
+      const blurb = document.createElement("p");
+      blurb.className = "curriculum-category-blurb";
+      blurb.textContent = cat.blurb;
+      section.append(head, blurb);
+    } else {
+      section.append(head);
+    }
+
+    const list = document.createElement("ul");
+    list.className = "curriculum-item-list";
+    list.setAttribute("aria-label", `${cat.title}の学習項目`);
+
+    for (const item of cat.items) {
+      const li = document.createElement("li");
+      li.className = "curriculum-item";
+      li.dataset.id = item.id;
+
+      const title = document.createElement("span");
+      title.className = "curriculum-item-title";
+      title.textContent = item.title;
+
+      // デモなし: リンク・ボタンは付けない（見出しのみ）
+      const mark = document.createElement("span");
+      mark.className = "curriculum-item-mark";
+      mark.textContent = "見出しのみ";
+      mark.title = "デモ未実装。学習項目として掲載";
+
+      li.append(title, mark);
+      list.appendChild(li);
+    }
+
+    section.append(list);
+    fragment.appendChild(section);
+  }
+
+  const summary = document.createElement("p");
+  summary.className = "curriculum-summary";
+  summary.textContent = `カテゴリ ${CURRICULUM_OUTLINE.length} · 学習項目（企画中） ${itemCount} — デモは上の「学習トピック」を参照`;
+
+  root.replaceChildren(summary, fragment);
+}
+
 renderMaturityLegend();
 renderTopics();
+renderCurriculumOutline();

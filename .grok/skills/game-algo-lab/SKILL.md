@@ -158,18 +158,19 @@ createPlayback({
 ### 2.6 登録
 
 - `js/main.js` … `TOPICS` に `id`, `title`, `description`, `href`, `badge`, `category`, `ready`, **`maturity`**
-- `docs/topics/CATALOG.md` … ready・**成熟度**・改訂メモ
+- `js/platform/maturity.js` … **`TOPIC_META`**（`maturity` / **`revisions`** / **`updated`**）— Web 表示の正
+- `docs/topics/CATALOG.md` … ready・成熟度・**修正回数**・**更新日**・改訂メモ
 - 完了時 `HANDOFF.md` を短く更新
 
 **成熟度**（`docs/topics/MATURITY.md`）:
 
 | コード | 表示 | いつ |
 |--------|------|------|
-| `oneshot` | 一発未調整 | 初回実装のまま |
+| `oneshot` | 一発未調整 | 初回実装のまま（修正回数 0） |
 | `revised` | 改訂・調整 | 教材・機能の意図した改訂後 |
 | `stable` | 安定版 | 授業据え置き決定後（破壊的変更を避ける） |
 
-新規は通常 `oneshot`。基盤寄せだけなら oneshot のまま可。
+新規は通常 `oneshot`・`revisions: 0`・`updated: 今日`。意図した改訂ごとに **revisions +1** と更新日を揃える。
 
 詳細雛形: **`docs/templates/TOPIC_SCAFFOLD.md`**。
 ---

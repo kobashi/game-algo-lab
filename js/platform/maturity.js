@@ -1,11 +1,18 @@
 /**
  * トピック成熟度（修正状況）の表示用定義
  * 正本の説明は docs/topics/MATURITY.md / CATALOG.md
- * コード値は js/main.js の TOPICS.maturity と揃えること
+ *
+ * 各トピックの maturity / revisions / updated はここが Web 表示の正。
+ * js/main.js の TOPICS.maturity と揃えること。
  */
 
 /**
  * @typedef {'oneshot' | 'revised' | 'stable'} Maturity
+ * @typedef {{
+ *   maturity: Maturity,
+ *   revisions: number,
+ *   updated: string,
+ * }} TopicMaturityMeta
  */
 
 /** @type {Maturity[]} */
@@ -18,7 +25,6 @@ export const MATURITY_LABEL = {
   stable: "安定版",
 };
 
-/** 短い説明（ツールチップ・凡例） */
 /** @type {Record<Maturity, string>} */
 export const MATURITY_HINT = {
   oneshot: "一通り実装した段階。大きな教材改訂はまだない",
@@ -27,33 +33,93 @@ export const MATURITY_HINT = {
 };
 
 /**
- * トピック id（およびナビ用エイリアス）→ 成熟度
+ * トピック id（ナビ用エイリアス含む）→ 成熟度メタ
+ * - revisions: 初回実装後の意図した改訂回数（oneshot は通常 0）
+ * - updated: 最終更新日 YYYY-MM-DD
  * multi-armed-bandit の data-active は "bandit"
- * @type {Record<string, Maturity>}
+ * @type {Record<string, TopicMaturityMeta>}
  */
-export const TOPIC_MATURITY = {
-  bfs: "revised",
-  dfs: "revised",
-  dijkstra: "revised",
-  "best-first": "revised",
-  astar: "revised",
-  "and-or": "oneshot",
-  minimax: "oneshot",
-  "alpha-beta": "oneshot",
-  "monte-carlo": "oneshot",
-  "multi-armed-bandit": "oneshot",
-  bandit: "oneshot",
-  collision: "revised",
-  fsm: "oneshot",
+export const TOPIC_META = {
+  bfs: { maturity: "revised", revisions: 2, updated: "2026-07-17" },
+  dfs: { maturity: "revised", revisions: 2, updated: "2026-07-17" },
+  dijkstra: { maturity: "revised", revisions: 2, updated: "2026-07-17" },
+  "best-first": { maturity: "revised", revisions: 2, updated: "2026-07-17" },
+  astar: { maturity: "revised", revisions: 3, updated: "2026-07-17" },
+  "and-or": { maturity: "oneshot", revisions: 0, updated: "2026-07-17" },
+  minimax: { maturity: "oneshot", revisions: 0, updated: "2026-07-17" },
+  "alpha-beta": { maturity: "oneshot", revisions: 0, updated: "2026-07-17" },
+  "monte-carlo": { maturity: "oneshot", revisions: 0, updated: "2026-07-17" },
+  "multi-armed-bandit": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-17",
+  },
+  bandit: { maturity: "oneshot", revisions: 0, updated: "2026-07-17" },
+  collision: { maturity: "revised", revisions: 2, updated: "2026-07-17" },
+  fsm: { maturity: "oneshot", revisions: 0, updated: "2026-07-17" },
 };
+
+/** @deprecated resolveTopicMeta / TOPIC_META を優先。後方互換用 */
+export const TOPIC_MATURITY = Object.fromEntries(
+  Object.entries(TOPIC_META).map(([id, m]) => [id, m.maturity]),
+);
+
+/**
+ * @param {string} [topicId]
+ * @returns {TopicMaturityMeta | null}
+ */
+export function resolveTopicMeta(topicId) {
+  if (!topicId) return null;
+  return TOPIC_META[topicId] ?? null;
+}
 
 /**
  * @param {string} [topicId]
  * @returns {Maturity | null}
  */
 export function resolveMaturity(topicId) {
-  if (!topicId) return null;
-  return TOPIC_MATURITY[topicId] ?? null;
+  return resolveTopicMeta(topicId)?.maturity ?? null;
+}
+
+/**
+ * @param {unknown} value
+ * @returns {TopicMaturityMeta | null}
+ */
+export function normalizeMaturityMeta(value) {
+  if (!value) return null;
+  if (typeof value === "string") {
+    if (value !== "oneshot" && value !== "revised" && value !== "stable") {
+      return null;
+    }
+    return { maturity: value, revisions: 0, updated: "" };
+  }
+  if (typeof value === "object") {
+    const o = /** @type {Record<string, unknown>} */ (value);
+    const maturity =
+      typeof o.maturity === "string"
+        ? o.maturity
+        : typeof o.code === "string"
+          ? o.code
+          : null;
+    if (
+      maturity !== "oneshot" &&
+      maturity !== "revised" &&
+      maturity !== "stable"
+    ) {
+      return null;
+    }
+    const revisions =
+      typeof o.revisions === "number" && o.revisions >= 0
+        ? Math.floor(o.revisions)
+        : 0;
+    const updated = typeof o.updated === "string" ? o.updated : "";
+    return {
+      maturity: /** @type {Maturity} */ (maturity),
+      revisions,
+      updated,
+    };
+  }
+  return null;
 }
 
 /**
@@ -75,19 +141,34 @@ export function maturityHint(code) {
 }
 
 /**
- * @param {Iterable<{ maturity?: string } | Maturity | string>} items
+ * バッジ用の「修正 N回 · 更新 YYYY-MM-DD」
+ * @param {TopicMaturityMeta | null | undefined} meta
+ * @returns {string}
+ */
+export function formatMaturityDetail(meta) {
+  if (!meta) return "";
+  const parts = [];
+  parts.push(`修正 ${meta.revisions}回`);
+  if (meta.updated) parts.push(`更新 ${meta.updated}`);
+  return parts.join(" · ");
+}
+
+/**
+ * @param {Iterable<{ maturity?: string } | Maturity | string | TopicMaturityMeta>} items
  * @returns {Record<Maturity, number>}
  */
 export function countByMaturity(items) {
   /** @type {Record<Maturity, number>} */
   const counts = { oneshot: 0, revised: 0, stable: 0 };
   for (const item of items) {
-    const code =
-      typeof item === "string"
+    const meta = normalizeMaturityMeta(
+      typeof item === "object" && item && "maturity" in item
         ? item
-        : item && typeof item === "object"
-          ? item.maturity
-          : null;
+        : item,
+    );
+    const code =
+      meta?.maturity ??
+      (typeof item === "string" ? item : null);
     if (code === "oneshot" || code === "revised" || code === "stable") {
       counts[code] += 1;
     }
@@ -96,20 +177,49 @@ export function countByMaturity(items) {
 }
 
 /**
- * バッジ用 span を生成
- * @param {Maturity | string | null | undefined} code
- * @param {{ className?: string }} [opts]
+ * バッジ用要素を生成（ラベル + 修正回数 + 更新日）
+ * @param {Maturity | string | TopicMaturityMeta | null | undefined} codeOrMeta
+ * @param {{ className?: string, compact?: boolean }} [opts]
  * @returns {HTMLSpanElement | null}
  */
-export function createMaturityBadge(code, opts = {}) {
-  if (!code) return null;
+export function createMaturityBadge(codeOrMeta, opts = {}) {
+  const meta = normalizeMaturityMeta(codeOrMeta);
+  if (!meta) return null;
+
   const span = document.createElement("span");
   const extra = opts.className ? ` ${opts.className}` : "";
-  span.className = `card-maturity card-maturity-${code}${extra}`;
-  span.textContent = maturityLabel(code);
-  span.title = maturityHint(code) || maturityLabel(code);
-  span.setAttribute("data-maturity", String(code));
-  span.setAttribute("aria-label", `成熟度: ${maturityLabel(code)}`);
+  span.className = `card-maturity card-maturity-${meta.maturity}${extra}`;
+  span.setAttribute("data-maturity", meta.maturity);
+  span.setAttribute("data-revisions", String(meta.revisions));
+  if (meta.updated) span.setAttribute("data-updated", meta.updated);
+
+  const name = document.createElement("span");
+  name.className = "card-maturity-name";
+  name.textContent = maturityLabel(meta.maturity);
+
+  const detailText = formatMaturityDetail(meta);
+  const titleParts = [maturityHint(meta.maturity) || maturityLabel(meta.maturity)];
+  if (detailText) titleParts.push(detailText);
+  span.title = titleParts.join(" — ");
+  span.setAttribute(
+    "aria-label",
+    `成熟度: ${maturityLabel(meta.maturity)}${detailText ? `（${detailText}）` : ""}`,
+  );
+
+  if (opts.compact || !detailText) {
+    span.append(name);
+    if (detailText && opts.compact) {
+      // compact: 1 行「改訂・調整 · 修正 2回 · 更新 …」
+      name.textContent = `${maturityLabel(meta.maturity)} · ${detailText}`;
+    }
+    return span;
+  }
+
+  const detail = document.createElement("span");
+  detail.className = "card-maturity-detail";
+  detail.textContent = detailText;
+
+  span.append(name, detail);
   return span;
 }
 
@@ -118,8 +228,8 @@ export function createMaturityBadge(code, opts = {}) {
  * @param {string} [topicId] data-active など
  */
 export function mountPageMaturity(topicId) {
-  const code = resolveMaturity(topicId);
-  if (!code) return;
+  const meta = resolveTopicMeta(topicId);
+  if (!meta) return;
 
   const pageHeader = document.querySelector(".page-header");
   if (!pageHeader) return;
@@ -127,18 +237,18 @@ export function mountPageMaturity(topicId) {
 
   const row = document.createElement("div");
   row.className = "page-maturity-row";
-  row.setAttribute("data-page-maturity", code);
+  row.setAttribute("data-page-maturity", meta.maturity);
 
   const label = document.createElement("span");
   label.className = "page-maturity-label";
   label.textContent = "成熟度";
 
-  const badge = createMaturityBadge(code, { className: "card-maturity-lg" });
+  const badge = createMaturityBadge(meta, { className: "card-maturity-lg" });
   if (!badge) return;
 
   const hint = document.createElement("span");
   hint.className = "page-maturity-hint";
-  hint.textContent = maturityHint(code);
+  hint.textContent = maturityHint(meta.maturity);
 
   row.append(label, badge, hint);
 

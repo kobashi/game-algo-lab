@@ -67,7 +67,9 @@ def check_exports() -> None:
         "drawScorePair",
         "mountTopicShellFromDataset",
         "mountPageMaturity",
+        "TOPIC_META",
         "TOPIC_MATURITY",
+        "formatMaturityDetail",
         "parsePaintMode",
     ]
     for name in needed:
@@ -144,19 +146,43 @@ def check_main_topics() -> None:
 
 
 def check_maturity_sync() -> None:
-    print("成熟度: main.js ↔ maturity.js")
+    print("成熟度: main.js ↔ TOPIC_META")
     main = (ROOT / "js/main.js").read_text(encoding="utf-8")
     mat = (ROOT / "js/platform/maturity.js").read_text(encoding="utf-8")
-    if "maturity-legend" not in (ROOT / "index.html").read_text(encoding="utf-8"):
+    index_html = (ROOT / "index.html").read_text(encoding="utf-8")
+    if "maturity-legend" not in index_html:
         fail("index.html missing #maturity-legend")
     else:
         ok("index.html #maturity-legend")
+    if 'id="curriculum"' not in index_html or "curriculum-outline" not in index_html:
+        fail("index.html missing #curriculum outline")
+    else:
+        ok("index.html #curriculum outline")
+    outline = ROOT / "js/curriculum-outline.js"
+    if not outline.is_file():
+        fail("missing js/curriculum-outline.js")
+    else:
+        ot = outline.read_text(encoding="utf-8")
+        if "CURRICULUM_OUTLINE" not in ot:
+            fail("curriculum-outline missing CURRICULUM_OUTLINE")
+        else:
+            ok("js/curriculum-outline.js")
+    if "renderCurriculumOutline" not in (ROOT / "js/main.js").read_text(
+        encoding="utf-8"
+    ):
+        fail("main.js missing renderCurriculumOutline")
+    else:
+        ok("main.js renders curriculum outline")
     if "mountPageMaturity" not in (ROOT / "js/platform/topic-shell.js").read_text(
         encoding="utf-8"
     ):
         fail("topic-shell missing mountPageMaturity")
     else:
         ok("topic-shell mounts page maturity")
+    if "TOPIC_META" not in mat or "revisions:" not in mat or "updated:" not in mat:
+        fail("maturity.js missing TOPIC_META / revisions / updated")
+    else:
+        ok("TOPIC_META has revisions + updated")
 
     pairs = re.findall(
         r'id:\s*"([^"]+)"[\s\S]*?maturity:\s*"([^"]+)"', main
@@ -165,15 +191,25 @@ def check_maturity_sync() -> None:
         fail("could not parse maturity from TOPICS")
         return
     for tid, code in pairs:
-        # maturity.js: bfs: "revised" or "best-first": "revised"
-        pat = (
-            rf'(?:["\']{re.escape(tid)}["\']|{re.escape(tid)})'
-            rf'\s*:\s*["\']{re.escape(code)}["\']'
+        # TOPIC_META entry: bfs: { maturity: "revised", revisions: N, updated: "YYYY-MM-DD" }
+        block_pat = (
+            rf'(?:["\']{re.escape(tid)}["\']|{re.escape(tid)})\s*:\s*\{{[^}}]*\}}'
         )
-        if re.search(pat, mat):
-            ok(f"{tid} = {code}")
-        else:
-            fail(f"{tid}: main.js maturity={code} not in TOPIC_MATURITY")
+        block_m = re.search(block_pat, mat, re.DOTALL)
+        if not block_m:
+            fail(f"{tid}: no TOPIC_META block")
+            continue
+        block = block_m.group(0)
+        if f'maturity: "{code}"' not in block and f"maturity: '{code}'" not in block:
+            fail(f"{tid}: main.js maturity={code} not in TOPIC_META")
+            continue
+        if not re.search(r"revisions:\s*\d+", block):
+            fail(f"{tid}: missing revisions in TOPIC_META")
+            continue
+        if not re.search(r'updated:\s*"\d{4}-\d{2}-\d{2}"', block):
+            fail(f"{tid}: missing updated YYYY-MM-DD in TOPIC_META")
+            continue
+        ok(f"{tid} = {code} + revisions/updated")
 
 
 def check_draw_score_pair_usage() -> None:

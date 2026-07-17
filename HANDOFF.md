@@ -24,8 +24,9 @@
 - **追加手順**: `docs/templates/TOPIC_SCAFFOLD.md`  
 - **成熟度（修正状況）**: `docs/topics/MATURITY.md` + `docs/topics/CATALOG.md`  
   - `oneshot` 一発未調整 / `revised` 改訂・調整 / `stable` 安定版  
-  - ドキュメント: CATALOG。Web: `js/main.js` + `js/platform/maturity.js`（凡例・カード・デモページ）  
-  - 成熟度を変えたら **3箇所**（CATALOG / main.js / maturity.js）を揃える  
+  - 付帯: **修正回数** (`revisions`) · **更新日** (`updated`)  
+  - Web 正: `js/platform/maturity.js` の `TOPIC_META`（カード・デモ・凡例）  
+  - 改訂したら CATALOG + `TOPIC_META`（+1 / 日付）+ `main.js` の maturity を揃える  
 - **健全性**: `python3 scripts/smoke-platform.py`  
 
 
@@ -44,7 +45,9 @@
 - **i18n**（多言語 UI）— 当面は日本語固定  
 
 計画の正本: [docs/interactive_game_programming_material_plan.docx](docs/interactive_game_programming_material_plan.docx)（**策定 2026年7月**）。  
-実装対応・**企画中トピック一覧**・バックログは [docs/ROADMAP.md](docs/ROADMAP.md)（§2.3–2.4）。索引: [docs/README.md](docs/README.md)
+実装対応・**企画中トピック一覧**・バックログは [docs/ROADMAP.md](docs/ROADMAP.md)（§2.3–2.4）。  
+サイト上の **見出しのみ掲載**（デモなし）: トップ `#curriculum` ← `js/curriculum-outline.js`。  
+索引: [docs/README.md](docs/README.md)
 
 ---
 

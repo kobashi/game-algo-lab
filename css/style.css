@@ -2128,20 +2128,41 @@ img {
 }
 
 .card-maturity {
-  display: inline-block;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.08rem;
   font-size: 0.68rem;
   font-weight: 700;
-  padding: 0.12rem 0.4rem;
-  border-radius: 999px;
+  padding: 0.18rem 0.45rem;
+  border-radius: 10px;
   border: 1px solid var(--border);
   color: var(--text-muted);
   letter-spacing: 0.02em;
+  line-height: 1.25;
+  max-width: 100%;
+}
+
+.card-maturity-name {
   white-space: nowrap;
+}
+
+.card-maturity-detail {
+  font-size: 0.62rem;
+  font-weight: 600;
+  opacity: 0.92;
+  white-space: nowrap;
+  letter-spacing: 0;
 }
 
 .card-maturity-lg {
   font-size: 0.78rem;
-  padding: 0.2rem 0.55rem;
+  padding: 0.28rem 0.6rem;
+  border-radius: 12px;
+}
+
+.card-maturity-lg .card-maturity-detail {
+  font-size: 0.7rem;
 }
 
 .card-maturity-oneshot {
@@ -2244,6 +2265,111 @@ img {
 
 .maturity-legend-note code {
   font-size: 0.9em;
+}
+
+/* ===== 学習項目（ロードマップ・見出しのみ） ===== */
+.curriculum-outline {
+  margin-top: 0.5rem;
+}
+
+.curriculum-summary {
+  margin: 0 0 1.25rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.curriculum-category {
+  margin-bottom: 1.5rem;
+  padding: 0.85rem 1rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+}
+
+.curriculum-category-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.curriculum-category-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.curriculum-category-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.curriculum-badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  letter-spacing: 0.02em;
+}
+
+.curriculum-badge-planned {
+  border-color: rgba(212, 168, 75, 0.55);
+  color: #d4a84b;
+  background: rgba(212, 168, 75, 0.1);
+}
+
+.curriculum-badge-phase {
+  border-color: rgba(154, 171, 191, 0.45);
+  color: var(--text-muted);
+  background: rgba(154, 171, 191, 0.08);
+}
+
+.curriculum-category-blurb {
+  margin: 0 0 0.65rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.curriculum-item-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.curriculum-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 8px;
+  border: 1px dashed rgba(154, 171, 191, 0.45);
+  background: var(--bg);
+  max-width: 100%;
+}
+
+.curriculum-item-title {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.curriculum-item-mark {
+  flex-shrink: 0;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  opacity: 0.9;
+  white-space: nowrap;
 }
 
 /* デモページ: タイトル直下の成熟度 */

@@ -17,6 +17,7 @@
       <nav class="nav" aria-label="メイン">
         <a href="index.html" class="nav-link is-active">ホーム</a>
         <a href="#topics" class="nav-link">トピック</a>
+        <a href="#curriculum" class="nav-link">学習項目</a>
         <a href="#about" class="nav-link">この教材について</a>
       </nav>
     </div>
@@ -40,7 +41,7 @@
         <h2 class="section-title">学習トピック</h2>
         <p class="section-desc">
           カテゴリ別に並びます。各カードと各デモページに
-          <strong>修正状況（成熟度）</strong>を表示します。
+          <strong>成熟度・修正回数・更新日</strong>を表示します。
         </p>
 
         <div id="maturity-legend" class="maturity-legend" aria-live="polite">
@@ -53,7 +54,21 @@
       </div>
     </section>
 
-    <section id="about" class="section section-alt">
+    <section id="curriculum" class="section section-alt">
+      <div class="container">
+        <h2 class="section-title">学習項目（ロードマップ）</h2>
+        <p class="section-desc">
+          教材構想に基づく <strong>学習項目の見出し一覧</strong>です。
+          <strong>デモはありません</strong>（企画中）。実装済みの操作デモは上の「学習トピック」を開いてください。
+          定義の正本はリポジトリの <code>docs/ROADMAP.md</code>。
+        </p>
+        <div id="curriculum-outline" class="curriculum-outline">
+          <!-- カテゴリ見出し + 項目名は js/main.js から描画 -->
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="section">
       <div class="container">
         <h2 class="section-title">この教材について</h2>
         <div class="about-grid">

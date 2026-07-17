@@ -150,7 +150,8 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 ## 2.4 企画中トピック一覧（実装しない・計画のみ）
 
-> 本節は **カタログ拡張の予約表**。`js/main.js` への登録・デモ実装・SPEC 作成は **行わない**（このドキュメント更新の範囲外）。  
+> 本節は **カタログ拡張の予約表**。デモ実装・SPEC は着手時まで作らない。  
+> **学習項目の見出しだけ** トップページ `#curriculum` に掲載する（`js/curriculum-outline.js`、デモ・リンクなし）。  
 > 正本 §5〜§14・§15 を id 候補に落としたもの。優先は上の期表に従う。
 
 ### 状態サマリ

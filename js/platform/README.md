@@ -12,7 +12,7 @@
 | `grid-paint.js` | 経路探索マップの塗り（`bindMapPaint` 等） |
 | `pathfinding-grid.js` | グリッド幾何・下地描画（`drawPathfindingGrid`） |
 | `topic-shell.js` | 共通ヘッダー／フッター（`mountTopicShellFromDataset`） |
-| `maturity.js` | 成熟度ラベル・`TOPIC_MATURITY`・デモページバッジ |
+| `maturity.js` | 成熟度・修正回数・更新日（`TOPIC_META`）・バッジ |
 | `index.js` | 上記の一括 export |
 
 経路探索の再生待ち時間はスライダーが大きいほど速いため  
