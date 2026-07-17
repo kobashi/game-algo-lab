@@ -37,7 +37,7 @@
 
 | id | タイトル | ready | 予定ページ | SPEC |
 |----|----------|-------|------------|------|
-| `collision` | AABB 衝突判定 | ❌ | `algorithms/collision.html` | 未作成 |
+| `collision` | AABB 衝突判定 | ✅ | `algorithms/collision.html` | [SPEC](./collision/SPEC.md) · 説明特化UI（非マップ） |
 
 ---
 

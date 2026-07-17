@@ -65,7 +65,14 @@
 | 4 | モンテカルロ | **ready** — `algorithms/monte-carlo.html` / SPEC |
 | 5 | 多腕バンディット | **ready** — `algorithms/multi-armed-bandit.html` / SPEC（シリーズ完了） |
 
-その他 ready:false: AABB、ステートマシン  
+### 物理・判定
+| トピック | 状態 |
+|----------|------|
+| AABB | **ready** — `algorithms/collision.html` / `js/collision.js` / `samples/AabbExample.cs` |
+|  | **説明特化 UI**（2D ドラッグ + X/Y 投影レール + 判定チェックリスト）。経路マップ不使用 |
+
+その他 ready:false: ステートマシン  
+
 
 定義: `js/main.js` の `TOPICS` ＋ `docs/topics/CATALOG.md`
 

@@ -92,10 +92,11 @@ const TOPICS = [
   {
     id: "collision",
     title: "AABB 衝突判定",
-    description: "矩形同士の当たり判定を図で確認し、ゲーム物理の基礎を学びます。",
+    description:
+      "軸投影で「X と Y の両方で重なる」を可視化。経路探索マップは使いません。",
     href: "algorithms/collision.html",
     badge: "物理・判定",
-    ready: false,
+    ready: true,
   },
   {
     id: "fsm",

@@ -2081,3 +2081,306 @@ img {
 .bandit-params {
   row-gap: 0.45rem;
 }
+
+/* ===== AABB 説明特化レイアウト（経路探索マップを使わない） ===== */
+.aabb-lesson {
+  margin-top: 0.5rem;
+}
+
+.aabb-story {
+  margin: 0 0 0.85rem;
+  padding: 0.65rem 0.9rem;
+  background: var(--accent-soft);
+  border: 1px solid rgba(91, 159, 212, 0.35);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.aabb-layout {
+  display: grid;
+  grid-template-columns: 1fr minmax(260px, 320px);
+  gap: 1rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .aabb-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.aabb-block-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.aabb-stage-block,
+.aabb-side {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem 1rem;
+}
+
+.aabb-stage-wrap {
+  background: #0a0e14;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+#aabb-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  cursor: grab;
+  touch-action: none;
+}
+
+#aabb-canvas:active {
+  cursor: grabbing;
+}
+
+.aabb-hint {
+  margin: 0;
+  padding: 0.35rem 0.6rem 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.aabb-projections {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 0.85rem;
+}
+
+.aabb-proj-block {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 0.65rem 0.55rem;
+}
+
+.aabb-proj-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.aabb-proj-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.aabb-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(61, 79, 102, 0.6);
+  color: var(--text-muted);
+}
+
+.aabb-badge[data-on="1"] {
+  background: rgba(107, 203, 143, 0.2);
+  color: #6bcb8f;
+}
+
+.aabb-badge[data-on="0"] {
+  background: rgba(224, 122, 95, 0.15);
+  color: #e07a5f;
+}
+
+.aabb-proj-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  background: #0a0e14;
+}
+
+.aabb-proj-formula {
+  margin: 0.35rem 0 0;
+  font-size: 0.72rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--text-muted);
+  word-break: break-all;
+}
+
+.aabb-verdict {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  margin-bottom: 0.85rem;
+  border: 2px solid var(--border);
+  background: var(--bg);
+}
+
+.aabb-verdict[data-state="yes"] {
+  border-color: #6bcb8f;
+  background: rgba(107, 203, 143, 0.12);
+}
+
+.aabb-verdict[data-state="no"] {
+  border-color: #5a6d85;
+}
+
+.aabb-verdict-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.aabb-verdict-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.aabb-verdict[data-state="yes"] .aabb-verdict-value {
+  color: #6bcb8f;
+}
+
+.aabb-checklist {
+  list-style: none;
+  margin: 0 0 0.85rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.aabb-check-item {
+  display: grid;
+  grid-template-columns: 1.75rem 1fr;
+  gap: 0.5rem;
+  align-items: start;
+  padding: 0.5rem 0.55rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  font-size: 0.8rem;
+}
+
+.aabb-check-item code {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  word-break: break-all;
+}
+
+.aabb-check-item.is-focus {
+  border-color: #f2cc8f;
+  box-shadow: 0 0 0 1px rgba(242, 204, 143, 0.35);
+}
+
+.aabb-check-item.is-pass:not(.is-focus) {
+  border-color: rgba(107, 203, 143, 0.4);
+}
+
+.aabb-check-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: 0.85rem;
+  background: #2d3a4d;
+  color: var(--text-muted);
+}
+
+.aabb-check-mark.ok {
+  background: rgba(107, 203, 143, 0.25);
+  color: #6bcb8f;
+}
+
+.aabb-check-mark.ng {
+  background: rgba(224, 122, 95, 0.2);
+  color: #e07a5f;
+}
+
+.aabb-check-mark.focus {
+  outline: 2px solid #f2cc8f;
+}
+
+.aabb-numbers {
+  margin-bottom: 0.75rem;
+  overflow-x: auto;
+}
+
+.aabb-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.aabb-table th,
+.aabb-table td {
+  border: 1px solid var(--border);
+  padding: 0.25rem 0.35rem;
+  text-align: center;
+}
+
+.aabb-table th {
+  background: var(--bg);
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.aabb-table .row-a td:first-child {
+  color: #5b9fd4;
+  font-weight: 700;
+}
+
+.aabb-table .row-b td:first-child {
+  color: #e07a5f;
+  font-weight: 700;
+}
+
+.aabb-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: 0.75rem;
+}
+
+.aabb-controls .control-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.aabb-presets {
+  margin-bottom: 0.65rem;
+}
+
+.aabb-preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.3rem;
+}
+
+.aabb-preset {
+  font-size: 0.75rem !important;
+  padding: 0.3rem 0.45rem !important;
+}
+
+.aabb-side .status-log {
+  margin-top: 0.25rem;
+}
