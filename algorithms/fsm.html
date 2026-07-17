@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ステートマシンの可視化。キャラの状態遷移を状態図とイベントで学ぶ。" />
+  <title>ステートマシン — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header">
+    <div class="container container-wide header-inner">
+      <a href="../index.html" class="logo">
+        <span class="logo-mark">◆</span>
+        Game Algo Lab
+      </a>
+      <nav class="nav" aria-label="メイン">
+        <a href="../index.html" class="nav-link">ホーム</a>
+        <a href="collision.html" class="nav-link">AABB</a>
+        <a href="fsm.html" class="nav-link is-active">FSM</a>
+        <a href="../index.html#topics" class="nav-link">一覧</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb">
+        <a href="../index.html">ホーム</a> / 設計パターン / ステートマシン
+      </p>
+      <h1>ステートマシン</h1>
+      <p class="page-header-lead">
+        キャラの行動を<strong>状態</strong>と<strong>イベントによる遷移</strong>で表す。
+        経路探索マップは使わず、状態図・イベント・遷移表で説明します。
+        定義は <code>js/maps/fsm-config.js</code>。
+      </p>
+    </div>
+
+    <details class="lesson-details">
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li><strong>状態</strong>: 今キャラが何をしているか（Idle / Walk / Attack …）</li>
+          <li><strong>イベント</strong>: 入力やアニメ終了などのきっかけ（Move / Hit …）</li>
+          <li><strong>遷移</strong>: (現在状態, イベント) → 次状態。表に無い組み合わせは無視</li>
+          <li>同じ「Attack」でも Idle からと Dead からでは結果が違う</li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="fsm-lesson">
+      <p class="fsm-story" id="fsm-story" role="status">
+        現在状態に応じて有効なイベントだけが遷移します。無効な入力は無視されます。
+      </p>
+
+      <div class="fsm-layout">
+        <section class="fsm-main-block" aria-labelledby="diagram-heading">
+          <h2 id="diagram-heading" class="fsm-block-title">状態図</h2>
+          <div class="fsm-diagram-wrap">
+            <svg id="fsm-svg" class="fsm-svg" viewBox="0 0 640 360" role="img" aria-labelledby="fsm-svg-title">
+              <title id="fsm-svg-title">ステートマシン状態図</title>
+            </svg>
+          </div>
+
+          <div class="fsm-actor" id="fsm-actor" aria-live="polite">
+            <div class="fsm-actor-figure" id="actor-figure">
+              <div class="fsm-actor-body"></div>
+              <div class="fsm-actor-face"></div>
+            </div>
+            <div class="fsm-actor-meta">
+              <span class="fsm-actor-state" id="actor-state">Idle</span>
+              <p class="fsm-actor-blurb" id="actor-blurb">待機。入力待ち。</p>
+            </div>
+          </div>
+        </section>
+
+        <aside class="fsm-side" aria-labelledby="control-heading">
+          <h2 id="control-heading" class="fsm-block-title">操作</h2>
+
+          <div class="fsm-controls">
+            <div class="controls-group">
+              <span class="controls-label">実行</span>
+              <div class="control-row">
+                <button type="button" id="btn-play" class="btn btn-primary">自動デモ</button>
+                <button type="button" id="btn-step" class="btn btn-ghost">次のイベント</button>
+                <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+              </div>
+            </div>
+            <div class="controls-group controls-group-speed">
+              <label class="controls-label" for="speed">速度</label>
+              <input type="range" id="speed" min="200" max="1200" value="550" step="50" />
+            </div>
+          </div>
+
+          <div class="fsm-events" role="group" aria-label="イベント">
+            <span class="controls-label">イベントを送る</span>
+            <div id="event-buttons" class="fsm-event-row"></div>
+            <p class="fsm-event-hint">緑枠 = 今の状態から遷移できる入力</p>
+          </div>
+
+          <div id="status" class="status-log" role="status">準備完了</div>
+
+          <div class="fsm-history-block">
+            <h3 class="fsm-subhead">状態履歴</h3>
+            <div id="history" class="fsm-history"></div>
+          </div>
+        </aside>
+      </div>
+
+      <section class="fsm-table-block" aria-labelledby="table-heading">
+        <h2 id="table-heading" class="fsm-block-title">遷移表</h2>
+        <p class="fsm-table-lead">行 = 現在状態、列 = イベント。空欄は「無視（状態維持）」。</p>
+        <div class="fsm-table-scroll">
+          <table class="fsm-table" id="trans-table"></table>
+        </div>
+      </section>
+    </div>
+
+    <section class="code-section" aria-labelledby="csharp-heading">
+      <h2 id="csharp-heading">C# 実装例</h2>
+      <div class="code-toolbar">
+        <p class="code-meta">ファイル: <code>samples/FsmExample.cs</code></p>
+      </div>
+      <pre class="code-block" id="csharp-sample"><code>// 読み込み中…</code></pre>
+      <p class="code-note">
+        辞書キー <code>現在|イベント</code> で次状態を引きます。デモの遷移表と同じ考え方です。
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container container-wide">
+      <p>
+        <a href="../index.html">← トピック一覧</a>
+        ·
+        <a href="collision.html">AABB（物理・判定）</a>
+        ·
+        <span class="footer-muted">設計パターン · マップ探索は使いません</span>
+      </p>
+    </div>
+  </footer>
+
+  <script type="module" src="../js/fsm.js"></script>
+</body>
+</html>

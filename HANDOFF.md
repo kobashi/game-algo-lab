@@ -71,7 +71,14 @@
 | AABB | **ready** — `algorithms/collision.html` / `js/collision.js` / `samples/AabbExample.cs` |
 |  | **説明特化 UI**（2D ドラッグ + X/Y 投影レール + 判定チェックリスト）。経路マップ不使用 |
 
-その他 ready:false: ステートマシン  
+### 設計パターン
+| トピック | 状態 |
+|----------|------|
+| ステートマシン | **ready** — `algorithms/fsm.html` / `js/fsm.js` / `js/maps/fsm-config.js` / `samples/FsmExample.cs` |
+|  | 状態図 SVG + イベントボタン（有効=緑）+ 遷移表 + 履歴。マップ不使用 |
+
+（メニューのみのトピックは現状なし — 経路探索・ゲーム木・AABB・FSM まで ready）  
+
 
 
 定義: `js/main.js` の `TOPICS` ＋ `docs/topics/CATALOG.md`

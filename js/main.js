@@ -101,10 +101,11 @@ const TOPICS = [
   {
     id: "fsm",
     title: "ステートマシン",
-    description: "キャラクターの状態遷移（待機・移動・攻撃など）を可視化します。",
+    description:
+      "状態・イベント・遷移表。キャラ行動を FSM でモデル化（非マップ UI）。",
     href: "algorithms/fsm.html",
     badge: "設計パターン",
-    ready: false,
+    ready: true,
   },
 ];
 

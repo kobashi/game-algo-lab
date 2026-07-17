@@ -2384,3 +2384,337 @@ img {
 .aabb-side .status-log {
   margin-top: 0.25rem;
 }
+
+/* ===== ステートマシン（説明特化・非マップ） ===== */
+.fsm-lesson {
+  margin-top: 0.5rem;
+}
+
+.fsm-story {
+  margin: 0 0 0.85rem;
+  padding: 0.65rem 0.9rem;
+  background: var(--accent-soft);
+  border: 1px solid rgba(91, 159, 212, 0.35);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.fsm-layout {
+  display: grid;
+  grid-template-columns: 1fr minmax(260px, 300px);
+  gap: 1rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .fsm-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fsm-block-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.fsm-main-block,
+.fsm-side,
+.fsm-table-block {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem 1rem;
+}
+
+.fsm-diagram-wrap {
+  background: #0a0e14;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: auto;
+}
+
+.fsm-svg {
+  display: block;
+  width: 100%;
+  min-height: 240px;
+}
+
+.fsm-edge {
+  stroke: #4a5d75;
+  stroke-width: 1.75;
+}
+
+.fsm-edge.is-active {
+  stroke: #f2cc8f;
+  stroke-width: 2.5;
+}
+
+.fsm-edge-label {
+  fill: #8a9bb0;
+  font-size: 10px;
+  font-family: ui-monospace, Menlo, monospace;
+}
+
+.fsm-edge-label.is-active {
+  fill: #f2cc8f;
+  font-weight: 700;
+}
+
+.fsm-node circle {
+  stroke-width: 2.5;
+  transition: filter 0.15s ease;
+}
+
+.fsm-node.is-current circle {
+  stroke-width: 3.5;
+  filter: drop-shadow(0 0 8px rgba(242, 204, 143, 0.45));
+}
+
+.fsm-node-label {
+  fill: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.fsm-actor {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.85rem;
+  padding: 0.75rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.fsm-actor-figure {
+  --actor-color: #5b9fd4;
+  position: relative;
+  width: 64px;
+  height: 72px;
+  flex-shrink: 0;
+}
+
+.fsm-actor-body {
+  position: absolute;
+  left: 50%;
+  bottom: 4px;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 40px;
+  border-radius: 10px 10px 8px 8px;
+  background: var(--actor-color);
+  opacity: 0.85;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.fsm-actor-face {
+  position: absolute;
+  left: 50%;
+  top: 4px;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #e8eef6;
+  border: 3px solid var(--actor-color);
+  transition: border-color 0.2s ease;
+}
+
+/* 状態ごとの簡易モーション */
+.fsm-actor-figure[data-state="Walk"] .fsm-actor-body {
+  animation: fsm-bob 0.35s ease-in-out infinite alternate;
+}
+
+.fsm-actor-figure[data-state="Jump"] .fsm-actor-body {
+  transform: translateX(-50%) translateY(-12px);
+}
+
+.fsm-actor-figure[data-state="Attack"] .fsm-actor-body {
+  transform: translateX(-50%) scaleX(1.15);
+}
+
+.fsm-actor-figure[data-state="Hurt"] .fsm-actor-body {
+  opacity: 0.55;
+  transform: translateX(-50%) rotate(-8deg);
+}
+
+.fsm-actor-figure[data-state="Dead"] .fsm-actor-body {
+  transform: translateX(-50%) rotate(90deg) translateY(8px);
+  opacity: 0.4;
+}
+
+.fsm-actor-figure[data-state="Dead"] .fsm-actor-face {
+  opacity: 0.35;
+}
+
+@keyframes fsm-bob {
+  from {
+    transform: translateX(-50%) translateY(0);
+  }
+  to {
+    transform: translateX(-50%) translateY(-4px);
+  }
+}
+
+.fsm-actor-state {
+  display: inline-block;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--actor-color, var(--accent));
+}
+
+.fsm-actor-blurb {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.fsm-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: 0.75rem;
+}
+
+.fsm-controls .control-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.fsm-events {
+  margin-bottom: 0.65rem;
+}
+
+.fsm-event-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.35rem;
+}
+
+.fsm-event-btn {
+  font-size: 0.75rem !important;
+  padding: 0.3rem 0.45rem !important;
+}
+
+.fsm-event-btn.is-valid {
+  border-color: #6bcb8f !important;
+  color: #6bcb8f !important;
+}
+
+.fsm-event-btn.is-invalid {
+  opacity: 0.55;
+}
+
+.fsm-event-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.fsm-subhead {
+  margin: 0.65rem 0 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.fsm-history {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  max-height: 6rem;
+  overflow-y: auto;
+}
+
+.fsm-hist-chip {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.4rem;
+  border-radius: 999px;
+  border: 1px solid var(--c, var(--border));
+  color: var(--c, var(--text));
+  background: rgba(91, 159, 212, 0.15);
+}
+
+.fsm-hist-chip.is-current {
+  box-shadow: 0 0 0 1px var(--c);
+}
+
+.fsm-hist-arrow {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.fsm-table-block {
+  margin-top: 1rem;
+}
+
+.fsm-table-lead {
+  margin: 0 0 0.5rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.fsm-table-scroll {
+  overflow: auto;
+  max-height: 22rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.fsm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.fsm-table th,
+.fsm-table td {
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.4rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.fsm-table thead th {
+  background: var(--bg);
+  color: var(--text-muted);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.fsm-table tbody th {
+  background: var(--bg);
+  text-align: left;
+  font-weight: 700;
+}
+
+.fsm-table tr.is-current-row th,
+.fsm-table tr.is-current-row td {
+  background: rgba(91, 159, 212, 0.08);
+}
+
+.fsm-table td.has-trans {
+  color: #6bcb8f;
+  font-weight: 600;
+}
+
+.fsm-table td.no-trans {
+  color: #5a6d85;
+}
+
+.fsm-table td.is-active-cell {
+  background: rgba(242, 204, 143, 0.2);
+  color: #f2cc8f;
+  font-weight: 800;
+}

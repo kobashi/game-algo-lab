@@ -45,7 +45,7 @@
 
 | id | タイトル | ready | 予定ページ | SPEC |
 |----|----------|-------|------------|------|
-| `fsm` | ステートマシン | ❌ | `algorithms/fsm.html` | 未作成 |
+| `fsm` | ステートマシン | ✅ | `algorithms/fsm.html` | [SPEC](./fsm/SPEC.md) · 説明特化UI（非マップ） |
 
 ---
 
