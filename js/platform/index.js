@@ -44,3 +44,15 @@ export {
   mountSiteHeaderFromDataset,
   mountTopicShellFromDataset,
 } from "./topic-shell.js";
+export {
+  MATURITY_ORDER,
+  MATURITY_LABEL,
+  MATURITY_HINT,
+  TOPIC_MATURITY,
+  resolveMaturity,
+  maturityLabel,
+  maturityHint,
+  countByMaturity,
+  createMaturityBadge,
+  mountPageMaturity,
+} from "./maturity.js";

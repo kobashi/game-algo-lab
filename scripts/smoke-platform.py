@@ -40,6 +40,7 @@ def check_platform_files() -> None:
         "js/platform/grid-paint.js",
         "js/platform/pathfinding-grid.js",
         "js/platform/topic-shell.js",
+        "js/platform/maturity.js",
         "js/platform/text.js",
         "js/map-format.js",
         "js/ds-viz.js",
@@ -65,6 +66,8 @@ def check_exports() -> None:
         "drawPathfindingGrid",
         "drawScorePair",
         "mountTopicShellFromDataset",
+        "mountPageMaturity",
+        "TOPIC_MATURITY",
         "parsePaintMode",
     ]
     for name in needed:
@@ -116,8 +119,6 @@ def check_algorithms() -> None:
 def check_main_topics() -> None:
     print("js/main.js TOPICS")
     t = (ROOT / "js/main.js").read_text(encoding="utf-8")
-    # ready: true の id をざっくり抽出
-    ids = re.findall(r'id:\s*"([^"]+)"', t)
     ready_blocks = re.findall(
         r'id:\s*"([^"]+)"[\s\S]*?ready:\s*(true|false)', t
     )
@@ -140,6 +141,39 @@ def check_main_topics() -> None:
             ok(f"topic {tid} → {href}")
         else:
             fail(f"topic {tid} missing file {href}")
+
+
+def check_maturity_sync() -> None:
+    print("成熟度: main.js ↔ maturity.js")
+    main = (ROOT / "js/main.js").read_text(encoding="utf-8")
+    mat = (ROOT / "js/platform/maturity.js").read_text(encoding="utf-8")
+    if "maturity-legend" not in (ROOT / "index.html").read_text(encoding="utf-8"):
+        fail("index.html missing #maturity-legend")
+    else:
+        ok("index.html #maturity-legend")
+    if "mountPageMaturity" not in (ROOT / "js/platform/topic-shell.js").read_text(
+        encoding="utf-8"
+    ):
+        fail("topic-shell missing mountPageMaturity")
+    else:
+        ok("topic-shell mounts page maturity")
+
+    pairs = re.findall(
+        r'id:\s*"([^"]+)"[\s\S]*?maturity:\s*"([^"]+)"', main
+    )
+    if not pairs:
+        fail("could not parse maturity from TOPICS")
+        return
+    for tid, code in pairs:
+        # maturity.js: bfs: "revised" or "best-first": "revised"
+        pat = (
+            rf'(?:["\']{re.escape(tid)}["\']|{re.escape(tid)})'
+            rf'\s*:\s*["\']{re.escape(code)}["\']'
+        )
+        if re.search(pat, mat):
+            ok(f"{tid} = {code}")
+        else:
+            fail(f"{tid}: main.js maturity={code} not in TOPIC_MATURITY")
 
 
 def check_draw_score_pair_usage() -> None:
@@ -203,6 +237,8 @@ def main() -> int:
     check_algorithms()
     print()
     check_main_topics()
+    print()
+    check_maturity_sync()
     print()
     check_draw_score_pair_usage()
     print()

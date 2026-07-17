@@ -2136,6 +2136,12 @@ img {
   border: 1px solid var(--border);
   color: var(--text-muted);
   letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.card-maturity-lg {
+  font-size: 0.78rem;
+  padding: 0.2rem 0.55rem;
 }
 
 .card-maturity-oneshot {
@@ -2154,6 +2160,113 @@ img {
   border-color: rgba(107, 203, 143, 0.65);
   color: #6bcb8f;
   background: rgba(107, 203, 143, 0.12);
+}
+
+/* カード左縁で成熟度を補助表示 */
+.card[data-maturity="oneshot"] {
+  border-left: 3px solid rgba(154, 171, 191, 0.75);
+}
+
+.card[data-maturity="revised"] {
+  border-left: 3px solid rgba(91, 159, 212, 0.85);
+}
+
+.card[data-maturity="stable"] {
+  border-left: 3px solid rgba(107, 203, 143, 0.9);
+}
+
+/* トップ: 成熟度凡例 */
+.maturity-legend {
+  margin: 0 0 1.5rem;
+  padding: 0.9rem 1rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+}
+
+.maturity-legend-title {
+  margin: 0 0 0.65rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.maturity-legend-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+@media (min-width: 720px) {
+  .maturity-legend-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+}
+
+.maturity-legend-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  min-height: 100%;
+}
+
+.maturity-legend-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.maturity-legend-count {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.maturity-legend-hint {
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.maturity-legend-note {
+  margin: 0.75rem 0 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.maturity-legend-note code {
+  font-size: 0.9em;
+}
+
+/* デモページ: タイトル直下の成熟度 */
+.page-maturity-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.65rem;
+  margin: 0 0 0.55rem;
+}
+
+.page-maturity-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+.page-maturity-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+  flex: 1 1 12rem;
 }
 
 .topic-category-grid {

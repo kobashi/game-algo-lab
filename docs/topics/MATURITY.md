@@ -55,7 +55,16 @@
 1. 成熟度を変えたら **CATALOG.md を同じ PR/コミットで更新**する  
 2. 可能なら `docs/topics/<id>/SPEC.md` の表に `成熟度` を書く  
 3. 大きな改訂のたびに CATALOG の「改訂メモ」列を1行足す（短く）  
-4. `js/main.js` の `maturity` は CATALOG と揃える（トップに表示する場合）
+4. Web 表示用に次を **同じ値** で揃える  
+   - `js/main.js` の `TOPICS[].maturity`（トップカード）  
+   - `js/platform/maturity.js` の `TOPIC_MATURITY`（デモページ・共有）  
+
+### Web での可視化
+
+| 画面 | 表示 |
+|------|------|
+| トップ (`index.html`) | 色付き凡例 + 件数、各カードのバッジと左縁色 |
+| 各デモ (`algorithms/*.html`) | `.page-header` に「成熟度」バッジと短い説明（`mountTopicShellFromDataset` 経由） |
 
 ---
 

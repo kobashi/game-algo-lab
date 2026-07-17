@@ -6,6 +6,15 @@
  * @see docs/topics/MATURITY.md
  */
 
+import {
+  MATURITY_ORDER,
+  MATURITY_LABEL,
+  MATURITY_HINT,
+  TOPIC_MATURITY,
+  countByMaturity,
+  createMaturityBadge,
+} from "./platform/maturity.js";
+
 /**
  * @typedef {'oneshot' | 'revised' | 'stable'} Maturity
  * @typedef {{
@@ -27,13 +36,6 @@ const CATEGORY_ORDER = [
   "物理・判定",
   "設計パターン",
 ];
-
-/** @type {Record<Maturity, string>} */
-const MATURITY_LABEL = {
-  oneshot: "一発未調整",
-  revised: "改訂・調整",
-  stable: "安定版",
-};
 
 /** @type {Topic[]} */
 const TOPICS = [
@@ -170,11 +172,10 @@ const TOPICS = [
  * @param {Topic} topic
  */
 function createCard(topic) {
+  const maturityCode = topic.maturity || TOPIC_MATURITY[topic.id] || "oneshot";
   const card = document.createElement("article");
   card.className = topic.ready ? "card" : "card is-coming-soon";
-  if (topic.maturity) {
-    card.dataset.maturity = topic.maturity;
-  }
+  card.dataset.maturity = maturityCode;
 
   const badgeRow = document.createElement("div");
   badgeRow.className = "card-badge-row";
@@ -183,13 +184,9 @@ function createCard(topic) {
   badge.className = "card-badge";
   badge.textContent = topic.badge;
 
-  const maturity = document.createElement("span");
-  maturity.className = `card-maturity card-maturity-${topic.maturity || "oneshot"}`;
-  maturity.textContent = MATURITY_LABEL[topic.maturity] || topic.maturity || "";
-  maturity.title =
-    "一発未調整 / 改訂・調整 / 安定版 — 定義は docs/topics/MATURITY.md";
-
-  badgeRow.append(badge, maturity);
+  const maturity = createMaturityBadge(maturityCode);
+  if (maturity) badgeRow.append(badge, maturity);
+  else badgeRow.append(badge);
 
   const title = document.createElement("h3");
   title.textContent = topic.title;
@@ -243,6 +240,50 @@ function orderedCategories(map) {
   return ordered;
 }
 
+/** 成熟度の色付き凡例 + 件数 */
+function renderMaturityLegend() {
+  const root = document.getElementById("maturity-legend");
+  if (!root) return;
+
+  const counts = countByMaturity(TOPICS);
+
+  const title = document.createElement("p");
+  title.className = "maturity-legend-title";
+  title.textContent = "修正状況（成熟度）";
+
+  const list = document.createElement("ul");
+  list.className = "maturity-legend-list";
+  list.setAttribute("aria-label", "成熟度の凡例");
+
+  for (const code of MATURITY_ORDER) {
+    const li = document.createElement("li");
+    li.className = "maturity-legend-item";
+
+    const badge = createMaturityBadge(code, { className: "card-maturity-lg" });
+    const meta = document.createElement("div");
+    meta.className = "maturity-legend-meta";
+
+    const count = document.createElement("span");
+    count.className = "maturity-legend-count";
+    count.textContent = `${counts[code]} 件`;
+
+    const hint = document.createElement("span");
+    hint.className = "maturity-legend-hint";
+    hint.textContent = MATURITY_HINT[code];
+
+    meta.append(count, hint);
+    if (badge) li.append(badge, meta);
+    list.appendChild(li);
+  }
+
+  const note = document.createElement("p");
+  note.className = "maturity-legend-note";
+  note.innerHTML =
+    "カード右上のラベルと同じです。定義の詳細はリポジトリの <code>docs/topics/MATURITY.md</code>。";
+
+  root.replaceChildren(title, list, note);
+}
+
 function renderTopics() {
   const root = document.getElementById("topic-list");
   if (!root) return;
@@ -274,4 +315,5 @@ function renderTopics() {
   root.replaceChildren(fragment);
 }
 
+renderMaturityLegend();
 renderTopics();

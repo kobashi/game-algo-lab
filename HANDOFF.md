@@ -24,7 +24,8 @@
 - **追加手順**: `docs/templates/TOPIC_SCAFFOLD.md`  
 - **成熟度（修正状況）**: `docs/topics/MATURITY.md` + `docs/topics/CATALOG.md`  
   - `oneshot` 一発未調整 / `revised` 改訂・調整 / `stable` 安定版  
-  - トップカードと `js/main.js` の `maturity` を CATALOG と揃える  
+  - ドキュメント: CATALOG。Web: `js/main.js` + `js/platform/maturity.js`（凡例・カード・デモページ）  
+  - 成熟度を変えたら **3箇所**（CATALOG / main.js / maturity.js）を揃える  
 - **健全性**: `python3 scripts/smoke-platform.py`  
 
 

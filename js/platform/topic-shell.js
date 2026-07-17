@@ -9,6 +9,8 @@
  * mountTopicShellFromDataset();
  */
 
+import { mountPageMaturity } from "./maturity.js";
+
 /**
  * @typedef {{ id: string, label: string, href: string }} NavLink
  */
@@ -203,4 +205,7 @@ export function mountTopicShellFromDataset() {
       note: footer.dataset.note || "",
     });
   }
+
+  // デモ本文の .page-header に成熟度バッジを表示
+  mountPageMaturity(active);
 }

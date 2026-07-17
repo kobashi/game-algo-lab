@@ -39,7 +39,8 @@ docs/templates/            # SPEC / スキャフォールド
 ```
 
 - **id**: 英小文字・ハイフン（例: `alpha-beta`, `best-first`）  
-- トップ掲載: `js/main.js` の `TOPICS`（`category` / `badge` / `ready`）  
+- トップ掲載: `js/main.js` の `TOPICS`（`category` / `badge` / `ready` / `maturity`）  
+- 成熟度 UI: `js/platform/maturity.js`（`TOPIC_MATURITY`・ラベル）＋ トップ凡例・デモ `.page-header`  
 - 未完成は `ready: false`
 
 ### 層の責務（分離の原則）
@@ -66,7 +67,8 @@ docs/templates/            # SPEC / スキャフォールド
 | `layoutTree` / `applySvgSize` | ゲーム木の水平配置 |
 | `bindMapPaint` 等 | 経路探索の塗り |
 | `drawPathfindingGrid` / `createGridOps` | グリッド下地・幾何 |
-| `mountTopicShellFromDataset` | 共通ヘッダー + フッター |
+| `mountTopicShellFromDataset` | 共通ヘッダー + フッター + 成熟度バッジ |
+| `TOPIC_MATURITY` / `createMaturityBadge` | 修正状況（成熟度）表示 |
 | `drawScorePair` | 探索マスの大/小ラベル |
 | `escapeHtml` / `escapeXml` | エスケープ |
 
