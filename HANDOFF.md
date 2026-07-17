@@ -34,7 +34,13 @@
 2. **共通基盤** — UI・用語・ファイル規約の統一（`docs/PLATFORM.md`）  
 3. **分業** — SPEC 先行 → 実装ブランチ → チェックリスト（`docs/WORKFLOW.md`、`docs/templates/`）  
 
-詳細: [docs/ROADMAP.md](docs/ROADMAP.md) / 索引: [docs/README.md](docs/README.md)
+### 着手保留（バックログ）
+
+- **E2E**（ブラウザ自動操作テスト）— いまは `python3 scripts/smoke-platform.py` + 手動  
+- **i18n**（多言語 UI）— 当面は日本語固定  
+
+詳細・意図は [docs/ROADMAP.md](docs/ROADMAP.md) の「今後の課題（バックログ）」を正とする。  
+索引: [docs/README.md](docs/README.md)
 
 ---
 

@@ -105,6 +105,10 @@ Phase B の主要項目は完了。
 python3 scripts/smoke-platform.py
 # Node がある場合は続けて scripts/smoke-platform.mjs も実行される
 ```
+
+構造・export・ページ実在の確認用。**ブラウザ E2E は導入しない**（今後の課題として [ROADMAP.md](./ROADMAP.md) のバックログに記載）。  
+**i18n も当面なし**（UI は日本語。同様に ROADMAP バックログ）。
+
 ---
 
 ## 3. 学習体験の統一
@@ -243,3 +247,4 @@ python3 scripts/smoke-platform.py
 |------|------|
 | 2026-07-17 | 初版（経路探索実績を一般化。複数ゴールを明記） |
 | 2026-07-17 | `js/platform` 分離、層の責務、スキャフォールド、移行状況を追加 |
+| 2026-07-17 | E2E / i18n は今後の課題（ROADMAP バックログ）と明記 |

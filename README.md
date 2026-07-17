@@ -70,6 +70,8 @@ Project/
 python3 scripts/smoke-platform.py
 ```
 
+ブラウザ E2E や i18n（多言語）は **今後の課題**（未着手）。方針は [docs/ROADMAP.md](docs/ROADMAP.md) を参照。
+
 ## GitHub Pages への公開
 
 1. GitHub にリポジトリを作成し、このフォルダを push  
