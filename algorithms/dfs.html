@@ -87,12 +87,13 @@
 
             <div class="controls-group controls-group-paint">
               <span class="controls-label">コスト</span>
-              <div id="paint-tools" class="paint-tools" role="group" aria-label="コストと壁">
+              <div id="paint-tools" class="paint-tools" role="group" aria-label="コスト・壁・ゴール">
                 <button type="button" class="paint-btn" data-paint="-1" aria-pressed="false">-1</button>
                 <button type="button" class="paint-btn" data-paint="0" aria-pressed="false">0</button>
                 <button type="button" class="paint-btn is-active" data-paint="1" aria-pressed="true">1</button>
                 <button type="button" class="paint-btn" data-paint="2" aria-pressed="false">2</button>
                 <button type="button" class="paint-btn paint-wall" data-paint="wall" aria-pressed="false">壁</button>
+                <button type="button" class="paint-btn paint-goal" data-paint="goal" aria-pressed="false" title="ゴールを追加/削除（複数可）">G</button>
               </div>
             </div>
           </div>
@@ -111,9 +112,16 @@
 
         <div class="ds-block ds-parent-block" id="ds-parent-block" data-parent-map>
           <div class="ds-title">親ポインタ（経路復元用） <span class="ds-type">Dictionary</span></div>
-          <div class="ds-tabs" role="tablist" aria-label="親ポインタの表示切替">
-            <button type="button" class="ds-tab is-active" role="tab" data-parent-tab="list" aria-selected="true" id="tab-parent-list">リスト</button>
-            <button type="button" class="ds-tab" role="tab" data-parent-tab="tree" aria-selected="false" id="tab-parent-tree">ツリー</button>
+                    <div class="ds-parent-toolbar">
+            <div class="ds-tabs" role="tablist" aria-label="親ポインタの表示切替">
+              <button type="button" class="ds-tab is-active" role="tab" data-parent-tab="list" aria-selected="true" id="tab-parent-list">リスト</button>
+              <button type="button" class="ds-tab" role="tab" data-parent-tab="tree" aria-selected="false" id="tab-parent-tree">ツリー</button>
+            </div>
+            <div class="tree-zoom-controls" id="tree-zoom-controls">
+              <span class="tree-zoom-label" id="tree-zoom-label">100%</span>
+              <button type="button" class="tree-zoom-btn" id="btn-tree-zoom-out" title="ツリーを縮小">縮小</button>
+              <button type="button" class="tree-zoom-btn" id="btn-tree-zoom-in" title="ツリーを拡大">拡大</button>
+            </div>
           </div>
           <p class="ds-caption ds-parent-root" id="ds-parent-root"></p>
           <div class="ds-tab-panel" data-parent-panel="list" id="ds-parent-list" role="tabpanel" aria-labelledby="tab-parent-list"></div>

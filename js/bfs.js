@@ -74,12 +74,15 @@ let hopDist = [];
 let pathCost = [];
 
 let start = { x: 1, y: 1 };
-let goal = { x: COLS - 2, y: ROWS - 2 };
+/** @type {{x:number,y:number}[]} ゴールは複数可。いずれかに到達で成功 */
+let goals = [{ x: COLS - 2, y: ROWS - 2 }];
+/** 到達したゴール（経路復元用） */
+let foundGoal = null;
 /** @type {{x:number,y:number}[]} */
 let queue = [];
 /** @type {Map<string, {x:number,y:number}|null>} */
 let cameFrom = new Map();
-/** @type {'wall' | -1 | 0 | 1 | 2} */
+/** @type {'wall' | 'goal' | -1 | 0 | 1 | 2} */
 let paintMode = 1;
 let painting = false;
 let running = false;
@@ -120,7 +123,7 @@ function isStart(x, y) {
 }
 
 function isGoal(x, y) {
-  return x === goal.x && y === goal.y;
+  return goals.some((g) => g.x === x && g.y === y);
 }
 
 function clearMarks() {
@@ -140,13 +143,15 @@ function loadInitialMap() {
   costs = map.costs.map((row) => row.slice());
   walls = map.walls.map((row) => row.slice());
   start = { ...map.start };
-  goal = { ...map.goal };
+  goals = map.goals.map((g) => ({ ...g }));
+  foundGoal = null;
 }
 
 function resetSearch() {
   stopAuto();
   finished = false;
   found = false;
+  foundGoal = null;
   clearMarks();
   hopDist[start.y][start.x] = 0;
   pathCost[start.y][start.x] = 0;
@@ -320,7 +325,8 @@ function draw() {
 
 function getPathCells() {
   const path = [];
-  let current = goal;
+  let current = foundGoal;
+  if (!current) return path;
   while (current) {
     path.push(current);
     current = cameFrom.get(key(current.x, current.y)) ?? null;
@@ -380,7 +386,7 @@ function dijkstraCost() {
     pq.sort((a, b) => a.d - b.d);
     const cur = pq.shift();
     if (!cur || cur.d !== dist[cur.y][cur.x]) continue;
-    if (cur.x === goal.x && cur.y === goal.y) return cur.d;
+    if (isGoal(cur.x, cur.y)) return cur.d;
 
     for (const n of neighbors(cur.x, cur.y)) {
       const nd = cur.d + costs[n.y][n.x];
@@ -416,7 +422,7 @@ function minCostSimplePathDfs() {
   function dfs(x, y, acc) {
     if (performance.now() - t0 > TIME_LIMIT_MS) return;
     if (acc >= best) return;
-    if (x === goal.x && y === goal.y) {
+    if (isGoal(x, y)) {
       best = acc;
       return;
     }
@@ -508,6 +514,7 @@ function stepOnce() {
   if (isGoal(current.x, current.y)) {
     finished = true;
     found = true;
+    foundGoal = { x: current.x, y: current.y };
     const path = reconstructPath();
     reportResult(path);
     stopAuto();
@@ -577,8 +584,34 @@ function canvasCellFromEvent(e) {
   return { x, y };
 }
 
+/**
+ * ゴール G を (x,y) に配置 / 削除（複数可）。
+ * @param {boolean} toggle  true=クリックで追加/削除切替、false=ドラッグで追加のみ
+ */
+function placeGoal(x, y, toggle = true) {
+  if (!inBounds(x, y) || isStart(x, y)) return false;
+  const idx = goals.findIndex((g) => g.x === x && g.y === y);
+  if (idx >= 0) {
+    if (!toggle) return false;
+    if (goals.length <= 1) {
+      setStatus("ゴールは最低1つ必要です");
+      return false;
+    }
+    goals.splice(idx, 1);
+    walls[y][x] = false;
+    costs[y][x] = 1;
+    return true;
+  }
+  walls[y][x] = false;
+  costs[y][x] = 0;
+  goals.push({ x, y });
+  return true;
+}
+
 function paintCell(x, y) {
-  if (!inBounds(x, y) || isStart(x, y) || isGoal(x, y)) return false;
+  if (!inBounds(x, y) || isStart(x, y)) return false;
+  if (paintMode === "goal") return placeGoal(x, y, true);
+  if (isGoal(x, y)) return false;
 
   if (paintMode === "wall") {
     walls[y][x] = !walls[y][x];
@@ -592,9 +625,11 @@ function paintCell(x, y) {
   return true;
 }
 
-/** ドラッグ塗り用: wall は ON 固定、コストは上書き */
+/** ドラッグ塗り用: wall は ON 固定、コストは上書き、goal は追加のみ */
 function paintCellDrag(x, y) {
-  if (!inBounds(x, y) || isStart(x, y) || isGoal(x, y)) return false;
+  if (!inBounds(x, y) || isStart(x, y)) return false;
+  if (paintMode === "goal") return placeGoal(x, y, false);
+  if (isGoal(x, y)) return false;
 
   if (paintMode === "wall") {
     walls[y][x] = true;
@@ -657,7 +692,7 @@ function setPaintMode(mode) {
   for (const btn of paintGroup.querySelectorAll("[data-paint]")) {
     const v = btn.getAttribute("data-paint");
     const active =
-      v === "wall" ? mode === "wall" : Number(v) === mode;
+      v === "wall" || v === "goal" ? mode === v : Number(v) === mode;
     btn.classList.toggle("is-active", active);
     btn.setAttribute("aria-pressed", active ? "true" : "false");
   }
@@ -680,7 +715,7 @@ paintGroup.addEventListener("click", (e) => {
   const btn = e.target.closest("[data-paint]");
   if (!btn) return;
   const v = btn.getAttribute("data-paint");
-  setPaintMode(v === "wall" ? "wall" : Number(v));
+  setPaintMode(v === "wall" || v === "goal" ? v : Number(v));
 });
 
 canvas.addEventListener("pointerdown", onPointerDown);

@@ -72,7 +72,10 @@ let hScore = [];
 let fScore = [];
 
 let start = { x: 1, y: 1 };
-let goal = { x: COLS - 2, y: ROWS - 2 };
+/** @type {{x:number,y:number}[]} ゴールは複数可。いずれかに到達で成功 */
+let goals = [{ x: COLS - 2, y: ROWS - 2 }];
+/** 到達したゴール（経路復元用） */
+let foundGoal = null;
 
 /** オープン集合（配列 + 都度最小 f を選択。教材用の単純実装） */
 /** @type {{x:number,y:number}[]} */
@@ -126,7 +129,7 @@ function isStart(x, y) {
 }
 
 function isGoal(x, y) {
-  return x === goal.x && y === goal.y;
+  return goals.some((g) => g.x === x && g.y === y);
 }
 
 function hasNegativeCost() {
@@ -155,8 +158,14 @@ function minNonNegativeCost() {
   return min === Infinity ? 1 : min;
 }
 
+/** 最も近いゴールまでのマンハッタン距離 */
 function manhattan(x, y) {
-  return Math.abs(x - goal.x) + Math.abs(y - goal.y);
+  let best = Infinity;
+  for (const g of goals) {
+    const d = Math.abs(x - g.x) + Math.abs(y - g.y);
+    if (d < best) best = d;
+  }
+  return best === Infinity ? 0 : best;
 }
 
 /** ヒューリスティック（ゴールまでの見積り）。最良優先探索ではこれだけを優先度に使う */
@@ -195,7 +204,8 @@ function loadInitialMap() {
   costs = map.costs.map((row) => row.slice());
   walls = map.walls.map((row) => row.slice());
   start = { ...map.start };
-  goal = { ...map.goal };
+  goals = map.goals.map((g) => ({ ...g }));
+  foundGoal = null;
 }
 
 function pushOpen(x, y) {
@@ -241,6 +251,7 @@ function resetSearch() {
   stopAuto();
   finished = false;
   found = false;
+  foundGoal = null;
   clearScores();
   updateHInfo();
 
@@ -410,7 +421,8 @@ function draw() {
 
 function getPathCells() {
   const path = [];
-  let current = goal;
+  let current = foundGoal;
+  if (!current) return path;
   while (current) {
     path.push(current);
     current = cameFrom.get(key(current.x, current.y)) ?? null;
@@ -436,9 +448,13 @@ function bfsPathCost() {
   const q = [{ ...start }];
   const parent = new Map([[key(start.x, start.y), null]]);
   let head = 0;
+  let end = null;
   while (head < q.length) {
     const cur = q[head++];
-    if (cur.x === goal.x && cur.y === goal.y) break;
+    if (isGoal(cur.x, cur.y)) {
+      end = cur;
+      break;
+    }
     for (const n of neighbors(cur.x, cur.y)) {
       const k = key(n.x, n.y);
       if (parent.has(k)) continue;
@@ -446,10 +462,10 @@ function bfsPathCost() {
       q.push(n);
     }
   }
-  if (!parent.has(key(goal.x, goal.y))) return null;
+  if (!end) return null;
 
   let sum = 0;
-  let cur = goal;
+  let cur = end;
   while (cur) {
     const p = parent.get(key(cur.x, cur.y));
     if (p) sum += costs[cur.y][cur.x];
@@ -475,7 +491,7 @@ function optimalSimplePathCost() {
   function dfs(x, y, acc) {
     if (performance.now() - t0 > 80) return;
     if (acc >= best) return;
-    if (x === goal.x && y === goal.y) {
+    if (isGoal(x, y)) {
       best = acc;
       return;
     }
@@ -495,7 +511,7 @@ function optimalSimplePathCost() {
 
 function reportResult(path) {
   const hops = pathHops(path);
-  const gGoal = gScore[goal.y][goal.x];
+  const gGoal = foundGoal ? gScore[foundGoal.y][foundGoal.x] : null;
   const optimal = optimalSimplePathCost();
   const scale = minNonNegativeCost();
 
@@ -564,6 +580,7 @@ function stepOnce() {
   if (isGoal(current.x, current.y)) {
     finished = true;
     found = true;
+    foundGoal = { x: current.x, y: current.y };
     const path = reconstructPath();
     reportResult(path);
     stopAuto();
@@ -640,8 +657,34 @@ function canvasCellFromEvent(e) {
   return { x, y };
 }
 
+/**
+ * ゴール G を (x,y) に配置 / 削除（複数可）。
+ * @param {boolean} toggle  true=クリックで追加/削除、false=ドラッグで追加のみ
+ */
+function placeGoal(x, y, toggle = true) {
+  if (!inBounds(x, y) || isStart(x, y)) return false;
+  const idx = goals.findIndex((g) => g.x === x && g.y === y);
+  if (idx >= 0) {
+    if (!toggle) return false;
+    if (goals.length <= 1) {
+      setStatus("ゴールは最低1つ必要です");
+      return false;
+    }
+    goals.splice(idx, 1);
+    walls[y][x] = false;
+    costs[y][x] = 1;
+    return true;
+  }
+  walls[y][x] = false;
+  costs[y][x] = 0;
+  goals.push({ x, y });
+  return true;
+}
+
 function paintCell(x, y) {
-  if (!inBounds(x, y) || isStart(x, y) || isGoal(x, y)) return false;
+  if (!inBounds(x, y) || isStart(x, y)) return false;
+  if (paintMode === "goal") return placeGoal(x, y, true);
+  if (isGoal(x, y)) return false;
   if (paintMode === "wall") {
     walls[y][x] = !walls[y][x];
   } else {
@@ -652,7 +695,9 @@ function paintCell(x, y) {
 }
 
 function paintCellDrag(x, y) {
-  if (!inBounds(x, y) || isStart(x, y) || isGoal(x, y)) return false;
+  if (!inBounds(x, y) || isStart(x, y)) return false;
+  if (paintMode === "goal") return placeGoal(x, y, false);
+  if (isGoal(x, y)) return false;
   if (paintMode === "wall") {
     walls[y][x] = true;
   } else {
@@ -708,7 +753,8 @@ function setPaintMode(mode) {
   paintMode = mode;
   for (const btn of paintGroup.querySelectorAll("[data-paint]")) {
     const v = btn.getAttribute("data-paint");
-    const active = v === "wall" ? mode === "wall" : Number(v) === mode;
+    const active =
+      v === "wall" || v === "goal" ? mode === v : Number(v) === mode;
     btn.classList.toggle("is-active", active);
     btn.setAttribute("aria-pressed", active ? "true" : "false");
   }
@@ -730,7 +776,7 @@ paintGroup.addEventListener("click", (e) => {
   const btn = e.target.closest("[data-paint]");
   if (!btn) return;
   const v = btn.getAttribute("data-paint");
-  setPaintMode(v === "wall" ? "wall" : Number(v));
+  setPaintMode(v === "wall" || v === "goal" ? v : Number(v));
 });
 
 canvas.addEventListener("pointerdown", onPointerDown);

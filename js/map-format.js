@@ -4,8 +4,8 @@
  * 1マス = 1文字。行数・列数は同じ（正方形/矩形可。現状デモは 14x14 想定）
  *
  * 記号:
- *   S … スタート（通行可・コストは 0）
- *   G … ゴール（通行可・コストは 0）
+ *   S … スタート（通行可・コストは 0）※1つだけ
+ *   G … ゴール（通行可・コストは 0）※複数可。いずれかに到達すれば成功
  *   # … 壁
  *   . … 通行コスト 1（デフォルト）
  *   0 1 2 … 通行コスト
@@ -22,6 +22,7 @@
  *   costs: number[][],
  *   walls: boolean[][],
  *   start: {x: number, y: number},
+ *   goals: {x: number, y: number}[],
  *   goal: {x: number, y: number},
  * }}
  */
@@ -53,7 +54,8 @@ export function parseMap(text) {
   /** @type {boolean[][]} */
   const walls = Array.from({ length: rows }, () => Array(cols).fill(false));
   let start = null;
-  let goal = null;
+  /** @type {{x: number, y: number}[]} */
+  const goals = [];
 
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
@@ -74,8 +76,7 @@ export function parseMap(text) {
         case "g":
           walls[y][x] = false;
           costs[y][x] = 0;
-          if (goal) throw new Error("ゴール G が複数あります");
-          goal = { x, y };
+          goals.push({ x, y });
           break;
         case ".":
         case "1":
@@ -110,7 +111,8 @@ export function parseMap(text) {
   }
 
   if (!start) throw new Error("スタート S がありません");
-  if (!goal) throw new Error("ゴール G がありません");
+  if (goals.length === 0) throw new Error("ゴール G がありません（1つ以上）");
 
-  return { cols, rows, costs, walls, start, goal };
+  // goal は先頭（後方互換）。探索は goals 全体を対象にする
+  return { cols, rows, costs, walls, start, goals, goal: goals[0] };
 }

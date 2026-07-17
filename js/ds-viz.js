@@ -5,7 +5,17 @@
 
 /** 親ポインタパネルのタブ状態（再描画後も維持） */
 let parentMapTab = "list"; // "list" | "tree"
+/**
+ * ツリー表示スケール段階（押すたびに進む）
+ * 100% → 70% → 50% → 100% …
+ */
+const TREE_SCALE_STEPS = [1, 0.7, 0.5];
+let treeScaleIndex = 0;
 let parentTabsBound = false;
+
+function currentTreeScale() {
+  return TREE_SCALE_STEPS[treeScaleIndex] ?? 1;
+}
 
 /**
  * @param {HTMLElement|null} el
@@ -196,13 +206,17 @@ export function updateParentMapPanels({ edges, root }) {
       treeEl.innerHTML = `<p class="ds-empty">（まだ辺なし）</p>
         <p class="ds-caption">探索が進むとスタートを根とした木が伸びます。</p>`;
     } else {
+      const scale = currentTreeScale();
       treeEl.innerHTML = `
-        <div class="ds-node-tree" id="ds-node-tree-scroll">${renderParentTree(edges, root)}</div>
-        <p class="ds-caption">同じ深さは同じ高さ。枝で接続。枠内をスクロールして全体を確認。</p>`;
+        <div class="ds-node-tree${scale < 1 ? " is-compact" : ""}" id="ds-node-tree-scroll" data-tree-scale="${scale}">
+          <div class="tree-scale-inner" id="tree-scale-inner" style="--tree-zoom:${scale}">${renderParentTree(edges, root)}</div>
+        </div>
+        <p class="ds-caption">同じ深さは同じ高さ。枝で接続。縮小／拡大ボタンでサイズ変更（${Math.round(scale * 100)}%）。</p>`;
     }
   }
 
   applyParentMapTabs(document);
+  applyTreeZoomUi();
 }
 
 /**
@@ -339,21 +353,95 @@ function applyParentMapTabs(scope) {
   }
 }
 
+function applyTreeZoomUi() {
+  const scale = currentTreeScale();
+  const scroll = document.getElementById("ds-node-tree-scroll");
+  const inner = document.getElementById("tree-scale-inner");
+  if (scroll) {
+    scroll.dataset.treeScale = String(scale);
+    scroll.classList.toggle("is-compact", scale < 1);
+  }
+  if (inner) {
+    inner.style.setProperty("--tree-zoom", String(scale));
+  }
+
+  // 常に両方のボタンを表示（押すたびに段階が変わる）
+  const zoomOut = document.getElementById("btn-tree-zoom-out");
+  const zoomIn = document.getElementById("btn-tree-zoom-in");
+  const zoomToggle = document.getElementById("btn-tree-zoom");
+
+  const atMin = treeScaleIndex >= TREE_SCALE_STEPS.length - 1;
+  const atMax = treeScaleIndex <= 0;
+
+  if (zoomOut) {
+    zoomOut.disabled = atMin;
+    zoomOut.setAttribute("aria-disabled", atMin ? "true" : "false");
+  }
+  if (zoomIn) {
+    zoomIn.disabled = atMax;
+    zoomIn.setAttribute("aria-disabled", atMax ? "true" : "false");
+  }
+  // 旧単一ボタン互換: 縮小↔拡大トグル表示
+  if (zoomToggle) {
+    zoomToggle.hidden = false;
+    zoomToggle.textContent = atMin ? "拡大" : "縮小";
+    zoomToggle.setAttribute("aria-pressed", scale < 1 ? "true" : "false");
+    zoomToggle.title = `現在 ${Math.round(scale * 100)}% — 押すと${atMin ? "拡大" : "縮小"}`;
+  }
+
+  const label = document.getElementById("tree-zoom-label");
+  if (label) {
+    label.textContent = `${Math.round(scale * 100)}%`;
+  }
+}
+
+function stepTreeZoom(direction) {
+  // direction: -1 縮小, +1 拡大
+  const next = treeScaleIndex + (direction < 0 ? 1 : -1);
+  treeScaleIndex = Math.max(0, Math.min(TREE_SCALE_STEPS.length - 1, next));
+  applyTreeZoomUi();
+}
+
 function bindParentMapTabsOnce() {
   if (parentTabsBound) return;
   parentTabsBound = true;
   document.addEventListener("click", (e) => {
     const t = /** @type {HTMLElement} */ (e.target);
-    const btn = t.closest?.("[data-parent-tab]");
-    if (!btn) return;
+
+    if (t.closest?.("#btn-tree-zoom-out")) {
+      e.preventDefault();
+      stepTreeZoom(-1);
+      return;
+    }
+    if (t.closest?.("#btn-tree-zoom-in")) {
+      e.preventDefault();
+      stepTreeZoom(1);
+      return;
+    }
+    // 単一トグル: 最小なら拡大、それ以外は縮小
+    if (t.closest?.("#btn-tree-zoom")) {
+      e.preventDefault();
+      if (treeScaleIndex >= TREE_SCALE_STEPS.length - 1) {
+        treeScaleIndex = 0; // 拡大（100%へ）
+      } else {
+        treeScaleIndex += 1; // 一段縮小
+      }
+      applyTreeZoomUi();
+      return;
+    }
+
+    const tab = t.closest?.("[data-parent-tab]");
+    if (!tab) return;
     e.preventDefault();
-    const id = btn.getAttribute("data-parent-tab");
+    const id = tab.getAttribute("data-parent-tab");
     if (id !== "list" && id !== "tree") return;
     parentMapTab = id;
     applyParentMapTabs(document);
+    applyTreeZoomUi();
   });
   // 初回反映
   applyParentMapTabs(document);
+  applyTreeZoomUi();
 }
 
 /**
