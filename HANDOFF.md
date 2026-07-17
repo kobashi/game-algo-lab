@@ -44,7 +44,7 @@
 - **i18n**（多言語 UI）— 当面は日本語固定  
 
 計画の正本: [docs/interactive_game_programming_material_plan.docx](docs/interactive_game_programming_material_plan.docx)（**策定 2026年7月**）。  
-実装対応・バックログは [docs/ROADMAP.md](docs/ROADMAP.md)。索引: [docs/README.md](docs/README.md)
+実装対応・**企画中トピック一覧**・バックログは [docs/ROADMAP.md](docs/ROADMAP.md)（§2.3–2.4）。索引: [docs/README.md](docs/README.md)
 
 ---
 

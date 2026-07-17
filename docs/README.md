@@ -5,7 +5,7 @@ Game Algo Lab の **方針・仕様・分業** はここに集約する。
 | 文書 | 内容 |
 |------|------|
 | **[interactive_game_programming_material_plan.docx](./interactive_game_programming_material_plan.docx)** | **計画の正本**（構想・設計資料）。**策定: 2026年7月** |
-| [ROADMAP.md](./ROADMAP.md) | 正本の要約・実装対応表・運用バックログ（E2E / i18n 等） |
+| [ROADMAP.md](./ROADMAP.md) | 正本の要約・実装対応・**企画中トピック/カテゴリ**・バックログ（E2E / i18n） |
 | [PLATFORM.md](./PLATFORM.md) | 全トピック共通の教材仕様（現行静的サイト） |
 | [WORKFLOW.md](./WORKFLOW.md) | Git 運用と実装フロー |
 | [topics/CATALOG.md](./topics/CATALOG.md) | カテゴリ別トピック一覧・**成熟度** |

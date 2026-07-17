@@ -3,7 +3,8 @@
 最終更新: 2026-07-17  
 
 - **実装の正**: この表 と `js/main.js` の `TOPICS`（ずれたら両方直す）  
-- **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable`）
+- **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable`）  
+- **未実装のカテゴリ・トピック（企画中のみ）**: [../ROADMAP.md](../ROADMAP.md) の **§2.3 / §2.4**。メニュー未掲載・SPEC 未作成。
 
 ### 成熟度の略号
 
@@ -70,6 +71,14 @@
 | 一発 (`oneshot`) | 6 | and-or, minimax, alpha-beta, monte-carlo, multi-armed-bandit, fsm |
 | 調整 (`revised`) | 6 | bfs, dfs, dijkstra, best-first, astar, collision |
 | 安定 (`stable`) | 0 | — |
+
+---
+
+## 企画中（本カタログ外）
+
+実装済み以外のカテゴリ（`fundamentals`, `ai-steering`, `spatial`, `hci`, `networking`, `audio`, `graphics`, `quality`, `procgen` 等）および  
+MCTS・ニム・4×4 オセロ・物理段階・Boids・通信 等のトピックは **[ROADMAP.md §2.4](../ROADMAP.md)** に **企画中** として列挙する。  
+着手するまで **ready 行を増やさない**（先に ROADMAP の状態を「実装済」に更新する運用でも可）。
 
 ---
 
