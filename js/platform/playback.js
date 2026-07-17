@@ -10,6 +10,8 @@
  * @property {HTMLInputElement | null} [speedEl]
  * @property {() => boolean} onTick  true なら継続、false で停止
  * @property {number} [defaultDelayMs]
+ * @property {(sliderValue: number) => number} [delayFromSpeed]
+ *   スライダー値 → 待ち ms。経路探索は (v) => 450 - v など
  * @property {string} [labelPlay] 停止中のボタン文言
  * @property {string} [labelPause] 再生中のボタン文言
  */
@@ -23,6 +25,7 @@ export function createPlayback(opts) {
     speedEl = null,
     onTick,
     defaultDelayMs = 200,
+    delayFromSpeed = null,
     labelPlay = "再生",
     labelPause = "一時停止",
   } = opts;
@@ -33,6 +36,9 @@ export function createPlayback(opts) {
 
   function delayMs() {
     const v = Number(speedEl?.value);
+    if (delayFromSpeed && Number.isFinite(v)) {
+      return Math.max(16, delayFromSpeed(v));
+    }
     return Number.isFinite(v) && v > 0 ? v : defaultDelayMs;
   }
 

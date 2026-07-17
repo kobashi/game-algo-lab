@@ -1,13 +1,17 @@
 /**
  * ステートマシンデモ（説明特化 UI）
  * - SVG 状態図、イベントボタン、遷移表、履歴
- * - 経路探索マップは使わない
+ * 共通基盤: js/platform
  */
 import { FSM_CONFIG, transitionKey } from "./maps/fsm-config.js";
+import {
+  createStatus,
+  createPlayback,
+  loadTextSample,
+} from "./platform/index.js";
 
 const svg = document.getElementById("fsm-svg");
 const eventButtons = document.getElementById("event-buttons");
-const statusEl = document.getElementById("status");
 const storyEl = document.getElementById("fsm-story");
 const actorState = document.getElementById("actor-state");
 const actorBlurb = document.getElementById("actor-blurb");
@@ -20,6 +24,8 @@ const btnReset = document.getElementById("btn-reset");
 const speedEl = document.getElementById("speed");
 const csharpSample = document.getElementById("csharp-sample");
 
+const setStatus = createStatus(document.getElementById("status"));
+
 const R = 36;
 
 let current = FSM_CONFIG.initial;
@@ -31,13 +37,7 @@ let lastFrom = null;
 let lastTo = null;
 let lastAccepted = false;
 
-let running = false;
-let timerId = null;
 let demoIndex = 0;
-
-function setStatus(msg) {
-  if (statusEl) statusEl.textContent = msg;
-}
 
 function stateIds() {
   return Object.keys(FSM_CONFIG.states);
@@ -264,19 +264,9 @@ function renderAll() {
 }
 
 // ----- 自動デモ -----
-function stopAuto() {
-  running = false;
-  if (btnPlay) btnPlay.textContent = "自動デモ";
-  if (timerId !== null) {
-    clearTimeout(timerId);
-    timerId = null;
-  }
-}
-
 function stepDemo() {
   const script = FSM_CONFIG.demoScript;
   if (demoIndex >= script.length) {
-    stopAuto();
     setStatus("自動デモ終了 — リセットで最初から");
     if (storyEl) {
       storyEl.textContent =
@@ -296,50 +286,33 @@ function stepDemo() {
   return demoIndex < script.length;
 }
 
-function scheduleDemo() {
-  if (!running) return;
-  const delay = Number(speedEl?.value) || 550;
-  timerId = setTimeout(() => {
-    if (!running) return;
-    if (stepDemo()) scheduleDemo();
-    else stopAuto();
-  }, delay);
+const playback = createPlayback({
+  btnPlay: /** @type {HTMLButtonElement | null} */ (btnPlay),
+  speedEl: /** @type {HTMLInputElement | null} */ (speedEl),
+  onTick: () => stepDemo(),
+  defaultDelayMs: 550,
+  labelPlay: "自動デモ",
+  labelPause: "停止",
+});
+
+function stopAuto() {
+  playback.stop();
 }
 
-function togglePlay() {
-  if (running) {
+btnPlay?.addEventListener("click", () => {
+  if (playback.running) {
     stopAuto();
     setStatus("自動デモを停止");
     return;
   }
-  // 続きから / 終わっていれば最初から
   if (demoIndex >= FSM_CONFIG.demoScript.length) {
     reset();
   }
-  running = true;
-  if (btnPlay) btnPlay.textContent = "停止";
-  // すぐ1手
-  if (stepDemo()) scheduleDemo();
-  else stopAuto();
-}
-
-async function loadCsharp() {
-  if (!csharpSample) return;
-  try {
-    const res = await fetch("../samples/FsmExample.cs");
-    if (!res.ok) throw new Error(String(res.status));
-    csharpSample.textContent = await res.text();
-  } catch {
-    csharpSample.textContent =
-      "// samples/FsmExample.cs を読み込めませんでした。";
-  }
-}
-
-btnPlay?.addEventListener("click", togglePlay);
+  playback.start();
+});
 btnStep?.addEventListener("click", () => {
   stopAuto();
   if (demoIndex >= FSM_CONFIG.demoScript.length) {
-    // 手動ステップ: 何もしないので案内
     setStatus("デモ脚本は終了済み。下のイベントボタンで手動入力してください");
     return;
   }
@@ -348,4 +321,8 @@ btnStep?.addEventListener("click", () => {
 btnReset?.addEventListener("click", reset);
 
 reset();
-loadCsharp();
+loadTextSample(
+  "../samples/FsmExample.cs",
+  csharpSample,
+  "// samples/FsmExample.cs を読み込めませんでした。"
+);

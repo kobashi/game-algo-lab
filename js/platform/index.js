@@ -18,3 +18,11 @@ export {
 export { createPlayback } from "./playback.js";
 export { mulberry32, randomIndex } from "./rng.js";
 export { layoutTree, applySvgSize } from "./tree-layout.js";
+export {
+  canvasCellFromEvent,
+  parsePaintMode,
+  syncPaintButtons,
+  placeGoal,
+  paintMapCell,
+  bindMapPaint,
+} from "./grid-paint.js";

@@ -72,10 +72,12 @@ docs/templates/            # SPEC / スキャフォールド
 
 | 領域 | platform 利用 |
 |------|----------------|
-| ゲーム木（AND-OR / Min-Max / α-β / MC） | レイアウト・status・playback・C# 読込など **済み** |
+| ゲーム木（AND-OR / Min-Max / α-β / MC） | layout・status・playback・C# など **済み** |
 | 多腕バンディット | rng・status・C# **済み** |
-| 経路探索（BFS…） | 未移行（次の候補: playback / C# / ペイント共通化） |
-| AABB / FSM | 未移行（次の候補: status / C# / playback） |
+| 経路探索（BFS〜A*） | playback（`delayFromSpeed`）・status・C#・**`bindMapPaint`** **済み** |
+| AABB / FSM | status・playback・C# **済み** |
+
+残タスク例: 経路探索の盤面描画共通化、HTML ヘッダー共有化。
 ---
 
 ## 3. 学習体験の統一

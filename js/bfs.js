@@ -14,6 +14,13 @@ import {
   updateParentMapPanels,
   cellLabel,
 } from "./ds-viz.js";
+import {
+  createStatus,
+  createResultPanel,
+  createPlayback,
+  loadTextSample,
+  bindMapPaint,
+} from "./platform/index.js";
 
 const COLS = 14;
 const ROWS = 14;
@@ -82,13 +89,8 @@ let foundGoal = null;
 let queue = [];
 /** @type {Map<string, {x:number,y:number}|null>} */
 let cameFrom = new Map();
-/** @type {'wall' | 'goal' | -1 | 0 | 1 | 2} */
-let paintMode = 1;
-let painting = false;
-let running = false;
 let finished = false;
 let found = false;
-let timerId = null;
 
 function key(x, y) {
   return `${x},${y}`;
@@ -163,9 +165,7 @@ function resetSearch() {
   updateDsViz();
 }
 
-function setStatus(text) {
-  statusEl.textContent = text;
-}
+const setStatus = createStatus(statusEl);
 
 function updateDsViz() {
   const qItems = queue.map((c) => cellLabel(c.x, c.y));
@@ -214,27 +214,20 @@ function updateDsViz() {
   });
 }
 
-async function loadCsharpSample() {
-  if (!csharpSample) return;
-  try {
-    const res = await fetch("../samples/BfsExample.cs");
-    if (!res.ok) throw new Error(String(res.status));
-    const text = await res.text();
-    csharpSample.textContent = text;
-  } catch {
-    csharpSample.textContent =
-      "// samples/BfsExample.cs を読み込めませんでした。\n// ローカルサーバー経由で開いてください。";
-  }
+function loadCsharpSample() {
+  loadTextSample(
+    "../samples/BfsExample.cs",
+    csharpSample,
+    "// samples/BfsExample.cs を読み込めませんでした。"
+  );
 }
 
+const resultPanel = createResultPanel(resultEl);
 function hideCompare() {
-  resultEl.hidden = true;
-  resultEl.innerHTML = "";
+  resultPanel.hide();
 }
-
 function showCompare(html) {
-  resultEl.hidden = false;
-  resultEl.innerHTML = html;
+  resultPanel.show(html);
 }
 
 function cellFillColor(x, y) {
@@ -546,99 +539,27 @@ function stepOnce() {
   return true;
 }
 
-function stopAuto() {
-  running = false;
-  btnPlay.textContent = "再生";
-  if (timerId !== null) {
-    clearTimeout(timerId);
-    timerId = null;
-  }
-}
+const playback = createPlayback({
+  btnPlay,
+  speedEl: speedInput,
+  delayFromSpeed: (v) => 450 - v,
+  onTick: () => stepOnce(),
+});
 
-function scheduleNext() {
-  if (!running) return;
-  const delay = 450 - Number(speedInput.value);
-  timerId = setTimeout(() => {
-    if (stepOnce()) scheduleNext();
-  }, delay);
+function stopAuto() {
+  playback.stop();
 }
 
 function togglePlay() {
   if (finished) resetSearch();
-  if (running) {
+  if (playback.running) {
     stopAuto();
     setStatus("一時停止");
     return;
   }
-  running = true;
-  btnPlay.textContent = "一時停止";
-  if (stepOnce()) scheduleNext();
+  playback.start();
 }
 
-function canvasCellFromEvent(e) {
-  const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
-  const x = Math.floor(((e.clientX - rect.left) * scaleX) / CELL);
-  const y = Math.floor(((e.clientY - rect.top) * scaleY) / CELL);
-  return { x, y };
-}
-
-/**
- * ゴール G を (x,y) に配置 / 削除（複数可）。
- * @param {boolean} toggle  true=クリックで追加/削除切替、false=ドラッグで追加のみ
- */
-function placeGoal(x, y, toggle = true) {
-  if (!inBounds(x, y) || isStart(x, y)) return false;
-  const idx = goals.findIndex((g) => g.x === x && g.y === y);
-  if (idx >= 0) {
-    if (!toggle) return false;
-    if (goals.length <= 1) {
-      setStatus("ゴールは最低1つ必要です");
-      return false;
-    }
-    goals.splice(idx, 1);
-    walls[y][x] = false;
-    costs[y][x] = 1;
-    return true;
-  }
-  walls[y][x] = false;
-  costs[y][x] = 0;
-  goals.push({ x, y });
-  return true;
-}
-
-function paintCell(x, y) {
-  if (!inBounds(x, y) || isStart(x, y)) return false;
-  if (paintMode === "goal") return placeGoal(x, y, true);
-  if (isGoal(x, y)) return false;
-
-  if (paintMode === "wall") {
-    walls[y][x] = !walls[y][x];
-    if (walls[y][x]) {
-      // 壁にしたらコストは保持（解除時に戻る）
-    }
-  } else {
-    walls[y][x] = false;
-    costs[y][x] = paintMode;
-  }
-  return true;
-}
-
-/** ドラッグ塗り用: wall は ON 固定、コストは上書き、goal は追加のみ */
-function paintCellDrag(x, y) {
-  if (!inBounds(x, y) || isStart(x, y)) return false;
-  if (paintMode === "goal") return placeGoal(x, y, false);
-  if (isGoal(x, y)) return false;
-
-  if (paintMode === "wall") {
-    walls[y][x] = true;
-  } else {
-    walls[y][x] = false;
-    costs[y][x] = paintMode;
-  }
-  return true;
-}
 
 function afterEdit() {
   // マップ編集後は探索状態をクリア
@@ -656,52 +577,11 @@ function afterEdit() {
   updateDsViz();
 }
 
-function onPointerDown(e) {
-  if (running) return;
-  if (finished) {
-    // 編集時は自動で探索結果をクリア
-  }
-  painting = true;
-  canvas.setPointerCapture?.(e.pointerId);
-  const { x, y } = canvasCellFromEvent(e);
-  if (paintMode === "wall") {
-    // クリック1回目はトグル
-    if (paintCell(x, y)) afterEdit();
-  } else {
-    if (paintCellDrag(x, y)) afterEdit();
-  }
-}
 
-function onPointerMove(e) {
-  if (!painting || running) return;
-  const { x, y } = canvasCellFromEvent(e);
-  if (paintCellDrag(x, y)) afterEdit();
-}
 
-function onPointerUp(e) {
-  painting = false;
-  try {
-    canvas.releasePointerCapture?.(e.pointerId);
-  } catch {
-    /* ignore */
-  }
-}
-
-function setPaintMode(mode) {
-  paintMode = mode;
-  for (const btn of paintGroup.querySelectorAll("[data-paint]")) {
-    const v = btn.getAttribute("data-paint");
-    const active =
-      v === "wall" || v === "goal" ? mode === v : Number(v) === mode;
-    btn.classList.toggle("is-active", active);
-    btn.setAttribute("aria-pressed", active ? "true" : "false");
-  }
-}
-
-// イベント
 btnPlay.addEventListener("click", togglePlay);
 btnStep.addEventListener("click", () => {
-  if (running) stopAuto();
+  if (playback.running) stopAuto();
   if (finished) resetSearch();
   stepOnce();
 });
@@ -711,23 +591,25 @@ btnReset.addEventListener("click", () => {
   setStatus("bfs-map.js の初期地図を再読み込みしました");
 });
 
-paintGroup.addEventListener("click", (e) => {
-  const btn = e.target.closest("[data-paint]");
-  if (!btn) return;
-  const v = btn.getAttribute("data-paint");
-  setPaintMode(v === "wall" || v === "goal" ? v : Number(v));
+bindMapPaint({
+  canvas,
+  paintGroup,
+  cellSize: CELL,
+  isBusy: () => playback.running,
+  getContext: () => ({
+    walls,
+    costs,
+    goals,
+    start,
+    inBounds,
+    isStart,
+    isGoal,
+  }),
+  onEdit: () => afterEdit(),
+  setStatus,
+  initialMode: 1,
 });
 
-canvas.addEventListener("pointerdown", onPointerDown);
-canvas.addEventListener("pointermove", onPointerMove);
-canvas.addEventListener("pointerup", onPointerUp);
-canvas.addEventListener("pointercancel", onPointerUp);
-canvas.addEventListener("pointerleave", () => {
-  painting = false;
-});
-
-// 起動
-setPaintMode(1);
 loadInitialMap();
 resetSearch();
 loadCsharpSample();

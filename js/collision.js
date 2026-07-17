@@ -1,17 +1,19 @@
 /**
  * AABB 衝突判定デモ（説明特化 UI）
- * - A: ポジティブ（重なり判定）overlapX ∧ overlapY
- * - B: ネガティブ（分離判定）¬(separatedX ∨ separatedY)
- * - B′: 早期 return 版（複雑度比較用）
- * 経路探索マップは使わない
+ * - A: ポジティブ / B: ネガティブ / B′: 早期 return
+ * 共通基盤: js/platform
  */
+import {
+  createStatus,
+  createPlayback,
+  loadTextSample,
+} from "./platform/index.js";
 
 const canvas = document.getElementById("aabb-canvas");
 const ctx = canvas?.getContext("2d");
 const projX = document.getElementById("proj-x");
 const projY = document.getElementById("proj-y");
 
-const statusEl = document.getElementById("status");
 const storyEl = document.getElementById("aabb-story");
 const verdictEl = document.getElementById("verdict");
 const verdictText = document.getElementById("verdict-text");
@@ -37,6 +39,8 @@ const sepYNote = document.getElementById("sep-y-note");
 const methodPos = document.getElementById("method-positive");
 const methodNeg = document.getElementById("method-negative");
 
+const setStatus = createStatus(document.getElementById("status"));
+
 /** @typedef {{ x: number, y: number, w: number, h: number, color: string, label: string }} Box */
 /** @typedef {{ minX: number, minY: number, maxX: number, maxY: number }} Bounds */
 
@@ -61,8 +65,6 @@ let drag = null;
 let explainStep = 0;
 /** @type {'both'|'positive'|'negative'} */
 let focusMode = "both";
-let running = false;
-let timerId = null;
 let demoT = 0;
 
 const PRESETS = {
@@ -161,10 +163,6 @@ if (a.MinX > b.MaxX) return false;
 if (a.MaxY < b.MinY) return false;
 if (a.MinY > b.MaxY) return false;
 return true;`;
-
-function setStatus(msg) {
-  if (statusEl) statusEl.textContent = msg;
-}
 
 function bounds(box) {
   return {
@@ -736,15 +734,6 @@ function stepExplain() {
   refresh();
 }
 
-function stopAuto() {
-  running = false;
-  if (btnPlay) btnPlay.textContent = "自動デモ";
-  if (timerId !== null) {
-    clearTimeout(timerId);
-    timerId = null;
-  }
-}
-
 function demoFrame() {
   demoT += 0.035;
   boxA.x = 80 + Math.sin(demoT) * 160 + 80;
@@ -756,40 +745,20 @@ function demoFrame() {
     `自動デモ… 衝突=${t.positive}（A≡B: ${t.agree ? "yes" : "no"}）`
   );
   refresh();
+  return true; // 手動停止まで継続
 }
 
-function scheduleDemo() {
-  if (!running) return;
-  const delay = Number(speedEl?.value) || 120;
-  timerId = setTimeout(() => {
-    if (!running) return;
-    demoFrame();
-    scheduleDemo();
-  }, delay);
-}
+const playback = createPlayback({
+  btnPlay: /** @type {HTMLButtonElement | null} */ (btnPlay),
+  speedEl: /** @type {HTMLInputElement | null} */ (speedEl),
+  onTick: () => demoFrame(),
+  defaultDelayMs: 120,
+  labelPlay: "自動デモ",
+  labelPause: "停止",
+});
 
-function togglePlay() {
-  if (running) {
-    stopAuto();
-    setStatus("自動デモを停止");
-    return;
-  }
-  running = true;
-  if (btnPlay) btnPlay.textContent = "停止";
-  demoT = 0;
-  scheduleDemo();
-}
-
-async function loadCsharp() {
-  if (!csharpSample) return;
-  try {
-    const res = await fetch("../samples/AabbExample.cs");
-    if (!res.ok) throw new Error(String(res.status));
-    csharpSample.textContent = await res.text();
-  } catch {
-    csharpSample.textContent =
-      "// samples/AabbExample.cs を読み込めませんでした。";
-  }
+function stopAuto() {
+  playback.stop();
 }
 
 // イベント
@@ -798,7 +767,15 @@ canvas?.addEventListener("pointermove", onPointerMove);
 canvas?.addEventListener("pointerup", onPointerUp);
 canvas?.addEventListener("pointercancel", onPointerUp);
 
-btnPlay?.addEventListener("click", togglePlay);
+btnPlay?.addEventListener("click", () => {
+  if (playback.running) {
+    stopAuto();
+    setStatus("自動デモを停止");
+    return;
+  }
+  demoT = 0;
+  playback.start();
+});
 btnStep?.addEventListener("click", stepExplain);
 btnReset?.addEventListener("click", resetBoxes);
 
@@ -833,4 +810,8 @@ document.querySelectorAll("[data-focus]").forEach((btn) => {
 
 renderComplexityTable();
 resetBoxes();
-loadCsharp();
+loadTextSample(
+  "../samples/AabbExample.cs",
+  csharpSample,
+  "// samples/AabbExample.cs を読み込めませんでした。"
+);
