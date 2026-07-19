@@ -33,8 +33,10 @@ export const CURRICULUM_OUTLINE = [
     phase: "第2期",
     blurb: "デモあり（AND-OR〜バンディット）。以下は追加予定。",
     items: [
+      { id: "tic-tac-toe", title: "三目並べ（全解析・対称性除去）" },
       { id: "mcts", title: "モンテカルロ木探索 (MCTS)" },
       { id: "nim", title: "ニム（完全読み切り→理論解）" },
+      { id: "chopsticks", title: "割り箸（循環グラフ・後退解析）" },
       { id: "othello-4x4", title: "4×4 オセロ（符号化・対称正規化）" },
       { id: "game-tree-engine", title: "共通探索エンジン" },
     ],

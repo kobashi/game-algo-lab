@@ -15,6 +15,8 @@
 
 直近の対応: 正本 docx との突き合わせレビュー（Fable5）を受け、ROADMAP.md §2.4 の物理／CG／サウンド企画中表に見落とし項目を追加し、`patterns`/`quality` 分割と FSM のカテゴリ分類の根拠を明記（Sonnet5、`js/curriculum-outline.js` も同期済み）。コード・メニュー・成熟度は無変更。
 
+**2026-07-19 正本改訂（ユーザー全件承認）**: Fable5 のミニゲームレビュー（`docs/reviews/2026-07-19-docx-minigames-review.md`、変更履歴版 docx あり）を全件承認し、正本 docx に反映 — §2 実在ルール優先原則、§4 procgen 行、§6.1 三目並べ、**§6.4 割り箸（循環ゲームグラフ・後退解析）新設**、§15 第2期追記。ROADMAP §2.4 と `curriculum-outline.js` に `tic-tac-toe` / `chopsticks` を企画中として追加（デモ実装・SPEC は未着手）。実装優先度の目安: tic-tac-toe → chopsticks（レビュー文書 §4）。
+
 ---
 
 ## プロジェクト概要

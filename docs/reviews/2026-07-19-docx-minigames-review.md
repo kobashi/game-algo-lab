@@ -3,6 +3,7 @@
 | 項目 | 内容 |
 |------|------|
 | レビュー日 | 2026-07-19 |
+| **状態** | **全件承認（2026-07-19）** — 提案1〜6を正本 docx へ反映済み。ROADMAP §2.4 / `curriculum-outline.js` に `tic-tac-toe` / `chopsticks` を同期済み |
 | レビュー担当 | Fable5（レビュー専任。docx・実装は編集しない） |
 | 対象 | `docs/interactive_game_programming_material_plan.docx`（2026年7月版） |
 | 観点 | **実際に遊び得る実在ルール**のミニゲームで各アルゴリズムを確認できるか |
