@@ -7,6 +7,7 @@
 | 対象 | `docs/interactive_game_programming_material_plan.docx`（2026年7月版） |
 | 観点 | **実際に遊び得る実在ルール**のミニゲームで各アルゴリズムを確認できるか |
 | 反映先 | 承認後、Grok（docx 改訂）→ Sonnet5（ROADMAP / curriculum-outline 同期） |
+| **レビュー版 Docx** | [interactive_game_programming_material_plan_fable5_review.docx](../interactive_game_programming_material_plan_fable5_review.docx) — 本レビューの提案1〜6を **Word 変更履歴（作成者 Fable5）** として挿入した版。全却下で正本と同一に戻ることを検証済み。正本は無変更 |
 
 ---
 
