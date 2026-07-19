@@ -6,7 +6,7 @@
 | **策定** | **2026年7月**（資料表題どおり） |
 | **リポジトリ登録** | 2026-07-17（`docs/` に配置し Git 管理開始） |
 | **本 Markdown** | 正本の要約・**実装状況の対応表**・Game Algo Lab 運用メモ（エージェント／GitHub 向け） |
-| **最終更新（md）** | 2026-07-17（未実装トピック・カテゴリを **企画中** として反映。実装はしない） |
+| **最終更新（md）** | 2026-07-19（正本 §8/§11/§12 の見落とし項目を追加、`patterns`/`quality` 分割と FSM 分類の根拠を明記。実装はしない） |
 
 正本の変更や方針の大きな見直しは **Docx を更新したうえで本ファイルを同期**する。  
 細部の図表・講義向け長文は正本を開き、日々の実装判断は本ファイルと [topics/CATALOG.md](./topics/CATALOG.md) を優先する。
@@ -146,6 +146,8 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 実装済みトピックの詳細・成熟度は [topics/CATALOG.md](./topics/CATALOG.md) / [topics/MATURITY.md](./topics/MATURITY.md)。  
 **企画中の id は仮**。着手時に衝突を避けて確定する。
 
+> **`patterns` / `quality` 分割について**: 正本 §13 は「ソフトウェア設計・品質」という **単一領域**（イベント〜プロファイリングまで）。本サイトはメニュー UI の都合で `patterns`（設計パターン寄り）と `quality`（品質・計測寄り）の **2 カテゴリに分割**している。上表の「第2〜3期」「横断」という期の目安は **正本 §15 に明記はなく、サイト運用上の便宜的な推定**。正本との対応は 1 領域 → 2 カテゴリの意図的な分割であり、矛盾ではなく **サイト独自の実装分類**として扱う。
+
 ---
 
 ## 2.4 企画中トピック一覧（実装しない・計画のみ）
@@ -192,12 +194,17 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `collision` | AABB 衝突判定 | 実装済 | 二重判定・複雑度比較 |
 | `grid-pseudo-physics` | グリッド擬似物理 | **企画中** | 1 マス落下・接地 |
 | `velocity-motion` | 速度による移動 | **企画中** | 位置←位置＋速度 |
+| `accel-decel` | 加減速 | **企画中** | 最高速度・方向転換・慣性（正本 §8.1、加速度と重力とは別項） |
 | `accel-gravity` | 加速度と重力 | **企画中** | 放物・ジャンプ |
 | `friction-bounce` | 摩擦・反発 | **企画中** | 減衰・反発係数 |
 | `momentum-1d` | 質量と運動量（1 次元） | **企画中** | 弾性/非弾性 |
+| `rotational-motion` | 回転運動 | **企画中** | 角速度・トルク・慣性モーメント・接触点による回転（正本 §8.1） |
 | `circle-collision` | 円同士・円と AABB | **企画中** | Clamp・最近点 |
+| `raycast-shapes` | 線分・レイキャストと図形の交差 | **企画中** | 正本 §8.2 |
 | `obb-sat` | OBB / 分離軸定理 (SAT) | **企画中** | 回転矩形 |
 | `swept-aabb` | 連続衝突 (Swept AABB / TOI) | **企画中** | 高速移動の貫通防止 |
+| `rotating-collision` | 回転中の物体との衝突 | **企画中** | サブステップから導入（正本 §8.2） |
+| `concave-compound` | 凹形状の凸分割・複合コライダー | **企画中** | 正本 §8.2 |
 | `collision-response` | 衝突応答 | **企画中** | 侵入解消・滑り・摩擦 |
 
 ---
@@ -228,6 +235,8 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 ---
 
 ### `ai-steering` — ゲーム AI・自律移動（カテゴリごと企画中）
+
+> **FSM の分類について**: 正本 §4 の領域表ではステートマシンは本カテゴリ（ゲームAI・自律移動）に属する。しかし本サイトは実装済みの UI 型（説明特化・非マップ）の都合で `patterns`（設計パターン）カテゴリに置いている。これは正本の体系からの **意図的なサイト側分類**であり、今後 FSM を本カテゴリへ移す予定はない（変更する場合は `js/main.js` の `category`/`badge`、CATALOG、本 ROADMAP を同時に更新する）。
 
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
@@ -284,9 +293,13 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 |----------|----------|------|------|
 | `sfx-events` | イベントと効果音 | **企画中** | |
 | `sfx-voice-limit` | 同時発音・重複制御 | **企画中** | |
+| `sfx-randomize` | ランダム化 | **企画中** | 音量・ピッチの揺らぎ、シャッフルバッグ（正本 §11.1） |
 | `sfx-material` | 材質別・衝突強度と音 | **企画中** | |
 | `sfx-spatial` | 距離・パン・優先順位 | **企画中** | |
+| `audio-bus-ducking` | サウンドバスとダッキング | **企画中** | BGM/SE/UI/Voice の分類と一時減衰（正本 §11.1） |
 | `bgm-loop` | BGM ループ / イントロ＋ループ | **企画中** | |
+| `bgm-transition-compare` | 切替方式の比較 | **企画中** | 即時切替・クロスフェード・拍同期・専用トランジション（正本 §11.2） |
+| `bgm-quantize` | 量子化 | **企画中** | イベントを次拍・次小節へ丸める（正本 §11.2） |
 | `bgm-interactive` | 拍同期・レイヤー型 BGM | **企画中** | ボス登場デモ（正本共通環境） |
 
 ---
@@ -301,7 +314,9 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `gfx-mesh-uv` | メッシュ・UV・マテリアル | **企画中** | |
 | `gfx-lighting-alpha` | ライティング・透明度 | **企画中** | |
 | `gfx-animation-vfx` | アニメーション・パーティクル | **企画中** | |
+| `gfx-postprocess` | ポストプロセス | **企画中** | Bloom・色調・Vignette（正本 §12.1） |
 | `gfx-lod-culling` | LOD・カリング | **企画中** | 負荷計測とセット |
+| `gfx-ui-canvas` | UI 描画 | **企画中** | Canvas・Anchor・Pivot・解像度対応（正本 §12.1） |
 | `gfx-gpu-concepts` | GPU パイプライン概説 | **企画中** | 説明中心（正本 §12.2） |
 
 ---

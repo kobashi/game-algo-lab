@@ -9,6 +9,14 @@
 
 ---
 
+## エージェント運用（2026-07-19〜）
+
+複数 AI 体制: **Grok4.5** が開発の起点（企画・ROADMAP 立案）、**Fable5** はレビュー専任（コード非編集）、**Sonnet5** が実装を担当。詳細は [docs/WORKFLOW.md §10](docs/WORKFLOW.md)。
+
+直近の対応: 正本 docx との突き合わせレビュー（Fable5）を受け、ROADMAP.md §2.4 の物理／CG／サウンド企画中表に見落とし項目を追加し、`patterns`/`quality` 分割と FSM のカテゴリ分類の根拠を明記（Sonnet5、`js/curriculum-outline.js` も同期済み）。コード・メニュー・成熟度は無変更。
+
+---
+
 ## プロジェクト概要
 
 - **名前**: Game Algo Lab  
