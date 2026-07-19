@@ -24,7 +24,9 @@
 
 **2026-07-19 `chopsticks`（割り箸）実装（Sonnet5）**: [SPEC](docs/topics/chopsticks/SPEC.md) を implemented に更新し `algorithms/chopsticks.html` / `js/chopsticks.js` / `js/maps/chopsticks-config.js` / `samples/ChopsticksExample.cs` を追加。局面は `{mover:[a,b], opp:[c,d]}`（手番側/相手側、正規化ソート済み）で表現し、状態数は 15×15=225（SPEC の上界450以下）。後退解析を波単位ジェネレータ（`retrogradeAnalysisSteps`）で実装し、波0=合法手0件(負け)からWIN/LOSEを確定、最後まで残った局面をDRAWとする。15×15マトリクスで波の広がりをアニメーション表示、対局ビューでは各合法手の行き先3値ラベルを表示、CPUはWIN維持/DRAWはDRAW維持の応手を実装（LOSE時の最長粘りはSPEC通りv1では未実装）。バリアント（分割・死の条件「5以上/ちょうど5」・mod5）は独立トグルで比較表に蓄積。深さ制限Min-Max（5/10/20、メモ化negamax）対比パネルも実装。数値検証（scratchpadのNode検証スクリプトで実施、smoke-platform.pyもALL PASSED）: 状態数225・全終局が波0/LOSE、6バリアント全てで不動点性質（WIN⇔∃手→相手LOSE、LOSE⇔∀手→相手WIN、DRAW⇔勝ち手なし∧∃手→相手DRAW）を全局面で確認、独立に再実装した後退解析（predecessor逆伝播ベース、chopsticks.jsのlegalMovesを使わない別コード）と全225局面のラベルが完全一致、分割ありで初めてDRAW局面が出現（標準0→分割あり14）、mod5/split+exact5では初期局面自体がDRAWに変わる、深さ制限Min-MaxはDRAW局面で深さ5/10/20とも値0のまま確定しない一方、決着バリアント（標準）は深さ10以降で真値(-1)に収束することを確認。詳細な数値表は下記「割り箸 メモ」。ready: true・`oneshot`。
 
-**次の実装ターゲット**: `nim`（ニム・完全読み切り→剰余/nim-sum）— 正本 §6.4 学習進行の目安（三目並べ→ニム→割り箸→4×4オセロ）どおり。SPEC 未着手。
+**2026-07-19 `nim`（ニム）実装（Sonnet5）**: [SPEC](docs/topics/nim/SPEC.md) を implemented に更新し `algorithms/nim.html` / `js/nim.js` / `js/maps/nim-config.js` / `samples/NimExample.cs` を追加。モード1（1山）は逆向き着色DP（`solveSingle`/`singleColoringSteps`）を n=0..N の順に1ステップずつ進めるジェネレータで実装し、0..Nの帯を左から着色。塗り終わると負け(LOSE)位置が n mod (k+1) = 0 の位置に並ぶ縞模様になり、帯の下に剰余行を並べて視覚比較できる。k（1〜5）・N（5〜40）スライダーで即座に縞の間隔が変わる。モード2（複数山）はメモ化探索（`solveMulti`）と nim-sum（`nimSum` = 各山のXOR）を実装し、2進パネルで各山の桁を揃えて表示・XOR列（nim-sum）を色分け表示。「一致確認」ボタン（`verifyAll`）で初期山構成の直積（各山0..初期値）の全局面についてメモ化探索のW/LとXOR判定を照合し、結果を result-compare に蓄積表示。CPUは1山が剰余を0にする手、複数山がnim-sumを0にする手（XORの構成的性質から直接算出、`cpuMoveMulti`）。モード切替は `<select>`＋`data-mode-only`属性によるパネル出し分け。数値検証（scratchpadのNode検証スクリプトで実施・全775チェックPASSED、`smoke-platform.py`もALL PASSED）: k=1..5×N=40の全域で着色L集合がn mod (k+1)=0の集合と完全一致、(3,5,7)=192局面・(1,2,3)=24局面・(2,4,6)=105局面すべてで探索とXOR判定が全数一致（探索が触った局面数=全局面数、直積が閉じた状態空間であることを実証）、`nim.js`のsolveMultiを使わない独立実装（素朴な再帰、メモ化なし）を別コードで書き(3,5,7)と(2,4,6)の全局面ラベルが完全一致することを確認、nim-sum≠0の全局面（3プリセット計276局面）でCPUの着手が必ずnim-sum=0の局面に遷移することを確認。プリセット結論: (3,5,7)はnim-sum=1（非0）で先手勝ち、(1,2,3)はnim-sum=0で先手負け、(2,4,6)もnim-sum=0で先手負け——(1,2,3)を単純に2倍しただけの構成だがXORのビットシフト不変性により結論（先手負け）が変わらないことを自前計算で確認した。学習進行の目安どおり NAV_GROUPS / FOOTER_RELATED を「三目並べ→ニム→割り箸」のリレーに更新（tic-tac-toeの次リンクをchopsticksからnimへ、chopsticksの前段リンクをtic-tac-toeからnimへ変更）。ready: true・`oneshot`。
+
+**次の実装ターゲット**: `othello-4x4`（4×4 オセロ・符号化・対称正規化）— 正本 §6.4 学習進行の目安（三目並べ→ニム→割り箸→4×4オセロ）の最後の1本。SPEC 未着手。
 
 ---
 
@@ -87,7 +89,8 @@
 | 11 | AABB | `algorithms/collision.html` | —（説明UI） | `AabbExample.cs` | 軸投影・非マップ |
 | 12 | ステートマシン | `algorithms/fsm.html` | `js/maps/fsm-config.js` | `FsmExample.cs` | 状態図・遷移表・非マップ |
 | 13 | 三目並べ | `algorithms/tic-tac-toe.html` | `js/maps/tic-tac-toe-config.js` | `TicTacToeExample.cs` | negamax全解析。α-β/メモ化/対称性除去(8変換)を独立トグル。3×3専用UI（非マップ） |
-| 14 | 割り箸 | `algorithms/chopsticks.html` | `js/maps/chopsticks-config.js` | `ChopsticksExample.cs` | 循環グラフを後退解析（波単位）で3値化。状態225局面。15×15マトリクス+対局ビュー（非マップ） |
+| 14 | ニム | `algorithms/nim.html` | `js/maps/nim-config.js` | `NimExample.cs` | 1山=逆向き着色DP（周期n mod k+1）／複数山=メモ化探索+nim-sum(XOR)全局面一致確認。2モードUI（非マップ） |
+| 15 | 割り箸 | `algorithms/chopsticks.html` | `js/maps/chopsticks-config.js` | `ChopsticksExample.cs` | 循環グラフを後退解析（波単位）で3値化。状態225局面。15×15マトリクス+対局ビュー（非マップ） |
 
 共通:
 
@@ -109,7 +112,8 @@
 | 4 | モンテカルロ | **ready** — `algorithms/monte-carlo.html` / SPEC |
 | 5 | 多腕バンディット | **ready** — `algorithms/multi-armed-bandit.html` / SPEC |
 | 6 | 三目並べ | **ready** — `algorithms/tic-tac-toe.html` / SPEC（実在ルール優先の初例） |
-| 7 | 割り箸 | **ready** — `algorithms/chopsticks.html` / SPEC（循環グラフ・後退解析の初例） |
+| 7 | ニム | **ready** — `algorithms/nim.html` / SPEC（全探索→周期性・nim-sum の理論解の初例） |
+| 8 | 割り箸 | **ready** — `algorithms/chopsticks.html` / SPEC（循環グラフ・後退解析の初例） |
 
 ### 物理・判定
 | トピック | 状態 |
@@ -179,7 +183,52 @@
   既定で「終盤（残り4手）」プリセットを用意し、コールスタック（盤面ミニチュア）を最後まで追える
 - 設定: `js/maps/tic-tac-toe-config.js`（初版・2026-07-19）
 
+### ニム メモ
+- モード1（1山・サブトラクションゲーム）: `solveSingle(N,k)` が n=0..N の逆向き着色DPの結果配列を返す。
+  `value[0]=LOSE`、n=1..Nは相手をLOSE局面(n-t)へ送れる手t(1..k)が1つでもあればWIN。
+  理論判定 `singleTheory(n,k)` は `n % (k+1) === 0` の1行だが、着色DPと全域で完全一致することを機械確認済み
+- 着色は `singleColoringSteps` ジェネレータで n を1つずつ進める（chopsticksの「波」と違い非循環なので
+  単純な昇順1ステップでよい。SPEC §4の非循環版という位置づけどおり）
+- モード2（複数山）: `solveMulti(piles, memo)` はメモ化再帰探索（山の合計が着手ごとに厳密に減るため
+  循環なし・必ず停止）。`nimSum(piles)` は全山のXOR。`verifyAll(piles)` が初期山構成の直積
+  （各山0..初期値）の全局面についてこの2つを照合する
+- CPUの着手（複数山）はメモ化探索の結果からではなく、nim-sumのXOR構成的性質
+  （`piles[i] XOR nimSum` が `piles[i]` より小さければ、その山をそこまで減らすと着手後のnim-sumが0になる）
+  から直接算出（`cpuMoveMulti`、SPEC §11に判断記録）。正当性は「一致確認」が探索と理論の等価性を
+  別途機械証明しているため担保される
+- プリセット（`js/maps/nim-config.js`）と結論（自前計算・実装値、全局面照合で確認済み）:
+
+  | プリセット | nim-sum | 結論（先手） | 全局面数（直積） |
+  |---|---|---|---|
+  | (3,5,7) | 1（非0） | 勝ち | 192 (=4×6×8) |
+  | (1,2,3) | 0 | 負け | 24 (=2×3×4) |
+  | (2,4,6) | 0 | 負け | 105 (=3×5×7) |
+
+  (2,4,6) は (1,2,3) の全山をちょうど2倍しただけの構成。XORはビットごとの線形演算で、
+  各ビットを1つ左シフトしても0は0のまま変わらないため、(1,2,3)と同じ「先手負け」という
+  結論を保つ好例として一致確認プリセットに採用した
+- 検証（scratchpadのNodeスクリプトで実施・全775チェックPASSED。文献値ではなく自前計算値）:
+  - k=1..5 それぞれ N=40（n=0..40 の全域）で、DP着色のLOSE位置集合が `{n: n%(k+1)==0}` と完全一致
+    （k=1:21件, k=2:14件, k=3:11件, k=4:9件, k=5:7件のLOSE位置を実測・全一致）
+  - (3,5,7)=192局面・(1,2,3)=24局面・(2,4,6)=105局面すべてで `solveMulti` のW/Lと`nimSum≠0`が完全一致。
+    探索が触った局面数（memo.size）は常に全局面数と一致（初期山構成の直積が閉じた到達可能状態空間で
+    あることの実証 — どの手も山を減らすだけなので直積の外には出られない）
+  - `js/nim.js` の `solveMulti` を使わない独立実装（メモ化なしの素朴な再帰を別コードでゼロから記述）で
+    (3,5,7)・(2,4,6) の全局面ラベルが完全一致することを確認（独立実装との突き合わせ）
+  - nim-sum≠0の全局面（3プリセット計276局面: 168+18+90）で `cpuMoveMulti` の着手が必ず
+    nim-sum=0の局面に遷移することを確認（CPU着手アルゴリズムの健全性）
+- 設定: `js/maps/nim-config.js`（初版・2026-07-19）
+
 ### 割り箸 メモ
+- **2026-07-19 改訂1（Sonnet5、Fable5レビュー起点）**: `nim` 実装レビュー中に「割り箸の『波を再生』ボタンが1波進めただけで
+  自動停止する」というバグを発見・確認。原因は `createPlayback` の契約（`onTick()` の戻り値 `true` で次ティックを予約、
+  `false`/`undefined` で自動停止）に対し、`js/chopsticks.js` の `onTick` がブロック本体の矢印関数
+  `() => { const cont = stepWave(); if (!cont) playback.stop(); }` になっており、戻り値が常に `undefined`
+  （falsy）だったため。`stepWave()` 自体は正しく続行可否の boolean を返していたので、修正は
+  `onTick: () => stepWave()` に1行置き換えるだけ（`if (!cont) playback.stop()` は falsy 戻り値で
+  `createPlayback` 側が自動停止するため不要になり削除）。ready 状態や後退解析ロジック自体に変更はない。
+  成熟度は主要操作の破綻修正のため `oneshot`→`revised`（修正+1、更新2026-07-19）に記帳
+  （CATALOG / `TOPIC_META` / `main.js` の3点セット・本SPEC最終改訂行も同時更新）
 - 状態は `{ mover:[a,b], opp:[c,d] }`（手番側/相手側、a<=b・c<=d に正規化）。
   先手/後手の固定ラベルは持たない設計にしたため状態数は 15×15=**225**（SPEC の上界450以下。§11参照）
 - タップ結果の本数（`applyHitValue`）は死の条件で分岐:

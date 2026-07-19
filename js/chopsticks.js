@@ -695,10 +695,11 @@ function runBrowserUi() {
   const playback = createPlayback({
     btnPlay: /** @type {HTMLButtonElement | null} */ (btnPlay),
     speedEl,
-    onTick: () => {
-      const cont = stepWave();
-      if (!cont) playback.stop();
-    },
+    // stepWave() 自身が続行可否(true/false)を返す。createPlayback の schedule() は
+    // onTick() の戻り値で次ティックを予約するかどうかを決めるため、ここは
+    // stepWave() の戻り値をそのまま返す必要がある（ブロック本体の矢印関数で
+    // 戻り値なし=undefinedにすると、最初の1波で自動停止してしまう — 2026-07-19 修正）。
+    onTick: () => stepWave(),
     defaultDelayMs: 400,
     delayFromSpeed: (v) => 450 - v,
     labelPlay: "波を再生",

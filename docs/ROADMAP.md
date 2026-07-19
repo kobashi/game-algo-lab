@@ -111,9 +111,9 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 - [x] AND-OR / Min-Max / α-β / モンテカルロ / 多腕バンディット  
 - [x] 三目並べ（全解析・対称性除去・MC 比較。正本 §6.1、2026-07-19 実装）  
+- [x] ニム完全解析 → 剰余 / nim-sum（正本 §6.2、2026-07-19 実装）  
 - [x] 割り箸（循環ゲームグラフ・後退解析。正本 §6.4、2026-07-19 新設・同日実装）  
 - [ ] MCTS（正本明記）  
-- [ ] ニム完全解析 → 剰余 / nim-sum  
 - [ ] 4×4 オセロ（転置表・対称正規化）  
 - 既存 5 本の教材改訂（成熟度 oneshot → revised）
 - 学習進行の目安（正本 §6）: 三目並べ → ニム → 割り箸 → 4×4 オセロ（非循環の理論解 → 循環の後退解析 → 対称正規化）
@@ -136,7 +136,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | カテゴリ ID（案） | 表示名 | 状態 | 期の目安 | 備考 |
 |-------------------|--------|------|----------|------|
 | `pathfinding` | 経路探索 | **実装済**（一部企画中） | 第1期 | 5 本実装済。双方向などは企画中 |
-| `game-tree` | ゲーム木 | **実装済**（一部企画中） | 第2期 | 7 本実装済（三目並べ・割り箸含む）。MCTS・ニム・オセロは企画中 |
+| `game-tree` | ゲーム木 | **実装済**（一部企画中） | 第2期 | 8 本実装済（三目並べ・ニム・割り箸含む）。MCTS・オセロは企画中 |
 | `physics` | 物理・判定 | **実装済**（一部企画中） | 第3期 | AABB のみ実装済 |
 | `patterns` | 設計パターン | **実装済**（一部企画中） | 第2〜3期 | FSM のみ実装済 |
 | `fundamentals` | 基礎実行モデル | **企画中** | 第1〜3期 | ゲームループ・時間・入力・座標・乱数 |
@@ -166,7 +166,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 | | 件数の目安 |
 |--|-----------|
-| 実装済（メニュー掲載） | 14（経路 5 + ゲーム木 7 + AABB + FSM） |
+| 実装済（メニュー掲載） | 15（経路 5 + ゲーム木 8 + AABB + FSM） |
 | 企画中（本節） | 下記の各表（カテゴリ横断で多数） |
 
 ---
@@ -188,7 +188,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `and-or` … `multi-armed-bandit` | （既存 5 本） | 実装済 | 多く oneshot。改訂は別作業 |
 | `tic-tac-toe` | 三目並べ（全解析・対称性除去） | **実装済** | 正本 §6.1（2026-07-19 追加・実装）。765 局面・α-β/メモ化/8対称 ON/OFF・MC 比較・15ゲーム同型は解説パネルのみ。[SPEC](./topics/tic-tac-toe/SPEC.md)（implemented） |
 | `mcts` | モンテカルロ木探索 (MCTS) | **企画中** | 選択・展開・シミュレーション・逆伝播 |
-| `nim` | ニム（完全読み切り→理論解） | **準備中**（SPEC 起草済み） | 剰余 / nim-sum・XOR 可視化。[SPEC](./topics/nim/SPEC.md) draft・CATALOG 登録済み |
+| `nim` | ニム（完全読み切り→理論解） | **実装済** | 正本 §6.2（2026-07-19 実装）。1山の逆向き着色DP（周期 n mod k+1）と複数山のnim-sum(XOR)判定・全局面一致確認。[SPEC](./topics/nim/SPEC.md)（implemented） |
 | `chopsticks` | 割り箸（循環グラフ・後退解析） | **実装済** | 正本 §6.4（2026-07-19 新設・同日実装）。勝ち/負け/引き分け3値・バリアント比較・局面正規化・深さ制限Min-Max対比。[SPEC](./topics/chopsticks/SPEC.md)（implemented） |
 | `othello-4x4` | 4×4 オセロ（符号化・対称正規化） | **企画中** | 転置表・8 対称・canonical |
 | `game-tree-engine` | 共通探索エンジン（交換可能） | **企画中** | 合法手・終局・評価のインタフェース（横断基盤） |

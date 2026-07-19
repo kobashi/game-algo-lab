@@ -157,6 +157,17 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "nim",
+    title: "ニム（完全読み切り→理論解）",
+    description:
+      "1山の逆向き着色で周期性(n mod k+1)を発見、複数山の全局面探索でnim-sum(XOR)判定と一致確認。",
+    href: "algorithms/nim.html",
+    badge: "ゲーム木",
+    category: "ゲーム木",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "chopsticks",
     title: "割り箸（循環グラフ・後退解析）",
     description:
@@ -165,7 +176,7 @@ const TOPICS = [
     badge: "ゲーム木",
     category: "ゲーム木",
     ready: true,
-    maturity: "oneshot",
+    maturity: "revised",
   },
   {
     id: "collision",
