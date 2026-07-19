@@ -99,7 +99,7 @@ const TOPICS = [
     badge: "ゲーム木",
     category: "ゲーム木",
     ready: true,
-    maturity: "oneshot",
+    maturity: "revised",
   },
   {
     id: "minimax",
@@ -110,7 +110,7 @@ const TOPICS = [
     badge: "ゲーム木",
     category: "ゲーム木",
     ready: true,
-    maturity: "oneshot",
+    maturity: "revised",
   },
   {
     id: "alpha-beta",
@@ -121,7 +121,7 @@ const TOPICS = [
     badge: "ゲーム木",
     category: "ゲーム木",
     ready: true,
-    maturity: "oneshot",
+    maturity: "revised",
   },
   {
     id: "monte-carlo",
@@ -132,7 +132,7 @@ const TOPICS = [
     badge: "ゲーム木",
     category: "ゲーム木",
     ready: true,
-    maturity: "oneshot",
+    maturity: "revised",
   },
   {
     id: "multi-armed-bandit",
@@ -143,7 +143,7 @@ const TOPICS = [
     badge: "ゲーム木",
     category: "ゲーム木",
     ready: true,
-    maturity: "oneshot",
+    maturity: "revised",
   },
   {
     id: "collision",

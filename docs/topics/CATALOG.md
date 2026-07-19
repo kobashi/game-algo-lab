@@ -1,6 +1,6 @@
 # トピックカタログ
 
-最終更新: 2026-07-19  
+最終更新: 2026-07-19（教材品質レビュー反映）  
 
 - **実装の正**: この表 と `js/main.js` の `TOPICS`（ずれたら両方直す）  
 - **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable` + **修正回数** + **更新日**）  
@@ -24,9 +24,9 @@
 | id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
 |----|----------|-------|--------|------|------|--------|------|----------|
 | `bfs` | 幅優先探索 (BFS) | ✅ | **調整** | 2 | 2026-07-17 | `algorithms/bfs.html` | 実装先行 | コスト比較・複数G・ペイント・表示 |
-| `dfs` | 深さ優先探索 (DFS) | ✅ | **調整** | 2 | 2026-07-17 | `algorithms/dfs.html` | 実装先行 | コールスタック可視化・地図・ペイント |
+| `dfs` | 深さ優先探索 (DFS) | ✅ | **調整** | 3 | 2026-07-19 | `algorithms/dfs.html` | 実装先行 | コールスタック可視化・地図・ペイント／行き止まり3本の小さめ迷路に差し替え（バックトラック3回を検証） |
 | `dijkstra` | ダイクストラ法 | ✅ | **調整** | 2 | 2026-07-17 | `algorithms/dijkstra.html` | 実装先行 | g 表示・複数G・platform 寄せ |
-| `best-first` | 最良優先探索 | ✅ | **調整** | 2 | 2026-07-17 | `algorithms/best-first.html` | 実装先行 | h 表示・複数G・platform 寄せ |
+| `best-first` | 最良優先探索 | ✅ | **調整** | 3 | 2026-07-19 | `algorithms/best-first.html` | 実装先行 | h 表示・複数G・platform 寄せ／S側に口を開けた凹型ポケットを追加（greedy が突っ込み g=27 vs 最適22を検証） |
 | `astar` | A* 探索 | ✅ | **調整** | 3 | 2026-07-17 | `algorithms/astar.html` | 実装先行 | f/g/h・負コスト・複数G・初期地図調整 |
 
 **学習ストーリー**: 歩数（BFS）→ 深さ（DFS）→ コスト g → 見積り h → 統合 f=g+h  
@@ -39,16 +39,18 @@
 
 | id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
 |----|----------|-------|--------|------|------|--------|------|----------|
-| `and-or` | AND-OR 探索 | ✅ | **一発** | 0 | 2026-07-17 | `algorithms/and-or.html` | [SPEC](./and-or/SPEC.md) | シリーズ初版。基盤寄せのみ |
-| `minimax` | Min-Max 探索 | ✅ | **一発** | 0 | 2026-07-17 | `algorithms/minimax.html` | [SPEC](./minimax/SPEC.md) | シリーズ初版。基盤寄せのみ |
-| `alpha-beta` | α-β 法 | ✅ | **一発** | 0 | 2026-07-17 | `algorithms/alpha-beta.html` | [SPEC](./alpha-beta/SPEC.md) | 枝刈り可視化の初版 |
-| `monte-carlo` | モンテカルロ法 | ✅ | **一発** | 0 | 2026-07-17 | `algorithms/monte-carlo.html` | [SPEC](./monte-carlo/SPEC.md) | プレイアウト平均の初版 |
-| `multi-armed-bandit` | 多腕バンディット | ✅ | **一発** | 0 | 2026-07-17 | `algorithms/multi-armed-bandit.html` | [SPEC](./multi-armed-bandit/SPEC.md) | ε-greedy/UCB1 初版 |
+| `and-or` | AND-OR 探索 | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/and-or.html` | [SPEC](./and-or/SPEC.md) | 「鍵を入手」を葉→OR節点（買う/盗む）に差し替えて深さ3化 |
+| `minimax` | Min-Max 探索 | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/minimax.html` | [SPEC](./minimax/SPEC.md) | 深さ2→深さ3・葉12の標準木に差し替え。MIN下にMAXが現れる交互再帰を可視化 |
+| `alpha-beta` | α-β 法 | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/alpha-beta.html` | [SPEC](./alpha-beta/SPEC.md) | 深さ3木でβカットを初めて可視化（旧木は深さ2でβカット不能だった） |
+| `monte-carlo` | モンテカルロ法 | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/monte-carlo.html` | [SPEC](./monte-carlo/SPEC.md) | 深さ3木でプレイアウトが3手の系列に。乱択EVとMin-Maxの食い違いを強化 |
+| `multi-armed-bandit` | 多腕バンディット | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/multi-armed-bandit.html` | [SPEC](./multi-armed-bandit/SPEC.md) | 難易度プリセット（易しい/難しい）追加、既定手数300へ |
 | `tic-tac-toe` | 三目並べ（全解析・対称性除去） | ❌ | —（準備中） | 0 | 2026-07-19 | —（未実装） | [SPEC](./tic-tac-toe/SPEC.md)（draft） | 正本 §6.1。SPEC 起草済み・実装未着手 |
 
 **推奨実装順**: 上から順（AND-OR → … → バンディット）  
 
-**成熟度メモ**: 試作 v0.9.0 時点は内容の大規模改訂なし → `oneshot`。教材フィードバック後に `revised` へ。
+**成熟度メモ**: 2026-07-19 の教材品質レビュー（[レビュー](../reviews/2026-07-19-demo-pedagogy-review.md)）を受け、
+ゲーム木4本（and-or/minimax/alpha-beta/monte-carlo）を深さ3の標準木に、多腕バンディットを
+難易度プリセット追加に改訂 → いずれも `oneshot` → `revised`（修正+1）。
 
 ---
 
@@ -72,8 +74,8 @@
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | 6 | and-or, minimax, alpha-beta, monte-carlo, multi-armed-bandit, fsm |
-| 調整 (`revised`) | 6 | bfs, dfs, dijkstra, best-first, astar, collision |
+| 一発 (`oneshot`) | 1 | fsm |
+| 調整 (`revised`) | 11 | bfs, dfs, dijkstra, best-first, astar, collision, and-or, minimax, alpha-beta, monte-carlo, multi-armed-bandit |
 | 安定 (`stable`) | 0 | — |
 
 ---

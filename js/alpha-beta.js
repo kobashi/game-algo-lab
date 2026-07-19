@@ -287,7 +287,8 @@ function finishRoot() {
       <li><strong>ステップ数</strong>: ${stepCount}</li>
     </ul>
     <p class="result-verdict">
-      手 B で相手δ=2 のあと v≤α となり、葉「相手ε(刈)=99」は<strong>読まずに済む</strong>。
+      手 L の応手 L2 は葉「L2a=7」≥β で<strong>β カット</strong>（葉「L2b=9」は読まずに済む）。
+      手 M は応手 M1=4≤α で<strong>α カット</strong>、応手 M2 は節点ごと未評価（葉2枚が丸ごと刈られる）。
       読まなくても根の答えは変わりません。
     </p>
     <p class="result-note">

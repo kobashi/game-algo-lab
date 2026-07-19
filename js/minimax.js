@@ -252,7 +252,7 @@ function finishRoot() {
       <li><strong>ステップ数</strong>: ${stepCount}</li>
     </ul>
     <p class="result-verdict">
-      手計算: A=min(3,12)=3、B=min(8,2)=2、C=min(4,6)=4 → 根 max=4（手 C）。
+      手計算: 手L=min(5,9)=5、手M=min(4,3)=3、手R=min(8,7)=7 → 根 max(5,3,7)=7（手 R）。
       相手は自分に不利な手を選ぶ前提です。
     </p>
     <p class="result-note">
