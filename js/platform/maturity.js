@@ -57,6 +57,7 @@ export const TOPIC_META = {
   bandit: { maturity: "revised", revisions: 1, updated: "2026-07-19" },
   collision: { maturity: "revised", revisions: 2, updated: "2026-07-17" },
   fsm: { maturity: "oneshot", revisions: 0, updated: "2026-07-17" },
+  "tic-tac-toe": { maturity: "oneshot", revisions: 0, updated: "2026-07-19" },
 };
 
 /** @deprecated resolveTopicMeta / TOPIC_META を優先。後方互換用 */

@@ -110,7 +110,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 #### Phase C — ゲーム木（第2期の前半）
 
 - [x] AND-OR / Min-Max / α-β / モンテカルロ / 多腕バンディット  
-- [ ] 三目並べ（全解析・対称性除去・MC 比較。正本 §6.1、2026-07-19 追加）  
+- [x] 三目並べ（全解析・対称性除去・MC 比較。正本 §6.1、2026-07-19 実装）  
 - [ ] 割り箸（循環ゲームグラフ・後退解析。正本 §6.4、2026-07-19 新設）  
 - [ ] MCTS（正本明記）  
 - [ ] ニム完全解析 → 剰余 / nim-sum  
@@ -136,7 +136,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | カテゴリ ID（案） | 表示名 | 状態 | 期の目安 | 備考 |
 |-------------------|--------|------|----------|------|
 | `pathfinding` | 経路探索 | **実装済**（一部企画中） | 第1期 | 5 本実装済。双方向などは企画中 |
-| `game-tree` | ゲーム木 | **実装済**（一部企画中） | 第2期 | 5 本実装済。三目並べ・割り箸・MCTS・ニム・オセロは企画中 |
+| `game-tree` | ゲーム木 | **実装済**（一部企画中） | 第2期 | 6 本実装済（三目並べ含む）。割り箸・MCTS・ニム・オセロは企画中 |
 | `physics` | 物理・判定 | **実装済**（一部企画中） | 第3期 | AABB のみ実装済 |
 | `patterns` | 設計パターン | **実装済**（一部企画中） | 第2〜3期 | FSM のみ実装済 |
 | `fundamentals` | 基礎実行モデル | **企画中** | 第1〜3期 | ゲームループ・時間・入力・座標・乱数 |
@@ -166,7 +166,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 | | 件数の目安 |
 |--|-----------|
-| 実装済（メニュー掲載） | 12（経路 5 + ゲーム木 5 + AABB + FSM） |
+| 実装済（メニュー掲載） | 13（経路 5 + ゲーム木 6 + AABB + FSM） |
 | 企画中（本節） | 下記の各表（カテゴリ横断で多数） |
 
 ---
@@ -186,7 +186,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
 | `and-or` … `multi-armed-bandit` | （既存 5 本） | 実装済 | 多く oneshot。改訂は別作業 |
-| `tic-tac-toe` | 三目並べ（全解析・対称性除去） | **準備中**（SPEC 起草済み） | 正本 §6.1（2026-07-19 追加）。765 局面・α-β/メモ化/8対称 ON/OFF・MC/MCTS 比較・15ゲーム同型。[SPEC](./topics/tic-tac-toe/SPEC.md) draft・CATALOG 登録済み |
+| `tic-tac-toe` | 三目並べ（全解析・対称性除去） | **実装済** | 正本 §6.1（2026-07-19 追加・実装）。765 局面・α-β/メモ化/8対称 ON/OFF・MC 比較・15ゲーム同型は解説パネルのみ。[SPEC](./topics/tic-tac-toe/SPEC.md)（implemented） |
 | `mcts` | モンテカルロ木探索 (MCTS) | **企画中** | 選択・展開・シミュレーション・逆伝播 |
 | `nim` | ニム（完全読み切り→理論解） | **企画中** | 剰余 / nim-sum・XOR 可視化 |
 | `chopsticks` | 割り箸（循環グラフ・後退解析） | **企画中** | 正本 §6.4（2026-07-19 新設）。勝ち/負け/引き分け3値・バリアント比較・局面正規化・転置表必須の体験 |

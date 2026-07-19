@@ -3236,3 +3236,235 @@ img {
   color: #f2cc8f;
   font-weight: 800;
 }
+
+/* ===== 三目並べ ===== */
+.ttt-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.ttt-board-wrap {
+  width: 100%;
+  max-width: 22rem;
+  margin: 0 auto;
+}
+
+.ttt-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+  aspect-ratio: 1 / 1;
+}
+
+.ttt-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0a0e14;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.ttt-cell:hover {
+  border-color: var(--accent);
+}
+
+.ttt-cell.is-win-line {
+  border-color: #f2cc8f;
+  box-shadow: 0 0 0 2px rgba(242, 204, 143, 0.5) inset;
+}
+
+.ttt-piece {
+  font-size: clamp(1.6rem, 6vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.ttt-piece-X {
+  color: #5b9fd4;
+}
+
+.ttt-piece-O {
+  color: #e07a5f;
+}
+
+.ttt-piece-empty {
+  color: transparent;
+}
+
+.ttt-eval {
+  position: absolute;
+  top: 0.25rem;
+  left: 0.35rem;
+  font-size: 0.68rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 700;
+  padding: 0.05rem 0.3rem;
+  border-radius: 4px;
+  background: rgba(10, 14, 20, 0.7);
+}
+
+.ttt-cell.is-win .ttt-eval {
+  color: #6bcb8f;
+  border: 1px solid rgba(107, 203, 143, 0.6);
+}
+
+.ttt-cell.is-draw .ttt-eval {
+  color: #f2cc8f;
+  border: 1px solid rgba(242, 204, 143, 0.6);
+}
+
+.ttt-cell.is-loss .ttt-eval {
+  color: #e07a5f;
+  border: 1px solid rgba(224, 122, 95, 0.6);
+}
+
+.ttt-cell.is-best {
+  border-color: #6bcb8f;
+  box-shadow: 0 0 0 2px rgba(107, 203, 143, 0.45) inset;
+}
+
+.ttt-mc {
+  position: absolute;
+  bottom: 0.25rem;
+  right: 0.35rem;
+  font-size: 0.66rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--text-muted);
+  background: rgba(10, 14, 20, 0.7);
+  padding: 0.05rem 0.3rem;
+  border-radius: 4px;
+}
+
+.ttt-reachable-note {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.ttt-legend {
+  justify-content: center;
+}
+
+.ttt-edit-row {
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ttt-check,
+.ttt-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.ttt-toggle-row {
+  align-items: center;
+}
+
+.ttt-toggle-row .controls-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+}
+
+.ttt-range {
+  flex: 1;
+  min-width: 6rem;
+}
+
+.ttt-sym-details {
+  margin: 0;
+}
+
+.ttt-sym-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding-top: 0.5rem;
+}
+
+.ttt-sym-item {
+  padding: 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  text-align: center;
+}
+
+.ttt-sym-item.is-canonical {
+  border-color: #6bcb8f;
+  box-shadow: 0 0 0 1px rgba(107, 203, 143, 0.4);
+}
+
+.ttt-mini-board {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  width: 3.3rem;
+}
+
+.ttt-mini-row {
+  display: flex;
+  gap: 1px;
+}
+
+.ttt-mini-cell {
+  flex: 1;
+  aspect-ratio: 1 / 1;
+  background: #0a0e14;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.ttt-sym-caption {
+  margin-top: 0.25rem;
+  font-size: 0.66rem;
+  color: var(--text-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.ds-table-scroll {
+  overflow-x: auto;
+}
+
+.ttt-compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.ttt-compare-table th,
+.ttt-compare-table td {
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.5rem;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.ttt-compare-table th:first-child,
+.ttt-compare-table td:first-child {
+  text-align: left;
+}
+
+.ttt-compare-table thead th {
+  background: var(--bg);
+  color: var(--text-muted);
+}

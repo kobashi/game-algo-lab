@@ -146,6 +146,17 @@ const TOPICS = [
     maturity: "revised",
   },
   {
+    id: "tic-tac-toe",
+    title: "三目並べ（全解析・対称性除去）",
+    description:
+      "全探索で引き分けを証明。α-β・メモ化・対称性除去(765局面)をON/OFF比較し、MCの誤判定も見る。",
+    href: "algorithms/tic-tac-toe.html",
+    badge: "ゲーム木",
+    category: "ゲーム木",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "collision",
     title: "AABB 衝突判定",
     description:

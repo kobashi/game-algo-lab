@@ -20,7 +20,9 @@
 **2026-07-19 教材品質レビュー反映（Fable5 指摘 → Sonnet5 実装）**: `docs/reviews/2026-07-19-demo-pedagogy-review.md` の指摘1〜7に対応。
 ゲーム木4本（Min-Max/α-β/モンテカルロ/AND-OR）は深さ2の同型木が「MIN の下にまた MAX が現れる交互再帰」「β カット」を構造的に見せられなかった問題を解消 — Min-Max/α-β/モンテカルロを同型・同値の深さ3・葉12標準木（根max=7、最善手R）に差し替え、AND-OR は「鍵を入手」を葉→OR節点（買う/盗む）に差し替えて深さ3化。DFS は行き止まり3本の小さめ迷路に、最良優先はS側に口を開けた凹型ポケット（greedy が突っ込み g=27 vs 最適22を確認）に地図を差し替え。多腕バンディットは易しい/難しい2プリセット化＋既定手数300へ。5トピックを oneshot→revised（修正+1、更新2026-07-19）。指摘9（疑似コード同期・戻る）はバックログのまま未対応。
 
-**次の実装ターゲット**: `tic-tac-toe`（三目並べ）— [SPEC draft](docs/topics/tic-tac-toe/SPEC.md) 起草済み・CATALOG に ready ❌ で登録済み。SPEC レビュー → `topic/tic-tac-toe` ブランチで実装、の順（WORKFLOW §5）。その次は `chopsticks`（割り箸、SPEC 未着手）。
+**2026-07-19 `tic-tac-toe`（三目並べ）実装（Sonnet5）**: [SPEC](docs/topics/tic-tac-toe/SPEC.md) を implemented に更新し `algorithms/tic-tac-toe.html` / `js/tic-tac-toe.js` / `js/maps/tic-tac-toe-config.js` / `samples/TicTacToeExample.cs` を追加。negamax + α-β/メモ化（exact/lower/upper 境界フラグ付き転置表）/対称性除去（8変換最小符号化）を独立トグルで比較でき、8構成一括比較・MC評価・1ステップ実行（コールスタック）・8対称パネルを実装。数値検証: 空盤=引き分け、到達5478局面/対称除去765局面を実装のcanonical関数で再現、トグル8構成の訪問局面数の単調性、隅初手の理論値スポットチェック、ダブルリーチ罠プリセットで低N(30,seed20)がMC最善手を外し高N(5000)で収束、を全てNode検証スクリプトで確認済み（`smoke-platform.py` も ALL PASSED）。ready: true・`oneshot`。
+
+**次の実装ターゲット**: `chopsticks`（割り箸・循環グラフ・後退解析）— 正本 §6.4。SPEC 未着手。
 
 ---
 
@@ -82,6 +84,7 @@
 | 10 | 多腕バンディット | `algorithms/multi-armed-bandit.html` | `js/maps/bandit-config.js` | `MultiArmedBanditExample.cs` | ε-greedy / UCB1・リグレット |
 | 11 | AABB | `algorithms/collision.html` | —（説明UI） | `AabbExample.cs` | 軸投影・非マップ |
 | 12 | ステートマシン | `algorithms/fsm.html` | `js/maps/fsm-config.js` | `FsmExample.cs` | 状態図・遷移表・非マップ |
+| 13 | 三目並べ | `algorithms/tic-tac-toe.html` | `js/maps/tic-tac-toe-config.js` | `TicTacToeExample.cs` | negamax全解析。α-β/メモ化/対称性除去(8変換)を独立トグル。3×3専用UI（非マップ） |
 
 共通:
 
@@ -101,7 +104,8 @@
 | 2 | Min-Max | **ready** — `algorithms/minimax.html` / SPEC |
 | 3 | α-β | **ready** — `algorithms/alpha-beta.html` / SPEC |
 | 4 | モンテカルロ | **ready** — `algorithms/monte-carlo.html` / SPEC |
-| 5 | 多腕バンディット | **ready** — `algorithms/multi-armed-bandit.html` / SPEC（シリーズ完了） |
+| 5 | 多腕バンディット | **ready** — `algorithms/multi-armed-bandit.html` / SPEC |
+| 6 | 三目並べ | **ready** — `algorithms/tic-tac-toe.html` / SPEC（実在ルール優先の初例） |
 
 ### 物理・判定
 | トピック | 状態 |
@@ -153,6 +157,23 @@
 - ε-greedy / UCB1、累積リグレット Σ(μ*−μ_a)、既定手数 300  
 - 真の μ 表示トグルあり  
 - 設定: `js/maps/bandit-config.js`（2026-07-19 難易度プリセット追加）
+
+### 三目並べ メモ
+- 盤面は9文字の string（`.`/`X`/`O`）。手番はXとOの個数差から一意に決まる（実装で `currentPlayer` として export）
+- negamax（`solveNode`）。α-β・メモ化・対称性除去（8変換=回転4×鏡映2の最小符号化）を**独立に** ON/OFF
+  - メモ化 と α-β を併用する場合、置換表には値だけでなく **exact/lower/upper の境界フラグ**が必須
+    （フラグなしで値だけキャッシュすると別窓での読み出しで値が壊れるバグを実装中に検出・修正）
+- 空盤の完全解析: 根の値は8トグル構成すべてで **引き分け（0）**（学習目標1）
+- 到達可能な合法局面 **5,478**、対称性除去後の代表局面 **765**（`countReachableStates()` で実装から再現・検証済み）
+- トグル8構成（2^3）の訪問局面数は「素の全探索 ≥ 各単独ON ≥ 全部ON」の単調減少を確認
+  （中盤局面 `XO..O..X.` で: 素257 → 全部ON 120、根の値はどの構成でも一致）
+- 隅初手の理論値: X が隅→ O が中央以外なら X 必勝、O が中央なら引き分け（実装のnegamaxで再現）
+- ダブルリーチ罠プリセット（`XO..O..X.`、Xの手番）: 完全解では手6が唯一の必勝手（他は引き分け）。
+  乱択EVは手6が約0.83、次点が約0.65〜0.67と差が小さく、低N（既定N=30, seed=20）だとMCが最善手を外す例を
+  再現。N=5000まで上げると正しい順位に収束
+- 1ステップ実行はジェネレータ（`solveStep`）実装。空きマス5個超は警告表示（全展開は約55万ノード）。
+  既定で「終盤（残り4手）」プリセットを用意し、コールスタック（盤面ミニチュア）を最後まで追える
+- 設定: `js/maps/tic-tac-toe-config.js`（初版・2026-07-19）
 
 ---
 

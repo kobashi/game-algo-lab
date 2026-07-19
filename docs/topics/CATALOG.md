@@ -44,13 +44,14 @@
 | `alpha-beta` | α-β 法 | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/alpha-beta.html` | [SPEC](./alpha-beta/SPEC.md) | 深さ3木でβカットを初めて可視化（旧木は深さ2でβカット不能だった） |
 | `monte-carlo` | モンテカルロ法 | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/monte-carlo.html` | [SPEC](./monte-carlo/SPEC.md) | 深さ3木でプレイアウトが3手の系列に。乱択EVとMin-Maxの食い違いを強化 |
 | `multi-armed-bandit` | 多腕バンディット | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/multi-armed-bandit.html` | [SPEC](./multi-armed-bandit/SPEC.md) | 難易度プリセット（易しい/難しい）追加、既定手数300へ |
-| `tic-tac-toe` | 三目並べ（全解析・対称性除去） | ❌ | —（準備中） | 0 | 2026-07-19 | —（未実装） | [SPEC](./tic-tac-toe/SPEC.md)（draft） | 正本 §6.1。SPEC 起草済み・実装未着手 |
+| `tic-tac-toe` | 三目並べ（全解析・対称性除去） | ✅ | **一発** | 0 | 2026-07-19 | `algorithms/tic-tac-toe.html` | [SPEC](./tic-tac-toe/SPEC.md) | 初版。negamax + α-β/メモ化/対称性除去(8変換)を独立トグル。到達5478局面・対称除去765局面を実装で再現。MCの低N誤判定プリセット付き |
 
-**推奨実装順**: 上から順（AND-OR → … → バンディット）  
+**推奨実装順**: 上から順（AND-OR → … → バンディット → 三目並べ）  
 
 **成熟度メモ**: 2026-07-19 の教材品質レビュー（[レビュー](../reviews/2026-07-19-demo-pedagogy-review.md)）を受け、
 ゲーム木4本（and-or/minimax/alpha-beta/monte-carlo）を深さ3の標準木に、多腕バンディットを
 難易度プリセット追加に改訂 → いずれも `oneshot` → `revised`（修正+1）。
+三目並べは同日に新規実装（初版のため `oneshot`）。
 
 ---
 
@@ -74,7 +75,7 @@
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | 1 | fsm |
+| 一発 (`oneshot`) | 2 | fsm, tic-tac-toe |
 | 調整 (`revised`) | 11 | bfs, dfs, dijkstra, best-first, astar, collision, and-or, minimax, alpha-beta, monte-carlo, multi-armed-bandit |
 | 安定 (`stable`) | 0 | — |
 
