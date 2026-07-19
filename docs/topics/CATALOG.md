@@ -1,6 +1,6 @@
 # トピックカタログ
 
-最終更新: 2026-07-17  
+最終更新: 2026-07-19  
 
 - **実装の正**: この表 と `js/main.js` の `TOPICS`（ずれたら両方直す）  
 - **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable` + **修正回数** + **更新日**）  
@@ -44,6 +44,7 @@
 | `alpha-beta` | α-β 法 | ✅ | **一発** | 0 | 2026-07-17 | `algorithms/alpha-beta.html` | [SPEC](./alpha-beta/SPEC.md) | 枝刈り可視化の初版 |
 | `monte-carlo` | モンテカルロ法 | ✅ | **一発** | 0 | 2026-07-17 | `algorithms/monte-carlo.html` | [SPEC](./monte-carlo/SPEC.md) | プレイアウト平均の初版 |
 | `multi-armed-bandit` | 多腕バンディット | ✅ | **一発** | 0 | 2026-07-17 | `algorithms/multi-armed-bandit.html` | [SPEC](./multi-armed-bandit/SPEC.md) | ε-greedy/UCB1 初版 |
+| `tic-tac-toe` | 三目並べ（全解析・対称性除去） | ❌ | —（準備中） | 0 | 2026-07-19 | —（未実装） | [SPEC](./tic-tac-toe/SPEC.md)（draft） | 正本 §6.1。SPEC 起草済み・実装未着手 |
 
 **推奨実装順**: 上から順（AND-OR → … → バンディット）  
 

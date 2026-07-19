@@ -186,7 +186,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
 | `and-or` … `multi-armed-bandit` | （既存 5 本） | 実装済 | 多く oneshot。改訂は別作業 |
-| `tic-tac-toe` | 三目並べ（全解析・対称性除去） | **企画中** | 正本 §6.1（2026-07-19 追加）。765 局面・α-β/メモ化/8対称 ON/OFF・MC/MCTS 比較・15ゲーム同型。Min-Max/α-β 改訂素材にも |
+| `tic-tac-toe` | 三目並べ（全解析・対称性除去） | **準備中**（SPEC 起草済み） | 正本 §6.1（2026-07-19 追加）。765 局面・α-β/メモ化/8対称 ON/OFF・MC/MCTS 比較・15ゲーム同型。[SPEC](./topics/tic-tac-toe/SPEC.md) draft・CATALOG 登録済み |
 | `mcts` | モンテカルロ木探索 (MCTS) | **企画中** | 選択・展開・シミュレーション・逆伝播 |
 | `nim` | ニム（完全読み切り→理論解） | **企画中** | 剰余 / nim-sum・XOR 可視化 |
 | `chopsticks` | 割り箸（循環グラフ・後退解析） | **企画中** | 正本 §6.4（2026-07-19 新設）。勝ち/負け/引き分け3値・バリアント比較・局面正規化・転置表必須の体験 |
