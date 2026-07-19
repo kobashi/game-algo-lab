@@ -45,14 +45,14 @@
 | `monte-carlo` | モンテカルロ法 | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/monte-carlo.html` | [SPEC](./monte-carlo/SPEC.md) | 深さ3木でプレイアウトが3手の系列に。乱択EVとMin-Maxの食い違いを強化 |
 | `multi-armed-bandit` | 多腕バンディット | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/multi-armed-bandit.html` | [SPEC](./multi-armed-bandit/SPEC.md) | 難易度プリセット（易しい/難しい）追加、既定手数300へ |
 | `tic-tac-toe` | 三目並べ（全解析・対称性除去） | ✅ | **一発** | 0 | 2026-07-19 | `algorithms/tic-tac-toe.html` | [SPEC](./tic-tac-toe/SPEC.md) | 初版。negamax + α-β/メモ化/対称性除去(8変換)を独立トグル。到達5478局面・対称除去765局面を実装で再現。MCの低N誤判定プリセット付き |
-| `chopsticks` | 割り箸（循環グラフ・後退解析） | ❌ | —（準備中） | 0 | 2026-07-19 | —（未実装） | [SPEC](./chopsticks/SPEC.md)（draft） | 正本 §6.4。SPEC 起草済み・実装未着手 |
+| `chopsticks` | 割り箸（循環グラフ・後退解析） | ✅ | **一発** | 0 | 2026-07-19 | `algorithms/chopsticks.html` | [SPEC](./chopsticks/SPEC.md)（implemented） | 正本 §6.4。初版。状態=(手番側ペア,相手側ペア)で正規化（225局面≤450）。後退解析を波単位ジェネレータで実装、15×15マトリクスで波の広がりを可視化。分割・死の条件（5以上/ちょうど5）・mod5 の6構成すべてで独立実装との全局面ラベル一致を確認。分割ありでDRAW14局面が出現（標準は0）。深さ制限Min-Max(5/10/20)はDRAW局面で値0のまま確定しない一方、決着バリアントは深さ10以降で真値に収束することを確認 |
 
 **推奨実装順**: 上から順（AND-OR → … → バンディット → 三目並べ）  
 
 **成熟度メモ**: 2026-07-19 の教材品質レビュー（[レビュー](../reviews/2026-07-19-demo-pedagogy-review.md)）を受け、
 ゲーム木4本（and-or/minimax/alpha-beta/monte-carlo）を深さ3の標準木に、多腕バンディットを
 難易度プリセット追加に改訂 → いずれも `oneshot` → `revised`（修正+1）。
-三目並べは同日に新規実装（初版のため `oneshot`）。
+三目並べ・割り箸は同日に新規実装（初版のため `oneshot`）。
 
 ---
 
@@ -76,7 +76,7 @@
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | 2 | fsm, tic-tac-toe |
+| 一発 (`oneshot`) | 3 | fsm, tic-tac-toe, chopsticks |
 | 調整 (`revised`) | 11 | bfs, dfs, dijkstra, best-first, astar, collision, and-or, minimax, alpha-beta, monte-carlo, multi-armed-bandit |
 | 安定 (`stable`) | 0 | — |
 

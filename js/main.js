@@ -157,6 +157,17 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "chopsticks",
+    title: "割り箸（循環グラフ・後退解析）",
+    description:
+      "同一局面に戻る循環グラフを後退解析で3値（勝ち/負け/引き分け）に確定。バリアント・深さ制限Min-Maxと比較。",
+    href: "algorithms/chopsticks.html",
+    badge: "ゲーム木",
+    category: "ゲーム木",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "collision",
     title: "AABB 衝突判定",
     description:

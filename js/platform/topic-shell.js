@@ -33,6 +33,7 @@ export const NAV_GROUPS = {
     { id: "monte-carlo", label: "モンテカルロ", href: "monte-carlo.html" },
     { id: "bandit", label: "バンディット", href: "multi-armed-bandit.html" },
     { id: "tic-tac-toe", label: "三目並べ", href: "tic-tac-toe.html" },
+    { id: "chopsticks", label: "割り箸", href: "chopsticks.html" },
   ],
   explain: [
     { id: "home", label: "ホーム", href: "../index.html" },
@@ -88,7 +89,10 @@ export const FOOTER_RELATED = {
   ],
   "tic-tac-toe": [
     { href: "multi-armed-bandit.html", label: "バンディット（前段）" },
-    { href: "alpha-beta.html", label: "α-β 法" },
+    { href: "chopsticks.html", label: "次: 割り箸" },
+  ],
+  chopsticks: [
+    { href: "tic-tac-toe.html", label: "三目並べ（前段）" },
   ],
   collision: [{ href: "fsm.html", label: "FSM" }],
   fsm: [{ href: "collision.html", label: "AABB" }],

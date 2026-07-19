@@ -58,6 +58,7 @@ export const TOPIC_META = {
   collision: { maturity: "revised", revisions: 2, updated: "2026-07-17" },
   fsm: { maturity: "oneshot", revisions: 0, updated: "2026-07-17" },
   "tic-tac-toe": { maturity: "oneshot", revisions: 0, updated: "2026-07-19" },
+  chopsticks: { maturity: "oneshot", revisions: 0, updated: "2026-07-19" },
 };
 
 /** @deprecated resolveTopicMeta / TOPIC_META を優先。後方互換用 */

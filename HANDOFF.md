@@ -22,7 +22,9 @@
 
 **2026-07-19 `tic-tac-toe`（三目並べ）実装（Sonnet5）**: [SPEC](docs/topics/tic-tac-toe/SPEC.md) を implemented に更新し `algorithms/tic-tac-toe.html` / `js/tic-tac-toe.js` / `js/maps/tic-tac-toe-config.js` / `samples/TicTacToeExample.cs` を追加。negamax + α-β/メモ化（exact/lower/upper 境界フラグ付き転置表）/対称性除去（8変換最小符号化）を独立トグルで比較でき、8構成一括比較・MC評価・1ステップ実行（コールスタック）・8対称パネルを実装。数値検証: 空盤=引き分け、到達5478局面/対称除去765局面を実装のcanonical関数で再現、トグル8構成の訪問局面数の単調性、隅初手の理論値スポットチェック、ダブルリーチ罠プリセットで低N(30,seed20)がMC最善手を外し高N(5000)で収束、を全てNode検証スクリプトで確認済み（`smoke-platform.py` も ALL PASSED）。ready: true・`oneshot`。
 
-**次の実装ターゲット**: `chopsticks`（割り箸・循環グラフ・後退解析）— 正本 §6.4。SPEC 未着手。
+**2026-07-19 `chopsticks`（割り箸）実装（Sonnet5）**: [SPEC](docs/topics/chopsticks/SPEC.md) を implemented に更新し `algorithms/chopsticks.html` / `js/chopsticks.js` / `js/maps/chopsticks-config.js` / `samples/ChopsticksExample.cs` を追加。局面は `{mover:[a,b], opp:[c,d]}`（手番側/相手側、正規化ソート済み）で表現し、状態数は 15×15=225（SPEC の上界450以下）。後退解析を波単位ジェネレータ（`retrogradeAnalysisSteps`）で実装し、波0=合法手0件(負け)からWIN/LOSEを確定、最後まで残った局面をDRAWとする。15×15マトリクスで波の広がりをアニメーション表示、対局ビューでは各合法手の行き先3値ラベルを表示、CPUはWIN維持/DRAWはDRAW維持の応手を実装（LOSE時の最長粘りはSPEC通りv1では未実装）。バリアント（分割・死の条件「5以上/ちょうど5」・mod5）は独立トグルで比較表に蓄積。深さ制限Min-Max（5/10/20、メモ化negamax）対比パネルも実装。数値検証（scratchpadのNode検証スクリプトで実施、smoke-platform.pyもALL PASSED）: 状態数225・全終局が波0/LOSE、6バリアント全てで不動点性質（WIN⇔∃手→相手LOSE、LOSE⇔∀手→相手WIN、DRAW⇔勝ち手なし∧∃手→相手DRAW）を全局面で確認、独立に再実装した後退解析（predecessor逆伝播ベース、chopsticks.jsのlegalMovesを使わない別コード）と全225局面のラベルが完全一致、分割ありで初めてDRAW局面が出現（標準0→分割あり14）、mod5/split+exact5では初期局面自体がDRAWに変わる、深さ制限Min-MaxはDRAW局面で深さ5/10/20とも値0のまま確定しない一方、決着バリアント（標準）は深さ10以降で真値(-1)に収束することを確認。詳細な数値表は下記「割り箸 メモ」。ready: true・`oneshot`。
+
+**次の実装ターゲット**: `nim`（ニム・完全読み切り→剰余/nim-sum）— 正本 §6.4 学習進行の目安（三目並べ→ニム→割り箸→4×4オセロ）どおり。SPEC 未着手。
 
 ---
 
@@ -85,6 +87,7 @@
 | 11 | AABB | `algorithms/collision.html` | —（説明UI） | `AabbExample.cs` | 軸投影・非マップ |
 | 12 | ステートマシン | `algorithms/fsm.html` | `js/maps/fsm-config.js` | `FsmExample.cs` | 状態図・遷移表・非マップ |
 | 13 | 三目並べ | `algorithms/tic-tac-toe.html` | `js/maps/tic-tac-toe-config.js` | `TicTacToeExample.cs` | negamax全解析。α-β/メモ化/対称性除去(8変換)を独立トグル。3×3専用UI（非マップ） |
+| 14 | 割り箸 | `algorithms/chopsticks.html` | `js/maps/chopsticks-config.js` | `ChopsticksExample.cs` | 循環グラフを後退解析（波単位）で3値化。状態225局面。15×15マトリクス+対局ビュー（非マップ） |
 
 共通:
 
@@ -106,6 +109,7 @@
 | 4 | モンテカルロ | **ready** — `algorithms/monte-carlo.html` / SPEC |
 | 5 | 多腕バンディット | **ready** — `algorithms/multi-armed-bandit.html` / SPEC |
 | 6 | 三目並べ | **ready** — `algorithms/tic-tac-toe.html` / SPEC（実在ルール優先の初例） |
+| 7 | 割り箸 | **ready** — `algorithms/chopsticks.html` / SPEC（循環グラフ・後退解析の初例） |
 
 ### 物理・判定
 | トピック | 状態 |
@@ -174,6 +178,49 @@
 - 1ステップ実行はジェネレータ（`solveStep`）実装。空きマス5個超は警告表示（全展開は約55万ノード）。
   既定で「終盤（残り4手）」プリセットを用意し、コールスタック（盤面ミニチュア）を最後まで追える
 - 設定: `js/maps/tic-tac-toe-config.js`（初版・2026-07-19）
+
+### 割り箸 メモ
+- 状態は `{ mover:[a,b], opp:[c,d] }`（手番側/相手側、a<=b・c<=d に正規化）。
+  先手/後手の固定ラベルは持たない設計にしたため状態数は 15×15=**225**（SPEC の上界450以下。§11参照）
+- タップ結果の本数（`applyHitValue`）は死の条件で分岐:
+  - 標準（5以上で死）: raw>=5 → 0
+  - **ちょうど5のみ死**: raw==5→0、raw>5（6〜8）は「片手に5本を超えて掲げられない」という物理的制約により
+    **不可能な手として除外**（legalMovesに含めない）。こうしないと本数が際限なく増え続け状態空間が
+    有限に収まらなくなるため採用（§11に明記）
+  - mod5 ON: raw%5（余り0=死）。deathRuleの設定より優先
+- 分割ルール: 自分の両手の合計を、現状と異なる 0〜4 の組へ再分配できる（(0,x) からの分割も許可）
+- 終局判定は「合法手0件=手番側の負け」という一般化した基準（通常の mover=(0,0) を包含し、
+  分割なし・相手が先に全滅した不到達局面などの縁も一貫して処理できる。§11参照）
+- 後退解析（`retrogradeAnalysisSteps`）は波単位ジェネレータ。マトリクスの波アニメーション専用に使い、
+  対局・CPU応手・比較表は即時に完了させた `runRetrogradeAnalysis` を別途使う（両者は同じロジック）
+- マトリクスは **行=手番側の手ペア、列=相手側の手ペア**（先手/後手固定ラベルは不採用。§11参照）
+- 検証（scratchpad の Node スクリプトで実施・全項目 PASSED。文献値ではなく自前計算値）:
+  - 状態数225（≤450）、全終局局面（合法手0件）は波0・LOSE
+  - 6バリアント全てで不動点性質（WIN⇔∃手→相手LOSE／LOSE⇔∀手→相手WIN／DRAW⇔勝ち手なし∧∃手→相手DRAW）を
+    全225局面で確認
+  - `chopsticks.js` の実装とは別に、predecessor逆伝播ベースの後退解析をゼロから再実装し、
+    6バリアント×225局面すべてでラベル完全一致を確認（独立実装との突き合わせ）
+  - バリアント別の初期局面(1,1)-(1,1)の結論とW/L/D（自前計算・実装値）:
+
+    | バリアント | 初期局面 | 勝ち | 負け | 引分 | 到達可能 | 波数 |
+    |---|---|---|---|---|---|---|
+    | 標準（分割なし・5以上で死） | LOSE | 146 | 79 | 0 | 92 | 7 |
+    | 分割あり（5以上で死） | LOSE | 141 | 70 | **14** | 191 | 18 |
+    | ちょうど5のみ死（分割なし） | LOSE | 99 | 126 | 0 | 75 | 5 |
+    | 分割あり + ちょうど5のみ死 | **DRAW** | 83 | 51 | 91 | 191 | 7 |
+    | mod5 ON（分割なし） | **DRAW** | 86 | 61 | 78 | 200 | 5 |
+    | 分割あり + mod5 ON | **DRAW** | 84 | 39 | 102 | 207 | 14 |
+
+  - 分割なし（標準・ちょうど5）では引き分け局面が**0**、分割ありで初めてDRAWが出現（14局面）。
+    さらに mod5 系・分割+ちょうど5では**初期局面そのものがDRAW**に変わる（バリアントで結論が変わる好例）
+  - 深さ制限Min-Max（メモ化negamax、`depthLimitedValue`）: 初期局面がDRAWのバリアント（mod5・分割+ちょうど5）では
+    深さ5/10/20のいずれも評価値が**0（未確定）のまま**変化しない。対照実験として決着がつく標準バリアントでは
+    深さ10・20で真値（-1、初期局面LOSE）に収束することを確認（ループ局面は深さを増やしても解けないことの実証）
+  - 標準の (1,1)-(1,1) が「手番側（先に動く方）の負け」になるのは直感に反するが、独立実装との
+    ラベル完全一致で裏付け済み
+- CPU応手: WIN局面では相手LOSEに行く手、DRAW局面では相手DRAWに行く手（DRAW局面には定義上必ず存在）を選択。
+  LOSE局面での「最長粘り」はSPEC §11の通りv1では未実装（どの手を選んでも理論上は負けなので暫定で先頭の手を選択）
+- 設定: `js/maps/chopsticks-config.js`（初版・2026-07-19）
 
 ---
 
