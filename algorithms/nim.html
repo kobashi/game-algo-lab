@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ニム（石取りゲーム）で全探索の逆向き着色から周期性（1山: n mod (k+1)）とnim-sum（複数山: 各山のXOR）の理論解を発見・確認する。" />
+  <title>ニム — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="game-tree" data-active="nim"></header>
+
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb">
+        <a href="../index.html">ホーム</a> / ゲーム木 / ニム
+      </p>
+      <h1>ニム（完全読み切り→理論解）</h1>
+      <p class="page-header-lead">
+        三目並べで見た「全探索」の次の一歩 — <strong>全探索の結果に規則性を発見すると、探索そのものが不要になる</strong>
+        ことを見せる。モード1（1山）は 0..N を逆向きに着色すると <strong>k+1 間隔の縞</strong> が現れ、
+        モード2（複数山）は全局面の勝敗が <strong>nim-sum（各山の XOR）≠0</strong> と完全に一致することを機械確認する。
+        設定は <code>js/maps/nim-config.js</code>。
+      </p>
+    </div>
+
+    <details class="lesson-details">
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li><strong>モード1（1山）</strong>: 終局（n=0）から逆向きに 勝ち(WIN)/負け(LOSE) を着色していくと、
+            負け局面が <code>n mod (k+1) === 0</code> の位置にきれいに並ぶ（学習目標1）</li>
+          <li><strong>モード2（複数山）</strong>: 各局面を全探索した勝敗と、各山の値を XOR した
+            nim-sum が 0 かどうかの理論判定が、全局面で一致することを「一致確認」ボタンで機械確認する（学習目標2）</li>
+          <li><strong>探索 vs 理論解</strong>: 「1局面ずつ探索する」（触った局面数）と「XORを1回計算する」の
+            計算量の差を数値で比較する（学習目標3）</li>
+          <li>発展: 最後の石を取ったら<strong>負け</strong>になる「ミゼール規則」は本デモでは扱わない
+            （SPEC §11・次回改訂の候補）</li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="demo-workspace">
+      <div class="demo-game-group">
+        <div class="demo-board">
+          <div class="canvas-panel nim-panel">
+            <h2 class="cs-panel-title">対局ビュー</h2>
+            <div id="nim-single-play" class="nim-mode-view" data-mode-only="single" aria-label="1山の対局ビュー"></div>
+            <div id="nim-multi-play" class="nim-mode-view" data-mode-only="multi" aria-label="複数山の対局ビュー"></div>
+            <p class="cs-empty" style="margin-top:0.4rem;">石（●）をクリックすると、そこまで残して取ります。</p>
+          </div>
+
+          <div class="canvas-panel nim-panel">
+            <div class="nim-mode-view" data-mode-only="single">
+              <h2 class="cs-panel-title">0..N の帯（逆向き着色）</h2>
+              <div class="nim-band-wrap">
+                <div id="nim-band" class="nim-band" aria-label="逆向き着色の帯"></div>
+                <div id="nim-mod-row" class="nim-mod-row" aria-label="n mod (k+1) の値"></div>
+              </div>
+              <p id="nim-band-note" class="cs-wave-note">（「1ステップ」または「再生」で開始）</p>
+              <div class="legend cs-legend">
+                <span><i class="swatch swatch-leaf-t"></i>勝ち（WIN）</span>
+                <span><i class="swatch swatch-leaf-f"></i>負け（LOSE）</span>
+                <span><i class="swatch swatch-path"></i>未着色</span>
+                <span>下段 = n mod (k+1)。0 の位置が LOSE と一致するはず</span>
+              </div>
+            </div>
+
+            <div class="nim-mode-view" data-mode-only="multi">
+              <h2 class="cs-panel-title">2進パネル（nim-sum）</h2>
+              <div id="nim-binary" class="nim-binary" aria-label="各山の2進数とXOR"></div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="controls-panel demo-controls">
+          <div class="controls-toolbar">
+            <div class="controls-toolbar-main">
+              <div class="controls-group">
+                <span class="controls-label">モード</span>
+                <div class="control-row">
+                  <label class="controls-label" for="mode-select">選択</label>
+                  <select id="mode-select" class="bandit-select">
+                    <option value="single">モード1: 1山</option>
+                    <option value="multi">モード2: 複数山</option>
+                  </select>
+                  <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+                </div>
+              </div>
+
+              <div class="controls-group" data-mode-only="multi">
+                <span class="controls-label">山構成</span>
+                <div class="control-row">
+                  <label class="controls-label" for="preset">プリセット</label>
+                  <select id="preset" class="bandit-select"></select>
+                </div>
+              </div>
+            </div>
+
+            <div class="controls-group-paint mc-params cs-toggle-row" data-mode-only="single">
+              <label class="controls-label" for="k-slider">k（最大取り数）= <span id="k-value">3</span></label>
+              <input type="range" id="k-slider" min="1" max="5" value="3" step="1" />
+              <label class="controls-label" for="n-slider">N（初期石数）= <span id="n-value">21</span></label>
+              <input type="range" id="n-slider" min="5" max="40" value="21" step="1" />
+            </div>
+
+            <div class="controls-group-paint mc-params cs-toggle-row" data-mode-only="single">
+              <span class="controls-label">逆向き着色</span>
+              <button type="button" id="btn-step" class="btn btn-ghost">1ステップ</button>
+              <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+              <label class="controls-label" for="speed">速度</label>
+              <input type="range" id="speed" min="20" max="400" value="200" step="20" />
+            </div>
+
+            <div class="controls-group-paint mc-params cs-toggle-row" data-mode-only="multi">
+              <span class="controls-label">全局面照合</span>
+              <button type="button" id="btn-verify" class="btn btn-primary">一致確認</button>
+            </div>
+          </div>
+
+          <div id="status" class="status-log" role="status">準備完了</div>
+          <div id="result-compare" class="result-compare" hidden></div>
+        </aside>
+      </div>
+
+      <section class="ds-section ds-section-workspace" aria-labelledby="ds-heading">
+        <h2 id="ds-heading">データ構造のようす</h2>
+        <p class="section-lead section-lead-compact">
+          モード1: 帯の着色履歴（直近）。モード2: 現在の山配列と nim-sum
+        </p>
+        <div id="ds-panels" class="ds-panels"></div>
+      </section>
+    </div>
+
+    <section class="code-section" aria-labelledby="csharp-heading">
+      <h2 id="csharp-heading">C# 実装例</h2>
+      <div class="code-toolbar">
+        <p class="code-meta">ファイル: <code>samples/NimExample.cs</code></p>
+      </div>
+      <pre class="code-block" id="csharp-sample"><code>// 読み込み中…</code></pre>
+      <p class="code-note">
+        1山の逆向き着色DP・複数山のメモ化探索・XOR判定・一致確認ループだけを抜き出しています。
+        盤面描画・対局UI・2進パネルはデモ側のみ。
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="ゲーム木シリーズ · 全探索から理論解へ（正本 §6.2）"></footer>
+
+  <script type="module" src="../js/nim.js"></script>
+</body>
+</html>

@@ -4,9 +4,10 @@
 |------|------|
 | **計画の正本** | [interactive_game_programming_material_plan.docx](./interactive_game_programming_material_plan.docx)（構想・設計資料） |
 | **策定** | **2026年7月**（資料表題どおり） |
+| **正本改訂** | **2026-07-19** — Fable5 レビュー全件承認を反映（§2 実在ルール優先原則、§4 procgen 行、§6.1 三目並べ、§6.4 割り箸 新設、§15 第2期追記）。レビュー記録: [reviews/2026-07-19-docx-minigames-review.md](./reviews/2026-07-19-docx-minigames-review.md)、変更履歴版: [interactive_game_programming_material_plan_fable5_review.docx](./interactive_game_programming_material_plan_fable5_review.docx) |
 | **リポジトリ登録** | 2026-07-17（`docs/` に配置し Git 管理開始） |
 | **本 Markdown** | 正本の要約・**実装状況の対応表**・Game Algo Lab 運用メモ（エージェント／GitHub 向け） |
-| **最終更新（md）** | 2026-07-17（未実装トピック・カテゴリを **企画中** として反映。実装はしない） |
+| **最終更新（md）** | 2026-07-19（正本改訂に同期: 三目並べ・割り箸を企画中に追加。§8/§11/§12 見落とし補完・分類根拠の明記も同日） |
 
 正本の変更や方針の大きな見直しは **Docx を更新したうえで本ファイルを同期**する。  
 細部の図表・講義向け長文は正本を開き、日々の実装判断は本ファイルと [topics/CATALOG.md](./topics/CATALOG.md) を優先する。
@@ -40,6 +41,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | 共通基盤 | 盤面・探索・物理・イベント・サウンド・UI・計測を共用 |
 | 理論と実装の接続 | 全探索→理論解、総当たり→空間分割、素朴→最適化 |
 | Unity を主基盤（将来） | 基本は Unity で実装・可視化。GPU 依存の高度領域は概念説明中心 |
+| 実在ルール優先（2026-07-19 追加） | ゲーム木の題材は人対人で遊べる実在ルール（ニム、割り箸、三目並べ、オセロ等）を優先。創作パズルは補助 |
 
 > **現行 Game Algo Lab**: GitHub Pages 向けの **静的 HTML/CSS/JS** で経路探索・ゲーム木・AABB・FSM を試作中。Unity 本線は正本の将来像であり、当面の公開デモ基盤は静的サイトを維持する（[PLATFORM.md](./PLATFORM.md)）。
 
@@ -55,7 +57,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 |------|----------------|
 | 基礎実行モデル | ゲームループ、時間、入力、座標、乱数 |
 | 経路・グラフ探索 | BFS, DFS, Dijkstra, 最良優先, A*, 双方向 |
-| ゲーム木・組合せ | AND-OR, Min-Max, α-β, ニム, 4×4 オセロ, MC, バンディット, MCTS |
+| ゲーム木・組合せ | AND-OR, Min-Max, α-β, 三目並べ, ニム, 割り箸, 4×4 オセロ, MC, バンディット, MCTS |
 | ゲーム AI・自律移動 | FSM, ステアリング, Boids, 障害物回避, BT |
 | 2D 物理・衝突 | 擬似物理〜加速度、AABB/OBB/SAT、連続衝突 |
 | 空間探索・最適化 | 総当たり, Broad/Narrow, グリッド, 四分木, SaP |
@@ -64,6 +66,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | CG | スプライト〜LOD（Unity 実習 + GPU 概念） |
 | 設計・品質 | イベント, コンポーネント, プール, セーブ, テスト, プロファイリング |
 | HCI・制作評価 | 入力バッファ, コヨーテタイム, UI, アクセシビリティ, バランス |
+| プロシージャル・確率・バランス | 迷路生成, ダンジョン生成, 地形, 制約付き生成, 乱数, バランス分析（2026-07-19 の正本改訂で §4 表へ追加） |
 
 教材カードの標準項目（正本 §16）: カテゴリ / 名 / 1–2 文 / 状態 / 学習目標 / 操作 / 計測 / 発展課題。  
 講義フロー（正本 §17）: 導入→原理→可視化→実験→比較→課題→振り返り。
@@ -77,7 +80,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | 期 | 正本のねらい | Game Algo Lab 現状（2026-07-17） | 次の実装候補（例） |
 |----|--------------|----------------------------------|-------------------|
 | **第1期** | 既存探索教材の完成と共通 UI | 経路探索 5 本 `ready`・**調整**。platform・スモーク・Pages 試作 | 疑似コード同期、厳密な同時比較モード、計測パネル統一、迷路エディタ強化 |
-| **第2期** | ゲーム木と状態空間 | AND-OR〜バンディット 5 本 `ready`・多く **一発**。AABB・FSM も試作 | **MCTS**、**ニム**（完全解析→剰余/nim-sum）、**4×4 オセロ**（符号化・対称正規化）、ゲーム木の教材改訂 |
+| **第2期** | ゲーム木と状態空間 | AND-OR〜バンディット 5 本 `ready`・多く **一発**。AABB・FSM も試作 | **三目並べ**（全解析・対称性除去）、**割り箸**（循環グラフ・後退解析）、**MCTS**、**ニム**（完全解析→剰余/nim-sum）、**4×4 オセロ**（符号化・対称正規化）、ゲーム木の教材改訂 |
 | **第3期** | 2D アクション共通基盤 | AABB のみ（説明 UI） | 擬似物理→速度/加速度、OBB/SAT/連続衝突、入力バッファ・コヨーテ、スプライト統合（将来 Unity と接続可） |
 | **第4期** | 群集・高速化・CG | 未着手 | ステアリング・Boids、空間分割、大量オブジェクト、CG 実験室 |
 | **第5期** | 通信・データ・BGM | 未着手 | コイン争奪の P2P/サーバ比較、遅延・予測、DB、インタラクティブ BGM |
@@ -107,10 +110,14 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 #### Phase C — ゲーム木（第2期の前半）
 
 - [x] AND-OR / Min-Max / α-β / モンテカルロ / 多腕バンディット  
+- [x] 三目並べ（全解析・対称性除去・MC 比較。正本 §6.1、2026-07-19 実装）  
+- [x] ニム完全解析 → 剰余 / nim-sum（正本 §6.2、2026-07-19 実装）  
+- [x] 割り箸（循環ゲームグラフ・後退解析。正本 §6.4、2026-07-19 新設・同日実装）  
 - [ ] MCTS（正本明記）  
-- [ ] ニム完全解析 → 剰余 / nim-sum  
-- [ ] 4×4 オセロ（転置表・対称正規化）  
+- [x] 4×4 オセロ（転置表・対称正規化・パス処理・3段計測。正本 §6.3、2026-07-19 実装）  
 - 既存 5 本の教材改訂（成熟度 oneshot → revised）
+- 学習進行の目安（正本 §6）: 三目並べ → ニム → 割り箸 → 4×4 オセロ（非循環の理論解 → 循環の後退解析 → 対称正規化）
+- これで第2期ゲーム木シリーズの**実在ゲーム4本**（三目並べ・ニム・割り箸・4×4オセロ）が出揃った。次は MCTS のみ未着手
 
 #### Phase D — その他カテゴリ（第2〜3期の入口）
 
@@ -130,7 +137,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | カテゴリ ID（案） | 表示名 | 状態 | 期の目安 | 備考 |
 |-------------------|--------|------|----------|------|
 | `pathfinding` | 経路探索 | **実装済**（一部企画中） | 第1期 | 5 本実装済。双方向などは企画中 |
-| `game-tree` | ゲーム木 | **実装済**（一部企画中） | 第2期 | 5 本実装済。MCTS・ニム・オセロは企画中 |
+| `game-tree` | ゲーム木 | **実装済**（一部企画中） | 第2期 | 9 本実装済（三目並べ・ニム・割り箸・4×4オセロ含む）。MCTS のみ企画中 |
 | `physics` | 物理・判定 | **実装済**（一部企画中） | 第3期 | AABB のみ実装済 |
 | `patterns` | 設計パターン | **実装済**（一部企画中） | 第2〜3期 | FSM のみ実装済 |
 | `fundamentals` | 基礎実行モデル | **企画中** | 第1〜3期 | ゲームループ・時間・入力・座標・乱数 |
@@ -146,6 +153,8 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 実装済みトピックの詳細・成熟度は [topics/CATALOG.md](./topics/CATALOG.md) / [topics/MATURITY.md](./topics/MATURITY.md)。  
 **企画中の id は仮**。着手時に衝突を避けて確定する。
 
+> **`patterns` / `quality` 分割について**: 正本 §13 は「ソフトウェア設計・品質」という **単一領域**（イベント〜プロファイリングまで）。本サイトはメニュー UI の都合で `patterns`（設計パターン寄り）と `quality`（品質・計測寄り）の **2 カテゴリに分割**している。上表の「第2〜3期」「横断」という期の目安は **正本 §15 に明記はなく、サイト運用上の便宜的な推定**。正本との対応は 1 領域 → 2 カテゴリの意図的な分割であり、矛盾ではなく **サイト独自の実装分類**として扱う。
+
 ---
 
 ## 2.4 企画中トピック一覧（実装しない・計画のみ）
@@ -158,7 +167,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 | | 件数の目安 |
 |--|-----------|
-| 実装済（メニュー掲載） | 12（経路 5 + ゲーム木 5 + AABB + FSM） |
+| 実装済（メニュー掲載） | 15（経路 5 + ゲーム木 8 + AABB + FSM） |
 | 企画中（本節） | 下記の各表（カテゴリ横断で多数） |
 
 ---
@@ -178,9 +187,11 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
 | `and-or` … `multi-armed-bandit` | （既存 5 本） | 実装済 | 多く oneshot。改訂は別作業 |
+| `tic-tac-toe` | 三目並べ（全解析・対称性除去） | **実装済** | 正本 §6.1（2026-07-19 追加・実装）。765 局面・α-β/メモ化/8対称 ON/OFF・MC 比較・15ゲーム同型は解説パネルのみ。[SPEC](./topics/tic-tac-toe/SPEC.md)（implemented） |
 | `mcts` | モンテカルロ木探索 (MCTS) | **企画中** | 選択・展開・シミュレーション・逆伝播 |
-| `nim` | ニム（完全読み切り→理論解） | **企画中** | 剰余 / nim-sum・XOR 可視化 |
-| `othello-4x4` | 4×4 オセロ（符号化・対称正規化） | **企画中** | 転置表・8 対称・canonical |
+| `nim` | ニム（完全読み切り→理論解） | **実装済** | 正本 §6.2（2026-07-19 実装）。1山の逆向き着色DP（周期 n mod k+1）と複数山のnim-sum(XOR)判定・全局面一致確認。[SPEC](./topics/nim/SPEC.md)（implemented） |
+| `chopsticks` | 割り箸（循環グラフ・後退解析） | **実装済** | 正本 §6.4（2026-07-19 新設・同日実装）。勝ち/負け/引き分け3値・バリアント比較・局面正規化・深さ制限Min-Max対比。[SPEC](./topics/chopsticks/SPEC.md)（implemented） |
+| `othello-4x4` | 4×4 オセロ（符号化・転置表・対称正規化） | **実装済** | 正本 §6.3（2026-07-19 実装）。負の全探索224,820局面/約0.4秒（Node実測）→3段計測（生/転置表後/対称除去後）をチャンク実行で可視化。canonical は手番込み8変換最小。初期局面は黒-8石差（自前計算・独立実装一致）。[SPEC](./topics/othello-4x4/SPEC.md)（implemented） |
 | `game-tree-engine` | 共通探索エンジン（交換可能） | **企画中** | 合法手・終局・評価のインタフェース（横断基盤） |
 
 ---
@@ -192,12 +203,17 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `collision` | AABB 衝突判定 | 実装済 | 二重判定・複雑度比較 |
 | `grid-pseudo-physics` | グリッド擬似物理 | **企画中** | 1 マス落下・接地 |
 | `velocity-motion` | 速度による移動 | **企画中** | 位置←位置＋速度 |
+| `accel-decel` | 加減速 | **企画中** | 最高速度・方向転換・慣性（正本 §8.1、加速度と重力とは別項） |
 | `accel-gravity` | 加速度と重力 | **企画中** | 放物・ジャンプ |
 | `friction-bounce` | 摩擦・反発 | **企画中** | 減衰・反発係数 |
 | `momentum-1d` | 質量と運動量（1 次元） | **企画中** | 弾性/非弾性 |
+| `rotational-motion` | 回転運動 | **企画中** | 角速度・トルク・慣性モーメント・接触点による回転（正本 §8.1） |
 | `circle-collision` | 円同士・円と AABB | **企画中** | Clamp・最近点 |
+| `raycast-shapes` | 線分・レイキャストと図形の交差 | **企画中** | 正本 §8.2 |
 | `obb-sat` | OBB / 分離軸定理 (SAT) | **企画中** | 回転矩形 |
 | `swept-aabb` | 連続衝突 (Swept AABB / TOI) | **企画中** | 高速移動の貫通防止 |
+| `rotating-collision` | 回転中の物体との衝突 | **企画中** | サブステップから導入（正本 §8.2） |
+| `concave-compound` | 凹形状の凸分割・複合コライダー | **企画中** | 正本 §8.2 |
 | `collision-response` | 衝突応答 | **企画中** | 侵入解消・滑り・摩擦 |
 
 ---
@@ -228,6 +244,8 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 ---
 
 ### `ai-steering` — ゲーム AI・自律移動（カテゴリごと企画中）
+
+> **FSM の分類について**: 正本 §4 の領域表ではステートマシンは本カテゴリ（ゲームAI・自律移動）に属する。しかし本サイトは実装済みの UI 型（説明特化・非マップ）の都合で `patterns`（設計パターン）カテゴリに置いている。これは正本の体系からの **意図的なサイト側分類**であり、今後 FSM を本カテゴリへ移す予定はない（変更する場合は `js/main.js` の `category`/`badge`、CATALOG、本 ROADMAP を同時に更新する）。
 
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
@@ -284,9 +302,13 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 |----------|----------|------|------|
 | `sfx-events` | イベントと効果音 | **企画中** | |
 | `sfx-voice-limit` | 同時発音・重複制御 | **企画中** | |
+| `sfx-randomize` | ランダム化 | **企画中** | 音量・ピッチの揺らぎ、シャッフルバッグ（正本 §11.1） |
 | `sfx-material` | 材質別・衝突強度と音 | **企画中** | |
 | `sfx-spatial` | 距離・パン・優先順位 | **企画中** | |
+| `audio-bus-ducking` | サウンドバスとダッキング | **企画中** | BGM/SE/UI/Voice の分類と一時減衰（正本 §11.1） |
 | `bgm-loop` | BGM ループ / イントロ＋ループ | **企画中** | |
+| `bgm-transition-compare` | 切替方式の比較 | **企画中** | 即時切替・クロスフェード・拍同期・専用トランジション（正本 §11.2） |
+| `bgm-quantize` | 量子化 | **企画中** | イベントを次拍・次小節へ丸める（正本 §11.2） |
 | `bgm-interactive` | 拍同期・レイヤー型 BGM | **企画中** | ボス登場デモ（正本共通環境） |
 
 ---
@@ -301,7 +323,9 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `gfx-mesh-uv` | メッシュ・UV・マテリアル | **企画中** | |
 | `gfx-lighting-alpha` | ライティング・透明度 | **企画中** | |
 | `gfx-animation-vfx` | アニメーション・パーティクル | **企画中** | |
+| `gfx-postprocess` | ポストプロセス | **企画中** | Bloom・色調・Vignette（正本 §12.1） |
 | `gfx-lod-culling` | LOD・カリング | **企画中** | 負荷計測とセット |
+| `gfx-ui-canvas` | UI 描画 | **企画中** | Canvas・Anchor・Pivot・解像度対応（正本 §12.1） |
 | `gfx-gpu-concepts` | GPU パイプライン概説 | **企画中** | 説明中心（正本 §12.2） |
 
 ---

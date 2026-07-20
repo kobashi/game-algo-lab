@@ -99,7 +99,7 @@ const TOPICS = [
     badge: "ゲーム木",
     category: "ゲーム木",
     ready: true,
-    maturity: "oneshot",
+    maturity: "revised",
   },
   {
     id: "minimax",
@@ -110,7 +110,7 @@ const TOPICS = [
     badge: "ゲーム木",
     category: "ゲーム木",
     ready: true,
-    maturity: "oneshot",
+    maturity: "revised",
   },
   {
     id: "alpha-beta",
@@ -121,7 +121,7 @@ const TOPICS = [
     badge: "ゲーム木",
     category: "ゲーム木",
     ready: true,
-    maturity: "oneshot",
+    maturity: "revised",
   },
   {
     id: "monte-carlo",
@@ -132,7 +132,7 @@ const TOPICS = [
     badge: "ゲーム木",
     category: "ゲーム木",
     ready: true,
-    maturity: "oneshot",
+    maturity: "revised",
   },
   {
     id: "multi-armed-bandit",
@@ -140,6 +140,50 @@ const TOPICS = [
     description:
       "探索と活用。ε-greedy / UCB1。MCTS の腕選択の基礎。",
     href: "algorithms/multi-armed-bandit.html",
+    badge: "ゲーム木",
+    category: "ゲーム木",
+    ready: true,
+    maturity: "revised",
+  },
+  {
+    id: "tic-tac-toe",
+    title: "三目並べ（全解析・対称性除去）",
+    description:
+      "全探索で引き分けを証明。α-β・メモ化・対称性除去(765局面)をON/OFF比較し、MCの誤判定も見る。",
+    href: "algorithms/tic-tac-toe.html",
+    badge: "ゲーム木",
+    category: "ゲーム木",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "nim",
+    title: "ニム（完全読み切り→理論解）",
+    description:
+      "1山の逆向き着色で周期性(n mod k+1)を発見、複数山の全局面探索でnim-sum(XOR)判定と一致確認。",
+    href: "algorithms/nim.html",
+    badge: "ゲーム木",
+    category: "ゲーム木",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "chopsticks",
+    title: "割り箸（循環グラフ・後退解析）",
+    description:
+      "同一局面に戻る循環グラフを後退解析で3値（勝ち/負け/引き分け）に確定。バリアント・深さ制限Min-Maxと比較。",
+    href: "algorithms/chopsticks.html",
+    badge: "ゲーム木",
+    category: "ゲーム木",
+    ready: true,
+    maturity: "revised",
+  },
+  {
+    id: "othello-4x4",
+    title: "4×4 オセロ（符号化・転置表・対称正規化）",
+    description:
+      "実在ルール＋パス・終局を持つゲーム木最終段。生の生成局面数/転置表後/対称除去後の3段比較をチャンク実行で可視化。",
+    href: "algorithms/othello-4x4.html",
     badge: "ゲーム木",
     category: "ゲーム木",
     ready: true,

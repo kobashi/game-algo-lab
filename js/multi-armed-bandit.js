@@ -5,6 +5,7 @@
 
 import {
   BANDIT_CONFIG,
+  getPresetArms,
   bestMean,
   bestArmIndex,
 } from "./maps/bandit-config.js";
@@ -30,6 +31,7 @@ const seedEl = document.getElementById("seed");
 const targetEl = document.getElementById("target-n");
 const epsilonEl = document.getElementById("epsilon");
 const policyEl = document.getElementById("policy");
+const presetEl = document.getElementById("preset");
 const showTrueEl = document.getElementById("show-true");
 const csharpSample = document.getElementById("csharp-sample");
 
@@ -77,6 +79,10 @@ function policy() {
   return policyEl?.value === "ucb1" ? "ucb1" : "eps";
 }
 
+function presetId() {
+  return presetEl?.value === "hard" ? "hard" : "easy";
+}
+
 function showTrue() {
   return !!showTrueEl?.checked;
 }
@@ -92,7 +98,7 @@ function optIndex() {
 function resetState() {
   stopAuto();
   finished = false;
-  arms = BANDIT_CONFIG.arms.map((a) => ({ ...a }));
+  arms = getPresetArms(presetId()).map((a) => ({ ...a }));
   const k = arms.length;
   pulls = Array(k).fill(0);
   rewardSum = Array(k).fill(0);
@@ -116,7 +122,7 @@ function resetState() {
 
   resultPanel.hide();
   setStatus(
-    `準備完了 — ${k} 本の腕、方策 ${policy() === "ucb1" ? "UCB1" : "ε-greedy"}、目標 ${targetN()} 回`
+    `準備完了 — 難易度 ${presetId() === "hard" ? "難しい" : "易しい"}、${k} 本の腕、方策 ${policy() === "ucb1" ? "UCB1" : "ε-greedy"}、目標 ${targetN()} 回`
   );
   draw();
   updateDs();
@@ -383,6 +389,7 @@ btnStep?.addEventListener("click", () => {
 });
 btnReset?.addEventListener("click", () => resetState());
 seedEl?.addEventListener("change", () => resetState());
+presetEl?.addEventListener("change", () => resetState());
 policyEl?.addEventListener("change", () => {
   if (totalPulls === 0) {
     setStatus(`方策を ${policy() === "ucb1" ? "UCB1" : "ε-greedy"} に変更（リセット済み状態）`);
@@ -410,6 +417,7 @@ showTrueEl?.addEventListener("change", () => {
 if (seedEl) seedEl.value = String(BANDIT_CONFIG.defaultSeed);
 if (targetEl) targetEl.value = String(BANDIT_CONFIG.defaultSteps);
 if (epsilonEl) epsilonEl.value = String(BANDIT_CONFIG.defaultEpsilon);
+if (presetEl) presetEl.value = BANDIT_CONFIG.defaultPreset;
 
 resetState();
 loadTextSample(

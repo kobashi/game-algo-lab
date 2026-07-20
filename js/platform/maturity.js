@@ -41,22 +41,26 @@ export const MATURITY_HINT = {
  */
 export const TOPIC_META = {
   bfs: { maturity: "revised", revisions: 2, updated: "2026-07-17" },
-  dfs: { maturity: "revised", revisions: 2, updated: "2026-07-17" },
+  dfs: { maturity: "revised", revisions: 3, updated: "2026-07-19" },
   dijkstra: { maturity: "revised", revisions: 2, updated: "2026-07-17" },
-  "best-first": { maturity: "revised", revisions: 2, updated: "2026-07-17" },
+  "best-first": { maturity: "revised", revisions: 3, updated: "2026-07-19" },
   astar: { maturity: "revised", revisions: 3, updated: "2026-07-17" },
-  "and-or": { maturity: "oneshot", revisions: 0, updated: "2026-07-17" },
-  minimax: { maturity: "oneshot", revisions: 0, updated: "2026-07-17" },
-  "alpha-beta": { maturity: "oneshot", revisions: 0, updated: "2026-07-17" },
-  "monte-carlo": { maturity: "oneshot", revisions: 0, updated: "2026-07-17" },
+  "and-or": { maturity: "revised", revisions: 1, updated: "2026-07-19" },
+  minimax: { maturity: "revised", revisions: 1, updated: "2026-07-19" },
+  "alpha-beta": { maturity: "revised", revisions: 1, updated: "2026-07-19" },
+  "monte-carlo": { maturity: "revised", revisions: 1, updated: "2026-07-19" },
   "multi-armed-bandit": {
-    maturity: "oneshot",
-    revisions: 0,
-    updated: "2026-07-17",
+    maturity: "revised",
+    revisions: 1,
+    updated: "2026-07-19",
   },
-  bandit: { maturity: "oneshot", revisions: 0, updated: "2026-07-17" },
+  bandit: { maturity: "revised", revisions: 1, updated: "2026-07-19" },
   collision: { maturity: "revised", revisions: 2, updated: "2026-07-17" },
   fsm: { maturity: "oneshot", revisions: 0, updated: "2026-07-17" },
+  "tic-tac-toe": { maturity: "oneshot", revisions: 0, updated: "2026-07-19" },
+  nim: { maturity: "oneshot", revisions: 0, updated: "2026-07-19" },
+  chopsticks: { maturity: "revised", revisions: 1, updated: "2026-07-19" },
+  "othello-4x4": { maturity: "oneshot", revisions: 0, updated: "2026-07-19" },
 };
 
 /** @deprecated resolveTopicMeta / TOPIC_META を優先。後方互換用 */

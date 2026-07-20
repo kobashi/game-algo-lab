@@ -113,6 +113,10 @@ gh auth login -h github.com -p https -w   # 未ログイン時
 | α-β 法 | **実装済** — `algorithms/alpha-beta.html` |
 | モンテカルロ法 | **実装済** — `algorithms/monte-carlo.html` |
 | 多腕バンディット | **実装済** — `algorithms/multi-armed-bandit.html` |
+| 三目並べ | **実装済** — `algorithms/tic-tac-toe.html` |
+| ニム | **実装済** — `algorithms/nim.html` |
+| 割り箸 | **実装済** — `algorithms/chopsticks.html` |
+| 4×4 オセロ | **実装済** — `algorithms/othello-4x4.html` |
 
 | カテゴリ | トピック | 状態 |
 |----------|----------|------|

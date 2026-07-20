@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="割り箸（指たたきゲーム）で循環するゲームグラフと後退解析を可視化。勝ち/負け/引き分け(ループ)の3値を波ごとに確定させ、バリアント間の結論の違いや深さ制限Min-Maxとの対比を見る。" />
+  <title>割り箸 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="game-tree" data-active="chopsticks"></header>
+
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb">
+        <a href="../index.html">ホーム</a> / ゲーム木 / 割り箸
+      </p>
+      <h1>割り箸（循環するゲームグラフ・後退解析）</h1>
+      <p class="page-header-lead">
+        三目並べやニムと違い、割り箸は<strong>同一局面に戻る循環</strong>を持つ「ゲーム木」ではなく
+        「ゲーム<strong>グラフ</strong>」。通常の深さ優先 Min-Max では解けないため、終局から遡る
+        <strong>後退解析</strong>で全局面を波ごとに 勝ち/負け/引き分け（ループ）の3値へ確定させる。
+        分割ルール・死の条件（5以上/ちょうど5）・mod5 のバリアントで結論がどう変わるかも比較する。
+        設定は <code>js/maps/chopsticks-config.js</code>。
+      </p>
+    </div>
+
+    <details class="lesson-details">
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li><strong>ゲーム「グラフ」</strong>: 割り箸は同じ局面に何度も戻れるため、根から葉へ一方向に読む
+            通常の Min-Max（深さ優先の再帰）が使えない（学習目標1）</li>
+          <li><strong>後退解析</strong>: 終局（合法手0件 = 手番側の負け）を波0として、
+            「ある手で相手LOSEに行ければWIN」「すべての手が相手WINに行けばLOSE」を波ごとに広げていく。
+            最後まで確定しない局面が<strong>引き分け（ループ）</strong>（学習目標2）</li>
+          <li><strong>バリアント比較</strong>: 分割の可否・死の条件（5以上/ちょうど5）・mod5 で、
+            初期局面 (1,1)-(1,1) の結論や引き分け局面の数が変わる（学習目標3）</li>
+          <li><strong>深さ制限 Min-Max との対比</strong>: ループ局面は探索の深さをいくら増やしても
+            評価値が確定しない（未確定のまま）ことを、実際に深さ5/10/20で比較して確認する</li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="demo-workspace">
+      <div class="demo-game-group">
+        <div class="demo-board">
+          <div class="canvas-panel cs-panel">
+            <h2 class="cs-panel-title">対局ビュー</h2>
+            <div id="cs-hands" class="cs-hands" aria-label="現在の手の本数"></div>
+            <div id="cs-move-list" class="cs-move-list" aria-label="合法手一覧（行き先の3値ラベル付き）"></div>
+          </div>
+
+          <div class="canvas-panel cs-panel">
+            <h2 class="cs-panel-title">全局面マトリクス（15×15）</h2>
+            <div class="cs-matrix-wrap">
+              <div id="cs-matrix" class="cs-matrix" aria-label="全225局面の勝ち/負け/引き分け一覧"></div>
+            </div>
+            <p id="cs-wave-note" class="cs-wave-note">（「1ステップ」または「波を再生」で後退解析を開始）</p>
+            <div class="legend cs-legend">
+              <span><i class="swatch swatch-leaf-t"></i>勝ち（緑）</span>
+              <span><i class="swatch swatch-path"></i>引き分け・ループ（黄）</span>
+              <span><i class="swatch swatch-leaf-f"></i>負け（赤）</span>
+              <span><i class="swatch swatch-unreachable"></i>初期局面から到達不能（灰）</span>
+              <span>行=手番側の手ペア / 列=相手側の手ペア。太枠＝現在の対局局面</span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="controls-panel demo-controls">
+          <div class="controls-toolbar">
+            <div class="controls-toolbar-main">
+              <div class="controls-group">
+                <span class="controls-label">局面</span>
+                <div class="control-row">
+                  <label class="controls-label" for="preset">プリセット</label>
+                  <select id="preset" class="bandit-select"></select>
+                  <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="controls-group-paint mc-params cs-toggle-row">
+              <label class="controls-label"><input type="checkbox" id="toggle-split" /> 分割あり</label>
+              <label class="controls-label"><input type="radio" name="death-rule" value="geq5" checked /> 死: 5以上</label>
+              <label class="controls-label"><input type="radio" name="death-rule" value="exact5" /> 死: ちょうど5</label>
+              <label class="controls-label"><input type="checkbox" id="toggle-mod5" /> mod5（死=余り0）</label>
+              <button type="button" id="btn-compare" class="btn btn-ghost">バリアントを比較に追加</button>
+            </div>
+
+            <div class="controls-group-paint mc-params cs-toggle-row">
+              <span class="controls-label">後退解析の波</span>
+              <button type="button" id="btn-step" class="btn btn-ghost">1ステップ</button>
+              <button type="button" id="btn-play" class="btn btn-primary">波を再生</button>
+              <label class="controls-label" for="speed">速度</label>
+              <input type="range" id="speed" min="20" max="400" value="200" step="20" />
+            </div>
+
+            <div class="controls-group-paint mc-params cs-toggle-row">
+              <span class="controls-label">深さ制限 Min-Max</span>
+              <select id="depth-select" class="bandit-select" title="将来の手動深さ選択用（現状は5/10/20を一括比較）">
+                <option value="20">5 / 10 / 20 を一括比較</option>
+              </select>
+              <button type="button" id="btn-depth-eval" class="btn btn-ghost">現在の対局局面で評価</button>
+            </div>
+          </div>
+
+          <div id="status" class="status-log" role="status">準備完了</div>
+          <div id="result-compare" class="result-compare" hidden></div>
+        </aside>
+      </div>
+
+      <section class="ds-section ds-section-workspace" aria-labelledby="ds-heading">
+        <h2 id="ds-heading">データ構造のようす</h2>
+        <p class="section-lead section-lead-compact">
+          今回の波で確定した局面のリスト（正規化表記 <code>(a,b|c,d)</code>）と、
+          深さ制限 Min-Max（負けは −1・勝ちは +1・未確定は 0）の対比
+        </p>
+        <div id="ds-panels" class="ds-panels"></div>
+      </section>
+    </div>
+
+    <section class="code-section" aria-labelledby="csharp-heading">
+      <h2 id="csharp-heading">C# 実装例</h2>
+      <div class="code-toolbar">
+        <p class="code-meta">ファイル: <code>samples/ChopsticksExample.cs</code></p>
+      </div>
+      <pre class="code-block" id="csharp-sample"><code>// 読み込み中…</code></pre>
+      <p class="code-note">
+        局面の正規化・合法手生成・後退解析（BFS ループ）だけを抜き出しています。
+        マトリクス描画・波アニメーション・対局 UI はデモ側のみ。
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="ゲーム木シリーズ · 循環グラフと後退解析（正本 §6.4）"></footer>
+
+  <script type="module" src="../js/chopsticks.js"></script>
+</body>
+</html>

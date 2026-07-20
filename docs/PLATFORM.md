@@ -1,6 +1,6 @@
 # 共通基盤仕様（教材プラットフォーム）
 
-最終更新: 2026-07-17
+最終更新: 2026-07-20
 
 全トピックで揃える **見た目・操作・ファイル配置・用語** と、  
 **共有コード（`js/platform`）** の境界。  
@@ -63,6 +63,7 @@ docs/templates/            # SPEC / スキャフォールド
 | `createResultPanel` | 結果 HTML の show/hide |
 | `loadTextSample` | C# 等のテキスト fetch |
 | `createPlayback` | 再生 / 一時停止 / 速度付き onTick |
+| `runChunked` | ジェネレータを時間分割で駆動（重い解析で UI を固めない。`chunked-run.js`、4×4オセロで新設） |
 | `mulberry32` / `randomIndex` | シード付き乱数 |
 | `layoutTree` / `applySvgSize` | ゲーム木の水平配置 |
 | `bindMapPaint` 等 | 経路探索の塗り |
@@ -250,3 +251,4 @@ python3 scripts/smoke-platform.py
 | 2026-07-17 | 初版（経路探索実績を一般化。複数ゴールを明記） |
 | 2026-07-17 | `js/platform` 分離、層の責務、スキャフォールド、移行状況を追加 |
 | 2026-07-17 | E2E / i18n は今後の課題（ROADMAP バックログ）と明記 |
+| 2026-07-20 | `js/platform/chunked-run.js`（`runChunked`）を新設。4×4オセロ実装で重い解析を UI ブロックなしに実行する必要があり、ジェネレータ駆動のトピック非依存ロジックとして抽出 |

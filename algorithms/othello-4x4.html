@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="4×4 オセロの可視化。符号化・転置表・対称正規化（8変換）を独立トグルで比較し、パス・終局を含む対局も体験する。" />
+  <title>4×4 オセロ — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="game-tree" data-active="othello-4x4"></header>
+
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb">
+        <a href="../index.html">ホーム</a> / ゲーム木 / 4×4 オセロ
+      </p>
+      <h1>4×4 オセロ（符号化・転置表・対称正規化）</h1>
+      <p class="page-header-lead">
+        ゲーム木シリーズの最終段。三目並べ・ニム・割り箸で覚えた符号化・転置表・8対称の考え方を、
+        パス・終局・石差という<strong>実在オセロのルール</strong>に適用する。生の生成局面数 / 転置表後 / 対称正規化後の
+        「3段比較」（正本 §6.3）で、探索空間削減が「あれば便利」から「ないと厳しい」に変わる境目を体感する。
+        設定は <code>js/maps/othello-4x4-config.js</code>。
+      </p>
+    </div>
+
+    <details class="lesson-details">
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li><strong>符号化</strong>: 盤面＋手番を1つのキー文字列にする。これが転置表（Map）のキーになる</li>
+          <li><strong>転置表</strong>: 別の手順で合流した同一局面の再計算を省略する（生成局面数が減る）</li>
+          <li><strong>対称正規化（canonical）</strong>: 盤面の8変換（回転・鏡映）のうち最小符号化を代表値にすると、
+            転置表でさらに多くの局面が同一視される。「生 / 転置表後 / 対称除去後」の3段比較が主役</li>
+          <li><strong>パスと終局</strong>: 合法手がない側は手番を渡すだけの特殊な節点。両者とも合法手がなければ終局
+            （このデモでは「盤面だけから決まる性質」として実装 — SPEC §11）</li>
+          <li>初期局面の理論結果（勝敗・石差）は文献に頼らず<strong>自前の全解析</strong>で確定する（学習目標4）</li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="demo-workspace">
+      <div class="demo-game-group">
+        <div class="demo-board">
+          <div class="canvas-panel oth-panel">
+            <div id="oth-board" class="oth-board-wrap" aria-label="4×4 オセロの盤面"></div>
+            <div class="legend oth-legend">
+              <span><i class="swatch swatch-leaf-t"></i>勝ち（緑）</span>
+              <span><i class="swatch swatch-path"></i>引き分け（黄）</span>
+              <span><i class="swatch swatch-leaf-f"></i>負け（赤）</span>
+              <span>マス内の数値 = その手を選んだ場合の理論石差</span>
+            </div>
+            <div class="oth-status-row">
+              <div id="pass-banner" class="oth-pass-banner" hidden></div>
+              <div id="score-row" class="oth-score-row"></div>
+              <div id="encode-view" class="oth-encode-view"></div>
+              <p id="oth-progress" class="oth-progress" role="status"></p>
+            </div>
+          </div>
+        </div>
+
+        <aside class="controls-panel demo-controls">
+          <div class="controls-toolbar">
+            <div class="controls-toolbar-main">
+              <div class="controls-group">
+                <span class="controls-label">局面</span>
+                <div class="control-row">
+                  <label class="controls-label" for="preset">プリセット</label>
+                  <select id="preset" class="bandit-select"></select>
+                  <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+                  <button type="button" id="btn-cpu" class="btn btn-ghost">CPU に指させる</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="controls-group-paint mc-params oth-toggle-row">
+              <label class="controls-label"><input type="checkbox" id="toggle-ab" /> α-β 枝刈り</label>
+              <label class="controls-label"><input type="checkbox" id="toggle-memo" /> 転置表</label>
+              <label class="controls-label"><input type="checkbox" id="toggle-sym" /> 対称性除去</label>
+              <button type="button" id="btn-analyze" class="btn btn-primary">解析</button>
+              <button type="button" id="btn-compare" class="btn btn-ghost">8構成を比較</button>
+            </div>
+          </div>
+
+          <div id="status" class="status-log" role="status">準備完了</div>
+          <div id="result-compare" class="result-compare" hidden></div>
+        </aside>
+      </div>
+
+      <section class="ds-section ds-section-workspace" aria-labelledby="stage-heading">
+        <h2 id="stage-heading">3段計測（主役）</h2>
+        <p class="section-lead section-lead-compact">
+          「解析」を押すと、現在のトグル設定（α-βは3列共通）で
+          <strong>①生の生成局面数 → ②転置表による再訪除去後 → ③対称正規化後</strong> を順にチャンク実行して比較する。
+        </p>
+        <div id="stage-panel"></div>
+      </section>
+
+      <details id="sym-details" class="lesson-details oth-sym-details">
+        <summary>8対称パネル（現局面の回転・鏡映と符号化・代表値）</summary>
+        <div id="sym-panel" class="oth-sym-panel" aria-label="8対称のミニ盤面一覧"></div>
+      </details>
+
+      <section class="ds-section ds-section-workspace" aria-labelledby="ds-heading">
+        <h2 id="ds-heading">データ構造のようす</h2>
+        <p class="section-lead section-lead-compact">
+          現在のトグル構成での「解析」実行結果（訪問局面・転置表ヒット・カット）
+        </p>
+        <div id="ds-panels" class="ds-panels"></div>
+      </section>
+    </div>
+
+    <section class="code-section" aria-labelledby="csharp-heading">
+      <h2 id="csharp-heading">C# 実装例</h2>
+      <div class="code-toolbar">
+        <p class="code-meta">ファイル: <code>samples/Othello4x4Example.cs</code></p>
+      </div>
+      <pre class="code-block" id="csharp-sample"><code>// 読み込み中…</code></pre>
+      <p class="code-note">
+        合法手判定・反転、negamax 形の <code>Solve</code>、境界フラグ付き転置表、
+        8変換の最小符号化 <code>Canonical</code> だけを抜き出しています。描画・チャンク実行はデモ側のみ。
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="ゲーム木シリーズ · 実在ルール優先（正本 §2）・第2期最終段"></footer>
+
+  <script type="module" src="../js/othello-4x4.js"></script>
+</body>
+</html>
