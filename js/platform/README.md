@@ -7,6 +7,7 @@
 | `text.js` | `escapeHtml` / `escapeXml` |
 | `dom.js` | ステータス、結果パネル、C# テキスト読込 |
 | `playback.js` | 再生・一時停止・速度スケジュール |
+| `chunked-run.js` | ジェネレータを時間分割で駆動する `runChunked`（重い解析で UI を固めない） |
 | `rng.js` | シード付き PRNG（再現実験） |
 | `tree-layout.js` | ゲーム木の水平レイアウト |
 | `grid-paint.js` | 経路探索マップの塗り（`bindMapPaint` 等） |
@@ -70,6 +71,26 @@ createPlayback({
   speedEl,
   delayFromSpeed: (v) => 450 - v,
   onTick: () => stepOnce(),
+});
+```
+
+重い解析をチャンク実行する（4×4オセロで新設。`solveNode` 等の再帰探索を
+ジェネレータ化し、一定訪問数ごとに `yield` するだけで組み込める）:
+
+```js
+import { runChunked } from "./platform/index.js";
+
+function* heavyWork() {
+  for (let i = 0; i < 1e7; i++) {
+    if (i % 400 === 0) yield; // ここで一旦制御を返してよい、という区切り
+  }
+  return 42;
+}
+
+runChunked(heavyWork(), {
+  chunkMs: 16, // 1チャンクの持ち時間（既定16ms）
+  onProgress: () => setStatus("解析中…"),
+  onDone: (result) => setStatus(`完了: ${result}`),
 });
 ```
 

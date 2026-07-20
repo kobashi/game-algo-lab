@@ -179,6 +179,17 @@ const TOPICS = [
     maturity: "revised",
   },
   {
+    id: "othello-4x4",
+    title: "4×4 オセロ（符号化・転置表・対称正規化）",
+    description:
+      "実在ルール＋パス・終局を持つゲーム木最終段。生の生成局面数/転置表後/対称除去後の3段比較をチャンク実行で可視化。",
+    href: "algorithms/othello-4x4.html",
+    badge: "ゲーム木",
+    category: "ゲーム木",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "collision",
     title: "AABB 衝突判定",
     description:

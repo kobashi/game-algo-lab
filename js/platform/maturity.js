@@ -60,6 +60,7 @@ export const TOPIC_META = {
   "tic-tac-toe": { maturity: "oneshot", revisions: 0, updated: "2026-07-19" },
   nim: { maturity: "oneshot", revisions: 0, updated: "2026-07-19" },
   chopsticks: { maturity: "revised", revisions: 1, updated: "2026-07-19" },
+  "othello-4x4": { maturity: "oneshot", revisions: 0, updated: "2026-07-19" },
 };
 
 /** @deprecated resolveTopicMeta / TOPIC_META を優先。後方互換用 */

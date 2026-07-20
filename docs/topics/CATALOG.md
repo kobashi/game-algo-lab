@@ -1,6 +1,6 @@
 # トピックカタログ
 
-最終更新: 2026-07-19（教材品質レビュー反映）  
+最終更新: 2026-07-19（`othello-4x4` 実装により ready 化）  
 
 - **実装の正**: この表 と `js/main.js` の `TOPICS`（ずれたら両方直す）  
 - **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable` + **修正回数** + **更新日**）  
@@ -46,10 +46,10 @@
 | `multi-armed-bandit` | 多腕バンディット | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/multi-armed-bandit.html` | [SPEC](./multi-armed-bandit/SPEC.md) | 難易度プリセット（易しい/難しい）追加、既定手数300へ |
 | `tic-tac-toe` | 三目並べ（全解析・対称性除去） | ✅ | **一発** | 0 | 2026-07-19 | `algorithms/tic-tac-toe.html` | [SPEC](./tic-tac-toe/SPEC.md) | 初版。negamax + α-β/メモ化/対称性除去(8変換)を独立トグル。到達5478局面・対称除去765局面を実装で再現。MCの低N誤判定プリセット付き |
 | `nim` | ニム（完全読み切り→理論解） | ✅ | **一発** | 0 | 2026-07-19 | `algorithms/nim.html` | [SPEC](./nim/SPEC.md)（implemented） | 正本 §6.2。初版。モード1（1山）: 逆向き着色DPで n mod (k+1)==0 の周期を可視化（k=1..5×N=40の全域で機械確認）。モード2（複数山）: メモ化探索と nim-sum(XOR) 判定を全局面（直積、最大192局面）で一致確認、独立再実装の素朴再帰とも突き合わせ済み |
-| `othello-4x4` | 4×4 オセロ（符号化・対称正規化） | ❌ | —（準備中） | 0 | 2026-07-19 | —（未実装） | [SPEC](./othello-4x4/SPEC.md)（draft） | 正本 §6.3。SPEC 起草済み・実装未着手 |
 | `chopsticks` | 割り箸（循環グラフ・後退解析） | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/chopsticks.html` | [SPEC](./chopsticks/SPEC.md)（implemented） | 正本 §6.4。初版。状態=(手番側ペア,相手側ペア)で正規化（225局面≤450）。後退解析を波単位ジェネレータで実装、15×15マトリクスで波の広がりを可視化。分割・死の条件（5以上/ちょうど5）・mod5 の6構成すべてで独立実装との全局面ラベル一致を確認。分割ありでDRAW14局面が出現（標準は0）。深さ制限Min-Max(5/10/20)はDRAW局面で値0のまま確定しない一方、決着バリアントは深さ10以降で真値に収束することを確認。**改訂1**: 「波を再生」が1波で自動停止するバグを修正（`createPlayback` の `onTick` 戻り値が常に `undefined` になっていたため。`nim` トピック実装時の Fable5 レビューで発覚） |
+| `othello-4x4` | 4×4 オセロ（符号化・転置表・対称正規化） | ✅ | **一発** | 0 | 2026-07-19 | `algorithms/othello-4x4.html` | [SPEC](./othello-4x4/SPEC.md)（implemented） | 正本 §6.3。初版・ゲーム木シリーズ最終段。局面=(16文字盤面, 手番)、パス状態は「両者とも合法手なし」という盤面だけから決まる性質として実装（状態に持たない設計判断、SPEC §11）。負の全探索は初期局面で224,820局面・約0.4秒（Node実測、ガードライン閾値3秒未満のためチャンク実行は必須要件のまま維持しつつ8構成比較の既定プリセットは強制変更せず）。3段計測（生/転置表後/対称除去後）をチャンク実行ジェネレータ（`js/platform/chunked-run.js` を新設）で実装。初期局面の理論結果は自前計算（独立実装と一致確認済み）で黒 -8石差（白の勝ち） |
 
-**推奨実装順**: 上から順（AND-OR → … → バンディット → 三目並べ → ニム → 割り箸）  
+**推奨実装順**: 上から順（AND-OR → … → バンディット → 三目並べ → ニム → 割り箸 → 4×4オセロ）  
 
 **成熟度メモ**: 2026-07-19 の教材品質レビュー（[レビュー](../reviews/2026-07-19-demo-pedagogy-review.md)）を受け、
 ゲーム木4本（and-or/minimax/alpha-beta/monte-carlo）を深さ3の標準木に、多腕バンディットを
@@ -57,6 +57,8 @@
 三目並べ・ニムは同日に新規実装（初版のため `oneshot`）。
 割り箸も同日新規実装だが、直後の Fable5 レビューで「波を再生」の自動停止バグ（`onTick` 戻り値の不備）が
 見つかり同日中に修正 → 意図した改訂として `oneshot` → `revised`（修正+1）。
+4×4オセロも同日新規実装（初版のため `oneshot`）。ゲーム木シリーズ（三目並べ→ニム→割り箸→4×4オセロ）が
+これで実在ゲーム4本すべて揃った。
 
 ---
 
@@ -80,7 +82,7 @@
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | 3 | fsm, tic-tac-toe, nim |
+| 一発 (`oneshot`) | 4 | fsm, tic-tac-toe, nim, othello-4x4 |
 | 調整 (`revised`) | 12 | bfs, dfs, dijkstra, best-first, astar, collision, and-or, minimax, alpha-beta, monte-carlo, multi-armed-bandit, chopsticks |
 | 安定 (`stable`) | 0 | — |
 
@@ -89,7 +91,7 @@
 ## 企画中（本カタログ外）
 
 実装済み以外のカテゴリ（`fundamentals`, `ai-steering`, `spatial`, `hci`, `networking`, `audio`, `graphics`, `quality`, `procgen` 等）および  
-MCTS・4×4 オセロ・物理段階・Boids・通信 等のトピックは **[ROADMAP.md §2.4](../ROADMAP.md)** に **企画中** として列挙する。  
+MCTS・物理段階・Boids・通信 等のトピックは **[ROADMAP.md §2.4](../ROADMAP.md)** に **企画中** として列挙する。  
 着手するまで **ready 行を増やさない**（先に ROADMAP の状態を「実装済」に更新する運用でも可）。
 
 ---

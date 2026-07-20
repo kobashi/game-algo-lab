@@ -35,6 +35,7 @@ export const NAV_GROUPS = {
     { id: "tic-tac-toe", label: "三目並べ", href: "tic-tac-toe.html" },
     { id: "nim", label: "ニム", href: "nim.html" },
     { id: "chopsticks", label: "割り箸", href: "chopsticks.html" },
+    { id: "othello-4x4", label: "4×4オセロ", href: "othello-4x4.html" },
   ],
   explain: [
     { id: "home", label: "ホーム", href: "../index.html" },
@@ -98,6 +99,10 @@ export const FOOTER_RELATED = {
   ],
   chopsticks: [
     { href: "nim.html", label: "ニム（前段）" },
+    { href: "othello-4x4.html", label: "次: 4×4オセロ" },
+  ],
+  "othello-4x4": [
+    { href: "chopsticks.html", label: "割り箸（前段）" },
   ],
   collision: [{ href: "fsm.html", label: "FSM" }],
   fsm: [{ href: "collision.html", label: "AABB" }],
