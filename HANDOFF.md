@@ -1,6 +1,6 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-07-19  
+最終更新: 2026-07-21  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）
 
 新セッション開始時の指示例:
@@ -370,12 +370,23 @@
 ## Git / 公開
 
 - リモート: `https://github.com/kobashi/game-algo-lab`（アカウント: kobashi）  
+- 既定ブランチ: `main`（ローカルは `origin/main` と同期済み想定）  
 - **GitHub Pages（試作運用中）**: https://kobashi.github.io/game-algo-lab/  
   - Source: `main` / `/ (root)`  
 - **Release 試作版**: https://github.com/kobashi/game-algo-lab/releases/tag/v0.9.0  
   - タグ `v0.9.0`（prerelease）— `RELEASE_NOTES_v0.9.0.md`  
+  - 続く試作: `RELEASE_NOTES_v0.9.1.md`（PR #2 で main に反映済み。タグ未切りの場合あり）  
 - 再公開: `./scripts/publish-github.sh game-algo-lab v0.9.0`（または新タグ）  
 - 旧ローカルタグ `v1.0.0` は初期準備用。正式版は別途 `v1.0.0` を切り直す想定  
+
+### リモートブランチ（不要マーク・削除しない）
+
+クラウド／別環境でレビュー・修正後に `main` へ merge 済みの作業ブランチ。  
+**作業再開の起点にしない**。履歴参照用に remote 上に残す（削除はユーザー判断のときだけ）。
+
+| ブランチ | 状態 | 備考 |
+|----------|------|------|
+| `origin/claude/grok4-5-learning-roadmap-iiihaa` | **不要（保持）** | tip = `main` の `a56ccde`（PR #1/#2 反映後と同一）。`main` に完全包含。2026-07-21 確認 |
 
 ---
 
