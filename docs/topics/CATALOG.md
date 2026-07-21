@@ -1,6 +1,6 @@
 # トピックカタログ
 
-最終更新: 2026-07-21（`mcts` 実装・ready 化）  
+最終更新: 2026-07-21（Fable5→成熟度監査・未反映なしを確認）  
 
 - **実装の正**: この表 と `js/main.js` の `TOPICS`（ずれたら両方直す）  
 - **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable` + **修正回数** + **更新日**）  
@@ -61,7 +61,8 @@
 見つかり同日中に修正 → 意図した改訂として `oneshot` → `revised`（修正+1）。
 4×4オセロも同日新規実装（初版のため `oneshot`）。ゲーム木シリーズ（三目並べ→ニム→割り箸→4×4オセロ）が
 これで実在ゲーム4本すべて揃った。
-**2026-07-21**: `mcts` 実装（初版 `oneshot`）。題材は三目並べ。ゲーム木シリーズのアルゴリズム可視化側が揃った。
+**2026-07-21**: `mcts` 実装（初版 `oneshot`）。題材は三目並べ。ゲーム木シリーズのアルゴリズム可視化側が揃った。  
+**2026-07-21 監査**: Fable5 レビュー起点の改訂は成熟度にすべて反映済み（詳細は [MATURITY.md §Fable5](./MATURITY.md)）。oneshot 残（ttt/nim/othello/mcts/fsm）は実装後レビュー未実施または「oneshot で十分」判定のため意図的。
 
 ---
 
@@ -81,13 +82,15 @@
 
 ---
 
-## 成熟度サマリ（試作 v0.9.0 時点）
+## 成熟度サマリ（2026-07-21・17 トピック ready）
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
 | 一発 (`oneshot`) | 5 | fsm, tic-tac-toe, mcts, nim, othello-4x4 |
 | 調整 (`revised`) | 12 | bfs, dfs, dijkstra, best-first, astar, collision, and-or, minimax, alpha-beta, monte-carlo, multi-armed-bandit, chopsticks |
 | 安定 (`stable`) | 0 | — |
+
+Fable5 起点のコード改訂 ↔ 成熟度の対応表: [MATURITY.md](./MATURITY.md) の「Fable5 レビュー → 成熟度の突き合わせ」。
 
 ---
 

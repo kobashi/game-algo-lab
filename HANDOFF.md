@@ -30,6 +30,8 @@
 
 **2026-07-21 `mcts` 実装（Grok4.5）**: 題材=三目並べ。`js/tic-tac-toe.js` を直 import（UI は `data-active="tic-tac-toe"` のときだけ起動するガードを追加）。4相 UCT・探索木 SVG・完全解/素の MC 比較。主プリセット `double-threat`（seed 既定20）。[SPEC](docs/topics/mcts/SPEC.md) implemented。ready: true・`oneshot`。
 
+**2026-07-21 Fable5→成熟度監査**: 教材品質レビュー指摘1〜7・割り箸波再生バグはすべて `revised` 記帳済み。oneshot 残（tic-tac-toe / nim / othello-4x4 / mcts / fsm）は実装後レビュー未実施または指摘8「oneshot で十分」。未反映の Fable5 コード改訂は無し。監査表: [docs/topics/MATURITY.md](docs/topics/MATURITY.md)。
+
 **次の実装ターゲット**: 正本第2期ゲーム木は一通り出揃った。候補は (1) 指摘9の疑似コード同期・戻る（platform）(2) 第3期物理段階の入口 (3) MCTS の発展（C 比較強化・4×4オセロ題材）など。ユーザー判断で優先度を決める。
 
 ---
