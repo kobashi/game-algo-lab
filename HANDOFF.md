@@ -28,7 +28,12 @@
 
 **2026-07-19 `othello-4x4`（4×4 オセロ）実装（Sonnet5）**: [SPEC](docs/topics/othello-4x4/SPEC.md) を implemented に更新し `algorithms/othello-4x4.html` / `js/othello-4x4.js` / `js/maps/othello-4x4-config.js` / `samples/Othello4x4Example.cs` を追加。局面は16文字盤面文字列＋手番の組（`(board, turn)`）で表現し、SPEC擬似コードの「直前がパスか」フラグは持たず、「両者とも合法手がない」という盤面だけから決まる性質として終局判定する設計にした（SPEC §11）。negamax（`solveNode`）に α-β・転置表（exact/lower/upper境界フラグ付き）・対称性除去（8変換=回転4×鏡映2の最小符号化、手番込み）を独立トグルで実装。実装前にNodeで性能実測: 初期局面からの素の全探索（全トグルOFF）は224,820局面・約0.4秒（SPEC §4のガードライン閾値3秒未満）、α-βのみ18,030局面・約37ms、α-β+転置表11,822局面・約38ms、全ON432局面・約6ms。3秒未満だったため8構成比較ボタンの既定プリセットは中盤に強制せず、現在のプリセット（既定=初期局面）のままとした（§11に判断根拠を記録）。ただしSPEC §4-2の要件どおりチャンク実行（ジェネレータ＋時間分割）は実装必須要件として実施し、`js/platform/chunked-run.js`（`runChunked`）をトピック非依存の汎用ランナーとして新設（`docs/PLATFORM.md`・`js/platform/README.md`同時更新）。3段計測（生の生成局面数/転置表による再訪除去後/対称正規化後）を主役の計測パネルとして実装。対局UIは合法手ハイライト・返る石ハイライト・パスバナー・CPU最善手・評価オーバレイ（勝/分/負+石差）・8対称パネル（canonical値ハイライト）・符号化ビュー（現局面のencode値表示）を実装。数値検証（scratchpadのNode検証スクリプトで実施・全18項目PASSED、`smoke-platform.py`もALL PASSED）: ルール正当性を独立実装（別コードの素朴な8方向走査）と500局×全手（102,320件）で完全一致確認、パス・両者パス終局・満杯終局の3系統がランダム対局で発生することを確認、初期局面の理論結果を実装solverと独立実装（別コードのメモ化のみ・α-βなしnegamax）の両方で計算し**黒-8石差（白の勝ち）**で一致、canonical不変条件（8変換いずれから取っても同じ代表値・8変換encodeの辞書順最小であること）をランダム1000局面で確認、トグル単調性（素≥転置表のみ≥全ON、3段計測のraw≥tt≥sym）を初期局面・中盤・終盤プリセット全てで確認。詳細は下記「4×4オセロ メモ」。ready: true・`oneshot`。
 
-**次の実装ターゲット**: `mcts`（モンテカルロ木探索）— 正本 §6 明記のゲーム木シリーズ最後の未着手項目（選択・展開・シミュレーション・逆伝播）。SPEC 未着手。三目並べ→ニム→割り箸→4×4オセロで実在ゲーム4本が完成したため、次はMCTSのアルゴリズム自体の可視化に focus する想定。
+**次の実装ターゲット**: `mcts`（モンテカルロ木探索）— **SPEC 準備中（2026-07-21）**。  
+- 題材ミニゲーム: **三目並べ**（新規ルールは作らない。`js/tic-tac-toe.js` の合法手・プレイアウト・`analyzeMoves` / `mcEstimateMoves` を再利用）  
+- 核: 4相（選択→展開→シミュレーション→逆伝播）+ UCB1/UCT。完全解・素の MC と同一局面比較  
+- 主シナリオ: `double-threat`（低予算で外しやすい局面で N 増加→完全解の必勝手へ収束）  
+- 仕様: [docs/topics/mcts/SPEC.md](docs/topics/mcts/SPEC.md)  
+- 実装ブランチ案: `topic/mcts`。ファイル: `algorithms/mcts.html` / `js/mcts.js` / `js/maps/mcts-config.js` / `samples/MctsExample.cs`
 
 ---
 
