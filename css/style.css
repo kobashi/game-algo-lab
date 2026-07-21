@@ -308,6 +308,13 @@ img {
   width: min(100% - 1.5rem, 1280px);
 }
 
+/* ゲーム木デモ: コンテナを画面横幅ほぼ一杯まで広げる（木の視認性優先） */
+main.container.container-wide.topic-main:has(.tree-viewport),
+main.container.container-wide.topic-main:has(.mcts-tree-panel) {
+  width: min(100% - 0.75rem, 100vw - 0.75rem);
+  max-width: none;
+}
+
 .topic-body {
   min-height: 100vh;
 }
@@ -1718,78 +1725,142 @@ img {
   color: var(--text-muted);
 }
 
-/* ===== AND-OR / ゲーム木 ===== */
+/* ===== AND-OR / ゲーム木 =====
+ * 方針: Tree 表示は画面横幅を最大限使う。
+ * 操作・DS は木の下（または木以外の行）に置き、木の横に並べない。
+ */
 .tree-panel {
   overflow: hidden;
   min-width: 0;
-  max-width: 100%;
+  width: 100%;
+  max-width: none;
 }
 
 .tree-viewport {
   width: 100%;
   min-width: 0;
-  min-height: 220px;
-  max-height: min(72vh, 40rem);
+  min-height: min(42vh, 20rem);
+  max-height: min(78vh, 48rem);
   overflow-x: hidden;
   overflow-y: auto;
   background: #0a0e14;
   border-radius: 8px;
-  padding: 0.5rem;
+  padding: 0.35rem 0.4rem;
   box-sizing: border-box;
 }
 
-/* ゲーム木 SVG: レイアウト座標は viewBox、見た目は親幅にフィット */
+/* ゲーム木 SVG: 親の全幅を使い切る（横スクロールは出さない） */
 .andor-svg,
 .mm-svg,
 .mcts-tree-svg,
 .tree-svg {
   display: block;
   width: 100%;
-  max-width: 100%;
+  max-width: none;
   height: auto;
-  margin: 0 auto;
+  margin: 0;
   font-family: var(--font);
 }
 
-/* ゲーム木デモ: 木を横いっぱいに使う（横並びで木が潰れるのを避ける） */
-@media (orientation: landscape) and (min-height: 400px) {
-  .demo-workspace:has(.tree-viewport),
-  .demo-workspace:has(.mcts-tree-panel) {
-    display: flex;
-    flex-direction: column;
-    grid-template-columns: none;
-  }
-
-  .demo-workspace:has(.tree-viewport) .demo-game-group,
-  .demo-workspace:has(.mcts-tree-panel) .demo-game-group {
-    position: static;
-  }
-
-  .demo-workspace:has(.tree-viewport) .demo-board .canvas-panel,
-  .demo-workspace:has(.mcts-tree-panel) .demo-board .canvas-panel {
-    max-width: 100%;
-  }
+/* ゲーム木デモ: 常に縦積み。木 = 全幅、操作は下 */
+.demo-workspace:has(.tree-viewport),
+.demo-workspace:has(.mcts-tree-panel) {
+  display: flex;
+  flex-direction: column;
+  grid-template-columns: none;
+  width: 100%;
+  max-width: none;
 }
 
-/* 広い画面だけ: 操作を横に置き、木は上段フル幅 */
-@media (orientation: landscape) and (min-width: 1100px) and (min-height: 480px) {
-  .demo-workspace:has(.tree-viewport) .demo-game-group,
+.demo-workspace:has(.tree-viewport) .demo-game-group,
+.demo-workspace:has(.mcts-tree-panel) .demo-game-group {
+  position: static;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--workspace-gap);
+  /* 木の横余白を削って描画幅を確保 */
+  padding: 0.4rem 0.35rem;
+}
+
+.demo-workspace:has(.tree-viewport) .demo-board,
+.demo-workspace:has(.tree-viewport) .demo-controls,
+.demo-workspace:has(.mcts-tree-panel) .demo-controls {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+}
+
+.demo-workspace:has(.tree-viewport) .demo-board .canvas-panel,
+.demo-workspace:has(.mcts-tree-panel) .demo-board .canvas-panel {
+  max-width: none;
+  width: 100%;
+}
+
+/* 汎用ゲーム木: 盤面領域 = 木のみ → 先頭に全幅配置 */
+.demo-workspace:has(.tree-viewport) .demo-board {
+  order: 0;
+  flex: 0 0 auto;
+}
+
+.demo-workspace:has(.tree-viewport) .demo-controls {
+  order: 1;
+  flex: 0 0 auto;
+}
+
+.demo-workspace:has(.tree-viewport) .ds-section-workspace,
+.demo-workspace:has(.mcts-tree-panel) .ds-section-workspace {
+  order: 2;
+  width: 100%;
+}
+
+/* MCTS: 1行目=盤+操作、2行目=探索木を全幅 */
+.demo-workspace:has(.mcts-tree-panel) .demo-game-group {
+  display: grid;
+  grid-template-columns: minmax(10rem, 16rem) minmax(0, 1fr);
+  grid-template-areas:
+    "board controls"
+    "tree tree";
+  align-items: start;
+}
+
+.demo-workspace:has(.mcts-tree-panel) .demo-board {
+  display: contents;
+}
+
+.demo-workspace:has(.mcts-tree-panel) .ttt-panel {
+  grid-area: board;
+  max-width: 16rem;
+  width: 100%;
+}
+
+.demo-workspace:has(.mcts-tree-panel) .mcts-tree-panel {
+  grid-area: tree;
+  width: 100%;
+  max-width: none;
+  margin-top: 0;
+}
+
+.demo-workspace:has(.mcts-tree-panel) .demo-controls {
+  grid-area: controls;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 720px) {
   .demo-workspace:has(.mcts-tree-panel) .demo-game-group {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
-    align-items: start;
-    gap: var(--workspace-gap);
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "board"
+      "controls"
+      "tree";
   }
 
-  .demo-workspace:has(.tree-viewport) .demo-board,
-  .demo-workspace:has(.mcts-tree-panel) .demo-board {
-    min-width: 0;
-  }
-
-  .demo-workspace:has(.tree-viewport) .demo-controls,
-  .demo-workspace:has(.mcts-tree-panel) .demo-controls {
-    position: sticky;
-    top: 3.25rem;
+  .demo-workspace:has(.mcts-tree-panel) .ttt-panel {
+    max-width: 18rem;
+    margin-inline: auto;
   }
 }
 
@@ -3550,12 +3621,14 @@ img {
 }
 
 .mcts-tree-panel {
-  margin-top: 0.75rem;
   overflow-x: hidden;
   overflow-y: auto;
   min-width: 0;
-  max-width: 100%;
-  max-height: min(72vh, 40rem);
+  width: 100%;
+  max-width: none;
+  max-height: min(78vh, 48rem);
+  padding: 0.5rem 0.4rem;
+  box-sizing: border-box;
 }
 
 .mcts-tree-heading {
@@ -3566,17 +3639,16 @@ img {
 
 .mcts-tree-svg {
   width: 100%;
-  max-width: 100%;
+  max-width: none;
   height: auto;
-  min-height: 120px;
+  min-height: 140px;
   background: var(--bg, #1a1d24);
   border-radius: 8px;
 }
 
-/* 3×3 盤は木より小さく中央寄せ（横幅を食いすぎない） */
 .demo-workspace:has(.mcts-tree-panel) .ttt-board-wrap {
-  max-width: 18rem;
-  margin-inline: auto;
+  max-width: 100%;
+  margin-inline: 0;
 }
 
 .mcts-edge {
