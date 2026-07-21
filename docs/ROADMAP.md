@@ -7,7 +7,7 @@
 | **正本改訂** | **2026-07-19** — Fable5 レビュー全件承認を反映（§2 実在ルール優先原則、§4 procgen 行、§6.1 三目並べ、§6.4 割り箸 新設、§15 第2期追記）。レビュー記録: [reviews/2026-07-19-docx-minigames-review.md](./reviews/2026-07-19-docx-minigames-review.md)、変更履歴版: [interactive_game_programming_material_plan_fable5_review.docx](./interactive_game_programming_material_plan_fable5_review.docx) |
 | **リポジトリ登録** | 2026-07-17（`docs/` に配置し Git 管理開始） |
 | **本 Markdown** | 正本の要約・**実装状況の対応表**・Game Algo Lab 運用メモ（エージェント／GitHub 向け） |
-| **最終更新（md）** | 2026-07-21（`mcts` を準備中へ: 題材=三目並べ、[SPEC](./topics/mcts/SPEC.md) 起草） |
+| **最終更新（md）** | 2026-07-21（`mcts` 実装 ready: 題材=三目並べ） |
 
 正本の変更や方針の大きな見直しは **Docx を更新したうえで本ファイルを同期**する。  
 細部の図表・講義向け長文は正本を開き、日々の実装判断は本ファイルと [topics/CATALOG.md](./topics/CATALOG.md) を優先する。
@@ -113,11 +113,11 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 - [x] 三目並べ（全解析・対称性除去・MC 比較。正本 §6.1、2026-07-19 実装）  
 - [x] ニム完全解析 → 剰余 / nim-sum（正本 §6.2、2026-07-19 実装）  
 - [x] 割り箸（循環ゲームグラフ・後退解析。正本 §6.4、2026-07-19 新設・同日実装）  
-- [ ] MCTS（正本明記）— **2026-07-21 準備中**: 題材=**三目並べ**（既存 solver/MC 再利用）。[SPEC](./topics/mcts/SPEC.md) 起草済み。実装未  
+- [x] MCTS（正本明記）— **2026-07-21 実装**: 題材=**三目並べ**。4相+UCB1、完全解/素の MC 比較。[SPEC](./topics/mcts/SPEC.md)  
 - [x] 4×4 オセロ（転置表・対称正規化・パス処理・3段計測。正本 §6.3、2026-07-19 実装）  
 - 既存 5 本の教材改訂（成熟度 oneshot → revised）
-- 学習進行の目安（正本 §6）: 三目並べ → ニム → 割り箸 → 4×4 オセロ（非循環の理論解 → 循環の後退解析 → 対称正規化）→ **MCTS（三目並べ上で UCT と完全解比較）**
-- 実在ゲーム4本は出揃い。ゲーム木シリーズの残りは **MCTS 実装**（SPEC 準備中）
+- 学習進行の目安（正本 §6）: 三目並べ → **MCTS（同一題材で UCT）** → ニム → 割り箸 → 4×4 オセロ  
+- 第2期ゲーム木（アルゴリズム可視化 + 実在ゲーム4本 + MCTS）は **一通り出揃った**
 
 #### Phase D — その他カテゴリ（第2〜3期の入口）
 
@@ -137,7 +137,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | カテゴリ ID（案） | 表示名 | 状態 | 期の目安 | 備考 |
 |-------------------|--------|------|----------|------|
 | `pathfinding` | 経路探索 | **実装済**（一部企画中） | 第1期 | 5 本実装済。双方向などは企画中 |
-| `game-tree` | ゲーム木 | **実装済**（一部準備中） | 第2期 | 9 本実装済（三目並べ・ニム・割り箸・4×4オセロ含む）。MCTS は SPEC 準備中 |
+| `game-tree` | ゲーム木 | **実装済** | 第2期 | 10 本実装済（MCTS + 実在ゲーム4本を含む） |
 | `physics` | 物理・判定 | **実装済**（一部企画中） | 第3期 | AABB のみ実装済 |
 | `patterns` | 設計パターン | **実装済**（一部企画中） | 第2〜3期 | FSM のみ実装済 |
 | `fundamentals` | 基礎実行モデル | **企画中** | 第1〜3期 | ゲームループ・時間・入力・座標・乱数 |
@@ -188,7 +188,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 |----------|----------|------|------|
 | `and-or` … `multi-armed-bandit` | （既存 5 本） | 実装済 | 多く oneshot。改訂は別作業 |
 | `tic-tac-toe` | 三目並べ（全解析・対称性除去） | **実装済** | 正本 §6.1（2026-07-19 追加・実装）。765 局面・α-β/メモ化/8対称 ON/OFF・MC 比較・15ゲーム同型は解説パネルのみ。[SPEC](./topics/tic-tac-toe/SPEC.md)（implemented） |
-| `mcts` | モンテカルロ木探索 (MCTS) | **準備中** | 題材=**三目並べ**。4相 + UCB1/UCT。完全解・素の MC と同一局面比較。主シナリオ=`double-threat`。[SPEC](./topics/mcts/SPEC.md)（draft） |
+| `mcts` | モンテカルロ木探索 (MCTS) | **実装済** | 題材=**三目並べ**。4相 + UCB1/UCT。完全解・素の MC 比較。主シナリオ=`double-threat`。[SPEC](./topics/mcts/SPEC.md) |
 | `nim` | ニム（完全読み切り→理論解） | **実装済** | 正本 §6.2（2026-07-19 実装）。1山の逆向き着色DP（周期 n mod k+1）と複数山のnim-sum(XOR)判定・全局面一致確認。[SPEC](./topics/nim/SPEC.md)（implemented） |
 | `chopsticks` | 割り箸（循環グラフ・後退解析） | **実装済** | 正本 §6.4（2026-07-19 新設・同日実装）。勝ち/負け/引き分け3値・バリアント比較・局面正規化・深さ制限Min-Max対比。[SPEC](./topics/chopsticks/SPEC.md)（implemented） |
 | `othello-4x4` | 4×4 オセロ（符号化・転置表・対称正規化） | **実装済** | 正本 §6.3（2026-07-19 実装）。負の全探索224,820局面/約0.4秒（Node実測）→3段計測（生/転置表後/対称除去後）をチャンク実行で可視化。canonical は手番込み8変換最小。初期局面は黒-8石差（自前計算・独立実装一致）。[SPEC](./topics/othello-4x4/SPEC.md)（implemented） |

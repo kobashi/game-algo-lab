@@ -3469,6 +3469,100 @@ img {
   color: var(--text-muted);
 }
 
+/* ===== MCTS ===== */
+.mcts-phase-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.mcts-phase-badge {
+  display: inline-block;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: var(--bg-elevated, #2a2f38);
+  color: var(--text);
+  border: 1px solid var(--border, #444);
+}
+
+.mcts-phase-badge[data-phase="done"] {
+  border-color: #3d8f6e;
+  color: #8fdfb8;
+}
+
+.mcts-tree-panel {
+  margin-top: 0.75rem;
+  overflow-x: auto;
+}
+
+.mcts-tree-heading {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.mcts-tree-svg {
+  width: 100%;
+  min-height: 160px;
+  background: var(--bg, #1a1d24);
+  border-radius: 8px;
+}
+
+.mcts-edge {
+  stroke: #5a6270;
+  stroke-width: 1.5;
+}
+
+.mcts-edge-path {
+  stroke: #6db3f2;
+  stroke-width: 2.5;
+}
+
+.mcts-node rect {
+  fill: #2a303c;
+  stroke: #5a6270;
+  stroke-width: 1.2;
+}
+
+.mcts-node.is-path rect {
+  fill: #243448;
+  stroke: #6db3f2;
+  stroke-width: 2;
+}
+
+.mcts-node-label,
+.mcts-node-meta,
+.mcts-tree-caption {
+  fill: var(--text, #e8eaed);
+  font-size: 11px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+}
+
+.mcts-node-meta {
+  fill: var(--text-muted, #9aa0a6);
+  font-size: 10px;
+}
+
+.mcts-tree-caption {
+  fill: var(--text-muted, #9aa0a6);
+  font-size: 10px;
+}
+
+.mcts-compare-lead {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.mcts-best-hint {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
 /* ===== 割り箸 ===== */
 .swatch-unreachable {
   background: #3a3f47;

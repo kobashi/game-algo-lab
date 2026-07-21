@@ -33,6 +33,7 @@ export const NAV_GROUPS = {
     { id: "monte-carlo", label: "モンテカルロ", href: "monte-carlo.html" },
     { id: "bandit", label: "バンディット", href: "multi-armed-bandit.html" },
     { id: "tic-tac-toe", label: "三目並べ", href: "tic-tac-toe.html" },
+    { id: "mcts", label: "MCTS", href: "mcts.html" },
     { id: "nim", label: "ニム", href: "nim.html" },
     { id: "chopsticks", label: "割り箸", href: "chopsticks.html" },
     { id: "othello-4x4", label: "4×4オセロ", href: "othello-4x4.html" },
@@ -91,10 +92,15 @@ export const FOOTER_RELATED = {
   ],
   "tic-tac-toe": [
     { href: "multi-armed-bandit.html", label: "バンディット（前段）" },
+    { href: "mcts.html", label: "次: MCTS" },
+  ],
+  mcts: [
+    { href: "tic-tac-toe.html", label: "三目並べ（題材・完全解）" },
+    { href: "multi-armed-bandit.html", label: "バンディット（UCB）" },
     { href: "nim.html", label: "次: ニム" },
   ],
   nim: [
-    { href: "tic-tac-toe.html", label: "三目並べ（前段）" },
+    { href: "mcts.html", label: "MCTS（前段）" },
     { href: "chopsticks.html", label: "次: 割り箸" },
   ],
   chopsticks: [

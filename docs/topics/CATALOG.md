@@ -1,6 +1,6 @@
 # トピックカタログ
 
-最終更新: 2026-07-21（`mcts` SPEC 起草・準備中）  
+最終更新: 2026-07-21（`mcts` 実装・ready 化）  
 
 - **実装の正**: この表 と `js/main.js` の `TOPICS`（ずれたら両方直す）  
 - **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable` + **修正回数** + **更新日**）  
@@ -49,7 +49,7 @@
 | `nim` | ニム（完全読み切り→理論解） | ✅ | **一発** | 0 | 2026-07-19 | `algorithms/nim.html` | [SPEC](./nim/SPEC.md)（implemented） | 正本 §6.2。初版。モード1（1山）: 逆向き着色DPで n mod (k+1)==0 の周期を可視化（k=1..5×N=40の全域で機械確認）。モード2（複数山）: メモ化探索と nim-sum(XOR) 判定を全局面（直積、最大192局面）で一致確認、独立再実装の素朴再帰とも突き合わせ済み |
 | `chopsticks` | 割り箸（循環グラフ・後退解析） | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/chopsticks.html` | [SPEC](./chopsticks/SPEC.md)（implemented） | 正本 §6.4。初版。状態=(手番側ペア,相手側ペア)で正規化（225局面≤450）。後退解析を波単位ジェネレータで実装、15×15マトリクスで波の広がりを可視化。分割・死の条件（5以上/ちょうど5）・mod5 の6構成すべてで独立実装との全局面ラベル一致を確認。分割ありでDRAW14局面が出現（標準は0）。深さ制限Min-Max(5/10/20)はDRAW局面で値0のまま確定しない一方、決着バリアントは深さ10以降で真値に収束することを確認。**改訂1**: 「波を再生」が1波で自動停止するバグを修正（`createPlayback` の `onTick` 戻り値が常に `undefined` になっていたため。`nim` トピック実装時の Fable5 レビューで発覚） |
 | `othello-4x4` | 4×4 オセロ（符号化・転置表・対称正規化） | ✅ | **一発** | 0 | 2026-07-19 | `algorithms/othello-4x4.html` | [SPEC](./othello-4x4/SPEC.md)（implemented） | 正本 §6.3。初版・ゲーム木シリーズ最終段。局面=(16文字盤面, 手番)、パス状態は「両者とも合法手なし」という盤面だけから決まる性質として実装（状態に持たない設計判断、SPEC §11）。負の全探索は初期局面で224,820局面・約0.4秒（Node実測、ガードライン閾値3秒未満のためチャンク実行は必須要件のまま維持しつつ8構成比較の既定プリセットは強制変更せず）。3段計測（生/転置表後/対称除去後）をチャンク実行ジェネレータ（`js/platform/chunked-run.js` を新設）で実装。初期局面の理論結果は自前計算（独立実装と一致確認済み）で黒 -8石差（白の勝ち） |
-| `mcts` | モンテカルロ木探索 (MCTS) | — | — | — | 2026-07-21 | （未） | [SPEC](./mcts/SPEC.md)（**準備中**） | 題材は**三目並べ**（`tic-tac-toe.js` 再利用）。4相（選択・展開・シミュレーション・逆伝播）+ UCB1/UCT。完全解・素の MC と同一局面比較。主シナリオ=`double-threat`。HTML/JS 未着手 |
+| `mcts` | モンテカルロ木探索 (MCTS) | ✅ | **一発** | 0 | 2026-07-21 | `algorithms/mcts.html` | [SPEC](./mcts/SPEC.md)（implemented） | 題材=**三目並べ**（`tic-tac-toe.js` 直 import・UI は data-active ガード）。4相+UCB1/UCT。探索木 SVG・根の子=腕の統計・完全解/素のMC比較。主シナリオ=`double-threat`（seed=20）。推奨手=訪問最多 |
 
 **推奨実装順**: 上から順（AND-OR → … → バンディット → 三目並べ → ニム → 割り箸 → 4×4オセロ → **MCTS**）  
 
@@ -61,7 +61,7 @@
 見つかり同日中に修正 → 意図した改訂として `oneshot` → `revised`（修正+1）。
 4×4オセロも同日新規実装（初版のため `oneshot`）。ゲーム木シリーズ（三目並べ→ニム→割り箸→4×4オセロ）が
 これで実在ゲーム4本すべて揃った。
-**2026-07-21**: `mcts` を SPEC 起草（状態=準備中）。題材は三目並べ。実装は `topic/mcts` で次工程。
+**2026-07-21**: `mcts` 実装（初版 `oneshot`）。題材は三目並べ。ゲーム木シリーズのアルゴリズム可視化側が揃った。
 
 ---
 
@@ -85,7 +85,7 @@
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | 4 | fsm, tic-tac-toe, nim, othello-4x4 |
+| 一発 (`oneshot`) | 5 | fsm, tic-tac-toe, mcts, nim, othello-4x4 |
 | 調整 (`revised`) | 12 | bfs, dfs, dijkstra, best-first, astar, collision, and-or, minimax, alpha-beta, monte-carlo, multi-armed-bandit, chopsticks |
 | 安定 (`stable`) | 0 | — |
 
@@ -95,7 +95,7 @@
 
 実装済み以外のカテゴリ（`fundamentals`, `ai-steering`, `spatial`, `hci`, `networking`, `audio`, `graphics`, `quality`, `procgen` 等）および  
 物理段階・Boids・通信 等のトピックは **[ROADMAP.md §2.4](../ROADMAP.md)** に **企画中** として列挙する。  
-`mcts` は上表のとおり **SPEC 準備中**（ready ではない）。その他は着手するまで ready 行を増やさない。
+着手するまで ready 行を増やさない。
 
 ---
 

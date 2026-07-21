@@ -28,12 +28,9 @@
 
 **2026-07-19 `othello-4x4`（4×4 オセロ）実装（Sonnet5）**: [SPEC](docs/topics/othello-4x4/SPEC.md) を implemented に更新し `algorithms/othello-4x4.html` / `js/othello-4x4.js` / `js/maps/othello-4x4-config.js` / `samples/Othello4x4Example.cs` を追加。局面は16文字盤面文字列＋手番の組（`(board, turn)`）で表現し、SPEC擬似コードの「直前がパスか」フラグは持たず、「両者とも合法手がない」という盤面だけから決まる性質として終局判定する設計にした（SPEC §11）。negamax（`solveNode`）に α-β・転置表（exact/lower/upper境界フラグ付き）・対称性除去（8変換=回転4×鏡映2の最小符号化、手番込み）を独立トグルで実装。実装前にNodeで性能実測: 初期局面からの素の全探索（全トグルOFF）は224,820局面・約0.4秒（SPEC §4のガードライン閾値3秒未満）、α-βのみ18,030局面・約37ms、α-β+転置表11,822局面・約38ms、全ON432局面・約6ms。3秒未満だったため8構成比較ボタンの既定プリセットは中盤に強制せず、現在のプリセット（既定=初期局面）のままとした（§11に判断根拠を記録）。ただしSPEC §4-2の要件どおりチャンク実行（ジェネレータ＋時間分割）は実装必須要件として実施し、`js/platform/chunked-run.js`（`runChunked`）をトピック非依存の汎用ランナーとして新設（`docs/PLATFORM.md`・`js/platform/README.md`同時更新）。3段計測（生の生成局面数/転置表による再訪除去後/対称正規化後）を主役の計測パネルとして実装。対局UIは合法手ハイライト・返る石ハイライト・パスバナー・CPU最善手・評価オーバレイ（勝/分/負+石差）・8対称パネル（canonical値ハイライト）・符号化ビュー（現局面のencode値表示）を実装。数値検証（scratchpadのNode検証スクリプトで実施・全18項目PASSED、`smoke-platform.py`もALL PASSED）: ルール正当性を独立実装（別コードの素朴な8方向走査）と500局×全手（102,320件）で完全一致確認、パス・両者パス終局・満杯終局の3系統がランダム対局で発生することを確認、初期局面の理論結果を実装solverと独立実装（別コードのメモ化のみ・α-βなしnegamax）の両方で計算し**黒-8石差（白の勝ち）**で一致、canonical不変条件（8変換いずれから取っても同じ代表値・8変換encodeの辞書順最小であること）をランダム1000局面で確認、トグル単調性（素≥転置表のみ≥全ON、3段計測のraw≥tt≥sym）を初期局面・中盤・終盤プリセット全てで確認。詳細は下記「4×4オセロ メモ」。ready: true・`oneshot`。
 
-**次の実装ターゲット**: `mcts`（モンテカルロ木探索）— **SPEC 準備中（2026-07-21）**。  
-- 題材ミニゲーム: **三目並べ**（新規ルールは作らない。`js/tic-tac-toe.js` の合法手・プレイアウト・`analyzeMoves` / `mcEstimateMoves` を再利用）  
-- 核: 4相（選択→展開→シミュレーション→逆伝播）+ UCB1/UCT。完全解・素の MC と同一局面比較  
-- 主シナリオ: `double-threat`（低予算で外しやすい局面で N 増加→完全解の必勝手へ収束）  
-- 仕様: [docs/topics/mcts/SPEC.md](docs/topics/mcts/SPEC.md)  
-- 実装ブランチ案: `topic/mcts`。ファイル: `algorithms/mcts.html` / `js/mcts.js` / `js/maps/mcts-config.js` / `samples/MctsExample.cs`
+**2026-07-21 `mcts` 実装（Grok4.5）**: 題材=三目並べ。`js/tic-tac-toe.js` を直 import（UI は `data-active="tic-tac-toe"` のときだけ起動するガードを追加）。4相 UCT・探索木 SVG・完全解/素の MC 比較。主プリセット `double-threat`（seed 既定20）。[SPEC](docs/topics/mcts/SPEC.md) implemented。ready: true・`oneshot`。
+
+**次の実装ターゲット**: 正本第2期ゲーム木は一通り出揃った。候補は (1) 指摘9の疑似コード同期・戻る（platform）(2) 第3期物理段階の入口 (3) MCTS の発展（C 比較強化・4×4オセロ題材）など。ユーザー判断で優先度を決める。
 
 ---
 
@@ -96,9 +93,10 @@
 | 11 | AABB | `algorithms/collision.html` | —（説明UI） | `AabbExample.cs` | 軸投影・非マップ |
 | 12 | ステートマシン | `algorithms/fsm.html` | `js/maps/fsm-config.js` | `FsmExample.cs` | 状態図・遷移表・非マップ |
 | 13 | 三目並べ | `algorithms/tic-tac-toe.html` | `js/maps/tic-tac-toe-config.js` | `TicTacToeExample.cs` | negamax全解析。α-β/メモ化/対称性除去(8変換)を独立トグル。3×3専用UI（非マップ） |
-| 14 | ニム | `algorithms/nim.html` | `js/maps/nim-config.js` | `NimExample.cs` | 1山=逆向き着色DP（周期n mod k+1）／複数山=メモ化探索+nim-sum(XOR)全局面一致確認。2モードUI（非マップ） |
-| 15 | 割り箸 | `algorithms/chopsticks.html` | `js/maps/chopsticks-config.js` | `ChopsticksExample.cs` | 循環グラフを後退解析（波単位）で3値化。状態225局面。15×15マトリクス+対局ビュー（非マップ） |
-| 16 | 4×4オセロ | `algorithms/othello-4x4.html` | `js/maps/othello-4x4-config.js` | `Othello4x4Example.cs` | negamax全解析。α-β/転置表/対称除去(8変換・手番込み)を独立トグル、3段計測（生/転置表後/対称除去後）が主役。チャンク実行（`js/platform/chunked-run.js`）でUI非ブロック。初期局面=黒-8石差（自前計算）。非マップ専用UI |
+| 14 | MCTS | `algorithms/mcts.html` | `js/maps/mcts-config.js` | `MctsExample.cs` | 三目並べ題材。UCT 4相・探索木・完全解/素のMC比較。`tic-tac-toe.js` 再利用 |
+| 15 | ニム | `algorithms/nim.html` | `js/maps/nim-config.js` | `NimExample.cs` | 1山=逆向き着色DP（周期n mod k+1）／複数山=メモ化探索+nim-sum(XOR)全局面一致確認。2モードUI（非マップ） |
+| 16 | 割り箸 | `algorithms/chopsticks.html` | `js/maps/chopsticks-config.js` | `ChopsticksExample.cs` | 循環グラフを後退解析（波単位）で3値化。状態225局面。15×15マトリクス+対局ビュー（非マップ） |
+| 17 | 4×4オセロ | `algorithms/othello-4x4.html` | `js/maps/othello-4x4-config.js` | `Othello4x4Example.cs` | negamax全解析。α-β/転置表/対称除去(8変換・手番込み)を独立トグル、3段計測（生/転置表後/対称除去後）が主役。チャンク実行（`js/platform/chunked-run.js`）でUI非ブロック。初期局面=黒-8石差（自前計算）。非マップ専用UI |
 
 共通:
 
@@ -120,9 +118,10 @@
 | 4 | モンテカルロ | **ready** — `algorithms/monte-carlo.html` / SPEC |
 | 5 | 多腕バンディット | **ready** — `algorithms/multi-armed-bandit.html` / SPEC |
 | 6 | 三目並べ | **ready** — `algorithms/tic-tac-toe.html` / SPEC（実在ルール優先の初例） |
-| 7 | ニム | **ready** — `algorithms/nim.html` / SPEC（全探索→周期性・nim-sum の理論解の初例） |
-| 8 | 割り箸 | **ready** — `algorithms/chopsticks.html` / SPEC（循環グラフ・後退解析の初例） |
-| 9 | 4×4オセロ | **ready** — `algorithms/othello-4x4.html` / SPEC（実在ゲーム4本の最終段・チャンク実行の初例） |
+| 7 | MCTS | **ready** — `algorithms/mcts.html` / SPEC（三目並べ題材・UCT 4相） |
+| 8 | ニム | **ready** — `algorithms/nim.html` / SPEC（全探索→周期性・nim-sum の理論解の初例） |
+| 9 | 割り箸 | **ready** — `algorithms/chopsticks.html` / SPEC（循環グラフ・後退解析の初例） |
+| 10 | 4×4オセロ | **ready** — `algorithms/othello-4x4.html` / SPEC（実在ゲーム4本の最終段・チャンク実行の初例） |
 
 ### 物理・判定
 | トピック | 状態 |

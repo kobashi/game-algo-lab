@@ -157,6 +157,17 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "mcts",
+    title: "モンテカルロ木探索 (MCTS)",
+    description:
+      "三目並べ上で選択・展開・シミュレーション・逆伝播。UCB1 と完全解・素の MC を同一局面で比較。",
+    href: "algorithms/mcts.html",
+    badge: "ゲーム木",
+    category: "ゲーム木",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "nim",
     title: "ニム（完全読み切り→理論解）",
     description:

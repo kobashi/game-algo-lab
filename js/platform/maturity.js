@@ -58,6 +58,7 @@ export const TOPIC_META = {
   collision: { maturity: "revised", revisions: 2, updated: "2026-07-17" },
   fsm: { maturity: "oneshot", revisions: 0, updated: "2026-07-17" },
   "tic-tac-toe": { maturity: "oneshot", revisions: 0, updated: "2026-07-19" },
+  mcts: { maturity: "oneshot", revisions: 0, updated: "2026-07-21" },
   nim: { maturity: "oneshot", revisions: 0, updated: "2026-07-19" },
   chopsticks: { maturity: "revised", revisions: 1, updated: "2026-07-19" },
   "othello-4x4": { maturity: "oneshot", revisions: 0, updated: "2026-07-19" },

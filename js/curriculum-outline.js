@@ -31,9 +31,8 @@ export const CURRICULUM_OUTLINE = [
     id: "game-tree",
     title: "ゲーム木",
     phase: "第2期",
-    blurb: "デモあり（AND-OR〜4×4オセロ等）。MCTS は SPEC 準備中（題材=三目並べ）。",
+    blurb: "デモあり（AND-OR〜MCTS・実在ゲーム4本等）。以下は追加予定。",
     items: [
-      { id: "mcts", title: "モンテカルロ木探索 (MCTS) — 準備中・三目並べ題材" },
       { id: "game-tree-engine", title: "共通探索エンジン" },
     ],
   },

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="モンテカルロ木探索 (MCTS) の可視化。三目並べ上で選択・展開・シミュレーション・逆伝播と UCB1 を学ぶ。" />
+  <title>モンテカルロ木探索 (MCTS) — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="game-tree" data-active="mcts"></header>
+
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb">
+        <a href="../index.html">ホーム</a> / ゲーム木 / MCTS
+      </p>
+      <h1>モンテカルロ木探索 (MCTS)</h1>
+      <p class="page-header-lead">
+        <strong>三目並べ</strong>を題材に、探索木をプレイアウトで成長させる MCTS（UCT）を可視化する。
+        1 反復 = <strong>選択 → 展開 → シミュレーション → 逆伝播</strong>。
+        腕の選び方は多腕バンディットの <strong>UCB1</strong> と同じ形。
+        ルール・完全解・素の MC は <code>tic-tac-toe</code> デモと共有する。
+        設定: <code>js/maps/mcts-config.js</code>。
+      </p>
+    </div>
+
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li><strong>4相</strong>: 選択（UCB で降りる）→ 展開（未試行手を1つ木に足す）→ 乱択プレイアウト → 訪問数・勝率を根まで戻す</li>
+          <li><strong>UCB1</strong>: \(\hat\mu + C\sqrt{\ln N_p / n_i}\)。各子 = バンディットの腕。未訪問は必ず一度選ぶ（∞）</li>
+          <li><strong>比較</strong>: 同一局面で MCTS・素のモンテカルロ推定・完全解（negamax）を並べ、反復 N を増やすと完全解の最善手に寄る様子を見る</li>
+          <li>主シナリオ「ダブルリーチ罠」: 素の MC が低 N で外しやすい局面。MCTS は有望手に予算を寄せやすい</li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="demo-workspace">
+      <div class="demo-game-group">
+        <div class="demo-board">
+          <div class="canvas-panel ttt-panel">
+            <div class="mcts-phase-row">
+              <span class="controls-label">現在の相</span>
+              <span id="phase-badge" class="mcts-phase-badge" data-phase="idle">待機</span>
+            </div>
+            <div id="ttt-board" class="ttt-board-wrap" aria-label="三目並べの盤面"></div>
+            <div class="legend ttt-legend">
+              <span>マス内 % = MCTS 勝率推定 · n = 訪問</span>
+              <span class="mcts-best-hint">枠強調 = 訪問最多の推奨手</span>
+            </div>
+          </div>
+          <div class="canvas-panel mcts-tree-panel">
+            <h2 class="mcts-tree-heading">探索木（成長のようす）</h2>
+            <svg id="tree-svg" class="tree-svg mcts-tree-svg" role="img" aria-label="MCTS 探索木"></svg>
+          </div>
+        </div>
+
+        <aside class="controls-panel demo-controls">
+          <div class="controls-toolbar">
+            <div class="controls-toolbar-main">
+              <div class="controls-group">
+                <span class="controls-label">局面</span>
+                <div class="control-row">
+                  <label class="controls-label" for="preset">プリセット</label>
+                  <select id="preset" class="bandit-select"></select>
+                  <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+                </div>
+              </div>
+              <div class="controls-group">
+                <span class="controls-label">編集</span>
+                <div class="control-row ttt-edit-row">
+                  <label class="ttt-check"><input type="checkbox" id="edit-mode" /> 局面を編集</label>
+                  <label class="ttt-radio"><input type="radio" name="edit-piece" value="X" checked /> X</label>
+                  <label class="ttt-radio"><input type="radio" name="edit-piece" value="O" /> O</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="controls-group-paint mc-params ttt-toggle-row">
+              <label class="controls-label" for="mcts-n">反復 N <span id="mcts-n-val">200</span></label>
+              <input type="range" id="mcts-n" class="ttt-range" min="10" max="5000" value="200" step="10" />
+              <label class="controls-label" for="mcts-c">探索 C <span id="mcts-c-val">1.414</span></label>
+              <input type="range" id="mcts-c" class="ttt-range" min="0.1" max="3" value="1.414" step="0.1" />
+              <label class="controls-label" for="mcts-seed">シード</label>
+              <input type="number" id="mcts-seed" class="mc-num" min="1" max="99999" value="20" step="1" />
+            </div>
+
+            <div class="controls-group-paint mc-params ttt-toggle-row">
+              <button type="button" id="btn-step" class="btn btn-ghost">1ステップ（1反復）</button>
+              <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+              <button type="button" id="btn-run-all" class="btn btn-ghost">N 回一括</button>
+              <button type="button" id="btn-compare" class="btn btn-ghost">完全解・MC と比較</button>
+              <label class="controls-label" for="speed">速度</label>
+              <input type="range" id="speed" min="20" max="400" value="200" step="20" />
+            </div>
+          </div>
+
+          <div id="status" class="status-log" role="status">準備完了</div>
+          <div id="result-compare" class="result-compare" hidden></div>
+        </aside>
+      </div>
+
+      <section class="ds-section ds-section-workspace" aria-labelledby="ds-heading">
+        <h2 id="ds-heading">データ構造のようす</h2>
+        <p class="section-lead section-lead-compact">
+          根の各子の訪問・勝率・UCB、直近の Selection 経路、計測。
+          バンディットデモの「腕」が、ここでは合法手（根の子）に対応する。
+        </p>
+        <div id="ds-panels" class="ds-panels"></div>
+      </section>
+    </div>
+
+    <section class="code-section" aria-labelledby="csharp-heading">
+      <h2 id="csharp-heading">C# 実装例</h2>
+      <div class="code-toolbar">
+        <p class="code-meta">ファイル: <code>samples/MctsExample.cs</code></p>
+      </div>
+      <pre class="code-block" id="csharp-sample"><code>// 読み込み中…</code></pre>
+      <p class="code-note">
+        <code>Select</code>（UCB1）・<code>Expand</code>・乱択 <code>Simulate</code>・<code>Backup</code> の核だけを抜き出しています。
+        盤面ロジックと描画はデモ側（三目並べは <code>tic-tac-toe</code> と共有）。
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="ゲーム木シリーズ · MCTS · 題材は三目並べ"></footer>
+
+  <script type="module" src="../js/mcts.js"></script>
+</body>
+</html>

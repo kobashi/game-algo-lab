@@ -608,10 +608,16 @@ export function miniBoardText(board) {
 
 /* ============================================================
  * ブラウザ UI（DOM 依存。IS_BROWSER ガード内のみ）
+ * mcts 等から solver だけ import されたときは起動しない
  * ============================================================ */
 
 if (IS_BROWSER) {
-  runBrowserUi();
+  const active = document
+    .querySelector("#site-header")
+    ?.getAttribute("data-active");
+  if (active === "tic-tac-toe") {
+    runBrowserUi();
+  }
 }
 
 function runBrowserUi() {
