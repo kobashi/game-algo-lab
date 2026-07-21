@@ -30,11 +30,12 @@
  * }}
  */
 export function layoutTree(nodes, rootId, opts = {}) {
-  const NODE_W = opts.nodeWidth ?? 100;
-  const NODE_H = opts.nodeHeight ?? 48;
-  const GAP_X = opts.gapX ?? 16;
-  const GAP_Y = opts.gapY ?? 76;
-  const PAD = opts.pad ?? 28;
+  // やや詰めた既定値（親幅フィット時もラベルが読める密度）
+  const NODE_W = opts.nodeWidth ?? 92;
+  const NODE_H = opts.nodeHeight ?? 44;
+  const GAP_X = opts.gapX ?? 12;
+  const GAP_Y = opts.gapY ?? 64;
+  const PAD = opts.pad ?? 20;
 
   /** @type {Record<string, number>} */
   const widthCache = {};
@@ -102,14 +103,40 @@ export function layoutTree(nodes, rootId, opts = {}) {
 }
 
 /**
- * SVG に viewBox / サイズを設定
+ * SVG に viewBox / サイズを設定。
+ * 既定は **コンテナ幅にフィット**（横スクロールを避ける）。
+ * 座標レイアウトの width/height は viewBox に載せ、見た目の幅は CSS で 100% にする。
+ *
  * @param {SVGElement | null} svg
- * @param {number} width
- * @param {number} height
+ * @param {number} width  レイアウト座標の幅
+ * @param {number} height レイアウト座標の高さ
+ * @param {{ fit?: boolean }} [opts]
+ *   fit: true（既定）= 親幅に合わせて縮小。false = 従来どおり絶対ピクセル
  */
-export function applySvgSize(svg, width, height) {
+export function applySvgSize(svg, width, height, opts = {}) {
   if (!svg) return;
-  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-  svg.setAttribute("width", String(width));
-  svg.setAttribute("height", String(height));
+  const w = Math.max(1, Math.round(width));
+  const h = Math.max(1, Math.round(height));
+  const fit = opts.fit !== false;
+
+  svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+  svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+
+  if (fit) {
+    // 親の幅に収める。height は aspect-ratio で自動（横スクロールを出さない）
+    svg.removeAttribute("width");
+    svg.removeAttribute("height");
+    svg.style.width = "100%";
+    svg.style.maxWidth = "100%";
+    svg.style.height = "auto";
+    svg.style.aspectRatio = `${w} / ${h}`;
+    svg.style.display = "block";
+  } else {
+    svg.setAttribute("width", String(w));
+    svg.setAttribute("height", String(h));
+    svg.style.removeProperty("width");
+    svg.style.removeProperty("max-width");
+    svg.style.removeProperty("height");
+    svg.style.removeProperty("aspect-ratio");
+  }
 }

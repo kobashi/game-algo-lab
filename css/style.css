@@ -460,20 +460,20 @@ img {
 
 .controls-toolbar-main {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.45rem 0.65rem;
   width: 100%;
   min-width: 0;
-  overflow-x: auto;
+  overflow-x: visible;
 }
 
 .controls-group {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.3rem;
-  flex: 0 0 auto;
+  flex: 0 1 auto;
   min-width: 0;
 }
 
@@ -536,10 +536,10 @@ img {
   max-width: 11rem;
 }
 
-/* 「コスト」行: ラベルとボタンを横並びで独立した1行 */
+/* 「コスト」行: ラベルとボタンを横並び（狭い幅では折り返し） */
 .controls-group-paint {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.35rem;
   width: 100%;
@@ -556,11 +556,12 @@ img {
 .controls-group-paint .paint-tools {
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.25rem;
   grid-template-columns: none;
   width: auto;
+  min-width: 0;
 }
 
 .controls-group-paint .paint-btn {
@@ -1719,23 +1720,77 @@ img {
 
 /* ===== AND-OR / ゲーム木 ===== */
 .tree-panel {
-  overflow: auto;
+  overflow: hidden;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .tree-viewport {
   width: 100%;
-  min-height: 280px;
-  overflow: auto;
+  min-width: 0;
+  min-height: 220px;
+  max-height: min(72vh, 40rem);
+  overflow-x: hidden;
+  overflow-y: auto;
   background: #0a0e14;
   border-radius: 8px;
   padding: 0.5rem;
+  box-sizing: border-box;
 }
 
-.andor-svg {
+/* ゲーム木 SVG: レイアウト座標は viewBox、見た目は親幅にフィット */
+.andor-svg,
+.mm-svg,
+.mcts-tree-svg,
+.tree-svg {
   display: block;
-  max-width: none;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
   margin: 0 auto;
   font-family: var(--font);
+}
+
+/* ゲーム木デモ: 木を横いっぱいに使う（横並びで木が潰れるのを避ける） */
+@media (orientation: landscape) and (min-height: 400px) {
+  .demo-workspace:has(.tree-viewport),
+  .demo-workspace:has(.mcts-tree-panel) {
+    display: flex;
+    flex-direction: column;
+    grid-template-columns: none;
+  }
+
+  .demo-workspace:has(.tree-viewport) .demo-game-group,
+  .demo-workspace:has(.mcts-tree-panel) .demo-game-group {
+    position: static;
+  }
+
+  .demo-workspace:has(.tree-viewport) .demo-board .canvas-panel,
+  .demo-workspace:has(.mcts-tree-panel) .demo-board .canvas-panel {
+    max-width: 100%;
+  }
+}
+
+/* 広い画面だけ: 操作を横に置き、木は上段フル幅 */
+@media (orientation: landscape) and (min-width: 1100px) and (min-height: 480px) {
+  .demo-workspace:has(.tree-viewport) .demo-game-group,
+  .demo-workspace:has(.mcts-tree-panel) .demo-game-group {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+    align-items: start;
+    gap: var(--workspace-gap);
+  }
+
+  .demo-workspace:has(.tree-viewport) .demo-board,
+  .demo-workspace:has(.mcts-tree-panel) .demo-board {
+    min-width: 0;
+  }
+
+  .demo-workspace:has(.tree-viewport) .demo-controls,
+  .demo-workspace:has(.mcts-tree-panel) .demo-controls {
+    position: sticky;
+    top: 3.25rem;
+  }
 }
 
 .andor-edge {
@@ -3496,7 +3551,11 @@ img {
 
 .mcts-tree-panel {
   margin-top: 0.75rem;
-  overflow-x: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  min-width: 0;
+  max-width: 100%;
+  max-height: min(72vh, 40rem);
 }
 
 .mcts-tree-heading {
@@ -3507,9 +3566,17 @@ img {
 
 .mcts-tree-svg {
   width: 100%;
-  min-height: 160px;
+  max-width: 100%;
+  height: auto;
+  min-height: 120px;
   background: var(--bg, #1a1d24);
   border-radius: 8px;
+}
+
+/* 3×3 盤は木より小さく中央寄せ（横幅を食いすぎない） */
+.demo-workspace:has(.mcts-tree-panel) .ttt-board-wrap {
+  max-width: 18rem;
+  margin-inline: auto;
 }
 
 .mcts-edge {

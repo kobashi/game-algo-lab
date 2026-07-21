@@ -765,9 +765,9 @@ function runBrowserUi() {
     const { layout, width, height, nodeWidth, nodeHeight } = layoutTree(
       vm.nodes,
       vm.rootId,
-      { nodeWidth: 88, nodeHeight: 40, gapX: 12, gapY: 64, pad: 20 }
+      { nodeWidth: 80, nodeHeight: 36, gapX: 10, gapY: 56, pad: 16 }
     );
-    applySvgSize(treeSvg, width, height);
+    applySvgSize(treeSvg, width, height); // 親幅フィット（横スクロール抑制）
 
     let edges = "";
     let bodies = "";

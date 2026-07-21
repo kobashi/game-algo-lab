@@ -9,7 +9,7 @@
 | `playback.js` | 再生・一時停止・速度スケジュール |
 | `chunked-run.js` | ジェネレータを時間分割で駆動する `runChunked`（重い解析で UI を固めない） |
 | `rng.js` | シード付き PRNG（再現実験） |
-| `tree-layout.js` | ゲーム木の水平レイアウト |
+| `tree-layout.js` | ゲーム木の水平レイアウト。`applySvgSize` は既定で親幅にフィット（横スクロール抑制） |
 | `grid-paint.js` | 経路探索マップの塗り（`bindMapPaint` 等） |
 | `pathfinding-grid.js` | グリッド幾何・下地描画（`drawPathfindingGrid`） |
 | `topic-shell.js` | 共通ヘッダー／フッター（`mountTopicShellFromDataset`） |
