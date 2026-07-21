@@ -2,6 +2,16 @@
 
 Game Algo Lab の **方針・仕様・分業** はここに集約する。
 
+### 公開サイト
+
+| | URL |
+|--|-----|
+| **GitHub Pages（教材）** | https://kobashi.github.io/game-algo-lab/ |
+| リポジトリ | https://github.com/kobashi/game-algo-lab |
+| 最新 Release（試作） | https://github.com/kobashi/game-algo-lab/releases/tag/v0.9.2 |
+
+利用者向けの起動方法・トピック一覧の概要はリポジトリ直下の [README.md](../README.md)。
+
 | 文書 | 内容 |
 |------|------|
 | **[interactive_game_programming_material_plan.docx](./interactive_game_programming_material_plan.docx)** | **計画の正本**（構想・設計資料）。**策定: 2026年7月** |
@@ -22,5 +32,4 @@ Game Algo Lab の **方針・仕様・分業** はここに集約する。
 - Word 正本: `docs/interactive_game_programming_material_plan.docx`  
   - https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_programming_material_plan.docx  
 
-コード作業の短い引き継ぎはリポジトリ直下の `HANDOFF.md`。  
-利用者向けの起動方法は `README.md`。
+コード作業の短い引き継ぎはリポジトリ直下の `HANDOFF.md`。

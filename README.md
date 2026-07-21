@@ -5,10 +5,26 @@
 GitHub Pages での公開を前提に、ビルド不要の静的サイト（HTML / CSS / JavaScript）で構成しています。  
 開発・拡張の方針と分業の進め方は **`docs/`** にまとめています。
 
+## 公開サイト（GitHub Pages）
+
+| | URL |
+|--|-----|
+| **教材トップ** | https://kobashi.github.io/game-algo-lab/ |
+| リポジトリ | https://github.com/kobashi/game-algo-lab |
+| 最新試作 Release | https://github.com/kobashi/game-algo-lab/releases/tag/v0.9.2 |
+
+主なデモ例:
+
+- [経路探索 — BFS](https://kobashi.github.io/game-algo-lab/algorithms/bfs.html)
+- [三目並べ](https://kobashi.github.io/game-algo-lab/algorithms/tic-tac-toe.html)
+- [モンテカルロ木探索 (MCTS)](https://kobashi.github.io/game-algo-lab/algorithms/mcts.html)
+- [4×4 オセロ](https://kobashi.github.io/game-algo-lab/algorithms/othello-4x4.html)
+
 ## できること
 
 - 経路探索（BFS → A* など）をステップ実行・再生で観察
 - グリッド上のコスト・壁・**複数ゴール**を編集して挙動を確認
+- ゲーム木・実在ルール題材（三目並べ、MCTS、ニム、割り箸、4×4オセロ など）
 - トピックをカテゴリ単位で増やし、共通 UI で統一感を保つ
 
 ## ローカルで見る
@@ -75,22 +91,25 @@ python3 scripts/smoke-platform.py
 
 ## GitHub Pages への公開（試作版）
 
-静的サイトのため **Source = `main` ブランチ / `/ (root)`** で公開します。
+**公開 URL**: https://kobashi.github.io/game-algo-lab/  
+
+静的サイトのため **Source = `main` ブランチ / `/ (root)`** で公開しています。
 
 1. GitHub にログインしたうえでリポジトリを push  
 2. **Settings → Pages** → Deploy from a branch → `main` / `/ (root)`  
-3. 数分後に `https://<ユーザー名>.github.io/<リポジトリ名>/`
+3. 数分後に上記 URL（一般形: `https://<ユーザー名>.github.io/<リポジトリ名>/`）
 
 ### 一括公開（推奨）
 
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
 gh auth login -h github.com -p https -w   # 未ログイン時
-./scripts/publish-github.sh game-algo-lab v0.9.0
+./scripts/publish-github.sh game-algo-lab v0.9.2
 ```
 
 - リポジトリ作成（未作成時）・`main` push・Pages 有効化・**試作 Release（prerelease）** を行います  
-- 現行の試作タグ: **`v0.9.0`**（リリースノート: `RELEASE_NOTES_v0.9.0.md`）
+- 現行の試作タグ: **`v0.9.2`**（リリースノート: `RELEASE_NOTES_v0.9.2.md`）  
+- リポジトリ About の Website にも Pages URL を設定する（`gh repo edit --homepage …`）
 
 ## 実装済みトピック（経路探索）
 
@@ -104,7 +123,7 @@ gh auth login -h github.com -p https -w   # 未ログイン時
 
 地図: ゴール `G` は **複数可**（いずれかに到達で成功）。ペイントの **G** で追加・削除。
 
-## ゲーム木（実装中）
+## ゲーム木（実装済）
 
 | トピック | 状態 |
 |----------|------|
@@ -114,6 +133,7 @@ gh auth login -h github.com -p https -w   # 未ログイン時
 | モンテカルロ法 | **実装済** — `algorithms/monte-carlo.html` |
 | 多腕バンディット | **実装済** — `algorithms/multi-armed-bandit.html` |
 | 三目並べ | **実装済** — `algorithms/tic-tac-toe.html` |
+| モンテカルロ木探索 (MCTS) | **実装済** — `algorithms/mcts.html` |
 | ニム | **実装済** — `algorithms/nim.html` |
 | 割り箸 | **実装済** — `algorithms/chopsticks.html` |
 | 4×4 オセロ | **実装済** — `algorithms/othello-4x4.html` |
