@@ -45,6 +45,13 @@ export const NAV_GROUPS = {
     { id: "fsm", label: "FSM", href: "fsm.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
   ],
+  fundamentals: [
+    { id: "home", label: "ホーム", href: "../index.html" },
+    { id: "game-loop", label: "ゲームループ", href: "game-loop.html" },
+    { id: "time-management", label: "時間管理", href: "time-management.html" },
+    { id: "input-basics", label: "入力", href: "input-basics.html" },
+    { id: "topics", label: "一覧", href: "../index.html#topics" },
+  ],
   default: [
     { id: "home", label: "ホーム", href: "../index.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
@@ -118,6 +125,17 @@ export const FOOTER_RELATED = {
   ],
   collision: [{ href: "fsm.html", label: "FSM" }],
   fsm: [{ href: "collision.html", label: "AABB" }],
+  "game-loop": [
+    { href: "time-management.html", label: "次: 時間管理" },
+  ],
+  "time-management": [
+    { href: "game-loop.html", label: "ゲームループ（前段）" },
+    { href: "input-basics.html", label: "次: 入力の基礎" },
+  ],
+  "input-basics": [
+    { href: "time-management.html", label: "時間管理（前段）" },
+    { href: "game-loop.html", label: "ゲームループ" },
+  ],
 };
 
 /** ナビ group ごとのフッター注記（data-note 未指定時） */
@@ -125,6 +143,7 @@ export const FOOTER_NOTES = {
   pathfinding: "経路探索シリーズ",
   "game-tree": "ゲーム木シリーズ",
   explain: "説明特化 UI · 経路探索マップは使いません",
+  fundamentals: "基礎実行モデル · ループ・時間・入力・座標・乱数",
   default: "",
 };
 

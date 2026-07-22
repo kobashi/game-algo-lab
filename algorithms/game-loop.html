@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ゲームループの可視化。可変/固定 timestep とスパイラル・オブ・デスを学ぶ。" />
+  <title>ゲームループ — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="fundamentals" data-active="game-loop"></header>
+
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb">
+        <a href="../index.html">ホーム</a> / 基礎実行モデル / ゲームループ
+      </p>
+      <h1>ゲームループ</h1>
+      <p class="page-header-lead">
+        ゲームは <strong>入力 → 更新 → 描画</strong> を繰り返す。
+        実経過時間 dt をそのまま使う<strong>可変 timestep</strong>と、
+        固定 Δt を溜めて回す<strong>固定 timestep</strong>を、跳ねるボールで比較する。
+        設定: <code>js/maps/game-loop-config.js</code>。
+      </p>
+    </div>
+
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li><strong>可変</strong>: 毎フレーム <code>update(realDt)</code> 1 回。実装は簡単だが、重いフレームで物理が不安定になりやすい</li>
+          <li><strong>固定</strong>: アキュムレータに時間を溜め、<code>FIXED_DT</code> ずつ複数回更新。シミュレーションが安定しやすい</li>
+          <li><strong>人工遅延</strong>を上げると「重いフレーム」を再現。固定側は 1 フレーム内の更新回数が増える</li>
+          <li><strong>MAX_STEPS</strong> で 1 フレーム内の更新上限を切ると、スパイラル・オブ・デスを防げる（代わりにシミュレーションが遅れうる）</li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="gl-layout">
+      <section class="gl-main" aria-labelledby="sim-heading">
+        <h2 id="sim-heading" class="gl-block-title">シミュレーション</h2>
+        <canvas id="gl-canvas" class="gl-canvas" width="640" height="360" aria-label="跳ねるボール"></canvas>
+        <div class="legend gl-legend">
+          <span><i class="swatch" style="background:#5b9fd4"></i>ボール</span>
+          <span><i class="swatch" style="background:#3d4f66"></i>床</span>
+          <span id="phase-badge" class="mcts-phase-badge" data-phase="idle">待機</span>
+        </div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+
+      <aside class="gl-side" aria-labelledby="ctrl-heading">
+        <h2 id="ctrl-heading" class="gl-block-title">操作</h2>
+        <div class="controls-toolbar">
+          <div class="controls-toolbar-main">
+            <div class="controls-group">
+              <span class="controls-label">実行</span>
+              <div class="control-row">
+                <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+                <button type="button" id="btn-step" class="btn btn-ghost">1フレーム</button>
+                <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+              </div>
+            </div>
+          </div>
+          <div class="controls-group-paint gl-params">
+            <label class="controls-label" for="mode">モード</label>
+            <select id="mode" class="bandit-select">
+              <option value="variable">可変 timestep</option>
+              <option value="fixed" selected>固定 timestep</option>
+            </select>
+          </div>
+          <div class="controls-group-paint gl-params">
+            <label class="controls-label" for="fixed-dt">FIXED_DT <span id="fixed-dt-val">16.7</span> ms</label>
+            <input type="range" id="fixed-dt" class="ttt-range" min="8" max="33" value="16.7" step="0.5" />
+          </div>
+          <div class="controls-group-paint gl-params">
+            <label class="controls-label" for="lag">人工遅延 <span id="lag-val">0</span> ms</label>
+            <input type="range" id="lag" class="ttt-range" min="0" max="80" value="0" step="5" />
+          </div>
+          <div class="controls-group-paint gl-params">
+            <label class="controls-label" for="max-steps">MAX_STEPS <span id="max-steps-val">8</span></label>
+            <input type="range" id="max-steps" class="ttt-range" min="1" max="16" value="8" step="1" />
+          </div>
+          <div class="controls-group-paint gl-params">
+            <label class="controls-label" for="speed">再生間隔</label>
+            <input type="range" id="speed" min="0" max="50" value="0" step="5" title="0=できるだけ速く（rAF相当）" />
+          </div>
+        </div>
+        <div id="result-compare" class="result-compare" hidden></div>
+      </aside>
+    </div>
+
+    <section class="ds-section" aria-labelledby="log-heading">
+      <h2 id="log-heading">フレームログ</h2>
+      <p class="section-lead section-lead-compact">
+        直近フレームの realDt・update 回数・accumulator 残り。固定モードで遅延を上げると steps が増えます。
+      </p>
+      <div id="frame-log" class="gl-frame-log" role="log"></div>
+    </section>
+
+    <section class="code-section" aria-labelledby="csharp-heading">
+      <h2 id="csharp-heading">C# 実装例</h2>
+      <div class="code-toolbar">
+        <p class="code-meta">ファイル: <code>samples/GameLoopExample.cs</code></p>
+      </div>
+      <pre class="code-block" id="csharp-sample"><code>// 読み込み中…</code></pre>
+      <p class="code-note">可変 / 固定 timestep の核。描画と人工遅延はデモ側のみ。</p>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="基礎実行モデル · ゲームループ"></footer>
+  <script type="module" src="../js/game-loop.js"></script>
+</body>
+</html>

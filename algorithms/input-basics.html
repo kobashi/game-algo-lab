@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="入力の基礎。held / down / up エッジと長押しを学ぶ。" />
+  <title>入力の基礎 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="fundamentals" data-active="input-basics"></header>
+
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb">
+        <a href="../index.html">ホーム</a> / 基礎実行モデル / 入力の基礎
+      </p>
+      <h1>入力の基礎</h1>
+      <p class="page-header-lead">
+        キーの<strong>押下中（held）</strong>と<strong>エッジ（down / up）</strong>を分ける。
+        ジャンプは down だけ、移動は held、チャージは長押し — 用途で読む信号が違う。
+        前段: <a href="game-loop.html">ゲームループ</a> · <a href="time-management.html">時間管理</a>。
+      </p>
+    </div>
+
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li><strong>held</strong>: 今フレームでキーが下がっている</li>
+          <li><strong>down</strong>: 今フレームで押し始めた（立ち上がり）。押し続けても 1 回だけ true</li>
+          <li><strong>up</strong>: 今フレームで離した（立ち下がり）</li>
+          <li><strong>長押し</strong>: held の累積時間が閾値を超えたら 1 回トリガー</li>
+          <li>対比: Jump は down、Fire は held 連射（わざと「悪い」例）</li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="gl-layout">
+      <section class="gl-main" aria-labelledby="sim-heading">
+        <h2 id="sim-heading" class="gl-block-title">プレイフィールド</h2>
+        <p class="tm-focus-hint" id="focus-hint">クリックしてフォーカスを当て、キーを押してください</p>
+        <canvas id="ib-canvas" class="gl-canvas" width="640" height="280" tabindex="0" aria-label="入力デモ"></canvas>
+        <div class="legend gl-legend">
+          <span><i class="swatch" style="background:#6bcb8f"></i>プレイヤー</span>
+          <span><i class="swatch" style="background:#5b9fd4"></i>ジャンプ回数</span>
+          <span><i class="swatch" style="background:#e07a5f"></i>連射</span>
+          <span><i class="swatch" style="background:#f2cc8f"></i>チャージ</span>
+        </div>
+        <div id="action-panels" class="ib-action-grid"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+
+      <aside class="gl-side" aria-labelledby="ctrl-heading">
+        <h2 id="ctrl-heading" class="gl-block-title">操作</h2>
+        <div class="controls-toolbar">
+          <div class="controls-toolbar-main">
+            <div class="controls-group">
+              <span class="controls-label">実行</span>
+              <div class="control-row">
+                <button type="button" id="btn-play" class="btn btn-primary">ポーリング開始</button>
+                <button type="button" id="btn-step" class="btn btn-ghost">1フレーム</button>
+                <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+              </div>
+            </div>
+          </div>
+          <div class="controls-group-paint gl-params">
+            <label class="controls-label" for="long-ms">長押し閾値 <span id="long-ms-val">400</span> ms</label>
+            <input type="range" id="long-ms" class="ttt-range" min="100" max="1500" value="400" step="50" />
+          </div>
+          <div class="ib-key-help">
+            <p><kbd>Space</kbd> Jump（edge）</p>
+            <p><kbd>Z</kbd> Fire（held 連射）</p>
+            <p><kbd>X</kbd> Charge（長押し）</p>
+            <p><kbd>←</kbd><kbd>→</kbd> Move（held）</p>
+          </div>
+        </div>
+        <div id="result-compare" class="result-compare" hidden></div>
+      </aside>
+    </div>
+
+    <section class="ds-section" aria-labelledby="log-heading">
+      <h2 id="log-heading">イベントログ</h2>
+      <p class="section-lead section-lead-compact">down / up / longPress が発生したフレームだけ記録する。</p>
+      <div id="event-log" class="gl-frame-log" role="log"></div>
+    </section>
+
+    <section class="code-section" aria-labelledby="csharp-heading">
+      <h2 id="csharp-heading">C# 実装例</h2>
+      <div class="code-toolbar">
+        <p class="code-meta">ファイル: <code>samples/InputBasicsExample.cs</code></p>
+      </div>
+      <pre class="code-block" id="csharp-sample"><code>// 読み込み中…</code></pre>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="基礎実行モデル · 入力の基礎"></footer>
+  <script type="module" src="../js/input-basics.js"></script>
+</body>
+</html>

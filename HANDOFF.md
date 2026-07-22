@@ -1,6 +1,6 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-07-22（v0.9.3 リリース）  
+最終更新: 2026-07-22（v0.9.4 リリース）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）
 
 新セッション開始時の指示例:
@@ -34,7 +34,13 @@
 
 **2026-07-22 `bidirectional-search` 実装（Grok4.5）**: 双方向 BFS。前向き=S / 後ろ向き=全 G（multi-source）。出会点で経路接合。展開数を一方向 BFS と比較。拡張方策: 小さい側優先 / 交互。[SPEC](docs/topics/bidirectional-search/SPEC.md)。ready: true・`oneshot`。
 
-**次の実装ターゲット**: 候補は (1) 指摘9の疑似コード同期・戻る（platform）(2) 第3期物理段階の入口 など。`path-compare`・`game-tree-engine` は **アイディアメモ・低優先**（ROADMAP §5）— 次ターゲットにしない。
+**2026-07-22 `game-loop` 実装（Grok4.5）**: 基礎実行モデルの入口。可変/固定 timestep、人工遅延、MAX_STEPS 打ち切り、跳ねるボール。[SPEC](docs/topics/game-loop/SPEC.md)。ready: true・`oneshot`。
+
+**2026-07-22 `time-management` 実装（Grok4.5）**: 壁時計 vs ゲーム内時間、time scale、ポーズ。往復キャラと回転は game time 駆動。[SPEC](docs/topics/time-management/SPEC.md)。ready: true・`oneshot`。
+
+**2026-07-22 `input-basics` 実装（Grok4.5）**: held / down / up / 長押し。Jump=edge、Fire=held 連射対比、Charge=長押し、Move=held。[SPEC](docs/topics/input-basics/SPEC.md)。ready: true・`oneshot`。
+
+**次の実装ターゲット**: 基礎実行の続きは `coordinates` または `rng-seed`。その他 (1) 指摘9 platform (2) 第3期物理。
 
 ---
 
@@ -102,6 +108,9 @@
 | 16 | ニム | `algorithms/nim.html` | `js/maps/nim-config.js` | `NimExample.cs` | 1山=逆向き着色DP（周期n mod k+1）／複数山=メモ化探索+nim-sum(XOR)全局面一致確認。2モードUI（非マップ） |
 | 17 | 割り箸 | `algorithms/chopsticks.html` | `js/maps/chopsticks-config.js` | `ChopsticksExample.cs` | 循環グラフを後退解析（波単位）で3値化。状態225局面。15×15マトリクス+対局ビュー（非マップ） |
 | 18 | 4×4オセロ | `algorithms/othello-4x4.html` | `js/maps/othello-4x4-config.js` | `Othello4x4Example.cs` | negamax全解析。α-β/転置表/対称除去(8変換・手番込み)を独立トグル、3段計測（生/転置表後/対称除去後）が主役。チャンク実行（`js/platform/chunked-run.js`）でUI非ブロック。初期局面=黒-8石差（自前計算）。非マップ専用UI |
+| 19 | ゲームループ | `algorithms/game-loop.html` | `js/maps/game-loop-config.js` | `GameLoopExample.cs` | 可変/固定 timestep。人工遅延・MAX_STEPS。基礎実行モデル入口 |
+| 20 | 時間管理 | `algorithms/time-management.html` | `js/maps/time-management-config.js` | `TimeManagementExample.cs` | real/game 時間・time scale・ポーズ |
+| 21 | 入力の基礎 | `algorithms/input-basics.html` | `js/maps/input-basics-config.js` | `InputBasicsExample.cs` | held/down/up・長押し |
 
 共通:
 
@@ -382,10 +391,10 @@
 - 既定ブランチ: `main`（ローカルは `origin/main` と同期済み想定）  
 - **GitHub Pages（試作運用中）**: https://kobashi.github.io/game-algo-lab/  
   - Source: `main` / `/ (root)`  
-- **Release 試作版**: https://github.com/kobashi/game-algo-lab/releases/tag/v0.9.3  
-  - タグ `v0.9.3`（prerelease）— `RELEASE_NOTES_v0.9.3.md`（双方向探索・UI 改善）  
-  - 前版: `v0.9.2`（MCTS）/ `v0.9.0`  
-- 再公開: `./scripts/publish-github.sh game-algo-lab v0.9.3`（または新タグ）  
+- **Release 試作版**: https://github.com/kobashi/game-algo-lab/releases/tag/v0.9.4  
+  - タグ `v0.9.4`（prerelease）— `RELEASE_NOTES_v0.9.4.md`（基礎実行モデル 3 本）  
+  - 前版: `v0.9.3` / `v0.9.2`  
+- 再公開: `./scripts/publish-github.sh game-algo-lab v0.9.4`（または新タグ）  
 - 旧ローカルタグ `v1.0.0` は初期準備用。正式版は別途 `v1.0.0` を切り直す想定  
 
 ### リモートブランチ（不要マーク・削除しない）

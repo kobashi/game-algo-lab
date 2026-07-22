@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="時間管理の可視化。壁時計とゲーム内時間、time scale、ポーズを学ぶ。" />
+  <title>時間管理 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="fundamentals" data-active="time-management"></header>
+
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb">
+        <a href="../index.html">ホーム</a> / 基礎実行モデル / 時間管理
+      </p>
+      <h1>時間管理</h1>
+      <p class="page-header-lead">
+        <strong>壁時計</strong>と<strong>ゲーム内時間</strong>を分ける。
+        <code>scaledDt = realDt × timeScale</code>（ポーズ時は 0）で、スロー・早送り・停止を一つの倍率で扱う。
+        前段: <a href="game-loop.html">ゲームループ</a>。設定: <code>js/maps/time-management-config.js</code>。
+      </p>
+    </div>
+
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li><strong>Real time</strong>: 現実の経過。UI や計測に使うことが多い</li>
+          <li><strong>Game time</strong>: シミュレーションが進む時間。ポーズ中は増えない</li>
+          <li><strong>Time scale</strong>: 1=等倍、0.25=スロー、2=早送り。更新は <code>scaledDt</code> で行う</li>
+          <li>往復キャラと回転マーカは <strong>game time だけ</strong>で動く → ポーズすると止まる</li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="gl-layout">
+      <section class="gl-main" aria-labelledby="sim-heading">
+        <h2 id="sim-heading" class="gl-block-title">シミュレーション</h2>
+        <canvas id="tm-canvas" class="gl-canvas" width="640" height="360" aria-label="時間駆動の往復"></canvas>
+        <div class="legend gl-legend">
+          <span><i class="swatch" style="background:#6bcb8f"></i>キャラ（game time）</span>
+          <span><i class="swatch" style="background:#f2cc8f"></i>回転（game time）</span>
+          <span id="phase-badge" class="mcts-phase-badge" data-phase="idle">待機</span>
+        </div>
+        <div class="tm-clocks" id="tm-clocks" aria-live="polite">
+          <div class="tm-clock-card">
+            <span class="tm-clock-label">壁時計 real</span>
+            <strong id="clock-real" class="tm-clock-value">0.00 s</strong>
+          </div>
+          <div class="tm-clock-card">
+            <span class="tm-clock-label">ゲーム内 game</span>
+            <strong id="clock-game" class="tm-clock-value">0.00 s</strong>
+          </div>
+          <div class="tm-clock-card">
+            <span class="tm-clock-label">scale × paused</span>
+            <strong id="clock-scale" class="tm-clock-value">1.00</strong>
+          </div>
+        </div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+
+      <aside class="gl-side" aria-labelledby="ctrl-heading">
+        <h2 id="ctrl-heading" class="gl-block-title">操作</h2>
+        <div class="controls-toolbar">
+          <div class="controls-toolbar-main">
+            <div class="controls-group">
+              <span class="controls-label">実行</span>
+              <div class="control-row">
+                <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+                <button type="button" id="btn-step" class="btn btn-ghost">1フレーム</button>
+                <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+              </div>
+            </div>
+          </div>
+          <div class="controls-group-paint gl-params">
+            <label class="ttt-check">
+              <input type="checkbox" id="paused" /> ポーズ（game 時間停止）
+            </label>
+          </div>
+          <div class="controls-group-paint gl-params">
+            <label class="controls-label" for="scale">time scale <span id="scale-val">1.00</span></label>
+            <input type="range" id="scale" class="ttt-range" min="0" max="3" value="1" step="0.05" />
+          </div>
+          <div class="controls-group-paint gl-params">
+            <span class="controls-label">プリセット</span>
+            <div class="control-row">
+              <button type="button" class="btn btn-ghost btn-sm" data-scale="0.25">スロー 0.25</button>
+              <button type="button" class="btn btn-ghost btn-sm" data-scale="1">等倍</button>
+              <button type="button" class="btn btn-ghost btn-sm" data-scale="2">早送り 2</button>
+            </div>
+          </div>
+        </div>
+        <div id="result-compare" class="result-compare" hidden></div>
+      </aside>
+    </div>
+
+    <section class="ds-section" aria-labelledby="log-heading">
+      <h2 id="log-heading">フレームログ</h2>
+      <p class="section-lead section-lead-compact">
+        realDt と scaledDt。ポーズ中は scaledDt=0 で game が進まないことを確認する。
+      </p>
+      <div id="frame-log" class="gl-frame-log" role="log"></div>
+    </section>
+
+    <section class="code-section" aria-labelledby="csharp-heading">
+      <h2 id="csharp-heading">C# 実装例</h2>
+      <div class="code-toolbar">
+        <p class="code-meta">ファイル: <code>samples/TimeManagementExample.cs</code></p>
+      </div>
+      <pre class="code-block" id="csharp-sample"><code>// 読み込み中…</code></pre>
+      <p class="code-note">TimeClock.Tick と time scale。描画はデモ側のみ。</p>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="基礎実行モデル · 時間管理"></footer>
+  <script type="module" src="../js/time-management.js"></script>
+</body>
+</html>

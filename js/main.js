@@ -102,6 +102,39 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "game-loop",
+    title: "ゲームループ",
+    description:
+      "可変/固定 timestep。人工遅延で重いフレームと MAX_STEPS 打ち切りを観察。",
+    href: "algorithms/game-loop.html",
+    badge: "基礎実行",
+    category: "基礎実行モデル",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "time-management",
+    title: "時間管理",
+    description:
+      "壁時計とゲーム内時間。time scale・ポーズ・スロー/早送りを scaledDt で統一。",
+    href: "algorithms/time-management.html",
+    badge: "基礎実行",
+    category: "基礎実行モデル",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "input-basics",
+    title: "入力の基礎",
+    description:
+      "held / down / up エッジと長押し。ジャンプは edge、連射は held の対比。",
+    href: "algorithms/input-basics.html",
+    badge: "基礎実行",
+    category: "基礎実行モデル",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "and-or",
     title: "AND-OR 探索",
     description:
