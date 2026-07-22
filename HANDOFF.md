@@ -1,6 +1,6 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-07-22  
+最終更新: 2026-07-22（v0.9.3 リリース）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）
 
 新セッション開始時の指示例:
@@ -382,10 +382,10 @@
 - 既定ブランチ: `main`（ローカルは `origin/main` と同期済み想定）  
 - **GitHub Pages（試作運用中）**: https://kobashi.github.io/game-algo-lab/  
   - Source: `main` / `/ (root)`  
-- **Release 試作版**: https://github.com/kobashi/game-algo-lab/releases/tag/v0.9.2  
-  - タグ `v0.9.2`（prerelease）— `RELEASE_NOTES_v0.9.2.md`（MCTS 追加）  
-  - 前版: `v0.9.0` / ノート `RELEASE_NOTES_v0.9.1.md`（ゲーム木4本・教材改訂）  
-- 再公開: `./scripts/publish-github.sh game-algo-lab v0.9.2`（または新タグ）  
+- **Release 試作版**: https://github.com/kobashi/game-algo-lab/releases/tag/v0.9.3  
+  - タグ `v0.9.3`（prerelease）— `RELEASE_NOTES_v0.9.3.md`（双方向探索・UI 改善）  
+  - 前版: `v0.9.2`（MCTS）/ `v0.9.0`  
+- 再公開: `./scripts/publish-github.sh game-algo-lab v0.9.3`（または新タグ）  
 - 旧ローカルタグ `v1.0.0` は初期準備用。正式版は別途 `v1.0.0` を切り直す想定  
 
 ### リモートブランチ（不要マーク・削除しない）
