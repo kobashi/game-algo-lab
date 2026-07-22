@@ -7,7 +7,7 @@
 | **正本改訂** | **2026-07-19** — Fable5 レビュー全件承認を反映（§2 実在ルール優先原則、§4 procgen 行、§6.1 三目並べ、§6.4 割り箸 新設、§15 第2期追記）。レビュー記録: [reviews/2026-07-19-docx-minigames-review.md](./reviews/2026-07-19-docx-minigames-review.md)、変更履歴版: [interactive_game_programming_material_plan_fable5_review.docx](./interactive_game_programming_material_plan_fable5_review.docx) |
 | **リポジトリ登録** | 2026-07-17（`docs/` に配置し Git 管理開始） |
 | **本 Markdown** | 正本の要約・**実装状況の対応表**・Game Algo Lab 運用メモ（エージェント／GitHub 向け） |
-| **最終更新（md）** | 2026-07-22（`bidirectional-search` 実装 ready） |
+| **最終更新（md）** | 2026-07-22（`path-compare` / `game-tree-engine` をアイディアメモ・低優先へ） |
 
 正本の変更や方針の大きな見直しは **Docx を更新したうえで本ファイルを同期**する。  
 細部の図表・講義向け長文は正本を開き、日々の実装判断は本ファイルと [topics/CATALOG.md](./topics/CATALOG.md) を優先する。
@@ -79,7 +79,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 | 期 | 正本のねらい | Game Algo Lab 現状（2026-07-17） | 次の実装候補（例） |
 |----|--------------|----------------------------------|-------------------|
-| **第1期** | 既存探索教材の完成と共通 UI | 経路探索 5 本 `ready`・**調整**。platform・スモーク・Pages 試作 | 疑似コード同期、厳密な同時比較モード、計測パネル統一、迷路エディタ強化 |
+| **第1期** | 既存探索教材の完成と共通 UI | 経路探索 6 本 `ready`（双方向含む）。platform・スモーク・Pages 試作 | 疑似コード同期、計測パネル統一、迷路エディタ強化（同時比較は低優先のアイディアメモ） |
 | **第2期** | ゲーム木と状態空間 | AND-OR〜バンディット 5 本 `ready`・多く **一発**。AABB・FSM も試作 | **三目並べ**（全解析・対称性除去）、**割り箸**（循環グラフ・後退解析）、**MCTS**、**ニム**（完全解析→剰余/nim-sum）、**4×4 オセロ**（符号化・対称正規化）、ゲーム木の教材改訂 |
 | **第3期** | 2D アクション共通基盤 | AABB のみ（説明 UI） | 擬似物理→速度/加速度、OBB/SAT/連続衝突、入力バッファ・コヨーテ、スプライト統合（将来 Unity と接続可） |
 | **第4期** | 群集・高速化・CG | 未着手 | ステアリング・Boids、空間分割、大量オブジェクト、CG 実験室 |
@@ -97,9 +97,10 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 #### Phase A — 経路探索（第1期の中核）
 
-- **状態**: BFS / DFS / ダイクストラ / 最良優先 / A* が `ready: true`（成熟度 **調整**）
+- **状態**: BFS / DFS / ダイクストラ / 最良優先 / A* / **双方向** が `ready: true`
 - 地図ペイント（コスト・壁・複数ゴール G）、DS 可視化、platform 寄せ済み
-- **残**: 比較モード強化、疑似コード行同期、計測表示の統一（双方向探索は 2026-07-22 実装済）
+- **残（優先）**: 疑似コード行同期、計測表示の統一  
+- **低優先（アイディアメモ）**: 経路アルゴリズム同時比較（`path-compare`）— 当面着手しない
 
 #### Phase B — 共通基盤 — **概ね完了（試作）**
 
@@ -136,7 +137,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 | カテゴリ ID（案） | 表示名 | 状態 | 期の目安 | 備考 |
 |-------------------|--------|------|----------|------|
-| `pathfinding` | 経路探索 | **実装済**（一部企画中） | 第1期 | 6 本実装済（双方向含む）。同時比較は企画中 |
+| `pathfinding` | 経路探索 | **実装済** | 第1期 | 6 本実装済（双方向含む）。同時比較はアイディアメモ（低優先） |
 | `game-tree` | ゲーム木 | **実装済** | 第2期 | 10 本実装済（MCTS + 実在ゲーム4本を含む） |
 | `physics` | 物理・判定 | **実装済**（一部企画中） | 第3期 | AABB のみ実装済 |
 | `patterns` | 設計パターン | **実装済**（一部企画中） | 第2〜3期 | FSM のみ実装済 |
@@ -178,7 +179,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 |----------|----------|------|------|
 | `bfs` … `astar` | （既存 5 本） | 実装済 | CATALOG 参照 |
 | `bidirectional-search` | 双方向探索 | **実装済** | 双方向 BFS・出会点接合・一方向との展開数比較。[SPEC](./topics/bidirectional-search/SPEC.md) |
-| `path-compare` | 経路アルゴリズム同時比較 | **企画中** | 同一地図・複数方式。第1期 UI |
+| `path-compare` | 経路アルゴリズム同時比較 | **アイディアメモ（低優先）** | 同一地図・複数方式の同時実行 UI の構想のみ。**当面 SPEC・実装しない**。双方向デモ内の「一方向との展開数比較」で比較学習の一部は既にカバー。優先度は E2E/i18n と同様バックログ側（§5 参照） |
 
 ---
 
@@ -192,7 +193,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `nim` | ニム（完全読み切り→理論解） | **実装済** | 正本 §6.2（2026-07-19 実装）。1山の逆向き着色DP（周期 n mod k+1）と複数山のnim-sum(XOR)判定・全局面一致確認。[SPEC](./topics/nim/SPEC.md)（implemented） |
 | `chopsticks` | 割り箸（循環グラフ・後退解析） | **実装済** | 正本 §6.4（2026-07-19 新設・同日実装）。勝ち/負け/引き分け3値・バリアント比較・局面正規化・深さ制限Min-Max対比。[SPEC](./topics/chopsticks/SPEC.md)（implemented） |
 | `othello-4x4` | 4×4 オセロ（符号化・転置表・対称正規化） | **実装済** | 正本 §6.3（2026-07-19 実装）。負の全探索224,820局面/約0.4秒（Node実測）→3段計測（生/転置表後/対称除去後）をチャンク実行で可視化。canonical は手番込み8変換最小。初期局面は黒-8石差（自前計算・独立実装一致）。[SPEC](./topics/othello-4x4/SPEC.md)（implemented） |
-| `game-tree-engine` | 共通探索エンジン（交換可能） | **企画中** | 合法手・終局・評価のインタフェース（横断基盤） |
+| `game-tree-engine` | 共通探索エンジン（交換可能） | **アイディアメモ（低優先）** | 合法手・終局・評価の共通インタフェース構想のみ。**当面 SPEC・実装しない**。現状は各トピックが solver を持ち、`js/platform` で UI・再生を共有する形で足りる。優先度は §5 バックログ側 |
 
 ---
 
@@ -404,6 +405,8 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 |------|------------------|------------------|
 | **E2E**（Playwright 等） | 主要操作の回帰防止 | メンテコスト。`scripts/smoke-platform.py` + 手動で当面足りる |
 | **i18n** | 多言語受講・公開 | 日本語教材が主。文言キー化の波及が大きい |
+| **`path-compare`（経路アルゴリズム同時比較）** | 同一地図で BFS/Dijkstra/A* 等を並べて再生・計測 | アイディアメモ段階。UI・共通エンジンの工大。双方向デモの比較パネルや個別トピックの切替で当面足りる。**優先度低・着手保留** |
+| **`game-tree-engine`（共通探索エンジン）** | 合法手・終局・評価を差し替え可能な横断 solver | アイディアメモ段階。抽象化の設計コストが大きく、教材効果は薄い。各デモの純関数 export + platform 共有で当面足りる。**優先度低・着手保留** |
 
 ### E2E 目安
 

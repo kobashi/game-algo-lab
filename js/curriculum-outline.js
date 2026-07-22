@@ -17,24 +17,8 @@
 /** 表示順（ROADMAP の期・カテゴリに沿う） */
 /** @type {CurriculumCategory[]} */
 export const CURRICULUM_OUTLINE = [
-  {
-    id: "pathfinding",
-    title: "経路探索",
-    phase: "第1期",
-    blurb: "デモあり（BFS〜A*）。以下は追加予定の学習項目。",
-    items: [
-      { id: "path-compare", title: "経路アルゴリズム同時比較" },
-    ],
-  },
-  {
-    id: "game-tree",
-    title: "ゲーム木",
-    phase: "第2期",
-    blurb: "デモあり（AND-OR〜MCTS・実在ゲーム4本等）。以下は追加予定。",
-    items: [
-      { id: "game-tree-engine", title: "共通探索エンジン" },
-    ],
-  },
+  // pathfinding / game-tree の追加案:
+  // path-compare・game-tree-engine は ROADMAP §5 のアイディアメモ（低優先）のため outline 非掲載。デモは TOPICS 側。
   {
     id: "physics",
     title: "物理・判定",

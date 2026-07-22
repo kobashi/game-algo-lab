@@ -34,7 +34,7 @@
 
 **2026-07-22 `bidirectional-search` 実装（Grok4.5）**: 双方向 BFS。前向き=S / 後ろ向き=全 G（multi-source）。出会点で経路接合。展開数を一方向 BFS と比較。拡張方策: 小さい側優先 / 交互。[SPEC](docs/topics/bidirectional-search/SPEC.md)。ready: true・`oneshot`。
 
-**次の実装ターゲット**: 候補は (1) `path-compare`（経路アルゴリズム同時比較）(2) 指摘9の疑似コード同期・戻る（platform）(3) 第3期物理段階の入口 など。
+**次の実装ターゲット**: 候補は (1) 指摘9の疑似コード同期・戻る（platform）(2) 第3期物理段階の入口 など。`path-compare`・`game-tree-engine` は **アイディアメモ・低優先**（ROADMAP §5）— 次ターゲットにしない。
 
 ---
 
