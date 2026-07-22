@@ -7,7 +7,7 @@
 | **正本改訂** | **2026-07-19** — Fable5 レビュー全件承認を反映（§2 実在ルール優先原則、§4 procgen 行、§6.1 三目並べ、§6.4 割り箸 新設、§15 第2期追記）。レビュー記録: [reviews/2026-07-19-docx-minigames-review.md](./reviews/2026-07-19-docx-minigames-review.md)、変更履歴版: [interactive_game_programming_material_plan_fable5_review.docx](./interactive_game_programming_material_plan_fable5_review.docx) |
 | **リポジトリ登録** | 2026-07-17（`docs/` に配置し Git 管理開始） |
 | **本 Markdown** | 正本の要約・**実装状況の対応表**・Game Algo Lab 運用メモ（エージェント／GitHub 向け） |
-| **最終更新（md）** | 2026-07-21（`mcts` 実装 ready: 題材=三目並べ） |
+| **最終更新（md）** | 2026-07-22（`bidirectional-search` 実装 ready） |
 
 正本の変更や方針の大きな見直しは **Docx を更新したうえで本ファイルを同期**する。  
 細部の図表・講義向け長文は正本を開き、日々の実装判断は本ファイルと [topics/CATALOG.md](./topics/CATALOG.md) を優先する。
@@ -99,7 +99,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 - **状態**: BFS / DFS / ダイクストラ / 最良優先 / A* が `ready: true`（成熟度 **調整**）
 - 地図ペイント（コスト・壁・複数ゴール G）、DS 可視化、platform 寄せ済み
-- **残**: 比較モード強化、疑似コード行同期、計測表示の統一、双方向探索（正本）
+- **残**: 比較モード強化、疑似コード行同期、計測表示の統一（双方向探索は 2026-07-22 実装済）
 
 #### Phase B — 共通基盤 — **概ね完了（試作）**
 
@@ -136,7 +136,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 | カテゴリ ID（案） | 表示名 | 状態 | 期の目安 | 備考 |
 |-------------------|--------|------|----------|------|
-| `pathfinding` | 経路探索 | **実装済**（一部企画中） | 第1期 | 5 本実装済。双方向などは企画中 |
+| `pathfinding` | 経路探索 | **実装済**（一部企画中） | 第1期 | 6 本実装済（双方向含む）。同時比較は企画中 |
 | `game-tree` | ゲーム木 | **実装済** | 第2期 | 10 本実装済（MCTS + 実在ゲーム4本を含む） |
 | `physics` | 物理・判定 | **実装済**（一部企画中） | 第3期 | AABB のみ実装済 |
 | `patterns` | 設計パターン | **実装済**（一部企画中） | 第2〜3期 | FSM のみ実装済 |
@@ -177,7 +177,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
 | `bfs` … `astar` | （既存 5 本） | 実装済 | CATALOG 参照 |
-| `bidirectional-search` | 双方向探索 | **企画中** | 正本 §4・第1期の拡張 |
+| `bidirectional-search` | 双方向探索 | **実装済** | 双方向 BFS・出会点接合・一方向との展開数比較。[SPEC](./topics/bidirectional-search/SPEC.md) |
 | `path-compare` | 経路アルゴリズム同時比較 | **企画中** | 同一地図・複数方式。第1期 UI |
 
 ---

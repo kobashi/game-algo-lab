@@ -24,6 +24,7 @@ export const NAV_GROUPS = {
     { id: "dijkstra", label: "ダイクストラ", href: "dijkstra.html" },
     { id: "best-first", label: "最良優先", href: "best-first.html" },
     { id: "astar", label: "A*", href: "astar.html" },
+    { id: "bidirectional-search", label: "双方向", href: "bidirectional-search.html" },
   ],
   "game-tree": [
     { id: "home", label: "ホーム", href: "../index.html" },
@@ -71,6 +72,11 @@ export const FOOTER_RELATED = {
   astar: [
     { href: "dijkstra.html", label: "ダイクストラ" },
     { href: "best-first.html", label: "最良優先" },
+    { href: "bidirectional-search.html", label: "次: 双方向探索" },
+  ],
+  "bidirectional-search": [
+    { href: "bfs.html", label: "BFS（片方向）" },
+    { href: "astar.html", label: "A*（前段）" },
   ],
   "and-or": [{ href: "minimax.html", label: "次: Min-Max" }],
   minimax: [

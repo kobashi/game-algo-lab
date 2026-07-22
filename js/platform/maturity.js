@@ -45,6 +45,11 @@ export const TOPIC_META = {
   dijkstra: { maturity: "revised", revisions: 2, updated: "2026-07-17" },
   "best-first": { maturity: "revised", revisions: 3, updated: "2026-07-19" },
   astar: { maturity: "revised", revisions: 3, updated: "2026-07-17" },
+  "bidirectional-search": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-22",
+  },
   "and-or": { maturity: "revised", revisions: 1, updated: "2026-07-19" },
   minimax: { maturity: "revised", revisions: 1, updated: "2026-07-19" },
   "alpha-beta": { maturity: "revised", revisions: 1, updated: "2026-07-19" },

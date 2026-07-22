@@ -23,7 +23,6 @@ export const CURRICULUM_OUTLINE = [
     phase: "第1期",
     blurb: "デモあり（BFS〜A*）。以下は追加予定の学習項目。",
     items: [
-      { id: "bidirectional-search", title: "双方向探索" },
       { id: "path-compare", title: "経路アルゴリズム同時比較" },
     ],
   },

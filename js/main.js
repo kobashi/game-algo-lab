@@ -91,6 +91,17 @@ const TOPICS = [
     maturity: "revised",
   },
   {
+    id: "bidirectional-search",
+    title: "双方向探索",
+    description:
+      "S と G の両側から BFS。出会点で経路接合。一方向より展開が減ることがある。",
+    href: "algorithms/bidirectional-search.html",
+    badge: "経路探索",
+    category: "経路探索",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "and-or",
     title: "AND-OR 探索",
     description:

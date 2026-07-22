@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="双方向探索（Bidirectional BFS）の可視化。S と G の両側から広げ出会点で経路を接合する。" />
+  <title>双方向探索 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="pathfinding" data-active="bidirectional-search"></header>
+
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb">
+        <a href="../index.html">ホーム</a> / 経路探索 / 双方向探索
+      </p>
+      <h1>双方向探索（Bidirectional BFS）</h1>
+      <p class="page-header-lead">
+        <strong>S から前向き</strong>と<strong>G から後ろ向き</strong>の BFS を同時に進め、出会ったマスで経路を接合する。
+        一方向 BFS より展開マスを減らせることがある。地図:
+        <code>js/maps/bidirectional-search-map.js</code>。
+      </p>
+    </div>
+
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li><strong>前向き（青系）</strong>: スタートから広がる探索済み・フロンティア</li>
+          <li><strong>後ろ向き（橙系）</strong>: ゴールから広がる（複数 G なら全ゴール同時開始）</li>
+          <li><strong>出会点</strong>: 両側が到達したマス。ここで経路を接合</li>
+          <li>既定の拡張方策は<strong>フロンティアが小さい側</strong>を優先（交互にも切替可）</li>
+          <li>結果で<strong>双方向の展開数 vs 一方向 BFS</strong>を比較する</li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="demo-workspace">
+      <div class="demo-game-group">
+        <div class="demo-board">
+          <div class="canvas-panel">
+            <canvas id="grid-canvas" width="560" height="560" aria-label="双方向探索グリッド"></canvas>
+            <div class="legend">
+              <span><i class="swatch swatch-start"></i>S</span>
+              <span><i class="swatch swatch-goal"></i>G</span>
+              <span><i class="swatch" style="background:#3d7ab8"></i>前・探索済</span>
+              <span><i class="swatch" style="background:#7eb6e8"></i>前・待ち</span>
+              <span><i class="swatch" style="background:#b86a3d"></i>後・探索済</span>
+              <span><i class="swatch" style="background:#e8a87e"></i>後・待ち</span>
+              <span><i class="swatch" style="background:#c9a0dc"></i>出会点</span>
+              <span><i class="swatch swatch-path"></i>経路</span>
+              <span><i class="swatch swatch-wall"></i>壁</span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="controls-panel demo-controls">
+          <div class="controls-toolbar">
+            <div class="controls-toolbar-main">
+              <div class="controls-group">
+                <span class="controls-label">操作</span>
+                <div class="control-row">
+                  <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+                  <button type="button" id="btn-step" class="btn btn-ghost">1ステップ</button>
+                  <button type="button" id="btn-reset" class="btn btn-ghost">再読込</button>
+                </div>
+              </div>
+              <div class="controls-group controls-group-speed">
+                <label class="controls-label" for="speed">速度</label>
+                <input type="range" id="speed" min="50" max="400" value="150" step="25" />
+              </div>
+              <div class="controls-group">
+                <label class="controls-label" for="expand-policy">拡張</label>
+                <select id="expand-policy" class="bandit-select">
+                  <option value="smaller" selected>小さい側優先</option>
+                  <option value="alternate">交互（前→後）</option>
+                </select>
+              </div>
+            </div>
+            <div class="controls-group controls-group-paint">
+              <span class="controls-label">コスト</span>
+              <div id="paint-tools" class="paint-tools" role="group" aria-label="コスト・壁・ゴール">
+                <button type="button" class="paint-btn" data-paint="-1" aria-pressed="false">-1</button>
+                <button type="button" class="paint-btn" data-paint="0" aria-pressed="false">0</button>
+                <button type="button" class="paint-btn is-active" data-paint="1" aria-pressed="true">1</button>
+                <button type="button" class="paint-btn" data-paint="2" aria-pressed="false">2</button>
+                <button type="button" class="paint-btn paint-wall" data-paint="wall" aria-pressed="false">壁</button>
+                <button type="button" class="paint-btn paint-goal" data-paint="goal" aria-pressed="false" title="ゴールを追加/削除">G</button>
+              </div>
+            </div>
+          </div>
+          <div id="status" class="status-log" role="status">準備完了</div>
+          <div id="result-compare" class="result-compare" hidden></div>
+        </aside>
+      </div>
+
+      <section class="ds-section ds-section-workspace" aria-labelledby="ds-heading">
+        <h2 id="ds-heading">データ構造のようす</h2>
+        <p class="section-lead section-lead-compact">
+          前向き Queue / 後ろ向き Queue（C# の Queue に相当）。出会後に経路を接合。
+        </p>
+        <div id="ds-panels" class="ds-panels"></div>
+      </section>
+    </div>
+
+    <section class="code-section" aria-labelledby="csharp-heading">
+      <h2 id="csharp-heading">C# 実装例</h2>
+      <div class="code-toolbar">
+        <p class="code-meta">ファイル: <code>samples/BidirectionalSearchExample.cs</code></p>
+      </div>
+      <pre class="code-block" id="csharp-sample"><code>// 読み込み中…</code></pre>
+      <p class="code-note">
+        双方向 BFS の核（2 つの Queue・出会点・経路接合）。描画と1ステップ表示はデモ側のみ。
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="経路探索シリーズ · 双方向 BFS"></footer>
+  <script type="module" src="../js/bidirectional-search.js"></script>
+</body>
+</html>

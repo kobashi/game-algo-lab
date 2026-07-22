@@ -1,6 +1,6 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-07-21  
+最終更新: 2026-07-22  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）
 
 新セッション開始時の指示例:
@@ -32,7 +32,9 @@
 
 **2026-07-21 Fable5→成熟度監査**: 教材品質レビュー指摘1〜7・割り箸波再生バグはすべて `revised` 記帳済み。oneshot 残（tic-tac-toe / nim / othello-4x4 / mcts / fsm）は実装後レビュー未実施または指摘8「oneshot で十分」。未反映の Fable5 コード改訂は無し。監査表: [docs/topics/MATURITY.md](docs/topics/MATURITY.md)。
 
-**次の実装ターゲット**: 正本第2期ゲーム木は一通り出揃った。候補は (1) 指摘9の疑似コード同期・戻る（platform）(2) 第3期物理段階の入口 (3) MCTS の発展（C 比較強化・4×4オセロ題材）など。ユーザー判断で優先度を決める。
+**2026-07-22 `bidirectional-search` 実装（Grok4.5）**: 双方向 BFS。前向き=S / 後ろ向き=全 G（multi-source）。出会点で経路接合。展開数を一方向 BFS と比較。拡張方策: 小さい側優先 / 交互。[SPEC](docs/topics/bidirectional-search/SPEC.md)。ready: true・`oneshot`。
+
+**次の実装ターゲット**: 候補は (1) `path-compare`（経路アルゴリズム同時比較）(2) 指摘9の疑似コード同期・戻る（platform）(3) 第3期物理段階の入口 など。
 
 ---
 
@@ -87,18 +89,19 @@
 | 3 | ダイクストラ | `algorithms/dijkstra.html` | `js/maps/dijkstra-map.js` | `DijkstraExample.cs` | 優先度 = g |
 | 4 | 最良優先 | `algorithms/best-first.html` | `js/maps/best-first-map.js` | `BestFirstExample.cs` | 優先度 = h |
 | 5 | A* | `algorithms/astar.html` | `js/maps/astar-map.js` | `AStarExample.cs` | f = g + h |
-| 6 | AND-OR | `algorithms/and-or.html` | `js/maps/and-or-tree.js` | `AndOrExample.cs` | OR=∃ / AND=∀。ゲーム木入口 |
-| 7 | Min-Max | `algorithms/minimax.html` | `js/maps/minimax-tree.js` | `MinimaxExample.cs` | MAX/MIN・数値評価。枝刈りなし |
-| 8 | α-β | `algorithms/alpha-beta.html` | `js/maps/alpha-beta-tree.js` | `AlphaBetaExample.cs` | α/β 窓で枝刈り。値は Min-Max と同じ |
-| 9 | モンテカルロ | `algorithms/monte-carlo.html` | `js/maps/monte-carlo-tree.js` | `MonteCarloExample.cs` | 乱択プレイアウト平均。Min-Max と不一致 |
-| 10 | 多腕バンディット | `algorithms/multi-armed-bandit.html` | `js/maps/bandit-config.js` | `MultiArmedBanditExample.cs` | ε-greedy / UCB1・リグレット |
-| 11 | AABB | `algorithms/collision.html` | —（説明UI） | `AabbExample.cs` | 軸投影・非マップ |
-| 12 | ステートマシン | `algorithms/fsm.html` | `js/maps/fsm-config.js` | `FsmExample.cs` | 状態図・遷移表・非マップ |
-| 13 | 三目並べ | `algorithms/tic-tac-toe.html` | `js/maps/tic-tac-toe-config.js` | `TicTacToeExample.cs` | negamax全解析。α-β/メモ化/対称性除去(8変換)を独立トグル。3×3専用UI（非マップ） |
-| 14 | MCTS | `algorithms/mcts.html` | `js/maps/mcts-config.js` | `MctsExample.cs` | 三目並べ題材。UCT 4相・探索木・完全解/素のMC比較。`tic-tac-toe.js` 再利用 |
-| 15 | ニム | `algorithms/nim.html` | `js/maps/nim-config.js` | `NimExample.cs` | 1山=逆向き着色DP（周期n mod k+1）／複数山=メモ化探索+nim-sum(XOR)全局面一致確認。2モードUI（非マップ） |
-| 16 | 割り箸 | `algorithms/chopsticks.html` | `js/maps/chopsticks-config.js` | `ChopsticksExample.cs` | 循環グラフを後退解析（波単位）で3値化。状態225局面。15×15マトリクス+対局ビュー（非マップ） |
-| 17 | 4×4オセロ | `algorithms/othello-4x4.html` | `js/maps/othello-4x4-config.js` | `Othello4x4Example.cs` | negamax全解析。α-β/転置表/対称除去(8変換・手番込み)を独立トグル、3段計測（生/転置表後/対称除去後）が主役。チャンク実行（`js/platform/chunked-run.js`）でUI非ブロック。初期局面=黒-8石差（自前計算）。非マップ専用UI |
+| 6 | 双方向探索 | `algorithms/bidirectional-search.html` | `js/maps/bidirectional-search-map.js` | `BidirectionalSearchExample.cs` | 双方向 BFS・出会点接合・一方向との展開数比較 |
+| 7 | AND-OR | `algorithms/and-or.html` | `js/maps/and-or-tree.js` | `AndOrExample.cs` | OR=∃ / AND=∀。ゲーム木入口 |
+| 8 | Min-Max | `algorithms/minimax.html` | `js/maps/minimax-tree.js` | `MinimaxExample.cs` | MAX/MIN・数値評価。枝刈りなし |
+| 9 | α-β | `algorithms/alpha-beta.html` | `js/maps/alpha-beta-tree.js` | `AlphaBetaExample.cs` | α/β 窓で枝刈り。値は Min-Max と同じ |
+| 10 | モンテカルロ | `algorithms/monte-carlo.html` | `js/maps/monte-carlo-tree.js` | `MonteCarloExample.cs` | 乱択プレイアウト平均。Min-Max と不一致 |
+| 11 | 多腕バンディット | `algorithms/multi-armed-bandit.html` | `js/maps/bandit-config.js` | `MultiArmedBanditExample.cs` | ε-greedy / UCB1・リグレット |
+| 12 | AABB | `algorithms/collision.html` | —（説明UI） | `AabbExample.cs` | 軸投影・非マップ |
+| 13 | ステートマシン | `algorithms/fsm.html` | `js/maps/fsm-config.js` | `FsmExample.cs` | 状態図・遷移表・非マップ |
+| 14 | 三目並べ | `algorithms/tic-tac-toe.html` | `js/maps/tic-tac-toe-config.js` | `TicTacToeExample.cs` | negamax全解析。α-β/メモ化/対称性除去(8変換)を独立トグル。3×3専用UI（非マップ） |
+| 15 | MCTS | `algorithms/mcts.html` | `js/maps/mcts-config.js` | `MctsExample.cs` | 三目並べ題材。UCT 4相・探索木・完全解/素のMC比較。`tic-tac-toe.js` 再利用 |
+| 16 | ニム | `algorithms/nim.html` | `js/maps/nim-config.js` | `NimExample.cs` | 1山=逆向き着色DP（周期n mod k+1）／複数山=メモ化探索+nim-sum(XOR)全局面一致確認。2モードUI（非マップ） |
+| 17 | 割り箸 | `algorithms/chopsticks.html` | `js/maps/chopsticks-config.js` | `ChopsticksExample.cs` | 循環グラフを後退解析（波単位）で3値化。状態225局面。15×15マトリクス+対局ビュー（非マップ） |
+| 18 | 4×4オセロ | `algorithms/othello-4x4.html` | `js/maps/othello-4x4-config.js` | `Othello4x4Example.cs` | negamax全解析。α-β/転置表/対称除去(8変換・手番込み)を独立トグル、3段計測（生/転置表後/対称除去後）が主役。チャンク実行（`js/platform/chunked-run.js`）でUI非ブロック。初期局面=黒-8石差（自前計算）。非マップ専用UI |
 
 共通:
 

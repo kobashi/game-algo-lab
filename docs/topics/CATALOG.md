@@ -1,6 +1,6 @@
 # トピックカタログ
 
-最終更新: 2026-07-21（Fable5→成熟度監査・未反映なしを確認）  
+最終更新: 2026-07-22（`bidirectional-search` 実装・ready 化）  
 
 - **実装の正**: この表 と `js/main.js` の `TOPICS`（ずれたら両方直す）  
 - **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable` + **修正回数** + **更新日**）  
@@ -29,8 +29,9 @@
 | `dijkstra` | ダイクストラ法 | ✅ | **調整** | 2 | 2026-07-17 | `algorithms/dijkstra.html` | 実装先行 | g 表示・複数G・platform 寄せ |
 | `best-first` | 最良優先探索 | ✅ | **調整** | 3 | 2026-07-19 | `algorithms/best-first.html` | 実装先行 | h 表示・複数G・platform 寄せ／S側に口を開けた凹型ポケットを追加（greedy が突っ込み g=27 vs 最適22を検証） |
 | `astar` | A* 探索 | ✅ | **調整** | 3 | 2026-07-17 | `algorithms/astar.html` | 実装先行 | f/g/h・負コスト・複数G・初期地図調整 |
+| `bidirectional-search` | 双方向探索 | ✅ | **一発** | 0 | 2026-07-22 | `algorithms/bidirectional-search.html` | [SPEC](./bidirectional-search/SPEC.md) | 双方向 BFS。前=S / 後=全G（multi-source）。出会点で接合。展開数を一方向 BFS と比較。拡張方策: 小さい側優先 / 交互 |
 
-**学習ストーリー**: 歩数（BFS）→ 深さ（DFS）→ コスト g → 見積り h → 統合 f=g+h  
+**学習ストーリー**: 歩数（BFS）→ 深さ（DFS）→ コスト g → 見積り h → 統合 f=g+h → **双方向（両端から）**  
 
 **成熟度メモ**: いずれも一発実装後に機能・教材表示の改訂あり → `revised`。授業で据え置くなら `stable` へ昇格。
 
@@ -82,11 +83,11 @@
 
 ---
 
-## 成熟度サマリ（2026-07-21・17 トピック ready）
+## 成熟度サマリ（2026-07-22・18 トピック ready）
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | 5 | fsm, tic-tac-toe, mcts, nim, othello-4x4 |
+| 一発 (`oneshot`) | 6 | fsm, tic-tac-toe, mcts, nim, othello-4x4, bidirectional-search |
 | 調整 (`revised`) | 12 | bfs, dfs, dijkstra, best-first, astar, collision, and-or, minimax, alpha-beta, monte-carlo, multi-armed-bandit, chopsticks |
 | 安定 (`stable`) | 0 | — |
 
