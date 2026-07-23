@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="乱数とシード。シード付き PRNG の再現性を学ぶ。" />
+  <title>乱数とシード — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="fundamentals" data-active="rng-seed"></header>
+
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb">
+        <a href="../index.html">ホーム</a> / 基礎実行モデル / 乱数とシード
+      </p>
+      <h1>乱数とシード</h1>
+      <p class="page-header-lead">
+        <strong>シード付き PRNG</strong>（Mulberry32）は同じシードなら同じ乱数列を返す。
+        再現可能な実験・リプレイ・procgen の土台。実装は <code>js/platform/rng.js</code> の
+        <code>mulberry32</code> をそのまま使う。
+      </p>
+    </div>
+
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li><strong>シード</strong>: 乱数系列の初期状態。同じシード → 同じ系列</li>
+          <li><strong>PRNG</strong>: 擬似乱数。決定的だが統計的には「ランダムに見える」</li>
+          <li><code>Math.random()</code> はシードを制御しにくい。教材・テストでは明示シードを推奨</li>
+          <li>「同じシードで再生成」で系列が一致し、「シード+1」で別系列になることを確認する</li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="gl-layout">
+      <section class="gl-main" aria-labelledby="viz-heading">
+        <h2 id="viz-heading" class="gl-block-title">サンプル列とヒストグラム</h2>
+        <canvas id="rng-canvas" class="gl-canvas" width="640" height="280" aria-label="乱数ヒストグラム"></canvas>
+        <div id="rng-list" class="rng-list" aria-label="乱数値一覧"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+        <div id="result-compare" class="result-compare" hidden></div>
+      </section>
+
+      <aside class="gl-side" aria-labelledby="ctrl-heading">
+        <h2 id="ctrl-heading" class="gl-block-title">操作</h2>
+        <div class="controls-toolbar">
+          <div class="controls-group-paint gl-params">
+            <label class="controls-label" for="seed">シード</label>
+            <input type="number" id="seed" class="mc-num" min="1" max="4294967295" value="42" step="1" />
+          </div>
+          <div class="controls-group-paint gl-params">
+            <label class="controls-label" for="count">個数 N <span id="count-val">24</span></label>
+            <input type="range" id="count" class="ttt-range" min="4" max="64" value="24" step="1" />
+          </div>
+          <div class="controls-group-paint gl-params">
+            <div class="control-row">
+              <button type="button" id="btn-gen" class="btn btn-primary">生成</button>
+              <button type="button" id="btn-regen" class="btn btn-ghost">同じシードで再生成</button>
+            </div>
+          </div>
+          <div class="controls-group-paint gl-params">
+            <div class="control-row">
+              <button type="button" id="btn-seed-plus" class="btn btn-ghost">シード +1</button>
+              <button type="button" id="btn-seed-rand" class="btn btn-ghost">シードをランダム化</button>
+            </div>
+          </div>
+        </div>
+        <p class="coord-side-note">
+          ダイス: 各サンプルを 1〜6 に写像した列も下に表示します。
+        </p>
+      </aside>
+    </div>
+
+    <section class="code-section" aria-labelledby="csharp-heading">
+      <h2 id="csharp-heading">C# 実装例</h2>
+      <div class="code-toolbar">
+        <p class="code-meta">ファイル: <code>samples/RngSeedExample.cs</code></p>
+      </div>
+      <pre class="code-block" id="csharp-sample"><code>// 読み込み中…</code></pre>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="基礎実行モデル · 乱数とシード"></footer>
+  <script type="module" src="../js/rng-seed.js"></script>
+</body>
+</html>

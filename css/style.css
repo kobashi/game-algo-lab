@@ -4716,3 +4716,46 @@ main.container.container-wide.topic-main:has(.mcts-tree-panel) {
   color: var(--text-muted);
   line-height: 1.4;
 }
+
+/* 乱数とシード */
+.rng-list {
+  margin-top: 0.65rem;
+}
+
+.rng-block {
+  margin-bottom: 0.65rem;
+}
+
+.rng-block-title {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 0.3rem;
+}
+
+.rng-chips,
+.rng-dice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.rng-chip {
+  font-family: ui-monospace, monospace;
+  font-size: 0.72rem;
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+}
+
+.rng-die {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 4px;
+  background: #2a4a6b;
+  font-weight: 700;
+  font-size: 0.85rem;
+}

@@ -146,6 +146,17 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "rng-seed",
+    title: "乱数とシード",
+    description:
+      "シード付き PRNG（Mulberry32）。同じシードで系列が再現することを確認。",
+    href: "algorithms/rng-seed.html",
+    badge: "基礎実行",
+    category: "基礎実行モデル",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "and-or",
     title: "AND-OR 探索",
     description:

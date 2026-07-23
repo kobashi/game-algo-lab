@@ -54,15 +54,7 @@ export const CURRICULUM_OUTLINE = [
       { id: "ecs-intro", title: "ECS 入門" },
     ],
   },
-  {
-    id: "fundamentals",
-    title: "基礎実行モデル",
-    phase: "第1〜3期",
-    blurb: "デモあり（ゲームループ〜座標変換）。以下は追加予定。",
-    items: [
-      { id: "rng-seed", title: "乱数とシード" },
-    ],
-  },
+  // fundamentals: 5 本すべて TOPICS に ready（game-loop〜rng-seed）
   {
     id: "ai-steering",
     title: "ゲーム AI・自律移動",

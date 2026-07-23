@@ -1,6 +1,6 @@
 # トピックカタログ
 
-最終更新: 2026-07-23（`coordinates` 実装）  
+最終更新: 2026-07-23（`rng-seed` 実装 — 基礎実行モデル完了）  
 
 - **実装の正**: この表 と `js/main.js` の `TOPICS`（ずれたら両方直す）  
 - **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable` + **修正回数** + **更新日**）  
@@ -75,8 +75,9 @@
 | `time-management` | 時間管理 | ✅ | **一発** | 0 | 2026-07-22 | `algorithms/time-management.html` | [SPEC](./time-management/SPEC.md) | 壁時計 vs ゲーム内時間。time scale・ポーズ。往復キャラは game time 駆動 |
 | `input-basics` | 入力の基礎 | ✅ | **一発** | 0 | 2026-07-22 | `algorithms/input-basics.html` | [SPEC](./input-basics/SPEC.md) | held / down / up。Jump=edge、Fire=held 連射対比、Charge=長押し |
 | `coordinates` | 座標変換 | ✅ | **一発** | 0 | 2026-07-23 | `algorithms/coordinates.html` | [SPEC](./coordinates/SPEC.md) | ローカル/ワールド/スクリーン。親子回転合成・カメラ・クリック逆変換 |
+| `rng-seed` | 乱数とシード | ✅ | **一発** | 0 | 2026-07-23 | `algorithms/rng-seed.html` | [SPEC](./rng-seed/SPEC.md) | Mulberry32（platform）。同シード再現・ヒストグラム・ダイス写像 |
 
-**学習ストーリー**: ゲームループ → 時間管理 → 入力 → 座標 →（予定）乱数とシード  
+**学習ストーリー**: ゲームループ → 時間管理 → 入力 → 座標 → 乱数とシード（**カテゴリ一通り完了**）  
 
 ---
 
@@ -96,11 +97,11 @@
 
 ---
 
-## 成熟度サマリ（2026-07-23・22 トピック ready）
+## 成熟度サマリ（2026-07-23・23 トピック ready）
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | 10 | fsm, tic-tac-toe, mcts, nim, othello-4x4, bidirectional-search, game-loop, time-management, input-basics, coordinates |
+| 一発 (`oneshot`) | 11 | fsm, tic-tac-toe, mcts, nim, othello-4x4, bidirectional-search, game-loop, time-management, input-basics, coordinates, rng-seed |
 | 調整 (`revised`) | 12 | bfs, dfs, dijkstra, best-first, astar, collision, and-or, minimax, alpha-beta, monte-carlo, multi-armed-bandit, chopsticks |
 | 安定 (`stable`) | 0 | — |
 
@@ -111,7 +112,7 @@ Fable5 起点のコード改訂 ↔ 成熟度の対応表: [MATURITY.md](./MATUR
 ## 企画中（本カタログ外）
 
 実装済み以外のカテゴリ（`ai-steering`, `spatial`, `hci`, `networking`, `audio`, `graphics`, `quality`, `procgen` 等）および  
-（`fundamentals` は `game-loop` 実装済・他は企画中）  
+（`fundamentals` は 5 本すべて実装済）  
 
 物理段階・Boids・通信 等のトピックは **[ROADMAP.md §2.4](../ROADMAP.md)** に **企画中** として列挙する。  
 着手するまで ready 行を増やさない。

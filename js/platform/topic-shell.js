@@ -51,6 +51,7 @@ export const NAV_GROUPS = {
     { id: "time-management", label: "時間管理", href: "time-management.html" },
     { id: "input-basics", label: "入力", href: "input-basics.html" },
     { id: "coordinates", label: "座標", href: "coordinates.html" },
+    { id: "rng-seed", label: "乱数", href: "rng-seed.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
   ],
   default: [
@@ -139,6 +140,10 @@ export const FOOTER_RELATED = {
   ],
   coordinates: [
     { href: "input-basics.html", label: "入力の基礎（前段）" },
+    { href: "rng-seed.html", label: "次: 乱数とシード" },
+  ],
+  "rng-seed": [
+    { href: "coordinates.html", label: "座標変換（前段）" },
     { href: "game-loop.html", label: "ゲームループ" },
   ],
 };
