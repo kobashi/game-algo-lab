@@ -11,7 +11,7 @@ GitHub Pages での公開を前提に、ビルド不要の静的サイト（HTML
 |--|-----|
 | **教材トップ** | https://kobashi.github.io/game-algo-lab/ |
 | リポジトリ | https://github.com/kobashi/game-algo-lab |
-| 最新試作 Release | https://github.com/kobashi/game-algo-lab/releases/tag/v0.9.4 |
+| 最新試作 Release | https://github.com/kobashi/game-algo-lab/releases/tag/v0.9.5 |
 
 主なデモ例:
 
@@ -104,11 +104,11 @@ python3 scripts/smoke-platform.py
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
 gh auth login -h github.com -p https -w   # 未ログイン時
-./scripts/publish-github.sh game-algo-lab v0.9.4
+./scripts/publish-github.sh game-algo-lab v0.9.5
 ```
 
 - リポジトリ作成（未作成時）・`main` push・Pages 有効化・**試作 Release（prerelease）** を行います  
-- 現行の試作タグ: **`v0.9.4`**（リリースノート: `RELEASE_NOTES_v0.9.4.md`）  
+- 現行の試作タグ: **`v0.9.5`**（リリースノート: `RELEASE_NOTES_v0.9.5.md`）  
 - リポジトリ About の Website にも Pages URL を設定する（`gh repo edit --homepage …`）
 
 ## 実装済みトピック（経路探索）
@@ -144,6 +144,7 @@ gh auth login -h github.com -p https -w   # 未ログイン時
 | 基礎実行モデル | ゲームループ | **実装済** — 可変/固定 timestep |
 | 基礎実行モデル | 時間管理 | **実装済** — time scale / ポーズ |
 | 基礎実行モデル | 入力の基礎 | **実装済** — held / edge / 長押し |
+| 基礎実行モデル | 座標変換 | **実装済** — ローカル/ワールド/スクリーン |
 | 物理・判定 | AABB 衝突判定 | **実装済** — 軸投影の説明 UI（マップ探索ではない） |
 | 設計パターン | ステートマシン | **実装済** — 状態図・イベント・遷移表（非マップ） |
 

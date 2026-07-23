@@ -7,7 +7,7 @@
 | **正本改訂** | **2026-07-19** — Fable5 レビュー全件承認を反映（§2 実在ルール優先原則、§4 procgen 行、§6.1 三目並べ、§6.4 割り箸 新設、§15 第2期追記）。レビュー記録: [reviews/2026-07-19-docx-minigames-review.md](./reviews/2026-07-19-docx-minigames-review.md)、変更履歴版: [interactive_game_programming_material_plan_fable5_review.docx](./interactive_game_programming_material_plan_fable5_review.docx) |
 | **リポジトリ登録** | 2026-07-17（`docs/` に配置し Git 管理開始） |
 | **本 Markdown** | 正本の要約・**実装状況の対応表**・Game Algo Lab 運用メモ（エージェント／GitHub 向け） |
-| **最終更新（md）** | 2026-07-22（`input-basics` 実装） |
+| **最終更新（md）** | 2026-07-23（`coordinates` 実装） |
 
 正本の変更や方針の大きな見直しは **Docx を更新したうえで本ファイルを同期**する。  
 細部の図表・講義向け長文は正本を開き、日々の実装判断は本ファイルと [topics/CATALOG.md](./topics/CATALOG.md) を優先する。
@@ -141,7 +141,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `game-tree` | ゲーム木 | **実装済** | 第2期 | 10 本実装済（MCTS + 実在ゲーム4本を含む） |
 | `physics` | 物理・判定 | **実装済**（一部企画中） | 第3期 | AABB のみ実装済 |
 | `patterns` | 設計パターン | **実装済**（一部企画中） | 第2〜3期 | FSM のみ実装済 |
-| `fundamentals` | 基礎実行モデル | **実装済**（一部企画中） | 第1〜3期 | game-loop / time-management / input-basics ready。座標・乱数は企画中 |
+| `fundamentals` | 基礎実行モデル | **実装済**（一部企画中） | 第1〜3期 | 4 本 ready。乱数とシードのみ企画中 |
 | `ai-steering` | ゲーム AI・自律移動 | **企画中** | 第4期 | ステアリング・Boids・BT（FSM は `patterns` に実装済） |
 | `spatial` | 空間探索・最適化 | **企画中** | 第3〜4期 | Broad/Narrow、グリッド、四分木、SaP |
 | `hci` | 入力・操作感・HCI | **企画中** | 第3期 | 入力バッファ、コヨーテタイム等 |
@@ -241,7 +241,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `game-loop` | ゲームループ | **実装済** | 可変/固定 timestep・人工遅延・MAX_STEPS。[SPEC](./topics/game-loop/SPEC.md) |
 | `time-management` | 時間管理 | **実装済** | real/game 時間、time scale、ポーズ。[SPEC](./topics/time-management/SPEC.md) |
 | `input-basics` | 入力の基礎 | **実装済** | held / down / up / 長押し。[SPEC](./topics/input-basics/SPEC.md) |
-| `coordinates` | 座標変換 | **企画中** | ローカル/ワールド/スクリーン |
+| `coordinates` | 座標変換 | **実装済** | ローカル/ワールド/スクリーン。[SPEC](./topics/coordinates/SPEC.md) |
 | `rng-seed` | 乱数とシード | **企画中** | 再現性（procgen と接続） |
 
 ---

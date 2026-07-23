@@ -1,6 +1,6 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-07-22（v0.9.4 リリース）  
+最終更新: 2026-07-23（v0.9.5 リリース）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）
 
 新セッション開始時の指示例:
@@ -40,7 +40,9 @@
 
 **2026-07-22 `input-basics` 実装（Grok4.5）**: held / down / up / 長押し。Jump=edge、Fire=held 連射対比、Charge=長押し、Move=held。[SPEC](docs/topics/input-basics/SPEC.md)。ready: true・`oneshot`。
 
-**次の実装ターゲット**: 基礎実行の続きは `coordinates` または `rng-seed`。その他 (1) 指摘9 platform (2) 第3期物理。
+**2026-07-23 `coordinates` 実装（Grok4.5）**: ローカル/ワールド/スクリーン。親子の回転合成、カメラ、クリック逆変換。[SPEC](docs/topics/coordinates/SPEC.md)。ready: true・`oneshot`。
+
+**次の実装ターゲット**: 基礎実行の最後は `rng-seed`。その他 (1) 指摘9 platform (2) 第3期物理。
 
 ---
 
@@ -111,6 +113,7 @@
 | 19 | ゲームループ | `algorithms/game-loop.html` | `js/maps/game-loop-config.js` | `GameLoopExample.cs` | 可変/固定 timestep。人工遅延・MAX_STEPS。基礎実行モデル入口 |
 | 20 | 時間管理 | `algorithms/time-management.html` | `js/maps/time-management-config.js` | `TimeManagementExample.cs` | real/game 時間・time scale・ポーズ |
 | 21 | 入力の基礎 | `algorithms/input-basics.html` | `js/maps/input-basics-config.js` | `InputBasicsExample.cs` | held/down/up・長押し |
+| 22 | 座標変換 | `algorithms/coordinates.html` | `js/maps/coordinates-config.js` | `CoordinatesExample.cs` | ローカル/ワールド/スクリーン |
 
 共通:
 
@@ -391,10 +394,10 @@
 - 既定ブランチ: `main`（ローカルは `origin/main` と同期済み想定）  
 - **GitHub Pages（試作運用中）**: https://kobashi.github.io/game-algo-lab/  
   - Source: `main` / `/ (root)`  
-- **Release 試作版**: https://github.com/kobashi/game-algo-lab/releases/tag/v0.9.4  
-  - タグ `v0.9.4`（prerelease）— `RELEASE_NOTES_v0.9.4.md`（基礎実行モデル 3 本）  
-  - 前版: `v0.9.3` / `v0.9.2`  
-- 再公開: `./scripts/publish-github.sh game-algo-lab v0.9.4`（または新タグ）  
+- **Release 試作版**: https://github.com/kobashi/game-algo-lab/releases/tag/v0.9.5  
+  - タグ `v0.9.5`（prerelease）— `RELEASE_NOTES_v0.9.5.md`（座標変換）  
+  - 前版: `v0.9.4`（基礎実行 3 本）  
+- 再公開: `./scripts/publish-github.sh game-algo-lab v0.9.5`（または新タグ）  
 - 旧ローカルタグ `v1.0.0` は初期準備用。正式版は別途 `v1.0.0` を切り直す想定  
 
 ### リモートブランチ（不要マーク・削除しない）

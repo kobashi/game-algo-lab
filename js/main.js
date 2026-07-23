@@ -135,6 +135,17 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "coordinates",
+    title: "座標変換",
+    description:
+      "ローカル / ワールド / スクリーン。親子の回転合成とカメラ。",
+    href: "algorithms/coordinates.html",
+    badge: "基礎実行",
+    category: "基礎実行モデル",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "and-or",
     title: "AND-OR 探索",
     description:

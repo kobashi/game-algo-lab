@@ -57,6 +57,7 @@ export const TOPIC_META = {
     updated: "2026-07-22",
   },
   "input-basics": { maturity: "oneshot", revisions: 0, updated: "2026-07-22" },
+  coordinates: { maturity: "oneshot", revisions: 0, updated: "2026-07-23" },
   "and-or": { maturity: "revised", revisions: 1, updated: "2026-07-19" },
   minimax: { maturity: "revised", revisions: 1, updated: "2026-07-19" },
   "alpha-beta": { maturity: "revised", revisions: 1, updated: "2026-07-19" },

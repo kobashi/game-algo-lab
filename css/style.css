@@ -4677,3 +4677,42 @@ main.container.container-wide.topic-main:has(.mcts-tree-panel) {
 .ib-event-list li {
   margin: 0.2rem 0;
 }
+
+/* 座標変換 */
+.coord-readout {
+  margin-top: 0.65rem;
+  overflow-x: auto;
+}
+
+.coord-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.coord-table th,
+.coord-table td {
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.45rem;
+  text-align: right;
+}
+
+.coord-table th:first-child,
+.coord-table td:first-child,
+.coord-table th:nth-child(2),
+.coord-table td:nth-child(2) {
+  text-align: left;
+}
+
+.coord-table thead th {
+  background: var(--bg);
+  color: var(--text-muted);
+}
+
+.coord-side-note {
+  margin: 0.65rem 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}

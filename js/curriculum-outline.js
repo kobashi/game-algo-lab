@@ -58,9 +58,8 @@ export const CURRICULUM_OUTLINE = [
     id: "fundamentals",
     title: "基礎実行モデル",
     phase: "第1〜3期",
-    blurb: "デモあり（ゲームループ・時間管理・入力）。以下は追加予定。",
+    blurb: "デモあり（ゲームループ〜座標変換）。以下は追加予定。",
     items: [
-      { id: "coordinates", title: "座標変換" },
       { id: "rng-seed", title: "乱数とシード" },
     ],
   },
