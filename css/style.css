@@ -4759,3 +4759,58 @@ main.container.container-wide.topic-main:has(.mcts-tree-panel) {
   font-weight: 700;
   font-size: 0.85rem;
 }
+
+.rng-lcg-panel {
+  margin: 0.35rem 0;
+  padding: 0.45rem 0 0.15rem;
+  border-top: 1px dashed var(--border);
+}
+
+.rng-param {
+  max-width: 11rem;
+}
+
+.rng-period-panel {
+  margin-top: 0.65rem;
+}
+
+.rng-period-card {
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  font-size: 0.85rem;
+}
+
+.rng-period-card.quality-bad {
+  border-color: #e07a5f;
+  background: rgba(224, 122, 95, 0.12);
+}
+
+.rng-period-card.quality-ok {
+  border-color: #f2cc8f;
+  background: rgba(242, 204, 143, 0.1);
+}
+
+.rng-period-card.quality-good {
+  border-color: #6bcb8f;
+  background: rgba(107, 203, 143, 0.1);
+}
+
+.rng-period-num {
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, monospace;
+}
+
+.rng-period-card p {
+  margin: 0.35rem 0 0;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.rng-period-eq code {
+  font-size: 0.8rem;
+}

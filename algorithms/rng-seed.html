@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="乱数とシード。シード付き PRNG の再現性を学ぶ。" />
+  <meta name="description" content="乱数とシード。Mulberry32 / XorShift / LCG を切替し、LCG の周期とパラメータを体験する。" />
   <title>乱数とシード — Game Algo Lab</title>
   <link rel="stylesheet" href="../css/style.css" />
 </head>
@@ -17,9 +17,9 @@
       </p>
       <h1>乱数とシード</h1>
       <p class="page-header-lead">
-        <strong>シード付き PRNG</strong>（Mulberry32）は同じシードなら同じ乱数列を返す。
-        再現可能な実験・リプレイ・procgen の土台。実装は <code>js/platform/rng.js</code> の
-        <code>mulberry32</code> をそのまま使う。
+        シード付き PRNG を<strong>アルゴリズムごと</strong>に切替できる。
+        <strong>Mulberry32</strong>（サイト標準）・<strong>XorShift32</strong>・<strong>線形合同法 (LCG)</strong>。
+        LCG は a,c,m をプリセット／手動で変え、<strong>周期の長さ</strong>とパラメータの関係を体感する。
       </p>
     </div>
 
@@ -27,10 +27,11 @@
       <summary>このデモで学ぶこと</summary>
       <div class="lesson-box lesson-box-nested">
         <ul>
-          <li><strong>シード</strong>: 乱数系列の初期状態。同じシード → 同じ系列</li>
-          <li><strong>PRNG</strong>: 擬似乱数。決定的だが統計的には「ランダムに見える」</li>
-          <li><code>Math.random()</code> はシードを制御しにくい。教材・テストでは明示シードを推奨</li>
-          <li>「同じシードで再生成」で系列が一致し、「シード+1」で別系列になることを確認する</li>
+          <li><strong>同じシード → 同じ系列</strong>（再現性）。アルゴリズムが違えば系列も違う</li>
+          <li><strong>LCG</strong>: <code>X' = (a·X + c) mod m</code>。状態は高々 m 通り → 周期 ≤ m</li>
+          <li>質の悪い例（極小 m・悪い a）ではすぐループし、ヒストグラムも偏る</li>
+          <li>許容・実用寄りの例では m が大きく、短いサンプルでは一様に見えやすい</li>
+          <li><strong>XorShift32</strong>: ビット演算のみ。シフト (a,b,c) の良し悪しで偏りが変わる。シード 0 は退化</li>
         </ul>
       </div>
     </details>
@@ -39,6 +40,7 @@
       <section class="gl-main" aria-labelledby="viz-heading">
         <h2 id="viz-heading" class="gl-block-title">サンプル列とヒストグラム</h2>
         <canvas id="rng-canvas" class="gl-canvas" width="640" height="280" aria-label="乱数ヒストグラム"></canvas>
+        <div id="period-panel" class="rng-period-panel" hidden></div>
         <div id="rng-list" class="rng-list" aria-label="乱数値一覧"></div>
         <div id="status" class="status-log" role="status">準備完了</div>
         <div id="result-compare" class="result-compare" hidden></div>
@@ -48,17 +50,70 @@
         <h2 id="ctrl-heading" class="gl-block-title">操作</h2>
         <div class="controls-toolbar">
           <div class="controls-group-paint gl-params">
+            <label class="controls-label" for="algo">アルゴリズム</label>
+            <select id="algo" class="bandit-select"></select>
+          </div>
+          <p id="algo-blurb" class="coord-side-note"></p>
+
+          <div class="controls-group-paint gl-params">
             <label class="controls-label" for="seed">シード</label>
-            <input type="number" id="seed" class="mc-num" min="1" max="4294967295" value="42" step="1" />
+            <input type="number" id="seed" class="mc-num" min="0" max="4294967295" value="42" step="1" />
           </div>
           <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="count">個数 N <span id="count-val">24</span></label>
-            <input type="range" id="count" class="ttt-range" min="4" max="64" value="24" step="1" />
+            <label class="controls-label" for="count">個数 N <span id="count-val">48</span></label>
+            <input type="range" id="count" class="ttt-range" min="4" max="128" value="48" step="1" />
           </div>
+
+          <div id="xs-panel" class="rng-lcg-panel" hidden>
+            <div class="controls-group-paint gl-params">
+              <label class="controls-label" for="xs-preset">XorShift プリセット</label>
+              <select id="xs-preset" class="bandit-select"></select>
+            </div>
+            <p id="xs-preset-blurb" class="coord-side-note"></p>
+            <div class="controls-group-paint gl-params">
+              <label class="controls-label" for="xs-a">a（&lt;&lt;）</label>
+              <input type="number" id="xs-a" class="mc-num rng-param" min="0" max="31" step="1" value="13" />
+            </div>
+            <div class="controls-group-paint gl-params">
+              <label class="controls-label" for="xs-b">b（&gt;&gt;&gt;）</label>
+              <input type="number" id="xs-b" class="mc-num rng-param" min="0" max="31" step="1" value="17" />
+            </div>
+            <div class="controls-group-paint gl-params">
+              <label class="controls-label" for="xs-c">c（&lt;&lt;）</label>
+              <input type="number" id="xs-c" class="mc-num rng-param" min="0" max="31" step="1" value="5" />
+            </div>
+            <p class="coord-side-note">
+              式: <code>x ^= x&lt;&lt;a; x ^= x&gt;&gt;&gt;b; x ^= x&lt;&lt;c</code>（32bit）。周期は短いループを検出（最大 2^20 ステップ）。
+            </p>
+          </div>
+
+          <div id="lcg-panel" class="rng-lcg-panel" hidden>
+            <div class="controls-group-paint gl-params">
+              <label class="controls-label" for="lcg-preset">LCG プリセット</label>
+              <select id="lcg-preset" class="bandit-select"></select>
+            </div>
+            <p id="lcg-preset-blurb" class="coord-side-note"></p>
+            <div class="controls-group-paint gl-params">
+              <label class="controls-label" for="lcg-a">a（乗数）</label>
+              <input type="number" id="lcg-a" class="mc-num rng-param" min="0" step="1" />
+            </div>
+            <div class="controls-group-paint gl-params">
+              <label class="controls-label" for="lcg-c">c（加数）</label>
+              <input type="number" id="lcg-c" class="mc-num rng-param" min="0" step="1" />
+            </div>
+            <div class="controls-group-paint gl-params">
+              <label class="controls-label" for="lcg-m">m（法）</label>
+              <input type="number" id="lcg-m" class="mc-num rng-param" min="2" step="1" />
+            </div>
+            <p class="coord-side-note">
+              周期計測は m ≤ 65536 のとき状態ループを数える（それより大きい m は理論メモのみ）。
+            </p>
+          </div>
+
           <div class="controls-group-paint gl-params">
             <div class="control-row">
               <button type="button" id="btn-gen" class="btn btn-primary">生成</button>
-              <button type="button" id="btn-regen" class="btn btn-ghost">同じシードで再生成</button>
+              <button type="button" id="btn-regen" class="btn btn-ghost">同じ設定で再生成</button>
             </div>
           </div>
           <div class="controls-group-paint gl-params">
@@ -68,9 +123,6 @@
             </div>
           </div>
         </div>
-        <p class="coord-side-note">
-          ダイス: 各サンプルを 1〜6 に写像した列も下に表示します。
-        </p>
       </aside>
     </div>
 

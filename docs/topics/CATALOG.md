@@ -75,7 +75,7 @@
 | `time-management` | 時間管理 | ✅ | **一発** | 0 | 2026-07-22 | `algorithms/time-management.html` | [SPEC](./time-management/SPEC.md) | 壁時計 vs ゲーム内時間。time scale・ポーズ。往復キャラは game time 駆動 |
 | `input-basics` | 入力の基礎 | ✅ | **一発** | 0 | 2026-07-22 | `algorithms/input-basics.html` | [SPEC](./input-basics/SPEC.md) | held / down / up。Jump=edge、Fire=held 連射対比、Charge=長押し |
 | `coordinates` | 座標変換 | ✅ | **一発** | 0 | 2026-07-23 | `algorithms/coordinates.html` | [SPEC](./coordinates/SPEC.md) | ローカル/ワールド/スクリーン。親子回転合成・カメラ・クリック逆変換 |
-| `rng-seed` | 乱数とシード | ✅ | **一発** | 0 | 2026-07-23 | `algorithms/rng-seed.html` | [SPEC](./rng-seed/SPEC.md) | Mulberry32（platform）。同シード再現・ヒストグラム・ダイス写像 |
+| `rng-seed` | 乱数とシード | ✅ | **調整** | 1 | 2026-07-23 | `algorithms/rng-seed.html` | [SPEC](./rng-seed/SPEC.md) | Mulberry32/XorShift/LCG 切替。LCG は a,c,m プリセット（質の悪い例〜実用寄り）と周期計測・ヒストグラム |
 
 **学習ストーリー**: ゲームループ → 時間管理 → 入力 → 座標 → 乱数とシード（**カテゴリ一通り完了**）  
 
@@ -101,8 +101,8 @@
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | 11 | fsm, tic-tac-toe, mcts, nim, othello-4x4, bidirectional-search, game-loop, time-management, input-basics, coordinates, rng-seed |
-| 調整 (`revised`) | 12 | bfs, dfs, dijkstra, best-first, astar, collision, and-or, minimax, alpha-beta, monte-carlo, multi-armed-bandit, chopsticks |
+| 一発 (`oneshot`) | 10 | fsm, tic-tac-toe, mcts, nim, othello-4x4, bidirectional-search, game-loop, time-management, input-basics, coordinates |
+| 調整 (`revised`) | 13 | bfs, dfs, dijkstra, best-first, astar, collision, and-or, minimax, alpha-beta, monte-carlo, multi-armed-bandit, chopsticks, rng-seed |
 | 安定 (`stable`) | 0 | — |
 
 Fable5 起点のコード改訂 ↔ 成熟度の対応表: [MATURITY.md](./MATURITY.md) の「Fable5 レビュー → 成熟度の突き合わせ」。
