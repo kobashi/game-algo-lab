@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="迷路生成の可視化。Recursive Backtracker と Prim 風をシード付きで比較する。" />
+  <title>迷路生成 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="procgen" data-active="maze-gen"></header>
+
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb">
+        <a href="../index.html">ホーム</a> / プロシージャル / 迷路生成
+      </p>
+      <h1>迷路生成</h1>
+      <p class="page-header-lead">
+        グリッド迷路を<strong>シード付き</strong>で生成する。
+        <strong>Recursive Backtracker（DFS）</strong>と<strong>Prim 風</strong>の広がり方を比較。
+        乱数は <a href="rng-seed.html">乱数とシード</a> と同じ Mulberry32。
+        設定: <code>js/maps/maze-gen-config.js</code>。
+      </p>
+    </div>
+
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>迷路 = セル（通路）と壁。生成は「壁を壊して道をつなぐ」過程</li>
+          <li><strong>Backtracker</strong>: 深く掘り、行き止まりで戻る → 長い廊下になりやすい</li>
+          <li><strong>Prim 風</strong>: 訪問済みの縁（frontier）から広げる → 枝分かれが増えやすい</li>
+          <li><strong>同じシード</strong>なら同じ迷路。アルゴリズムを変えると構造が変わる</li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="gl-layout">
+      <section class="gl-main" aria-labelledby="maze-heading">
+        <h2 id="maze-heading" class="gl-block-title">迷路</h2>
+        <canvas id="maze-canvas" class="gl-canvas maze-canvas" width="560" height="560" aria-label="迷路グリッド"></canvas>
+        <div class="legend gl-legend">
+          <span><i class="swatch" style="background:#3d4f66"></i>壁</span>
+          <span><i class="swatch" style="background:#1a2433"></i>通路</span>
+          <span><i class="swatch" style="background:#e07a5f"></i>現在</span>
+          <span><i class="swatch" style="background:#6bcb8f"></i>スタック/開始</span>
+          <span><i class="swatch" style="background:#f2cc8f"></i>frontier (Prim)</span>
+        </div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+        <div id="result-compare" class="result-compare" hidden></div>
+      </section>
+
+      <aside class="gl-side" aria-labelledby="ctrl-heading">
+        <h2 id="ctrl-heading" class="gl-block-title">操作</h2>
+        <div class="controls-toolbar">
+          <div class="controls-group-paint gl-params">
+            <label class="controls-label" for="algo">アルゴリズム</label>
+            <select id="algo" class="bandit-select"></select>
+          </div>
+          <p id="algo-blurb" class="coord-side-note"></p>
+          <div class="controls-group-paint gl-params">
+            <label class="controls-label" for="seed">シード</label>
+            <input type="number" id="seed" class="mc-num" min="1" value="42" step="1" />
+          </div>
+          <div class="controls-group-paint gl-params">
+            <label class="controls-label" for="size">セル数 <span id="size-val">15</span></label>
+            <input type="range" id="size" class="ttt-range" min="7" max="31" value="15" step="2" />
+          </div>
+          <div class="controls-group-paint gl-params">
+            <div class="control-row">
+              <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+              <button type="button" id="btn-step" class="btn btn-ghost">1ステップ</button>
+            </div>
+          </div>
+          <div class="controls-group-paint gl-params">
+            <div class="control-row">
+              <button type="button" id="btn-run" class="btn btn-ghost">一括生成</button>
+              <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+            </div>
+          </div>
+          <div class="controls-group-paint gl-params">
+            <label class="controls-label" for="speed">速度</label>
+            <input type="range" id="speed" min="20" max="400" value="200" step="20" />
+          </div>
+        </div>
+        <p class="coord-side-note">
+          完成後、緑＝開始付近、赤＝反対側の通路セル。経路探索教材との接続を意識した入口です。
+        </p>
+      </aside>
+    </div>
+
+    <section class="code-section" aria-labelledby="csharp-heading">
+      <h2 id="csharp-heading">C# 実装例</h2>
+      <div class="code-toolbar">
+        <p class="code-meta">ファイル: <code>samples/MazeGenExample.cs</code></p>
+      </div>
+      <pre class="code-block" id="csharp-sample"><code>// 読み込み中…</code></pre>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="プロシージャル · 迷路生成"></footer>
+  <script type="module" src="../js/maze-gen.js"></script>
+</body>
+</html>

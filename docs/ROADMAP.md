@@ -7,7 +7,7 @@
 | **正本改訂** | **2026-07-19** — Fable5 レビュー全件承認を反映（§2 実在ルール優先原則、§4 procgen 行、§6.1 三目並べ、§6.4 割り箸 新設、§15 第2期追記）。レビュー記録: [reviews/2026-07-19-docx-minigames-review.md](./reviews/2026-07-19-docx-minigames-review.md)、変更履歴版: [interactive_game_programming_material_plan_fable5_review.docx](./interactive_game_programming_material_plan_fable5_review.docx) |
 | **リポジトリ登録** | 2026-07-17（`docs/` に配置し Git 管理開始） |
 | **本 Markdown** | 正本の要約・**実装状況の対応表**・Game Algo Lab 運用メモ（エージェント／GitHub 向け） |
-| **最終更新（md）** | 2026-07-23（`rng-seed` 実装 — 基礎実行モデル完了） |
+| **最終更新（md）** | 2026-07-23（`maze-gen` 実装 — プロシージャル入口） |
 
 正本の変更や方針の大きな見直しは **Docx を更新したうえで本ファイルを同期**する。  
 細部の図表・講義向け長文は正本を開き、日々の実装判断は本ファイルと [topics/CATALOG.md](./topics/CATALOG.md) を優先する。
@@ -149,7 +149,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `audio` | ゲームサウンド | **企画中** | 第5期 | SE・発音管理・BGM・拍同期 |
 | `graphics` | ゲーム CG | **企画中** | 第4期 | 当面は Web 概念デモ or Unity 連携を SPEC で決める |
 | `quality` | 設計・品質 | **企画中** | 横断 | イベント、プール、セーブ、テスト、プロファイリング |
-| `procgen` | プロシージャル・確率・バランス | **企画中** | 第2〜4期 | 迷路生成、乱数、バランス分析 |
+| `procgen` | プロシージャル・確率・バランス | **実装済**（一部企画中） | 第2〜4期 | `maze-gen` ready。ダンジョン・ノイズ等は企画中 |
 
 実装済みトピックの詳細・成熟度は [topics/CATALOG.md](./topics/CATALOG.md) / [topics/MATURITY.md](./topics/MATURITY.md)。  
 **企画中の id は仮**。着手時に衝突を避けて確定する。
@@ -345,11 +345,13 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 ---
 
-### `procgen` — プロシージャル・確率・バランス（カテゴリごと企画中）
+### `procgen` — プロシージャル・確率・バランス
+
+学習順（案）: **rng-seed → maze-gen → dungeon-gen → …**
 
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
-| `maze-gen` | 迷路生成 | **企画中** | DFS / Prim / Kruskal 等。探索教材と接続 |
+| `maze-gen` | 迷路生成 | **実装済** | Backtracker / Prim 風・シード付き。[SPEC](./topics/maze-gen/SPEC.md) |
 | `dungeon-gen` | ダンジョン生成 | **企画中** | 部屋と通路・BSP 等 |
 | `noise-terrain` | ノイズと地形 | **企画中** | 概念 |
 | `constrained-gen` | 制約付き生成 | **企画中** | 到達可能性検証 |

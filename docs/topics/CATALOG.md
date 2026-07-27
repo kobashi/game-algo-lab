@@ -1,6 +1,6 @@
 # トピックカタログ
 
-最終更新: 2026-07-23（`rng-seed` 実装 — 基礎実行モデル完了）  
+最終更新: 2026-07-23（`maze-gen` 実装 — プロシージャル入口）  
 
 - **実装の正**: この表 と `js/main.js` の `TOPICS`（ずれたら両方直す）  
 - **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable` + **修正回数** + **更新日**）  
@@ -81,6 +81,16 @@
 
 ---
 
+## カテゴリ: プロシージャル (`procgen`)
+
+| id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
+|----|----------|-------|--------|------|------|--------|------|----------|
+| `maze-gen` | 迷路生成 | ✅ | **一発** | 0 | 2026-07-23 | `algorithms/maze-gen.html` | [SPEC](./maze-gen/SPEC.md) | Recursive Backtracker / Prim 風。Mulberry32 シード。1ステップ可視化 |
+
+**学習ストーリー**: 乱数とシード → 迷路生成 →（予定）ダンジョン・ノイズ・制約付き生成  
+
+---
+
 ## カテゴリ: 物理・判定 (`physics`)
 
 | id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
@@ -97,11 +107,11 @@
 
 ---
 
-## 成熟度サマリ（2026-07-23・23 トピック ready）
+## 成熟度サマリ（2026-07-23・24 トピック ready）
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | 10 | fsm, tic-tac-toe, mcts, nim, othello-4x4, bidirectional-search, game-loop, time-management, input-basics, coordinates |
+| 一発 (`oneshot`) | 11 | fsm, tic-tac-toe, mcts, nim, othello-4x4, bidirectional-search, game-loop, time-management, input-basics, coordinates, maze-gen |
 | 調整 (`revised`) | 13 | bfs, dfs, dijkstra, best-first, astar, collision, and-or, minimax, alpha-beta, monte-carlo, multi-armed-bandit, chopsticks, rng-seed |
 | 安定 (`stable`) | 0 | — |
 
@@ -111,8 +121,8 @@ Fable5 起点のコード改訂 ↔ 成熟度の対応表: [MATURITY.md](./MATUR
 
 ## 企画中（本カタログ外）
 
-実装済み以外のカテゴリ（`ai-steering`, `spatial`, `hci`, `networking`, `audio`, `graphics`, `quality`, `procgen` 等）および  
-（`fundamentals` は 5 本すべて実装済）  
+実装済み以外のカテゴリ（`ai-steering`, `spatial`, `hci`, `networking`, `audio`, `graphics`, `quality` 等）および  
+（`fundamentals` 完了 / `procgen` は maze-gen 実装済）  
 
 物理段階・Boids・通信 等のトピックは **[ROADMAP.md §2.4](../ROADMAP.md)** に **企画中** として列挙する。  
 着手するまで ready 行を増やさない。

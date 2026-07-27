@@ -54,6 +54,12 @@ export const NAV_GROUPS = {
     { id: "rng-seed", label: "乱数", href: "rng-seed.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
   ],
+  procgen: [
+    { id: "home", label: "ホーム", href: "../index.html" },
+    { id: "maze-gen", label: "迷路生成", href: "maze-gen.html" },
+    { id: "rng-seed", label: "乱数", href: "rng-seed.html" },
+    { id: "topics", label: "一覧", href: "../index.html#topics" },
+  ],
   default: [
     { id: "home", label: "ホーム", href: "../index.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
@@ -144,7 +150,11 @@ export const FOOTER_RELATED = {
   ],
   "rng-seed": [
     { href: "coordinates.html", label: "座標変換（前段）" },
-    { href: "game-loop.html", label: "ゲームループ" },
+    { href: "maze-gen.html", label: "次: 迷路生成" },
+  ],
+  "maze-gen": [
+    { href: "rng-seed.html", label: "乱数とシード（前段）" },
+    { href: "bfs.html", label: "BFS（探索接続）" },
   ],
 };
 
@@ -154,6 +164,7 @@ export const FOOTER_NOTES = {
   "game-tree": "ゲーム木シリーズ",
   explain: "説明特化 UI · 経路探索マップは使いません",
   fundamentals: "基礎実行モデル · ループ・時間・入力・座標・乱数",
+  procgen: "プロシージャル · 生成と確率",
   default: "",
 };
 

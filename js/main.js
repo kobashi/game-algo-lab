@@ -157,6 +157,17 @@ const TOPICS = [
     maturity: "revised",
   },
   {
+    id: "maze-gen",
+    title: "迷路生成",
+    description:
+      "Recursive Backtracker と Prim 風。シード付きで生成過程を可視化。",
+    href: "algorithms/maze-gen.html",
+    badge: "プロシージャル",
+    category: "プロシージャル",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "and-or",
     title: "AND-OR 探索",
     description:

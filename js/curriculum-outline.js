@@ -163,9 +163,8 @@ export const CURRICULUM_OUTLINE = [
     id: "procgen",
     title: "プロシージャル・確率・バランス",
     phase: "第2〜4期",
-    blurb: "カテゴリごと企画中。",
+    blurb: "デモあり（迷路生成）。乱数は基礎実行にデモあり。",
     items: [
-      { id: "maze-gen", title: "迷路生成" },
       { id: "dungeon-gen", title: "ダンジョン生成" },
       { id: "noise-terrain", title: "ノイズと地形" },
       { id: "constrained-gen", title: "制約付き生成" },

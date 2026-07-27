@@ -4814,3 +4814,9 @@ main.container.container-wide.topic-main:has(.mcts-tree-panel) {
 .rng-period-eq code {
   font-size: 0.8rem;
 }
+
+.maze-canvas {
+  image-rendering: pixelated;
+  max-width: 100%;
+  height: auto;
+}

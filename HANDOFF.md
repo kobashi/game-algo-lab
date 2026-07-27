@@ -1,6 +1,6 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-07-23（v0.9.7 リリース）  
+最終更新: 2026-07-27（v0.9.8 リリース）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）
 
 新セッション開始時の指示例:
@@ -46,7 +46,9 @@
 
 **2026-07-23 `rng-seed` 改訂1**: アルゴリズム切替（Mulberry32 / XorShift32 / LCG）。LCG は a,c,m のプリセット（質の悪い例・許容・実用寄り）と手動調整、m≤65536 で周期計測。成熟度 oneshot→**revised**（修正1）。
 
-**次の実装ターゲット**: (1) 第3期物理の入口（`grid-pseudo-physics` 等）(2) 指摘9 疑似コード同期・戻る（platform）。
+**2026-07-23 `maze-gen` 実装（Grok4.5）**: プロシージャル入口。Recursive Backtracker / Prim 風、シード付き、1ステップ可視化。[SPEC](docs/topics/maze-gen/SPEC.md)。ready: true・`oneshot`。
+
+**次の実装ターゲット**: (1) `dungeon-gen` 等 procgen 続き (2) 第3期物理 (3) 指摘9 platform。
 
 ---
 
@@ -119,6 +121,7 @@
 | 21 | 入力の基礎 | `algorithms/input-basics.html` | `js/maps/input-basics-config.js` | `InputBasicsExample.cs` | held/down/up・長押し |
 | 22 | 座標変換 | `algorithms/coordinates.html` | `js/maps/coordinates-config.js` | `CoordinatesExample.cs` | ローカル/ワールド/スクリーン |
 | 23 | 乱数とシード | `algorithms/rng-seed.html` | `js/maps/rng-seed-config.js` | `RngSeedExample.cs` | Mulberry32/XorShift/LCG・周期体験 |
+| 24 | 迷路生成 | `algorithms/maze-gen.html` | `js/maps/maze-gen-config.js` | `MazeGenExample.cs` | Backtracker/Prim・シード付き |
 
 共通:
 
@@ -399,10 +402,10 @@
 - 既定ブランチ: `main`（ローカルは `origin/main` と同期済み想定）  
 - **GitHub Pages（試作運用中）**: https://kobashi.github.io/game-algo-lab/  
   - Source: `main` / `/ (root)`  
-- **Release 試作版**: https://github.com/kobashi/game-algo-lab/releases/tag/v0.9.7  
-  - タグ `v0.9.7`（prerelease）— `RELEASE_NOTES_v0.9.7.md`（乱数アルゴリズム切替）  
-  - 前版: `v0.9.6` / `v0.9.5`  
-- 再公開: `./scripts/publish-github.sh game-algo-lab v0.9.7`（または新タグ）  
+- **Release 試作版**: https://github.com/kobashi/game-algo-lab/releases/tag/v0.9.8  
+  - タグ `v0.9.8`（prerelease）— `RELEASE_NOTES_v0.9.8.md`（迷路生成）  
+  - 前版: `v0.9.7` / `v0.9.6`  
+- 再公開: `./scripts/publish-github.sh game-algo-lab v0.9.8`（または新タグ）  
 - 旧ローカルタグ `v1.0.0` は初期準備用。正式版は別途 `v1.0.0` を切り直す想定  
 
 ### リモートブランチ（不要マーク・削除しない）
