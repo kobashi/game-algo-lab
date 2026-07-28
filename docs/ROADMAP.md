@@ -99,7 +99,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 - **状態**: BFS / DFS / ダイクストラ / 最良優先 / A* / **双方向** が `ready: true`
 - 地図ペイント（コスト・壁・複数ゴール G）、DS 可視化、platform 寄せ済み
-- **残（優先）**: 疑似コード行同期は **BFS にパイロット導入**（`createPseudocode`、2026-07-28）。他経路探索への横展開・計測表示の統一は継続  
+- **残（優先）**: 疑似コード行同期は **BFS/DFS/Dijkstra/最良優先/A\*** に導入済み（`createPseudocode`）。双方向への横展開・計測表示の統一は継続  
 - **低優先（アイディアメモ）**: 経路アルゴリズム同時比較（`path-compare`）— 当面着手しない
 
 #### Phase B — 共通基盤 — **概ね完了（試作）**

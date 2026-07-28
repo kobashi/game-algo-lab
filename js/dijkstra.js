@@ -18,6 +18,7 @@ import {
   createStatus,
   createResultPanel,
   createPlayback,
+  createPseudocode,
   loadTextSample,
   bindMapPaint,
   mountTopicShellFromDataset,
@@ -30,6 +31,19 @@ import {
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
+
+const DIJKSTRA_PSEUDO = [
+  { id: "init", text: "open ← { start }; g(start)=0; closed ← ∅" },
+  { id: "loop", text: "while open が空でない:" },
+  { id: "pop", text: "  u ← open から g 最小を取り出し closed へ" },
+  { id: "goal", text: "  if u がゴール: 経路を復元して終了" },
+  { id: "relax", text: "  for 隣接 v: より良い g なら更新し open へ" },
+  { id: "fail", text: "経路なし（open が空）" },
+];
+const pseudo = createPseudocode(document.getElementById("pseudo-panel"), {
+  lines: DIJKSTRA_PSEUDO,
+  title: "Dijkstra（優先度 = g）",
+});
 
 const COLS = PF.COLS;
 const ROWS = PF.ROWS;
@@ -233,6 +247,7 @@ function resetSearch() {
   setNodeScores(start.x, start.y, 0);
   cameFrom.set(key(start.x, start.y), null);
   pushOpen(start.x, start.y);
+  pseudo.setActive("init");
 
   setStatus("準備完了 — 初期地図は js/maps/dijkstra-map.js を編集。再生で探索");
   hideCompare();
@@ -502,9 +517,11 @@ function reportResult(path) {
 function stepOnce() {
   if (finished) return false;
 
+  pseudo.setActive("loop");
   if (openSet.length === 0) {
     finished = true;
     found = false;
+    pseudo.setActive("fail");
     setStatus("経路が見つかりませんでした（オープン集合が空）");
     stopAuto();
     draw();
@@ -512,6 +529,7 @@ function stepOnce() {
     return false;
   }
 
+  pseudo.setActive("pop");
   const current = popBestOpen();
   if (!current) return false;
 
@@ -530,6 +548,7 @@ function stepOnce() {
     finished = true;
     found = true;
     foundGoal = { x: current.x, y: current.y };
+    pseudo.setActive("goal");
     const path = reconstructPath();
     reportResult(path);
     stopAuto();
@@ -538,6 +557,7 @@ function stepOnce() {
     return false;
   }
 
+  pseudo.setActive("relax");
   for (const n of neighbors(current.x, current.y)) {
     const nk = key(n.x, n.y);
     if (closedSet.has(nk)) continue;
@@ -600,6 +620,7 @@ function afterEdit() {
   cameFrom.set(key(start.x, start.y), null);
   pushOpen(start.x, start.y);
   hideCompare();
+  pseudo.setActive("init");
   setStatus("マップを更新しました — 再生で探索");
   draw();
   updateDsViz();

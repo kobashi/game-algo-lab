@@ -17,7 +17,7 @@ GitHub Pages での公開を前提に、ビルド不要の静的サイト（HTML
 
 主なデモ例:
 
-- [経路探索 — BFS](https://kobashi.github.io/game-algo-lab/algorithms/bfs.html)（疑似コード行同期あり）
+- [経路探索 — BFS](https://kobashi.github.io/game-algo-lab/algorithms/bfs.html)（疑似コード行同期: BFS/DFS/Dijkstra/最良優先/A*）
 - [三目並べ](https://kobashi.github.io/game-algo-lab/algorithms/tic-tac-toe.html)
 - [モンテカルロ木探索 (MCTS)](https://kobashi.github.io/game-algo-lab/algorithms/mcts.html)
 - [GPU パイプライン](https://kobashi.github.io/game-algo-lab/algorithms/gfx-gpu-concepts.html)

@@ -19,6 +19,7 @@ import {
   createStatus,
   createResultPanel,
   createPlayback,
+  createPseudocode,
   loadTextSample,
   bindMapPaint,
   mountTopicShellFromDataset,
@@ -30,6 +31,19 @@ import {
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
+
+const DFS_PSEUDO = [
+  { id: "init", text: "Search(start) を呼ぶ（スタックに積む）" },
+  { id: "enter", text: "Search(u): 入場 — visited に u を記録" },
+  { id: "goal", text: "  if u がゴール: 経路を復元して終了" },
+  { id: "recurse", text: "  for 各方向 v: 未訪問なら Search(v) を再帰" },
+  { id: "backtrack", text: "  全方向失敗 → return（バックトラック）" },
+  { id: "fail", text: "経路なし（スタックが空）" },
+];
+const pseudo = createPseudocode(document.getElementById("pseudo-panel"), {
+  lines: DFS_PSEUDO,
+  title: "DFS（再帰 / コールスタック）",
+});
 
 const COLS = PF.COLS;
 const ROWS = PF.ROWS;
@@ -155,6 +169,7 @@ function resetSearch() {
   });
   cameFrom.set(key(start.x, start.y), null);
   maxStackDepth = 1;
+  pseudo.setActive("init");
 
   setStatus("準備完了 — 再帰 DFS。右優先で袋小路に入り、バックトラックします");
   hideCompare();
@@ -346,6 +361,7 @@ function stepOnce() {
   if (callStack.length === 0) {
     finished = true;
     found = false;
+    pseudo.setActive("fail");
     setStatus("経路なし — スタックが空になりました");
     stopAuto();
     draw();
@@ -358,6 +374,7 @@ function stepOnce() {
 
   // --- 呼び出し入場 ---
   if (frame.phase === "enter") {
+    pseudo.setActive("enter");
     visited[frame.y][frame.x] = true;
     depthAt[frame.y][frame.x] = frame.depth;
     frame.phase = "explore";
@@ -366,6 +383,7 @@ function stepOnce() {
       finished = true;
       found = true;
       foundGoal = { x: frame.x, y: frame.y };
+      pseudo.setActive("goal");
       const path = reconstructPath();
       reportResult(path);
       stopAuto();
@@ -399,6 +417,7 @@ function stepOnce() {
       phase: "enter",
     });
     maxStackDepth = Math.max(maxStackDepth, callStack.length);
+    pseudo.setActive("recurse");
 
     setStatus(
       `再帰呼び出し → Search${cellLabel(nx, ny)}（${name}） stack=${callStack.length}`
@@ -414,6 +433,7 @@ function stepOnce() {
   if (!isStart(frame.x, frame.y) && !isGoal(frame.x, frame.y)) {
     marks[frame.y][frame.x] = Mark.DEAD;
   }
+  pseudo.setActive("backtrack");
 
   setStatus(
     `return Search${cellLabel(frame.x, frame.y)}（バックトラック） stack=${callStack.length}`
