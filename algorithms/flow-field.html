@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>フローフィールド — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="steering" data-active="flow-field"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / ゲーム AI / フローフィールド</p>
+      <h1>フローフィールド</h1>
+      <p class="page-header-lead">
+        ゴールから<strong>コスト場</strong>を塗り、勾配方向に多数エージェントが流れる。
+        前段: <a href="bfs.html">BFS</a> ·
+        <a href="steering-seek-flee.html">Seek/Flee</a> ·
+        <a href="boids.html">Boids</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>ゴール起点の BFS で積分距離（コスト）を塗る</li>
+          <li>各セルの流れ = コストが下がる近傍方向</li>
+          <li>個体 A* より「同じ目的地へ大勢」が安い用途</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="ff-canvas" class="gl-canvas" width="672" height="448" tabindex="0"></canvas>
+        <div id="ff-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="control-row">
+          <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+          <button type="button" id="btn-rebuild" class="btn btn-ghost">再スポーン</button>
+          <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+        </div>
+        <p class="footer-muted">クリック = ゴール移動 · Shift+クリック = 壁トグル。矢印=流れ、緑=エージェント。</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="AI · Flow Field"></footer>
+  <script type="module" src="../js/flow-field.js"></script>
+</body>
+</html>

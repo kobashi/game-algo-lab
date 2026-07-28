@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ナビメッシュ入門 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="pathfinding" data-active="navmesh-intro"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 経路探索 / ナビメッシュ入門</p>
+      <h1>ナビメッシュ入門（2D）</h1>
+      <p class="page-header-lead">
+        歩行可能領域を<strong>多角形メッシュ</strong>で表し、中心グラフ上で A*。
+        簡易 string pull で経路を滑らかに。前段:
+        <a href="astar.html">A*</a> ·
+        <a href="coordinates.html">座標</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>歩行可能 = ポリゴンの和集合（グリッドではない）</li>
+          <li>隣接ポリゴン中心を結んだグラフで経路探索</li>
+          <li>直線ショートカット（string pull）で回廊経路が短くなる</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="nm-canvas" class="gl-canvas" width="440" height="360" tabindex="0"></canvas>
+        <div id="nm-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="control-row">
+          <button type="button" id="btn-path" class="btn btn-primary">経路再計算</button>
+          <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+        </div>
+        <label class="ttt-check">
+          <input type="checkbox" id="string-pull" checked /> 簡易 string pull
+        </label>
+        <p class="footer-muted">S/G をドラッグ（またはメッシュ内クリックで S）。青=回廊、赤=ショートカット。</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Pathfinding · NavMesh"></footer>
+  <script type="module" src="../js/navmesh-intro.js"></script>
+</body>
+</html>

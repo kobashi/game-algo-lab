@@ -1,6 +1,6 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-07-28（ready **99** · Sprint S1 + 範囲メモ）  
+最終更新: 2026-07-28（ready **102** · Sprint S2）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.11.1
@@ -123,7 +123,12 @@ ready **95**。**Audio / Networking / Graphics（主要）一通り完了。**
 **2026-07-28 Sprint S1（ready 99）**:  
 `cellular-automata` · `spatial-hash` · `sprite-anim-fsm` · `dirty-flag`。
 
-**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: Sprint S2（navmesh / flow-field / utility）または oneshot 改訂。
+**2026-07-28 Sprint S2（ready 102）**:  
+1. `navmesh-intro` — 2D ポリゴンメッシュ · 中心グラフ A* · 簡易 string pull  
+2. `flow-field` — ゴール BFS コスト場 · 勾配フロー · 多数エージェント  
+3. `utility-ai` — 空腹/脅威/エネルギー → 行動スコア arg max  
+
+**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: Sprint S3（influence-map / jps 等）または oneshot 改訂。
 
 ---
 

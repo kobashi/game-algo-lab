@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>効用 AI — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="steering" data-active="utility-ai"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / ゲーム AI / 効用 AI</p>
+      <h1>効用 AI（Utility）</h1>
+      <p class="page-header-lead">
+        行動ごとに<strong>スコア関数</strong>を計算し最大を選ぶ。
+        前段: <a href="fsm.html">FSM</a> ·
+        <a href="behavior-tree.html">ビヘイビアツリー</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>空腹・脅威・エネルギー → 各行動の連続スコア</li>
+          <li>最大スコアの行動を採用（arg max）</li>
+          <li>FSM/BT は離散遷移、Utility は曲線パラメータ調整</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <div id="util-bars" class="pf-list"></div>
+        <div id="util-choice" class="result-compare"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <label class="controls-label" for="hunger">空腹 <span id="hunger-val">0.55</span></label>
+        <input type="range" id="hunger" class="ttt-range" min="0" max="1" value="0.55" step="0.01" />
+        <label class="controls-label" for="threat">脅威 <span id="threat-val">0.25</span></label>
+        <input type="range" id="threat" class="ttt-range" min="0" max="1" value="0.25" step="0.01" />
+        <label class="controls-label" for="energy">エネルギー <span id="energy-val">0.6</span></label>
+        <input type="range" id="energy" class="ttt-range" min="0" max="1" value="0.6" step="0.01" />
+        <p class="footer-muted">緑バー = 現在の最大効用。脅威を上げると逃走が勝つ。</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="AI · Utility"></footer>
+  <script type="module" src="../js/utility-ai.js"></script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # トピックカタログ
 
-最終更新: 2026-07-28（ready **99** · Sprint S1）  
+最終更新: 2026-07-28（ready **102** · Sprint S2）  
 
 - **実装の正**: この表 と `js/main.js` の `TOPICS`（ずれたら両方直す）  
 - **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable` + **修正回数** + **更新日**）  
@@ -29,8 +29,9 @@
 | `best-first` | 最良優先探索 | ✅ | **調整** | 3 | 2026-07-19 | `algorithms/best-first.html` | 実装先行 | h 表示・複数G・platform 寄せ／S側に口を開けた凹型ポケットを追加（greedy が突っ込み g=27 vs 最適22を検証） |
 | `astar` | A* 探索 | ✅ | **調整** | 3 | 2026-07-17 | `algorithms/astar.html` | 実装先行 | f/g/h・負コスト・複数G・初期地図調整 |
 | `bidirectional-search` | 双方向探索 | ✅ | **一発** | 0 | 2026-07-22 | `algorithms/bidirectional-search.html` | [SPEC](./bidirectional-search/SPEC.md) | 双方向 BFS。前=S / 後=全G（multi-source）。出会点で接合。展開数を一方向 BFS と比較。拡張方策: 小さい側優先 / 交互 |
+| `navmesh-intro` | ナビメッシュ入門（2D） | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/navmesh-intro.html` | [SPEC](./navmesh-intro/SPEC.md) | ポリゴン中心 A* · 簡易 string pull |
 
-**学習ストーリー**: 歩数（BFS）→ 深さ（DFS）→ コスト g → 見積り h → 統合 f=g+h → **双方向（両端から）**  
+**学習ストーリー**: 歩数（BFS）→ 深さ（DFS）→ コスト g → 見積り h → 統合 f=g+h → **双方向（両端から）** → **ナビメッシュ**  
 
 **成熟度メモ**: いずれも一発実装後に機能・教材表示の改訂あり → `revised`。授業で据え置くなら `stable` へ昇格。
 
@@ -173,8 +174,10 @@
 | `steering-leader` | Leader Following | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/steering-leader.html` | [SPEC](./steering-leader/SPEC.md) | 後方スロットへ Arrive |
 | `behavior-tree` | ビヘイビアツリー | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/behavior-tree.html` | [SPEC](./behavior-tree/SPEC.md) | Selector/Sequence · Chase/Patrol |
 | `obstacle-avoidance-nav` | 障害物回避（ナビ連携） | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/obstacle-avoidance-nav.html` | [SPEC](./obstacle-avoidance-nav/SPEC.md) | BFS 経路 + 局所回避 |
+| `flow-field` | フローフィールド | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/flow-field.html` | [SPEC](./flow-field/SPEC.md) | コスト場 + 勾配追従 · 多数エージェント |
+| `utility-ai` | 効用 AI（Utility） | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/utility-ai.html` | [SPEC](./utility-ai/SPEC.md) | スコア曲線 · arg max |
 
-**学習ストーリー**: Seek → Wander → Boids → Leader → BT → ナビ連携回避  
+**学習ストーリー**: Seek → Wander → Boids → Leader → BT → ナビ連携回避 → **Flow** → **Utility**  
 
 ---
 
@@ -249,11 +252,11 @@
 
 ---
 
-## 成熟度サマリ（2026-07-28·99 トピック ready）
+## 成熟度サマリ（2026-07-28·102 トピック ready）
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | ≈84 | 詳細は TOPIC_META（ready 99 本） |
+| 一発 (`oneshot`) | ≈87 | 詳細は TOPIC_META（ready 102 本） |
 | 調整 (`revised`) | ≈15 | bfs〜rng-seed · coordinates 等 |
 | 安定 (`stable`) | 0 | — |
 

@@ -170,7 +170,8 @@
 **v0.11.0**: ready 67→95 の大型拡張を Release。  
 **v0.11.1**: docs 実装状況表記の同期 · 経路探索 6 本の疑似コード行同期。  
 **Sprint S1 実装済（ready 99）**: cellular-automata · spatial-hash · sprite-anim-fsm · dirty-flag。  
-次: Sprint S2 · oneshot 改訂 · 計測パネル統一 ·「戻る」。  
+**Sprint S2 実装済（ready 102）**: navmesh-intro · flow-field · utility-ai。  
+次: Sprint S3 · oneshot 改訂 · 計測パネル統一 ·「戻る」。  
 **候補**: [topics/CANDIDATE_TOPICS.md](./topics/CANDIDATE_TOPICS.md)。**範囲外**: ROADMAP §4.2。
 
 ---

@@ -13,7 +13,7 @@ GitHub Pages での公開を前提に、ビルド不要の静的サイト（HTML
 | リポジトリ | https://github.com/kobashi/game-algo-lab |
 | 最新試作 Release | https://github.com/kobashi/game-algo-lab/releases/tag/v0.11.1 |
 
-**ready 99 トピック**。経路探索・ゲーム木・物理・空間・AI・設計・品質・HCI・プロシージャル・**サウンド**・**ゲーム CG**・**通信**まで一通り揃い、Sprint S1（CA・空間Hash・AnimFSM・DirtyFlag）まで追加済みです。
+**ready 102 トピック**。経路探索・ゲーム木・物理・空間・AI・設計・品質・HCI・プロシージャル・**サウンド**・**ゲーム CG**・**通信**まで一通り揃い、Sprint S2（NavMesh・FlowField・UtilityAI）まで追加済みです。
 
 主なデモ例:
 

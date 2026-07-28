@@ -25,6 +25,7 @@ export const NAV_GROUPS = {
     { id: "best-first", label: "最良優先", href: "best-first.html" },
     { id: "astar", label: "A*", href: "astar.html" },
     { id: "bidirectional-search", label: "双方向", href: "bidirectional-search.html" },
+    { id: "navmesh-intro", label: "NavMesh", href: "navmesh-intro.html" },
   ],
   "game-tree": [
     { id: "home", label: "ホーム", href: "../index.html" },
@@ -125,6 +126,8 @@ export const NAV_GROUPS = {
     { id: "steering-leader", label: "Leader", href: "steering-leader.html" },
     { id: "behavior-tree", label: "BT", href: "behavior-tree.html" },
     { id: "obstacle-avoidance-nav", label: "ナビ回避", href: "obstacle-avoidance-nav.html" },
+    { id: "flow-field", label: "Flow", href: "flow-field.html" },
+    { id: "utility-ai", label: "Utility", href: "utility-ai.html" },
     { id: "fsm", label: "FSM", href: "fsm.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
   ],
@@ -372,6 +375,18 @@ export const FOOTER_RELATED = {
   "dirty-flag": [
     { href: "coordinates.html", label: "座標（前段）" },
     { href: "fsm.html", label: "FSM" },
+  ],
+  "navmesh-intro": [
+    { href: "astar.html", label: "A*（前段）" },
+    { href: "obstacle-avoidance-nav.html", label: "ナビ回避" },
+  ],
+  "flow-field": [
+    { href: "bfs.html", label: "BFS（前段）" },
+    { href: "boids.html", label: "Boids" },
+  ],
+  "utility-ai": [
+    { href: "fsm.html", label: "FSM（前段）" },
+    { href: "behavior-tree.html", label: "BT" },
   ],
   "net-p2p-demo": [
     { href: "time-management.html", label: "時間管理（関連）" },

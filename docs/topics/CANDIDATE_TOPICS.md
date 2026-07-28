@@ -52,11 +52,11 @@
 
 | id 案 | タイトル | カテゴリ | 難度 | 依存・前段 | 学習ゴール（要約） | 適合 | 根拠・メモ |
 |-------|----------|----------|------|------------|-------------------|------|------------|
-| `navmesh-intro` | ナビメッシュ入門（2D） | 経路探索 / AI | **M** | A* · coordinates | 歩行可能多角形 → グラフ化 → 経路 → **string pulling（funnel）** | 高 | グリッド A* の「次の現実」。GameDev 定番。2D 多角形で十分。 |
-| `flow-field` | フローフィールド | AI · 経路 | **M** | BFS · steering | ゴールからコスト場を塗り、多数エージェントが勾配に従う | 高 | 群集・RTS。可視化が映える。Boids と並べて比較できる。 |
+| `navmesh-intro` | ナビメッシュ入門（2D） | 経路探索 / AI | **M** | A* · coordinates | 歩行可能多角形 → グラフ化 → 経路 → **string pulling（funnel）** | 高 | **実装済**（2026-07-28 · Sprint S2） |
+| `flow-field` | フローフィールド | AI · 経路 | **M** | BFS · steering | ゴールからコスト場を塗り、多数エージェントが勾配に従う | 高 | **実装済**（2026-07-28 · Sprint S2） |
 | `jps` | Jump Point Search | 経路探索 | **M〜H** | A* | 一様コスト格子で対称性を刈り込み展開数を減らす | 高 | A* の高速化ストーリー。計測パネルと相性良。 |
 | `spatial-hash` | 空間ハッシュ | 空間 | **E〜M** | uniform-grid · brute-force | ハッシュで近傍候補を絞る | 高 | グリッドと役割が近いが「ハッシュ衝突・セルサイズ」を教えられる。 |
-| `utility-ai` | 効用 AI（Utility） | AI | **M** | FSM · BT | 行動ごとにスコア曲線を計算し最大を選ぶ | 高 | FSM/BT の次。パラメータ調整の教材向き。 |
+| `utility-ai` | 効用 AI（Utility） | AI | **M** | FSM · BT | 行動ごとにスコア曲線を計算し最大を選ぶ | 高 | **実装済**（2026-07-28 · Sprint S2） |
 | `verlet-integration` | Verlet 積分 · 距離拘束 | 物理 | **M** | velocity · momentum | 位置ベース積分と棒・布の簡易拘束 | 高 | 連続物理の別系統。ロープ/布の入口。 |
 | `wfc-intro` | Wave Function Collapse 入門 | procgen | **M〜H** | constrained-gen · weighted-random | タイル制約で局所一貫したマップ生成 | 高 | 近年の定番。可視化が分かりやすい。工数は中〜高。 |
 | `cellular-automata` | セルオートマトン（洞窟生成） | procgen | **E〜M** | maze-gen · noise | 近傍ルールで壁/床が進化 | 高 | 実装が軽く、迷路・ノイズと並ぶ生成三本目。 |
@@ -132,11 +132,11 @@
 3. `sprite-anim-fsm` ✅  
 4. `dirty-flag` ✅
 
-### Sprint S2 — 経路・AI の「次の現実」（3 本）
+### Sprint S2 — 経路・AI の「次の現実」（3 本）— **実装済 2026-07-28**
 
-1. `navmesh-intro`（M）  
-2. `flow-field`（M）  
-3. `utility-ai`（M）
+1. `navmesh-intro`（M） ✅  
+2. `flow-field`（M） ✅  
+3. `utility-ai`（M） ✅
 
 ### Sprint S3 — 生成・物理の深掘り（3 本）
 
@@ -186,5 +186,5 @@ NavMesh は「グラフ探索 + string pulling + ステアリング」の三段�
 | 実装完了 | 本表から削除 or 「実装済 → CATALOG」と 1 行残す |
 | 調査の再見直し | 年 1 回または Wave 完了時。日付を表紙に更新 |
 
-**次の人間/エージェント向け**: 実装指示が「候補から進めて」のときは、§4 の Sprint S1 から選ぶと安全。  
+**次の人間/エージェント向け**: 実装指示が「候補から進めて」のときは、§4 の Sprint S3 から選ぶと安全（S1/S2 実装済）。  
 低優先の `path-compare` / `game-tree-engine` は本表の推奨スプリントに入れない。

@@ -111,6 +111,17 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "navmesh-intro",
+    title: "ナビメッシュ入門（2D）",
+    description:
+      "歩行可能多角形のグラフ上 A* と簡易 string pull。グリッド経路の次の現実。",
+    href: "algorithms/navmesh-intro.html",
+    badge: "経路探索",
+    category: "経路探索",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "game-loop",
     title: "ゲームループ",
     description:
@@ -622,6 +633,28 @@ const TOPICS = [
     description:
       "リーダー後方スロットへ Arrive。列になって追従する。",
     href: "algorithms/steering-leader.html",
+    badge: "ステアリング",
+    category: "ゲーム AI・ステアリング",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "flow-field",
+    title: "フローフィールド",
+    description:
+      "ゴールからコスト場を塗り、勾配に多数エージェントが流れる。",
+    href: "algorithms/flow-field.html",
+    badge: "ステアリング",
+    category: "ゲーム AI・ステアリング",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "utility-ai",
+    title: "効用 AI（Utility）",
+    description:
+      "空腹・脅威・エネルギーから行動スコアを計算し最大を選ぶ。",
+    href: "algorithms/utility-ai.html",
     badge: "ステアリング",
     category: "ゲーム AI・ステアリング",
     ready: true,
