@@ -146,9 +146,9 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `spatial` | 空間探索・最適化 | **実装済**（一部企画中） | 第3〜4期 | 総当たり〜BVH ready |
 | `hci` | 入力・操作感・HCI | **実装済**（一部企画中） | 第3期 | coyote-time / input-buffer ready |
 
-| `networking` | 通信・データ | **実装済**（一部企画中） | 第5期 | net-p2p-demo ready。サーバ権威・予測等は企画中 |
-| `audio` | ゲームサウンド | **実装済**（一部企画中） | 第5期 | SFX〜空間・バス・BGM ループ ready。量子化等は企画中 |
-| `graphics` | ゲーム CG | **実装済**（一部企画中） | 第4期 | GPU 概念 · 2D スプライト ready。カメラ等は企画中 |
+| `networking` | 通信・データ | **実装済**（一部企画中） | 第5期 | p2p · prediction ready。サーバ権威・DB 等は企画中 |
+| `audio` | ゲームサウンド | **実装済**（一部企画中） | 第5期 | SFX〜材質・量子化 ready。クロスフェード等は企画中 |
+| `graphics` | ゲーム CG | **実装済**（一部企画中） | 第4期 | GPU · スプライト · カメラ ready。ライティング等は企画中 |
 | `quality` | 設計・品質 | **実装済**（一部企画中） | 横断 | save/replay/debug ready。計測・テストは企画中 |
 | `procgen` | プロシージャル・確率・バランス | **実装済**（一部企画中） | 第2〜4期 | maze〜noise · balance-sim ready |
 
@@ -294,7 +294,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `net-p2p-demo` | P2P 通信の観察 | **実装済** | [SPEC](./topics/net-p2p-demo/SPEC.md) |
 | `net-client-server` | クライアント・サーバ | **企画中** | サーバ権威 |
 | `net-sync-modes` | 状態同期 vs 入力同期 | **企画中** | |
-| `net-prediction` | 補間・予測・補正 | **企画中** | |
+| `net-prediction` | 補間・予測・補正 | **実装済** | [SPEC](./topics/net-prediction/SPEC.md) |
 | `net-anti-cheat` | サーバ権威とチート対策 | **企画中** | 速度・スコア検証の疑似 |
 | `net-db-transaction` | DB とトランザクション | **企画中** | 購入の COMMIT/ROLLBACK 概念 |
 
@@ -307,12 +307,12 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `sfx-events` | イベントと効果音 | **実装済** | [SPEC](./topics/sfx-events/SPEC.md) |
 | `sfx-voice-limit` | 同時発音・重複制御 | **実装済** | [SPEC](./topics/sfx-voice-limit/SPEC.md) |
 | `sfx-randomize` | ランダム化 | **実装済** | [SPEC](./topics/sfx-randomize/SPEC.md) |
-| `sfx-material` | 材質別・衝突強度と音 | **企画中** | |
+| `sfx-material` | 材質別・衝突強度と音 | **実装済** | [SPEC](./topics/sfx-material/SPEC.md) |
 | `sfx-spatial` | 距離・パン・優先順位 | **実装済** | [SPEC](./topics/sfx-spatial/SPEC.md) |
 | `audio-bus-ducking` | サウンドバスとダッキング | **実装済** | [SPEC](./topics/audio-bus-ducking/SPEC.md) |
 | `bgm-loop` | BGM ループ / イントロ＋ループ | **実装済** | [SPEC](./topics/bgm-loop/SPEC.md) |
 | `bgm-transition-compare` | 切替方式の比較 | **企画中** | 即時切替・クロスフェード・拍同期・専用トランジション（正本 §11.2） |
-| `bgm-quantize` | 量子化 | **企画中** | イベントを次拍・次小節へ丸める（正本 §11.2） |
+| `bgm-quantize` | 量子化 | **実装済** | [SPEC](./topics/bgm-quantize/SPEC.md) |
 | `bgm-interactive` | 拍同期・レイヤー型 BGM | **企画中** | ボス登場デモ（正本共通環境） |
 
 ---
@@ -322,7 +322,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
 | `gfx-coordinates` | 座標系と変換 | **企画中** | Unity / Web のどちらでやるか SPEC で決定 |
-| `gfx-camera` | カメラと投影 | **企画中** | |
+| `gfx-camera` | カメラと投影 | **実装済** | [SPEC](./topics/gfx-camera/SPEC.md) |
 | `gfx-sprite-2d` | 2D スプライト | **実装済** | [SPEC](./topics/gfx-sprite-2d/SPEC.md) |
 | `gfx-mesh-uv` | メッシュ・UV・マテリアル | **企画中** | |
 | `gfx-lighting-alpha` | ライティング・透明度 | **企画中** | |

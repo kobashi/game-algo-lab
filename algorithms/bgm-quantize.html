@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="イベントを次拍・次小節へ量子化する。" />
+  <title>量子化（拍・小節） — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="bgm-quantize"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / サウンド / 量子化</p>
+      <h1>量子化（拍・小節）</h1>
+      <p class="page-header-lead">
+        ゲームイベントを<strong>即時</strong> / <strong>次拍</strong> / <strong>次小節</strong>に丸めて発火。
+        前段: <a href="bgm-loop.html">BGM ループ</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>BPM から 1 拍の秒数 = 60/BPM</li>
+          <li>次拍 = ceil(t / beat) × beat</li>
+          <li>ボス登場 SE を小節頭に揃えると音楽的に聞こえる</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="q-canvas" class="gl-canvas" width="720" height="200"></canvas>
+        <div id="q-stats" class="coord-readout"></div>
+        <div id="q-log" class="es-log-panel" role="log"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="control-row">
+          <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+        </div>
+        <label class="controls-label" for="bpm">BPM <span id="bpm-val">120</span></label>
+        <input type="range" id="bpm" class="ttt-range" min="60" max="200" value="120" step="1" />
+        <div class="control-row" style="flex-wrap:wrap;gap:0.35rem">
+          <button type="button" id="btn-now" class="btn btn-ghost">即時</button>
+          <button type="button" id="btn-beat" class="btn btn-ghost">次拍</button>
+          <button type="button" id="btn-bar" class="btn btn-ghost">次小節</button>
+        </div>
+        <label class="ttt-check"><input type="checkbox" id="mute" /> ミュート</label>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Audio · 量子化"></footer>
+  <script type="module" src="../js/bgm-quantize.js"></script>
+</body>
+</html>

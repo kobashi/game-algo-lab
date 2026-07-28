@@ -815,6 +815,28 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "sfx-material",
+    title: "材質別・衝突強度と音",
+    description:
+      "材質ペアと強度から周波数・音量を決め、衝突 SE を再生。",
+    href: "algorithms/sfx-material.html",
+    badge: "サウンド",
+    category: "サウンド",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "bgm-quantize",
+    title: "量子化（拍・小節）",
+    description:
+      "イベントを即時 / 次拍 / 次小節に丸めて音楽グリッドへ揃える。",
+    href: "algorithms/bgm-quantize.html",
+    badge: "サウンド",
+    category: "サウンド",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "balance-sim",
     title: "ゲームバランス分析",
     description:
@@ -848,11 +870,33 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "gfx-camera",
+    title: "カメラと投影（2D フォロー）",
+    description:
+      "ワールド→スクリーン変換、デッドゾーン付きプレイヤー追従。",
+    href: "algorithms/gfx-camera.html",
+    badge: "ゲーム CG",
+    category: "ゲーム CG",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "net-p2p-demo",
     title: "P2P 通信の観察",
     description:
       "疑似ネットの遅延・欠落・順序乱れ。Local と Remote 位置のズレ。",
     href: "algorithms/net-p2p-demo.html",
+    badge: "通信・データ",
+    category: "通信・データ",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "net-prediction",
+    title: "補間・予測・補正",
+    description:
+      "クライアント予測で即応し、権威到着で再シミュ補正。",
+    href: "algorithms/net-prediction.html",
     badge: "通信・データ",
     category: "通信・データ",
     ready: true,

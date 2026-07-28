@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="材質と衝突強度で SE を選ぶ。" />
+  <title>材質別・衝突強度と音 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="sfx-material"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / サウンド / 材質と強度</p>
+      <h1>材質別・衝突強度と音</h1>
+      <p class="page-header-lead">
+        物理イベントの<strong>材質ペア</strong>と<strong>強度</strong>から SE パラメータを決める。
+        前段: <a href="sfx-events.html">イベントと効果音</a> ·
+        <a href="sfx-randomize.html">ランダム化</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>木×金属と石×石では聞こえる帯域が違う</li>
+          <li>強度が大きいほど音量・ピッチが上がるモデル</li>
+          <li>Collision → Material tags → Sound table の流れ</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <div id="mat-preview" class="coord-readout"></div>
+        <div id="mat-log" class="es-log-panel" role="log"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <label class="controls-label" for="mat-a">材質 A</label>
+        <select id="mat-a" class="bandit-select"></select>
+        <label class="controls-label" for="mat-b">材質 B</label>
+        <select id="mat-b" class="bandit-select"></select>
+        <label class="controls-label" for="force">強度 <span id="force-val">0.50</span></label>
+        <input type="range" id="force" class="ttt-range" min="0.05" max="1" value="0.5" step="0.05" />
+        <div class="control-row">
+          <button type="button" id="btn-hit" class="btn btn-primary">衝突</button>
+        </div>
+        <label class="ttt-check"><input type="checkbox" id="mute" /> ミュート</label>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Audio · 材質 SE"></footer>
+  <script type="module" src="../js/sfx-material.js"></script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # トピックカタログ
 
-最終更新: 2026-07-28（ready 79）  
+最終更新: 2026-07-28（ready 83）  
 
 - **実装の正**: この表 と `js/main.js` の `TOPICS`（ずれたら両方直す）  
 - **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable` + **修正回数** + **更新日**）  
@@ -210,6 +210,8 @@
 | `sfx-spatial` | 距離・パン・空間 SE | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-spatial.html` | [SPEC](./sfx-spatial/SPEC.md) | 距離減衰 + ステレオパン |
 | `audio-bus-ducking` | サウンドバスとダッキング | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/audio-bus-ducking.html` | [SPEC](./audio-bus-ducking/SPEC.md) | Master/BGM/SE · ダック |
 | `bgm-loop` | BGM ループ / イントロ＋ループ | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/bgm-loop.html` | [SPEC](./bgm-loop/SPEC.md) | 再生ヘッド · loopStart |
+| `sfx-material` | 材質別・衝突強度と音 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-material.html` | [SPEC](./sfx-material/SPEC.md) | 材質ペア · 強度スケール |
+| `bgm-quantize` | 量子化（拍・小節） | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/bgm-quantize.html` | [SPEC](./bgm-quantize/SPEC.md) | 即時/次拍/次小節 |
 
 ---
 
@@ -219,6 +221,7 @@
 |----|----------|-------|--------|------|------|--------|------|----------|
 | `gfx-gpu-concepts` | GPU パイプライン概説 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-gpu-concepts.html` | [SPEC](./gfx-gpu-concepts/SPEC.md) | 概念デモ · 実 GPU API なし |
 | `gfx-sprite-2d` | 2D スプライト | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-sprite-2d.html` | [SPEC](./gfx-sprite-2d/SPEC.md) | シートフレーム · Y ソート |
+| `gfx-camera` | カメラと投影（2D フォロー） | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-camera.html` | [SPEC](./gfx-camera/SPEC.md) | デッドゾーン · world→screen |
 
 ---
 
@@ -227,14 +230,15 @@
 | id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
 |----|----------|-------|--------|------|------|--------|------|----------|
 | `net-p2p-demo` | P2P 通信の観察 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/net-p2p-demo.html` | [SPEC](./net-p2p-demo/SPEC.md) | 疑似遅延・欠落・順序 |
+| `net-prediction` | 補間・予測・補正 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/net-prediction.html` | [SPEC](./net-prediction/SPEC.md) | クライアント予測 · 権威補正 |
 
 ---
 
-## 成熟度サマリ（2026-07-28·79 トピック ready）
+## 成熟度サマリ（2026-07-28·83 トピック ready）
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | 66 | 詳細は TOPIC_META |
+| 一発 (`oneshot`) | 70 | 詳細は TOPIC_META |
 | 調整 (`revised`) | 13 | bfs〜rng-seed 等 |
 | 安定 (`stable`) | 0 | — |
 

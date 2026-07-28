@@ -1,6 +1,6 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-07-28（ready **79** · spatial / bus / BGM / sprite）  
+最終更新: 2026-07-28（ready **83** · material / quantize / camera / prediction）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.10.0
@@ -78,7 +78,14 @@ ready **75**。いずれも `oneshot`。
 4. `gfx-sprite-2d` — シートフレーム · Y ソート  
 ready **79**。いずれも `oneshot`。
 
-**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: bgm-quantize / gfx-camera / net-prediction / sfx-material。
+**2026-07-28 続き 4 本**:  
+1. `sfx-material` — 材質ペア × 強度 → SE  
+2. `bgm-quantize` — 即時 / 次拍 / 次小節  
+3. `gfx-camera` — 2D フォロー · デッドゾーン  
+4. `net-prediction` — クライアント予測 · 権威補正  
+ready **83**。いずれも `oneshot`。
+
+**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: bgm-transition-compare / gfx-animation-vfx / net-client-server。
 
 ---
 
@@ -208,6 +215,10 @@ ready **79**。いずれも `oneshot`。
 | 77 | バス/ダック | `algorithms/audio-bus-ducking.html` | `js/maps/audio-bus-ducking-config.js` | `AudioBusDuckingExample.cs` | Mixer |
 | 78 | BGM ループ | `algorithms/bgm-loop.html` | `js/maps/bgm-loop-config.js` | `BgmLoopExample.cs` | intro+loop |
 | 79 | 2D スプライト | `algorithms/gfx-sprite-2d.html` | `js/maps/gfx-sprite-2d-config.js` | `GfxSprite2dExample.cs` | シート+Yソート |
+| 80 | 材質 SE | `algorithms/sfx-material.html` | `js/maps/sfx-material-config.js` | `SfxMaterialExample.cs` | 材質×強度 |
+| 81 | 量子化 | `algorithms/bgm-quantize.html` | `js/maps/bgm-quantize-config.js` | `BgmQuantizeExample.cs` | 拍/小節 |
+| 82 | カメラ | `algorithms/gfx-camera.html` | `js/maps/gfx-camera-config.js` | `GfxCameraExample.cs` | 2D フォロー |
+| 83 | 予測・補正 | `algorithms/net-prediction.html` | `js/maps/net-prediction-config.js` | `NetPredictionExample.cs` | クライアント予測 |
 
 共通:
 

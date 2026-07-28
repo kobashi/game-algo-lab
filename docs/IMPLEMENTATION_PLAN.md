@@ -142,11 +142,11 @@
 
 | 群 | id 例 | 難度 | 備考 |
 |----|--------|------|------|
-| Audio 入門 | `sfx-events`〜`sfx-spatial`, bus, `bgm-loop` | **M** | ✅ 実装済 2026-07-28 |
-| Audio 高度 | `bgm-quantize`, `bgm-interactive`, `bgm-transition-compare` | **H** | 拍同期は実装コスト大 |
-| Graphics | `gfx-sprite-2d` ✅, `gfx-camera`, … | **M〜H** | `gfx-coordinates` は coordinates と統合検討 |
+| Audio 入門 | SFX〜材質・バス・BGM ループ・量子化 | **M** | ✅ 実装済 2026-07-28 |
+| Audio 高度 | `bgm-interactive`, `bgm-transition-compare` | **H** | クロスフェード·レイヤー残 |
+| Graphics | sprite · camera ✅, lighting/VFX … | **M〜H** | `gfx-coordinates` は coordinates と統合検討 |
 | GPU | `gfx-gpu-concepts` | **E〜M** | ✅ **実装済** 2026-07-28（図解中心） |
-| Networking | `net-p2p-demo` + `net-*` | **H** | ✅ p2p 入口実装済。他は疑似遅延·権威シム |
+| Networking | p2p · prediction ✅ + 他 `net-*` | **H** | サーバ権威·DB は企画中 |
 
 **通信·本格 BGM·Unity 本線は「静的サイトでどこまで見せるか」を各 SPEC の未決事項で固定してから着手。**
 
@@ -167,8 +167,8 @@
 | 7 | **`constrained-gen`** | 中 | maze-gen + bfs 到達性 | ✅ |
 | 8 | **`accel-gravity`** | 小〜中 | velocity の次 | ✅ |
 
-**ready 79**: sfx-spatial · audio-bus-ducking · bgm-loop · gfx-sprite-2d まで。  
-次: bgm-quantize / gfx-camera / net-prediction / sfx-material。
+**ready 83**: sfx-material · bgm-quantize · gfx-camera · net-prediction まで。  
+次: bgm-transition-compare / gfx-animation-vfx / net-client-server。
 
 ---
 

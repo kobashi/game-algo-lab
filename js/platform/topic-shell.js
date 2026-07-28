@@ -61,11 +61,15 @@ export const NAV_GROUPS = {
     { id: "sfx-voice-limit", label: "ボイス", href: "sfx-voice-limit.html" },
     { id: "sfx-randomize", label: "ランダムSE", href: "sfx-randomize.html" },
     { id: "sfx-spatial", label: "空間SE", href: "sfx-spatial.html" },
+    { id: "sfx-material", label: "材質SE", href: "sfx-material.html" },
     { id: "audio-bus-ducking", label: "バス", href: "audio-bus-ducking.html" },
     { id: "bgm-loop", label: "BGM", href: "bgm-loop.html" },
+    { id: "bgm-quantize", label: "量子化", href: "bgm-quantize.html" },
     { id: "gfx-gpu-concepts", label: "GPU", href: "gfx-gpu-concepts.html" },
     { id: "gfx-sprite-2d", label: "スプライト", href: "gfx-sprite-2d.html" },
+    { id: "gfx-camera", label: "カメラ", href: "gfx-camera.html" },
     { id: "net-p2p-demo", label: "P2P", href: "net-p2p-demo.html" },
+    { id: "net-prediction", label: "予測", href: "net-prediction.html" },
     { id: "balance-sim", label: "バランス", href: "balance-sim.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
   ],
@@ -279,7 +283,15 @@ export const FOOTER_RELATED = {
   ],
   "bgm-loop": [
     { href: "audio-bus-ducking.html", label: "バス（前段）" },
-    { href: "sfx-events.html", label: "SFX イベント" },
+    { href: "bgm-quantize.html", label: "次: 量子化" },
+  ],
+  "bgm-quantize": [
+    { href: "bgm-loop.html", label: "BGM ループ（前段）" },
+    { href: "time-management.html", label: "時間管理" },
+  ],
+  "sfx-material": [
+    { href: "sfx-events.html", label: "SFX イベント（前段）" },
+    { href: "sfx-randomize.html", label: "ランダム化" },
   ],
   "balance-sim": [
     { href: "weighted-random.html", label: "重み付き抽選" },
@@ -291,10 +303,18 @@ export const FOOTER_RELATED = {
   ],
   "gfx-sprite-2d": [
     { href: "gfx-gpu-concepts.html", label: "GPU 概念（前段）" },
+    { href: "gfx-camera.html", label: "次: カメラ" },
+  ],
+  "gfx-camera": [
+    { href: "gfx-sprite-2d.html", label: "スプライト（前段）" },
     { href: "coordinates.html", label: "座標" },
   ],
   "net-p2p-demo": [
     { href: "time-management.html", label: "時間管理（関連）" },
+    { href: "net-prediction.html", label: "次: 予測・補正" },
+  ],
+  "net-prediction": [
+    { href: "net-p2p-demo.html", label: "P2P（前段）" },
   ],
   "accessibility-basics": [
     { href: "input-abstraction.html", label: "入力抽象（前段）" },

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="クライアント予測と権威補正の可視化。" />
+  <title>補間・予測・補正 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="net-prediction"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 通信 / 予測・補正</p>
+      <h1>補間・予測・補正</h1>
+      <p class="page-header-lead">
+        入力を<strong>即時にローカル適用</strong>（予測）し、遅延後の権威位置で
+        <strong>再シミュ補正</strong>。前段: <a href="net-p2p-demo.html">P2P 観察</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>予測 OFF = 権威到着まで表示が動かない（重い操作感）</li>
+          <li>予測 ON = すぐ動き、権威で位置を合わせ直す</li>
+          <li>スムーズ補正はスナップの見た目を和らげる</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="pred-canvas" class="gl-canvas" width="640" height="300" tabindex="0"></canvas>
+        <div id="pred-stats" class="coord-readout"></div>
+        <div id="pred-log" class="es-log-panel" role="log"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="control-row">
+          <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+          <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+        </div>
+        <p class="footer-muted">← → / A D で移動</p>
+        <label class="controls-label" for="latency">遅延 ms <span id="lat-val">120</span></label>
+        <input type="range" id="latency" class="ttt-range" min="0" max="400" value="120" step="10" />
+        <label class="ttt-check"><input type="checkbox" id="use-pred" checked /> クライアント予測</label>
+        <label class="ttt-check"><input type="checkbox" id="use-smooth" checked /> スムーズ補正</label>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Networking · 予測"></footer>
+  <script type="module" src="../js/net-prediction.js"></script>
+</body>
+</html>
