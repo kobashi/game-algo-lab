@@ -5202,3 +5202,63 @@ main.container.container-wide.topic-main:has(.mcts-tree-panel) {
   background: rgba(107, 203, 143, 0.15);
   color: #e8eef7;
 }
+
+/* 疑似コード同期パネル */
+.pseudo-panel {
+  margin: 1rem 0 1.25rem;
+  padding: 0.75rem 1rem 0.5rem;
+  border-radius: 10px;
+  border: 1px solid #3d4f66;
+  background: rgba(18, 24, 32, 0.9);
+  max-height: 280px;
+  overflow: auto;
+}
+.pseudo-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e8eef7;
+}
+.pseudo-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pseudo-line {
+  display: flex;
+  gap: 0.55rem;
+  align-items: baseline;
+  padding: 0.28rem 0.45rem;
+  border-radius: 6px;
+  border-left: 3px solid transparent;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: #9aabbf;
+}
+.pseudo-line.is-active {
+  background: rgba(107, 203, 143, 0.14);
+  border-left-color: #6bcb8f;
+  color: #e8eef7;
+}
+.pseudo-num {
+  flex: 0 0 1.4rem;
+  font-family: ui-monospace, monospace;
+  font-size: 0.75rem;
+  color: #5a6a80;
+  text-align: right;
+}
+.pseudo-line.is-active .pseudo-num {
+  color: #6bcb8f;
+  font-weight: 700;
+}
+.pseudo-text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+  background: none;
+  color: inherit;
+}
+.pseudo-caption {
+  margin: 0.45rem 0 0.15rem;
+  font-size: 0.75rem;
+}

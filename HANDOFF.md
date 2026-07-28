@@ -110,7 +110,9 @@ ready **95**。**Audio / Networking / Graphics（主要）一通り完了。**
 - `gfx-coordinates` → **`coordinates` に統合**（重複デモは作らず CG 導線を追加）。coordinates を oneshot→**revised**。  
 - **Release `v0.11.0`**（ready 67→95、Wave F 本線）。ノート: `RELEASE_NOTES_v0.11.0.md`。
 
-**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: oneshot 改訂 · 授業向け stable 選定。
+**2026-07-28 基盤**: `createPseudocode`（`js/platform/pseudocode.js`）を追加し **BFS に疑似コード行同期**をパイロット実装。README を v0.11.0 / ready 95 に更新。
+
+**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: 疑似コードを他経路探索へ横展開 · oneshot 改訂 · stable 選定。
 
 ---
 

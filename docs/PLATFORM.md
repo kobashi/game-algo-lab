@@ -1,6 +1,6 @@
 # 共通基盤仕様（教材プラットフォーム）
 
-最終更新: 2026-07-20
+最終更新: 2026-07-28
 
 全トピックで揃える **見た目・操作・ファイル配置・用語** と、  
 **共有コード（`js/platform`）** の境界。  
@@ -61,6 +61,7 @@ docs/templates/            # SPEC / スキャフォールド
 |--------|------|
 | `createStatus` | `#status` への1行ログ |
 | `createResultPanel` | 結果 HTML の show/hide |
+| `createPseudocode` | 疑似コード行のハイライト同期（`#pseudo-panel` 等） |
 | `loadTextSample` | C# 等のテキスト fetch |
 | `createPlayback` | 再生 / 一時停止 / 速度付き onTick |
 | `runChunked` | ジェネレータを時間分割で駆動（重い解析で UI を固めない。`chunked-run.js`、4×4オセロで新設） |

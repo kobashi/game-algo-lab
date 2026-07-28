@@ -18,6 +18,7 @@ import {
   createStatus,
   createResultPanel,
   createPlayback,
+  createPseudocode,
   loadTextSample,
   bindMapPaint,
   mountTopicShellFromDataset,
@@ -30,6 +31,21 @@ import {
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
+
+const BFS_PSEUDO = [
+  { id: "init", text: "queue ← { start }; visited ← { start }" },
+  { id: "loop", text: "while queue が空でない:" },
+  { id: "dequeue", text: "  u ← queue から取り出す（FIFO）" },
+  { id: "goal", text: "  if u がゴール: 経路を復元して終了" },
+  { id: "expand", text: "  for 各隣接 v of u:" },
+  { id: "enqueue", text: "    if v 未訪問: visited に入れ queue へ" },
+  { id: "fail", text: "経路なし（キューが空）" },
+  { id: "done", text: "完了" },
+];
+const pseudo = createPseudocode(document.getElementById("pseudo-panel"), {
+  lines: BFS_PSEUDO,
+  title: "BFS（歩数最少）",
+});
 
 const COLS = PF.COLS;
 const ROWS = PF.ROWS;
@@ -130,6 +146,7 @@ function resetSearch() {
   pathCost[start.y][start.x] = 0;
   queue = [{ ...start }];
   cameFrom = new Map([[key(start.x, start.y), null]]);
+  pseudo.setActive("init");
   setStatus("準備完了 — 初期地図は js/maps/bfs-map.js を編集。再生で探索");
   hideCompare();
   draw();
@@ -434,9 +451,11 @@ function reportResult(path) {
 function stepOnce() {
   if (finished) return false;
 
+  pseudo.setActive("loop");
   if (queue.length === 0) {
     finished = true;
     found = false;
+    pseudo.setActive("fail");
     setStatus("経路が見つかりませんでした（行き止まり）");
     stopAuto();
     draw();
@@ -444,6 +463,7 @@ function stepOnce() {
     return false;
   }
 
+  pseudo.setActive("dequeue");
   const current = queue.shift();
   const curHop = hopDist[current.y][current.x];
   const curPath = pathCost[current.y][current.x] ?? 0;
@@ -456,14 +476,19 @@ function stepOnce() {
     finished = true;
     found = true;
     foundGoal = { x: current.x, y: current.y };
+    pseudo.setActive("goal");
     const path = reconstructPath();
     reportResult(path);
+    // reportResult 後も goal 行を維持
+    pseudo.setActive("goal");
     stopAuto();
     draw();
     updateDsViz();
     return false;
   }
 
+  pseudo.setActive("expand");
+  let enqueued = 0;
   for (const n of neighbors(current.x, current.y)) {
     const k = key(n.x, n.y);
     if (cameFrom.has(k)) continue;
@@ -474,10 +499,12 @@ function stepOnce() {
     // ※キュー順・訪問判定には使わない（ここが弱点の可視化）
     pathCost[n.y][n.x] = curPath + costs[n.y][n.x];
     queue.push(n);
+    enqueued += 1;
     if (!isGoal(n.x, n.y)) {
       marks[n.y][n.x] = Mark.FRONTIER;
     }
   }
+  if (enqueued > 0) pseudo.setActive("enqueue");
 
   setStatus(
     `探索中… (${current.x},${current.y}) 経路コスト=${curPath}（参考） / 歩数=${curHop} / キュー ${queue.length}`
@@ -520,6 +547,7 @@ function afterEdit() {
   queue = [{ ...start }];
   cameFrom = new Map([[key(start.x, start.y), null]]);
   hideCompare();
+  pseudo.setActive("init");
   setStatus("マップを更新しました — 再生で探索");
   draw();
   updateDsViz();

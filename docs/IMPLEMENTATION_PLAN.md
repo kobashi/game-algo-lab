@@ -167,7 +167,8 @@
 | 8 | **`accel-gravity`** | 小〜中 | velocity の次 | ✅ |
 
 **ready 95**: Wave F 主要 id 完了。gfx-coordinates は coordinates に統合。  
-**v0.11.0**: ready 67→95 の大型拡張を Release。次: oneshot 改訂・授業向け stable 選定。
+**v0.11.0**: ready 67→95 の大型拡張を Release。  
+**基盤**: `createPseudocode` を BFS にパイロット。次: DFS/Dijkstra/A* へ横展開 · oneshot 改訂 · stable 選定。
 
 ---
 

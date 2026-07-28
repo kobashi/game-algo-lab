@@ -6,6 +6,7 @@
 |----------|------|
 | `text.js` | `escapeHtml` / `escapeXml` |
 | `dom.js` | ステータス、結果パネル、C# テキスト読込 |
+| `pseudocode.js` | 疑似コード行ハイライト（`createPseudocode`）— 実行ステップと同期 |
 | `playback.js` | 再生・一時停止・速度スケジュール |
 | `chunked-run.js` | ジェネレータを時間分割で駆動する `runChunked`（重い解析で UI を固めない） |
 | `rng.js` | シード付き PRNG（再現実験） |

@@ -15,6 +15,7 @@ export {
   loadTextSample,
   bindElements,
 } from "./dom.js";
+export { createPseudocode } from "./pseudocode.js";
 export { createPlayback } from "./playback.js";
 export { runChunked } from "./chunked-run.js";
 export { mulberry32, randomIndex } from "./rng.js";

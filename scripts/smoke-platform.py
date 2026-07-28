@@ -60,6 +60,7 @@ def check_exports() -> None:
     needed = [
         "createStatus",
         "createPlayback",
+        "createPseudocode",
         "mulberry32",
         "layoutTree",
         "bindMapPaint",
