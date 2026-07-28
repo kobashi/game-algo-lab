@@ -1,7 +1,9 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-07-28（ready 67 · 物理締め/HCI/SFX）  
-パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）
+最終更新: 2026-07-28（**v0.10.0** 公開 · ready 67）  
+パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
+Pages: https://kobashi.github.io/game-algo-lab/  
+Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.10.0
 
 新セッション開始時の指示例:
 
