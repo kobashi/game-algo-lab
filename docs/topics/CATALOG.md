@@ -268,6 +268,8 @@ Fable5 起点のコード改訂 ↔ 成熟度の対応表: [MATURITY.md](./MATUR
 
 詳細: [ROADMAP.md §5](../ROADMAP.md)。E2E / i18n も同節のバックログ。
 
+**新規に盛り込めそうな候補**（調査メモ・未 SPEC）: [CANDIDATE_TOPICS.md](./CANDIDATE_TOPICS.md)
+
 ---
 
 ## 追加・更新手順

@@ -21,6 +21,7 @@ Game Algo Lab の **方針・仕様・分業** はここに集約する。
 | [PLATFORM.md](./PLATFORM.md) | 全トピック共通の教材仕様（現行静的サイト） |
 | [WORKFLOW.md](./WORKFLOW.md) | Git 運用と実装フロー |
 | [topics/CATALOG.md](./topics/CATALOG.md) | カテゴリ別トピック一覧・**成熟度** |
+| [topics/CANDIDATE_TOPICS.md](./topics/CANDIDATE_TOPICS.md) | **追加候補トピック調査**（優先度 A〜C · スプリント案） |
 | [topics/MATURITY.md](./topics/MATURITY.md) | 一発 / 調整 / 安定 の定義と昇格条件 |
 | [templates/SPEC.md](./templates/SPEC.md) | トピック仕様テンプレ |
 | [templates/CHECKLIST.md](./templates/CHECKLIST.md) | 実装完了チェックリスト |

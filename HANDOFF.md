@@ -118,7 +118,9 @@ ready **95**。**Audio / Networking / Graphics（主要）一通り完了。**
 
 **2026-07-28 docs 同期 · v0.11.1**: ROADMAP/CATALOG/index の古い「企画中」表記を修正。本線カテゴリは実装済に揃えた。
 
-**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: oneshot 改訂 · stable 選定 · 計測パネル統一。
+**2026-07-28 候補調査**: [docs/topics/CANDIDATE_TOPICS.md](docs/topics/CANDIDATE_TOPICS.md) — 追加可能トピックを優先度 A〜C で記録（navmesh / flow-field / utility-ai / WFC / Verlet 等）。
+
+**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: oneshot 改訂 · 候補 Sprint S1 · 計測パネル統一。
 
 ---
 
