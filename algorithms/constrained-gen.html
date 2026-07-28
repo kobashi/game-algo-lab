@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>制約付き生成 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="procgen" data-active="constrained-gen"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / プロシージャル / 制約付き生成</p>
+      <h1>制約付き生成</h1>
+      <p class="page-header-lead">
+        ランダムに壁を置いたあと <strong>BFS で S→G 到達性</strong>を検査し、不可なら棄却して再生成。
+        前段: <a href="maze-gen.html">迷路生成</a> · <a href="bfs.html">BFS</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>生成 → 検証 → 棄却のループ</li>
+          <li>緑の塗り = BFS で到達できたマス</li>
+          <li>壁確率が高いと試行回数が増える</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="cg-canvas" class="gl-canvas" width="420" height="308"></canvas>
+        <div id="cg-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+        <div id="result-compare" class="result-compare" hidden></div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="seed">シード</label>
+          <input type="number" id="seed" class="mc-num" value="42" min="1" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="wall-prob">壁確率 <span id="wall-prob-val">0.32</span></label>
+          <input type="range" id="wall-prob" class="ttt-range" min="0.05" max="0.55" value="0.32" step="0.01" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-gen" class="btn btn-primary">制約まで再生成</button>
+          </div>
+          <div class="control-row" style="margin-top:0.4rem">
+            <button type="button" id="btn-once" class="btn btn-ghost">1回だけ生成</button>
+            <button type="button" id="btn-reset" class="btn btn-ghost">クリア</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="プロシージャル · 制約付き生成"></footer>
+  <script type="module" src="../js/constrained-gen.js"></script>
+</body>
+</html>

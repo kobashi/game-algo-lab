@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seek / Flee / Arrive — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="steering" data-active="steering-seek-flee"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / ゲーム AI · ステアリング / Seek·Flee·Arrive</p>
+      <h1>Seek / Flee / Arrive</h1>
+      <p class="page-header-lead">
+        希望速度へ向かう<strong>舵力</strong>。Seek=追従、Flee=逃走、Arrive=減速接近。
+        前段: <a href="velocity-motion.html">速度</a> · <a href="accel-decel.html">加減速</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>desired = normalize(target−pos)·maxSpeed</li>
+          <li>steer = clamp(desired − v, maxForce)</li>
+          <li>Arrive は距離に応じて希望速度を落とす</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="st-canvas" class="gl-canvas" width="640" height="360"></canvas>
+        <div id="st-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+            <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+          </div>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="mode">モード</label>
+          <select id="mode" class="bandit-select">
+            <option value="seek">Seek</option>
+            <option value="flee">Flee</option>
+            <option value="arrive">Arrive</option>
+          </select>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="max-speed">maxSpeed <span id="max-speed-val">160</span></label>
+          <input type="range" id="max-speed" class="ttt-range" min="40" max="300" value="160" step="10" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="max-force">maxForce <span id="max-force-val">280</span></label>
+          <input type="range" id="max-force" class="ttt-range" min="40" max="500" value="280" step="10" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="arrive-r">Arrive 半径 <span id="arrive-r-val">90</span></label>
+          <input type="range" id="arrive-r" class="ttt-range" min="20" max="200" value="90" step="5" />
+        </div>
+        <p class="footer-muted">キャンバスクリックでターゲット移動</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="ステアリング · Seek/Flee/Arrive"></footer>
+  <script type="module" src="../js/steering-seek-flee.js"></script>
+</body>
+</html>

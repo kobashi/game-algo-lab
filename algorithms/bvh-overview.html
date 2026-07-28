@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BVH 概説 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="spatial" data-active="bvh-overview"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 空間探索 / BVH</p>
+      <h1>BVH 概説</h1>
+      <p class="page-header-lead">
+        物体 AABB を階層にまとめた <strong>Bounding Volume Hierarchy</strong>。
+        前段: <a href="quadtree.html">四分木</a> · <a href="broad-narrow-phase.html">Broad/Narrow</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>葉 = 各オブジェクト、親 = 子 AABB の合併</li>
+          <li>クエリと交差しない枝は訪問しない（剪定）</li>
+          <li>空間固定分割（四分木）ではなく物体側の階層</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="bvh-canvas" class="gl-canvas" width="640" height="360"></canvas>
+        <div id="bvh-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-rebuild" class="btn btn-primary">再構築</button>
+            <button type="button" id="btn-clear-q" class="btn btn-ghost">クエリ解除</button>
+          </div>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="count-n">物体数 <span id="n-val">12</span></label>
+          <input type="range" id="count-n" class="ttt-range" min="4" max="24" value="12" step="1" />
+        </div>
+        <p class="footer-muted">ドラッグでクエリ AABB（緑）</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="空間分割 · BVH"></footer>
+  <script type="module" src="../js/bvh-overview.js"></script>
+</body>
+</html>

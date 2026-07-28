@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ECS 入門 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="ecs-intro"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 設計パターン / ECS 入門</p>
+      <h1>ECS 入門</h1>
+      <p class="page-header-lead">
+        <strong>Entity</strong>（ID）· <strong>Component</strong>（データ）· <strong>System</strong>（処理）。
+        前段: <a href="component-vs-inheritance.html">継承 vs コンポーネント</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>表の行 = Entity、列 = コンポーネントの有無</li>
+          <li>MoveSystem は Transform+Velocity を持つ行だけ処理</li>
+          <li>継承ツリーではなく「データの組み合わせ」で能力が決まる</li>
+        </ul>
+      </div>
+    </details>
+    <div class="ecs-layout">
+      <section>
+        <h2 class="gl-block-title">アーキタイプ例</h2>
+        <div id="ecs-arch" class="ecs-arch-grid"></div>
+        <div class="controls-group-paint gl-params" style="margin-top:0.75rem">
+          <label class="controls-label" for="arch-select">生成</label>
+          <select id="arch-select" class="bandit-select"></select>
+          <div class="control-row" style="margin-top:0.5rem">
+            <button type="button" id="btn-spawn" class="btn btn-primary">Spawn</button>
+            <button type="button" id="btn-tick" class="btn btn-ghost">Systems Tick</button>
+            <button type="button" id="btn-clear" class="btn btn-ghost">クリア</button>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h2 class="gl-block-title">Entity 表</h2>
+        <div id="ecs-table" class="ecs-table-wrap"></div>
+        <h2 class="gl-block-title">System ログ</h2>
+        <div id="ecs-log" class="es-log-panel" role="log"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="設計パターン · ECS"></footer>
+  <script type="module" src="../js/ecs-intro.js"></script>
+</body>
+</html>

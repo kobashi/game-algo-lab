@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>グリッド擬似物理 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="physics" data-active="grid-pseudo-physics"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 物理・判定 / グリッド擬似物理</p>
+      <h1>グリッド擬似物理</h1>
+      <p class="page-header-lead">
+        連続速度の前段階。<strong>下マスが空なら1マス落下</strong>するだけの擬似重力。
+        次: <a href="velocity-motion.html">速度による移動</a> · <a href="accel-gravity.html">加速度と重力</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>砂（黄）は下に固体/砂がなければ毎ティック1マス落ちる</li>
+          <li>連続の v·dt は使わない — 離散マスの規則だけ</li>
+          <li>上から落ちる連鎖は「下から走査」で1ティックに正しく進む</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="gpp-canvas" class="gl-canvas" width="432" height="360"></canvas>
+        <div id="gpp-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+            <button type="button" id="btn-step" class="btn btn-ghost">1ステップ</button>
+            <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+          </div>
+        </div>
+        <p class="footer-muted">灰 = 固定固体 · 黄 = 落下する砂</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="物理 · グリッド擬似"></footer>
+  <script type="module" src="../js/grid-pseudo-physics.js"></script>
+</body>
+</html>

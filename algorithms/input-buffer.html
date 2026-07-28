@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>入力バッファ — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="fundamentals" data-active="input-buffer"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 入力・操作感 / 入力バッファ</p>
+      <h1>入力バッファ</h1>
+      <p class="page-header-lead">
+        着地<strong>前</strong>に押したジャンプを短い窓だけ記憶し、着地直後に実行する。
+        関連: <a href="coyote-time.html">コヨーテタイム</a>（離地後の猶予）·
+        <a href="input-basics.html">入力の基礎</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>空中で Space → バッファタイマー開始</li>
+          <li>着地した瞬間に残っていればジャンプ実行</li>
+          <li>コヨーテ（離地後）とは逆方向の「先読み」</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="ibuf-canvas" class="gl-canvas" width="640" height="300" tabindex="0"></canvas>
+        <div id="ibuf-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+            <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+          </div>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="ttt-check"><input type="checkbox" id="buffer-on" checked /> バッファ ON</label>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="buffer-ms">窓 <span id="buffer-ms-val">150</span> ms</label>
+          <input type="range" id="buffer-ms" class="ttt-range" min="0" max="400" value="150" step="10" />
+        </div>
+        <p class="footer-muted"><kbd>←</kbd><kbd>→</kbd> 移動 · <kbd>Space</kbd> ジャンプ</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="HCI · 入力バッファ"></footer>
+  <script type="module" src="../js/input-buffer.js"></script>
+</body>
+</html>

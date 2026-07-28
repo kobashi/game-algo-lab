@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>リプレイと決定性 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="replay-determinism"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 設計・品質 / リプレイ</p>
+      <h1>リプレイと決定性</h1>
+      <p class="page-header-lead">
+        <strong>同じシード + 同じ入力列</strong>なら同じ軌跡。記録→再生。
+        関連: <a href="rng-seed.html">乱数とシード</a> · <a href="save-load.html">セーブ</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>入力をフレーム単位で配列に記録</li>
+          <li>再生時は記録入力だけを食わせる（キーボード無視）</li>
+          <li>ジャンプ高さに乱数を混ぜ、シード固定の効果を見る</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="rp-canvas" class="gl-canvas" width="640" height="300" tabindex="0"></canvas>
+        <p>状態: <strong id="rp-mode">待機</strong> · <span id="rp-log" class="footer-muted"></span></p>
+        <div id="rp-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-rec" class="btn btn-primary">記録開始</button>
+            <button type="button" id="btn-stop" class="btn btn-ghost">停止</button>
+          </div>
+          <div class="control-row" style="margin-top:0.4rem">
+            <button type="button" id="btn-play" class="btn btn-ghost">再生</button>
+            <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+          </div>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="seed">シード</label>
+          <input type="number" id="seed" class="mc-num" value="42" min="1" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="ttt-check"><input type="checkbox" id="fixed-seed" checked /> シード固定（決定的）</label>
+        </div>
+        <p class="footer-muted"><kbd>←</kbd><kbd>→</kbd> 移動 · <kbd>Space</kbd> ジャンプ</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="品質 · リプレイ"></footer>
+  <script type="module" src="../js/replay-determinism.js"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>質量と運動量（1D） — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="physics" data-active="momentum-1d"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 物理・判定 / 質量と運動量（1D）</p>
+      <h1>質量と運動量（1 次元）</h1>
+      <p class="page-header-lead">
+        衝突前後の <strong>Σp = m·v</strong> と運動エネルギーを比較。
+        弾性 / 完全非弾性を切替。前段: <a href="friction-bounce.html">摩擦・反発</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>弾性: 1D 公式で両速度が入れ替わる（等質量）など</li>
+          <li>完全非弾性: 一体速度 u = (m1v1+m2v2)/(m1+m2)、KE は減る</li>
+          <li>質量比を変えると跳ね返り方が変わる</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="m1-canvas" class="gl-canvas" width="640" height="280"></canvas>
+        <div id="m1-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+            <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+          </div>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="mode">衝突タイプ</label>
+          <select id="mode" class="bandit-select">
+            <option value="elastic">弾性</option>
+            <option value="inelastic">完全非弾性</option>
+          </select>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="m-a">mA <span id="m-a-val">2.0</span></label>
+          <input type="range" id="m-a" class="ttt-range" min="0.5" max="6" value="2" step="0.5" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="m-b">mB <span id="m-b-val">3.0</span></label>
+          <input type="range" id="m-b" class="ttt-range" min="0.5" max="6" value="3" step="0.5" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="v-a">vA <span id="v-a-val">140</span></label>
+          <input type="range" id="v-a" class="ttt-range" min="-200" max="200" value="140" step="10" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="v-b">vB <span id="v-b-val">-60</span></label>
+          <input type="range" id="v-b" class="ttt-range" min="-200" max="200" value="-60" step="10" />
+        </div>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="物理 · 運動量"></footer>
+  <script type="module" src="../js/momentum-1d.js"></script>
+</body>
+</html>

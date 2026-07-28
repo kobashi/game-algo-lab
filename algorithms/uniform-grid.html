@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>一様グリッド — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="spatial" data-active="uniform-grid"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 空間探索 / 一様グリッド</p>
+      <h1>一様グリッド</h1>
+      <p class="page-header-lead">
+        空間をセルに分け、<strong>近傍セル内だけ</strong>距離判定。
+        前段: <a href="brute-force-pairs.html">総当たり</a>。次: <a href="broad-narrow-phase.html">Broad/Narrow</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>各円を floor(x/cell) のセルへ登録</li>
+          <li>3×3 近傍のペアだけ検査</li>
+          <li>セルが細かすぎ/粗すぎると効率が変わる</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="ug-canvas" class="gl-canvas" width="640" height="360"></canvas>
+        <div id="ug-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+            <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+          </div>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="count-n">個数 n <span id="n-val">40</span></label>
+          <input type="range" id="count-n" class="ttt-range" min="8" max="100" value="40" step="1" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="cell-size">セル辺 <span id="cell-val">48</span> px</label>
+          <input type="range" id="cell-size" class="ttt-range" min="24" max="120" value="48" step="4" />
+        </div>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="空間分割 · 一様グリッド"></footer>
+  <script type="module" src="../js/uniform-grid.js"></script>
+</body>
+</html>

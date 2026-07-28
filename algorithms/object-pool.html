@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>オブジェクトプール — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="object-pool"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 設計パターン / オブジェクトプール</p>
+      <h1>オブジェクトプール</h1>
+      <p class="page-header-lead">
+        弾やエフェクトを<strong>毎回 new せず再利用</strong>する。
+        生成 (created) と再利用 (reused) のカウンタを比較する。
+        関連: <a href="event-system.html">イベントシステム</a> · <a href="fsm.html">FSM</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>Acquire / Release でオブジェクトを貸し借りする</li>
+          <li>プール OFF では created が増え続け、ON では reused が増える</li>
+          <li>画面外へ出た弾を返却して次の spawn に回す</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="op-canvas" class="gl-canvas" width="640" height="280"></canvas>
+        <div id="op-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+            <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+          </div>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="ttt-check"><input type="checkbox" id="use-pool" checked /> プールを使う</label>
+        </div>
+        <p class="footer-muted">
+          プール ON のまま再生 → リセット → 同じ操作を OFF で繰り返すと、created / reused の差が分かりやすい。
+        </p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="設計パターン · オブジェクトプール"></footer>
+  <script type="module" src="../js/object-pool.js"></script>
+</body>
+</html>

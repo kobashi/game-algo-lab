@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>衝突応答 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="physics" data-active="collision-response"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 物理・判定 / 衝突応答</p>
+      <h1>衝突応答</h1>
+      <p class="page-header-lead">
+        重なりを<strong>法線方向に分離</strong>し、<strong>反発インパルス</strong>で速度を更新。
+        判定のみ: <a href="circle-collision.html">円衝突</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>位置補正: めり込みを質量逆比で押し戻す</li>
+          <li>j = −(1+e)·velN / (1/m1+1/m2)</li>
+          <li>離れていく相対速度（velN&gt;0）ではインパルスしない</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="cr-canvas" class="gl-canvas" width="640" height="360"></canvas>
+        <div id="cr-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+            <button type="button" id="btn-nudge" class="btn btn-ghost">加速</button>
+            <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+          </div>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="restitution">反発 e <span id="e-val">0.85</span></label>
+          <input type="range" id="restitution" class="ttt-range" min="0" max="1" value="0.85" step="0.05" />
+        </div>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="物理 · 衝突応答"></footer>
+  <script type="module" src="../js/collision-response.js"></script>
+</body>
+</html>

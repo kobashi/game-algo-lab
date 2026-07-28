@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>継承 vs コンポーネント — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="component-vs-inheritance"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 設計パターン / 継承 vs コンポーネント</p>
+      <h1>継承 vs コンポーネント</h1>
+      <p class="page-header-lead">
+        能力を<strong>クラス階層</strong>で固定するか、<strong>コンポーネント</strong>で合成するか。
+        関連: <a href="fsm.html">FSM</a> · <a href="object-pool.html">オブジェクトプール</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>継承: FlyingEnemy は Enemy の固定サブクラス</li>
+          <li>コンポーネント: Health / Move / Shoot / Fly を自由に付け外し</li>
+          <li>組み合わせ爆発を避けるのがコンポーネント志向の動機の一つ</li>
+        </ul>
+      </div>
+    </details>
+    <div class="cvi-layout">
+      <section class="cvi-col">
+        <h2 class="gl-block-title">継承モデル</h2>
+        <div id="inh-tree" class="cvi-tree"></div>
+        <label class="controls-label" for="inh-class">クラス</label>
+        <select id="inh-class" class="bandit-select"></select>
+        <div id="inh-card" class="cvi-card"></div>
+      </section>
+      <section class="cvi-col">
+        <h2 class="gl-block-title">コンポーネントモデル</h2>
+        <div id="comp-checks" class="cvi-checks"></div>
+        <div id="comp-card" class="cvi-card"></div>
+      </section>
+    </div>
+    <p id="cvi-note" class="status-log" role="status"></p>
+    <div id="status" class="status-log" hidden></div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="設計パターン · 継承 vs コンポーネント"></footer>
+  <script type="module" src="../js/component-vs-inheritance.js"></script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Broad / Narrow Phase — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="spatial" data-active="broad-narrow-phase"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 空間探索 / Broad·Narrow</p>
+      <h1>Broad / Narrow Phase</h1>
+      <p class="page-header-lead">
+        <strong>Broad</strong>=粗い候補、<strong>Narrow</strong>=精密判定。
+        前段: <a href="uniform-grid.html">一様グリッド</a> · <a href="circle-collision.html">円衝突</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>黄線: Broad（グリッド近傍の候補ペア）</li>
+          <li>赤線: Narrow（実際に重なったペア）</li>
+          <li>候補の多くは Narrow で落ちる — だから二段に分ける</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="bn-canvas" class="gl-canvas" width="640" height="360"></canvas>
+        <div id="bn-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+            <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+          </div>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="count-n">個数 n <span id="n-val">36</span></label>
+          <input type="range" id="count-n" class="ttt-range" min="8" max="80" value="36" step="1" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="ttt-check"><input type="checkbox" id="show-broad" checked /> Broad 候補を表示</label>
+        </div>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="空間分割 · Broad/Narrow"></footer>
+  <script type="module" src="../js/broad-narrow-phase.js"></script>
+</body>
+</html>

@@ -7,7 +7,7 @@
 | **正本改訂** | **2026-07-19** — Fable5 レビュー全件承認を反映（§2 実在ルール優先原則、§4 procgen 行、§6.1 三目並べ、§6.4 割り箸 新設、§15 第2期追記）。レビュー記録: [reviews/2026-07-19-docx-minigames-review.md](./reviews/2026-07-19-docx-minigames-review.md)、変更履歴版: [interactive_game_programming_material_plan_fable5_review.docx](./interactive_game_programming_material_plan_fable5_review.docx) |
 | **リポジトリ登録** | 2026-07-17（`docs/` に配置し Git 管理開始） |
 | **本 Markdown** | 正本の要約・**実装状況の対応表**・Game Algo Lab 運用メモ（エージェント／GitHub 向け） |
-| **最終更新（md）** | 2026-07-23（`maze-gen` 実装 — プロシージャル入口） |
+| **最終更新（md）** | 2026-07-27（難易度順の実装計画 [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) を追加） |
 
 正本の変更や方針の大きな見直しは **Docx を更新したうえで本ファイルを同期**する。  
 細部の図表・講義向け長文は正本を開き、日々の実装判断は本ファイルと [topics/CATALOG.md](./topics/CATALOG.md) を優先する。
@@ -139,17 +139,18 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 |-------------------|--------|------|----------|------|
 | `pathfinding` | 経路探索 | **実装済** | 第1期 | 6 本実装済（双方向含む）。同時比較はアイディアメモ（低優先） |
 | `game-tree` | ゲーム木 | **実装済** | 第2期 | 10 本実装済（MCTS + 実在ゲーム4本を含む） |
-| `physics` | 物理・判定 | **実装済**（一部企画中） | 第3期 | AABB のみ実装済 |
-| `patterns` | 設計パターン | **実装済**（一部企画中） | 第2〜3期 | FSM のみ実装済 |
+| `physics` | 物理・判定 | **実装済**（一部企画中） | 第3期 | 擬似〜回転・OBB/Swept。回転衝突・複合は企画中 |
+| `patterns` | 設計パターン | **実装済**（一部企画中） | 第2〜3期 | FSM〜ECS 実装済 |
 | `fundamentals` | 基礎実行モデル | **実装済** | 第1〜3期 | 5 本すべて ready（game-loop〜rng-seed） |
-| `ai-steering` | ゲーム AI・自律移動 | **企画中** | 第4期 | ステアリング・Boids・BT（FSM は `patterns` に実装済） |
-| `spatial` | 空間探索・最適化 | **企画中** | 第3〜4期 | Broad/Narrow、グリッド、四分木、SaP |
-| `hci` | 入力・操作感・HCI | **企画中** | 第3期 | 入力バッファ、コヨーテタイム等 |
+| `ai-steering` | ゲーム AI・自律移動 | **実装済**（一部企画中） | 第4期 | Seek〜Leader・BT ready。ナビ連携は企画中 |
+| `spatial` | 空間探索・最適化 | **実装済**（一部企画中） | 第3〜4期 | 総当たり〜BVH ready |
+| `hci` | 入力・操作感・HCI | **実装済**（一部企画中） | 第3期 | coyote-time / input-buffer ready |
+
 | `networking` | 通信・データ | **企画中** | 第5期 | P2P / サーバ権威・予測・DB（静的サイトでは疑似遅延中心） |
-| `audio` | ゲームサウンド | **企画中** | 第5期 | SE・発音管理・BGM・拍同期 |
+| `audio` | ゲームサウンド | **実装済**（一部企画中） | 第5期 | sfx-events ready。BGM 等は企画中 |
 | `graphics` | ゲーム CG | **企画中** | 第4期 | 当面は Web 概念デモ or Unity 連携を SPEC で決める |
-| `quality` | 設計・品質 | **企画中** | 横断 | イベント、プール、セーブ、テスト、プロファイリング |
-| `procgen` | プロシージャル・確率・バランス | **実装済**（一部企画中） | 第2〜4期 | `maze-gen` ready。ダンジョン・ノイズ等は企画中 |
+| `quality` | 設計・品質 | **実装済**（一部企画中） | 横断 | save/replay/debug ready。計測・テストは企画中 |
+| `procgen` | プロシージャル・確率・バランス | **実装済**（一部企画中） | 第2〜4期 | maze〜noise ready。balance-sim は企画中 |
 
 実装済みトピックの詳細・成熟度は [topics/CATALOG.md](./topics/CATALOG.md) / [topics/MATURITY.md](./topics/MATURITY.md)。  
 **企画中の id は仮**。着手時に衝突を避けて確定する。
@@ -202,20 +203,20 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
 | `collision` | AABB 衝突判定 | 実装済 | 二重判定・複雑度比較 |
-| `grid-pseudo-physics` | グリッド擬似物理 | **企画中** | 1 マス落下・接地 |
-| `velocity-motion` | 速度による移動 | **企画中** | 位置←位置＋速度 |
-| `accel-decel` | 加減速 | **企画中** | 最高速度・方向転換・慣性（正本 §8.1、加速度と重力とは別項） |
-| `accel-gravity` | 加速度と重力 | **企画中** | 放物・ジャンプ |
-| `friction-bounce` | 摩擦・反発 | **企画中** | 減衰・反発係数 |
-| `momentum-1d` | 質量と運動量（1 次元） | **企画中** | 弾性/非弾性 |
-| `rotational-motion` | 回転運動 | **企画中** | 角速度・トルク・慣性モーメント・接触点による回転（正本 §8.1） |
-| `circle-collision` | 円同士・円と AABB | **企画中** | Clamp・最近点 |
-| `raycast-shapes` | 線分・レイキャストと図形の交差 | **企画中** | 正本 §8.2 |
-| `obb-sat` | OBB / 分離軸定理 (SAT) | **企画中** | 回転矩形 |
-| `swept-aabb` | 連続衝突 (Swept AABB / TOI) | **企画中** | 高速移動の貫通防止 |
-| `rotating-collision` | 回転中の物体との衝突 | **企画中** | サブステップから導入（正本 §8.2） |
-| `concave-compound` | 凹形状の凸分割・複合コライダー | **企画中** | 正本 §8.2 |
-| `collision-response` | 衝突応答 | **企画中** | 侵入解消・滑り・摩擦 |
+| `grid-pseudo-physics` | グリッド擬似物理 | **実装済** | 1 マス落下・接地。[SPEC](./topics/grid-pseudo-physics/SPEC.md) |
+| `velocity-motion` | 速度による移動 | **実装済** | 位置←位置＋速度。[SPEC](./topics/velocity-motion/SPEC.md) |
+| `accel-decel` | 加減速 | **実装済** | 最高速度・慣性。[SPEC](./topics/accel-decel/SPEC.md) |
+| `accel-gravity` | 加速度と重力 | **実装済** | 放物・ジャンプ。[SPEC](./topics/accel-gravity/SPEC.md) |
+| `friction-bounce` | 摩擦・反発 | **実装済** | 減衰・反発係数。[SPEC](./topics/friction-bounce/SPEC.md) |
+| `momentum-1d` | 質量と運動量（1 次元） | **実装済** | 弾性/非弾性。[SPEC](./topics/momentum-1d/SPEC.md) |
+| `rotational-motion` | 回転運動 | **実装済** | [SPEC](./topics/rotational-motion/SPEC.md) |
+| `circle-collision` | 円同士・円と AABB | **実装済** | Clamp・最近点。[SPEC](./topics/circle-collision/SPEC.md) |
+| `raycast-shapes` | 線分・レイキャストと図形の交差 | **実装済** | [SPEC](./topics/raycast-shapes/SPEC.md) |
+| `obb-sat` | OBB / 分離軸定理 (SAT) | **実装済** | [SPEC](./topics/obb-sat/SPEC.md) |
+| `swept-aabb` | 連続衝突 (Swept AABB / TOI) | **実装済** | [SPEC](./topics/swept-aabb/SPEC.md) |
+| `rotating-collision` | 回転中の物体との衝突 | **実装済** | [SPEC](./topics/rotating-collision/SPEC.md) |
+| `concave-compound` | 凹形状の凸分割・複合コライダー | **実装済** | [SPEC](./topics/concave-compound/SPEC.md) |
+| `collision-response` | 衝突応答 | **実装済** | 侵入解消・インパルス。[SPEC](./topics/collision-response/SPEC.md) |
 
 ---
 
@@ -224,11 +225,11 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
 | `fsm` | ステートマシン | 実装済 | |
-| `event-system` | イベントシステム | **企画中** | 疎結合通知（`quality` と重複可。配置は SPEC で決定） |
-| `command-pattern` | コマンドパターン | **企画中** | リプレイ・Undo・入力抽象 |
-| `component-vs-inheritance` | 継承 vs コンポーネント | **企画中** | 構成比較 |
-| `object-pool` | オブジェクトプール | **企画中** | 弾丸・エフェクト・GC 比較 |
-| `ecs-intro` | ECS 入門 | **企画中** | 概念紹介 |
+| `event-system` | イベントシステム | **実装済** | 疎結合通知。[SPEC](./topics/event-system/SPEC.md) |
+| `command-pattern` | コマンドパターン | **実装済** | リプレイ・Undo。[SPEC](./topics/command-pattern/SPEC.md) |
+| `component-vs-inheritance` | 継承 vs コンポーネント | **実装済** | 構成比較。[SPEC](./topics/component-vs-inheritance/SPEC.md) |
+| `object-pool` | オブジェクトプール | **実装済** | 弾丸・エフェクト・GC 比較。[SPEC](./topics/object-pool/SPEC.md) |
+| `ecs-intro` | ECS 入門 | **実装済** | [SPEC](./topics/ecs-intro/SPEC.md) |
 
 ---
 
@@ -252,25 +253,25 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
-| `steering-seek-flee` | Seek / Flee / Arrive | **企画中** | ステアリング基礎 |
-| `steering-wander-avoid` | Wander / Obstacle Avoidance | **企画中** | |
-| `steering-leader` | Leader Following | **企画中** | |
-| `boids` | Boids / Flocking | **企画中** | 分離・整列・結合。4 分割比較 |
-| `behavior-tree` | ビヘイビアツリー | **企画中** | FSM との対比 |
+| `steering-seek-flee` | Seek / Flee / Arrive | **実装済** | [SPEC](./topics/steering-seek-flee/SPEC.md) |
+| `steering-wander-avoid` | Wander / Obstacle Avoidance | **実装済** | [SPEC](./topics/steering-wander-avoid/SPEC.md) |
+| `steering-leader` | Leader Following | **実装済** | [SPEC](./topics/steering-leader/SPEC.md) |
+| `boids` | Boids / Flocking | **実装済** | [SPEC](./topics/boids/SPEC.md) |
+| `behavior-tree` | ビヘイビアツリー | **実装済** | [SPEC](./topics/behavior-tree/SPEC.md) |
 | `obstacle-avoidance-nav` | 障害物回避（ナビ連携） | **企画中** | 経路探索との接続 |
 
 ---
 
-### `spatial` — 空間探索・最適化（カテゴリごと企画中）
+### `spatial` — 空間探索・最適化
 
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
-| `brute-force-pairs` | 総当たり O(n²) | **企画中** | ベースライン |
-| `broad-narrow-phase` | Broad / Narrow Phase | **企画中** | |
-| `uniform-grid` | 一様グリッド | **企画中** | 近傍探索高速化 |
-| `quadtree` | 四分木 | **企画中** | |
-| `sweep-and-prune` | Sweep and Prune | **企画中** | |
-| `bvh-overview` | BVH（概説） | **企画中** | 概念中心可 |
+| `brute-force-pairs` | 総当たり O(n²) | **実装済** | [SPEC](./topics/brute-force-pairs/SPEC.md) |
+| `broad-narrow-phase` | Broad / Narrow Phase | **実装済** | [SPEC](./topics/broad-narrow-phase/SPEC.md) |
+| `uniform-grid` | 一様グリッド | **実装済** | [SPEC](./topics/uniform-grid/SPEC.md) |
+| `quadtree` | 四分木 | **実装済** | [SPEC](./topics/quadtree/SPEC.md) |
+| `sweep-and-prune` | Sweep and Prune | **実装済** | [SPEC](./topics/sweep-and-prune/SPEC.md) |
+| `bvh-overview` | BVH（概説） | **実装済** | [SPEC](./topics/bvh-overview/SPEC.md) |
 
 ---
 
@@ -278,10 +279,10 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
-| `input-buffer` | 入力バッファ | **企画中** | 着地前入力など |
-| `coyote-time` | コヨーテタイム | **企画中** | 猶予の有無比較 |
-| `input-abstraction` | 入力抽象化 | **企画中** | デバイス→アクション |
-| `command-input` | コマンド入力 | **企画中** | 方向＋ボタン系列 |
+| `input-buffer` | 入力バッファ | **実装済** | 着地前入力。[SPEC](./topics/input-buffer/SPEC.md) |
+| `coyote-time` | コヨーテタイム | **実装済** | 猶予の有無比較。[SPEC](./topics/coyote-time/SPEC.md) |
+| `input-abstraction` | 入力抽象化 | **実装済** | [SPEC](./topics/input-abstraction/SPEC.md) |
+| `command-input` | コマンド入力 | **実装済** | [SPEC](./topics/command-input/SPEC.md) |
 | `accessibility-basics` | アクセシビリティ基礎 | **企画中** | キー設定・字幕・色覚等 |
 
 ---
@@ -303,7 +304,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
-| `sfx-events` | イベントと効果音 | **企画中** | |
+| `sfx-events` | イベントと効果音 | **実装済** | [SPEC](./topics/sfx-events/SPEC.md) |
 | `sfx-voice-limit` | 同時発音・重複制御 | **企画中** | |
 | `sfx-randomize` | ランダム化 | **企画中** | 音量・ピッチの揺らぎ、シャッフルバッグ（正本 §11.1） |
 | `sfx-material` | 材質別・衝突強度と音 | **企画中** | |
@@ -337,10 +338,10 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
-| `save-load` | セーブ・ロード | **企画中** | バージョン互換 |
-| `replay-determinism` | リプレイと決定性 | **企画中** | 入力記録・シード |
-| `debug-overlays` | デバッグ可視化 | **企画中** | コライダー・経路・AI 状態 |
-| `profiling-loop` | プロファイリング循環 | **企画中** | 測定→改善→再測定 |
+| `save-load` | セーブ・ロード | **実装済** | [SPEC](./topics/save-load/SPEC.md) |
+| `replay-determinism` | リプレイと決定性 | **実装済** | [SPEC](./topics/replay-determinism/SPEC.md) |
+| `debug-overlays` | デバッグ可視化 | **実装済** | [SPEC](./topics/debug-overlays/SPEC.md) |
+| `profiling-loop` | プロファイリング循環 | **実装済** | [SPEC](./topics/profiling-loop/SPEC.md) |
 | `unit-test-gameplay` | ゲームロジックのテスト | **企画中** | 衝突・ダメージ等 |
 
 ---
@@ -352,10 +353,10 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
 | `maze-gen` | 迷路生成 | **実装済** | Backtracker / Prim 風・シード付き。[SPEC](./topics/maze-gen/SPEC.md) |
-| `dungeon-gen` | ダンジョン生成 | **企画中** | 部屋と通路・BSP 等 |
-| `noise-terrain` | ノイズと地形 | **企画中** | 概念 |
-| `constrained-gen` | 制約付き生成 | **企画中** | 到達可能性検証 |
-| `weighted-random` | 重み付き抽選・分布 | **企画中** | Fisher–Yates 等 |
+| `dungeon-gen` | ダンジョン生成 | **実装済** | 部屋と通路。[SPEC](./topics/dungeon-gen/SPEC.md) |
+| `noise-terrain` | ノイズと地形 | **実装済** | Value Noise + fBm。[SPEC](./topics/noise-terrain/SPEC.md) |
+| `constrained-gen` | 制約付き生成 | **実装済** | 到達可能性検証。[SPEC](./topics/constrained-gen/SPEC.md) |
+| `weighted-random` | 重み付き抽選・分布 | **実装済** | Fisher–Yates 等。[SPEC](./topics/weighted-random/SPEC.md) |
 | `balance-sim` | ゲームバランス分析 | **企画中** | 自動プレイで勝率比較 |
 
 ---
@@ -367,6 +368,8 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 3. 実装ブランチ → デモ → `ready: true`・成熟度 `oneshot`  
 4. **本 ROADMAP の該当行を「実装済」に更新**（CATALOG と揃える）  
 5. この更新作業では **コード・HTML・main.js は触らない**
+
+**実装の優先順位（難易度順）**は [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) を正とする。簡単なものから Wave A → B → … と進める。
 
 ---
 
@@ -439,6 +442,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | [PLATFORM.md](./PLATFORM.md) | 現行静的サイトの共通仕様 |
 | [WORKFLOW.md](./WORKFLOW.md) | Git と分業 |
 | [topics/CATALOG.md](./topics/CATALOG.md) | トピック一覧・成熟度 |
+| [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) | 難易度順の実装計画 |
 | [topics/MATURITY.md](./topics/MATURITY.md) | 一発 / 調整 / 安定 |
 | [templates/SPEC.md](./templates/SPEC.md) | 仕様テンプレ |
 | [../README.md](../README.md) / [../HANDOFF.md](../HANDOFF.md) | 入口・引き継ぎ |

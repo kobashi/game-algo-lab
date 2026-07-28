@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>回転中の衝突 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="physics" data-active="rotating-collision"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 物理 / 回転中の衝突</p>
+      <h1>回転中の衝突</h1>
+      <p class="page-header-lead">
+        回転 OBB を毎フレーム <strong>SAT</strong> 判定し、押し戻しと角速度減衰。
+        前段: <a href="rotational-motion.html">回転運動</a> · <a href="obb-sat.html">OBB/SAT</a>。
+      </p>
+    </div>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="rcoll-canvas" class="gl-canvas" width="640" height="360"></canvas>
+        <div id="rcoll-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="control-row">
+          <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+          <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+        </div>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="物理 · 回転衝突"></footer>
+  <script type="module" src="../js/rotating-collision.js"></script>
+</body>
+</html>

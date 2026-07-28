@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>プロファイリング循環 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="profiling-loop"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 品質 / プロファイリング</p>
+      <h1>プロファイリング循環</h1>
+      <p class="page-header-lead">
+        <strong>測定 → アルゴリズム変更 → 再測定</strong>。
+        関連: <a href="brute-force-pairs.html">総当たり</a> · <a href="uniform-grid.html">グリッド</a>。
+      </p>
+    </div>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="pf-canvas" class="gl-canvas" width="480" height="280"></canvas>
+        <div id="pf-bars" class="pf-panel"></div>
+        <div id="pf-hist" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="control-row">
+          <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+          <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+        </div>
+        <label class="controls-label" for="count-n">n <span id="n-val">40</span></label>
+        <input type="range" id="count-n" class="ttt-range" min="8" max="100" value="40" />
+        <label class="controls-label" for="collide-mode">衝突</label>
+        <select id="collide-mode" class="bandit-select">
+          <option value="brute">総当たり O(n²)</option>
+          <option value="grid">一様グリッド</option>
+        </select>
+        <p class="footer-muted">モードを切り替えて数秒測り、collide 棒の変化を見る</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="品質 · プロファイリング"></footer>
+  <script type="module" src="../js/profiling-loop.js"></script>
+</body>
+</html>

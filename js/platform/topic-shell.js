@@ -43,6 +43,59 @@ export const NAV_GROUPS = {
     { id: "home", label: "ホーム", href: "../index.html" },
     { id: "collision", label: "AABB", href: "collision.html" },
     { id: "fsm", label: "FSM", href: "fsm.html" },
+    { id: "event-system", label: "イベント", href: "event-system.html" },
+    { id: "object-pool", label: "プール", href: "object-pool.html" },
+    { id: "command-pattern", label: "コマンド", href: "command-pattern.html" },
+    {
+      id: "component-vs-inheritance",
+      label: "継承/Comp",
+      href: "component-vs-inheritance.html",
+    },
+    { id: "ecs-intro", label: "ECS", href: "ecs-intro.html" },
+    { id: "save-load", label: "セーブ", href: "save-load.html" },
+    { id: "replay-determinism", label: "リプレイ", href: "replay-determinism.html" },
+    { id: "debug-overlays", label: "デバッグ", href: "debug-overlays.html" },
+    { id: "profiling-loop", label: "計測", href: "profiling-loop.html" },
+    { id: "sfx-events", label: "SFX", href: "sfx-events.html" },
+    { id: "topics", label: "一覧", href: "../index.html#topics" },
+  ],
+  physics: [
+    { id: "home", label: "ホーム", href: "../index.html" },
+    { id: "grid-pseudo-physics", label: "擬似物理", href: "grid-pseudo-physics.html" },
+    { id: "velocity-motion", label: "速度", href: "velocity-motion.html" },
+    { id: "accel-decel", label: "加減速", href: "accel-decel.html" },
+    { id: "accel-gravity", label: "重力", href: "accel-gravity.html" },
+    { id: "friction-bounce", label: "摩擦", href: "friction-bounce.html" },
+    { id: "collision", label: "AABB", href: "collision.html" },
+    { id: "circle-collision", label: "円", href: "circle-collision.html" },
+    { id: "momentum-1d", label: "運動量", href: "momentum-1d.html" },
+    { id: "raycast-shapes", label: "レイ", href: "raycast-shapes.html" },
+    { id: "collision-response", label: "応答", href: "collision-response.html" },
+    { id: "obb-sat", label: "OBB", href: "obb-sat.html" },
+    { id: "swept-aabb", label: "Swept", href: "swept-aabb.html" },
+    { id: "rotational-motion", label: "回転", href: "rotational-motion.html" },
+    { id: "rotating-collision", label: "回転衝突", href: "rotating-collision.html" },
+    { id: "concave-compound", label: "複合", href: "concave-compound.html" },
+    { id: "topics", label: "一覧", href: "../index.html#topics" },
+  ],
+  spatial: [
+    { id: "home", label: "ホーム", href: "../index.html" },
+    { id: "brute-force-pairs", label: "総当たり", href: "brute-force-pairs.html" },
+    { id: "uniform-grid", label: "グリッド", href: "uniform-grid.html" },
+    { id: "broad-narrow-phase", label: "Broad/Narrow", href: "broad-narrow-phase.html" },
+    { id: "sweep-and-prune", label: "SaP", href: "sweep-and-prune.html" },
+    { id: "quadtree", label: "四分木", href: "quadtree.html" },
+    { id: "bvh-overview", label: "BVH", href: "bvh-overview.html" },
+    { id: "topics", label: "一覧", href: "../index.html#topics" },
+  ],
+  steering: [
+    { id: "home", label: "ホーム", href: "../index.html" },
+    { id: "steering-seek-flee", label: "Seek/Flee", href: "steering-seek-flee.html" },
+    { id: "steering-wander-avoid", label: "Wander", href: "steering-wander-avoid.html" },
+    { id: "boids", label: "Boids", href: "boids.html" },
+    { id: "steering-leader", label: "Leader", href: "steering-leader.html" },
+    { id: "behavior-tree", label: "BT", href: "behavior-tree.html" },
+    { id: "fsm", label: "FSM", href: "fsm.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
   ],
   fundamentals: [
@@ -50,6 +103,10 @@ export const NAV_GROUPS = {
     { id: "game-loop", label: "ゲームループ", href: "game-loop.html" },
     { id: "time-management", label: "時間管理", href: "time-management.html" },
     { id: "input-basics", label: "入力", href: "input-basics.html" },
+    { id: "coyote-time", label: "コヨーテ", href: "coyote-time.html" },
+    { id: "input-buffer", label: "バッファ", href: "input-buffer.html" },
+    { id: "input-abstraction", label: "抽象入力", href: "input-abstraction.html" },
+    { id: "command-input", label: "コマンド", href: "command-input.html" },
     { id: "coordinates", label: "座標", href: "coordinates.html" },
     { id: "rng-seed", label: "乱数", href: "rng-seed.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
@@ -57,6 +114,10 @@ export const NAV_GROUPS = {
   procgen: [
     { id: "home", label: "ホーム", href: "../index.html" },
     { id: "maze-gen", label: "迷路生成", href: "maze-gen.html" },
+    { id: "weighted-random", label: "重み付き", href: "weighted-random.html" },
+    { id: "constrained-gen", label: "制約生成", href: "constrained-gen.html" },
+    { id: "dungeon-gen", label: "ダンジョン", href: "dungeon-gen.html" },
+    { id: "noise-terrain", label: "ノイズ", href: "noise-terrain.html" },
     { id: "rng-seed", label: "乱数", href: "rng-seed.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
   ],
@@ -131,8 +192,160 @@ export const FOOTER_RELATED = {
   "othello-4x4": [
     { href: "chopsticks.html", label: "割り箸（前段）" },
   ],
-  collision: [{ href: "fsm.html", label: "FSM" }],
-  fsm: [{ href: "collision.html", label: "AABB" }],
+  collision: [
+    { href: "friction-bounce.html", label: "摩擦・反発（前段）" },
+    { href: "circle-collision.html", label: "次: 円衝突" },
+  ],
+  "circle-collision": [
+    { href: "collision.html", label: "AABB（前段）" },
+    { href: "collision-response.html", label: "次: 衝突応答" },
+  ],
+  "momentum-1d": [
+    { href: "friction-bounce.html", label: "摩擦・反発（前段）" },
+    { href: "collision-response.html", label: "衝突応答" },
+  ],
+  "raycast-shapes": [
+    { href: "circle-collision.html", label: "円衝突（前段）" },
+    { href: "collision.html", label: "AABB" },
+  ],
+  "collision-response": [
+    { href: "circle-collision.html", label: "円判定（前段）" },
+    { href: "obb-sat.html", label: "次: OBB/SAT" },
+  ],
+  "obb-sat": [
+    { href: "collision.html", label: "AABB（前段）" },
+    { href: "swept-aabb.html", label: "次: Swept AABB" },
+  ],
+  "swept-aabb": [
+    { href: "obb-sat.html", label: "OBB/SAT（前段）" },
+    { href: "rotational-motion.html", label: "次: 回転運動" },
+  ],
+  "rotational-motion": [
+    { href: "accel-gravity.html", label: "重力（前段）" },
+    { href: "rotating-collision.html", label: "次: 回転衝突" },
+  ],
+  "rotating-collision": [
+    { href: "rotational-motion.html", label: "回転運動（前段）" },
+    { href: "obb-sat.html", label: "OBB/SAT" },
+  ],
+  "concave-compound": [
+    { href: "collision.html", label: "AABB" },
+    { href: "circle-collision.html", label: "円衝突" },
+  ],
+  "input-abstraction": [
+    { href: "input-basics.html", label: "入力の基礎（前段）" },
+    { href: "command-input.html", label: "次: コマンド入力" },
+  ],
+  "command-input": [
+    { href: "input-abstraction.html", label: "入力抽象（前段）" },
+    { href: "input-buffer.html", label: "入力バッファ" },
+  ],
+  "profiling-loop": [
+    { href: "brute-force-pairs.html", label: "総当たり" },
+    { href: "uniform-grid.html", label: "グリッド" },
+  ],
+  "sfx-events": [
+    { href: "event-system.html", label: "イベント（前段）" },
+  ],
+  "save-load": [
+    { href: "ecs-intro.html", label: "ECS（状態の切り出し）" },
+    { href: "replay-determinism.html", label: "次: リプレイ" },
+  ],
+  "replay-determinism": [
+    { href: "save-load.html", label: "セーブ（前段）" },
+    { href: "rng-seed.html", label: "乱数とシード" },
+  ],
+  "debug-overlays": [
+    { href: "collision.html", label: "AABB" },
+    { href: "behavior-tree.html", label: "BT（AI 状態）" },
+  ],
+  "brute-force-pairs": [
+    { href: "circle-collision.html", label: "円判定（前段）" },
+    { href: "uniform-grid.html", label: "次: 一様グリッド" },
+  ],
+  "uniform-grid": [
+    { href: "brute-force-pairs.html", label: "総当たり（前段）" },
+    { href: "broad-narrow-phase.html", label: "次: Broad/Narrow" },
+  ],
+  "broad-narrow-phase": [
+    { href: "uniform-grid.html", label: "一様グリッド（前段）" },
+    { href: "sweep-and-prune.html", label: "次: Sweep and Prune" },
+  ],
+  "sweep-and-prune": [
+    { href: "broad-narrow-phase.html", label: "Broad/Narrow（前段）" },
+    { href: "quadtree.html", label: "次: 四分木" },
+  ],
+  quadtree: [
+    { href: "uniform-grid.html", label: "一様グリッド（対比）" },
+    { href: "bvh-overview.html", label: "次: BVH" },
+  ],
+  "steering-seek-flee": [
+    { href: "accel-decel.html", label: "加減速（前段）" },
+    { href: "steering-wander-avoid.html", label: "次: Wander/Avoid" },
+  ],
+  "steering-wander-avoid": [
+    { href: "steering-seek-flee.html", label: "Seek（前段）" },
+    { href: "boids.html", label: "次: Boids" },
+  ],
+  boids: [
+    { href: "steering-wander-avoid.html", label: "Wander（前段）" },
+    { href: "steering-leader.html", label: "次: Leader Following" },
+  ],
+  "steering-leader": [
+    { href: "boids.html", label: "Boids（前段）" },
+    { href: "behavior-tree.html", label: "次: ビヘイビアツリー" },
+  ],
+  "behavior-tree": [
+    { href: "steering-leader.html", label: "Leader（前段）" },
+    { href: "fsm.html", label: "FSM（対比）" },
+  ],
+  "bvh-overview": [
+    { href: "quadtree.html", label: "四分木（対比）" },
+    { href: "broad-narrow-phase.html", label: "Broad/Narrow" },
+  ],
+  "ecs-intro": [
+    { href: "component-vs-inheritance.html", label: "継承/Comp（前段）" },
+    { href: "fsm.html", label: "FSM" },
+  ],
+  fsm: [
+    { href: "event-system.html", label: "次: イベントシステム" },
+    { href: "collision.html", label: "AABB" },
+  ],
+  "event-system": [
+    { href: "fsm.html", label: "FSM（前段）" },
+    { href: "object-pool.html", label: "次: オブジェクトプール" },
+  ],
+  "object-pool": [
+    { href: "event-system.html", label: "イベント（前段）" },
+    { href: "command-pattern.html", label: "次: コマンドパターン" },
+  ],
+  "command-pattern": [
+    { href: "object-pool.html", label: "プール（前段）" },
+    { href: "component-vs-inheritance.html", label: "次: 継承 vs Comp" },
+  ],
+  "component-vs-inheritance": [
+    { href: "command-pattern.html", label: "コマンド（前段）" },
+    { href: "ecs-intro.html", label: "次: ECS 入門" },
+  ],
+  "grid-pseudo-physics": [
+    { href: "velocity-motion.html", label: "次: 速度による移動" },
+  ],
+  "velocity-motion": [
+    { href: "grid-pseudo-physics.html", label: "グリッド擬似物理（前段）" },
+    { href: "accel-decel.html", label: "次: 加減速" },
+  ],
+  "accel-decel": [
+    { href: "velocity-motion.html", label: "速度（前段）" },
+    { href: "accel-gravity.html", label: "次: 加速度と重力" },
+  ],
+  "accel-gravity": [
+    { href: "accel-decel.html", label: "加減速（前段）" },
+    { href: "friction-bounce.html", label: "次: 摩擦・反発" },
+  ],
+  "friction-bounce": [
+    { href: "accel-gravity.html", label: "重力（前段）" },
+    { href: "collision.html", label: "次: AABB 衝突" },
+  ],
   "game-loop": [
     { href: "time-management.html", label: "次: 時間管理" },
   ],
@@ -142,7 +355,15 @@ export const FOOTER_RELATED = {
   ],
   "input-basics": [
     { href: "time-management.html", label: "時間管理（前段）" },
-    { href: "coordinates.html", label: "次: 座標変換" },
+    { href: "coyote-time.html", label: "次: コヨーテタイム" },
+  ],
+  "coyote-time": [
+    { href: "input-basics.html", label: "入力の基礎（前段）" },
+    { href: "input-buffer.html", label: "次: 入力バッファ" },
+  ],
+  "input-buffer": [
+    { href: "coyote-time.html", label: "コヨーテ（対比）" },
+    { href: "input-basics.html", label: "入力の基礎" },
   ],
   coordinates: [
     { href: "input-basics.html", label: "入力の基礎（前段）" },
@@ -154,7 +375,23 @@ export const FOOTER_RELATED = {
   ],
   "maze-gen": [
     { href: "rng-seed.html", label: "乱数とシード（前段）" },
-    { href: "bfs.html", label: "BFS（探索接続）" },
+    { href: "weighted-random.html", label: "次: 重み付き抽選" },
+  ],
+  "weighted-random": [
+    { href: "maze-gen.html", label: "迷路生成（前段）" },
+    { href: "constrained-gen.html", label: "次: 制約付き生成" },
+  ],
+  "constrained-gen": [
+    { href: "weighted-random.html", label: "重み付き抽選（前段）" },
+    { href: "dungeon-gen.html", label: "次: ダンジョン生成" },
+  ],
+  "dungeon-gen": [
+    { href: "constrained-gen.html", label: "制約付き生成（前段）" },
+    { href: "noise-terrain.html", label: "次: ノイズと地形" },
+  ],
+  "noise-terrain": [
+    { href: "dungeon-gen.html", label: "ダンジョン（前段）" },
+    { href: "rng-seed.html", label: "乱数とシード" },
   ],
 };
 
@@ -163,6 +400,9 @@ export const FOOTER_NOTES = {
   pathfinding: "経路探索シリーズ",
   "game-tree": "ゲーム木シリーズ",
   explain: "説明特化 UI · 経路探索マップは使いません",
+  physics: "物理・判定 · 速度・衝突",
+  spatial: "空間探索 · 総当たりから分割へ",
+  steering: "ゲーム AI · ステアリング",
   fundamentals: "基礎実行モデル · ループ・時間・入力・座標・乱数",
   procgen: "プロシージャル · 生成と確率",
   default: "",

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ノイズと地形 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="procgen" data-active="noise-terrain"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / プロシージャル / ノイズと地形</p>
+      <h1>ノイズと地形</h1>
+      <p class="page-header-lead">
+        <strong>Value Noise</strong>（格子乱数 + 補間）とオクターブ重ねで高さマップを作る。
+        前段: <a href="rng-seed.html">乱数とシード</a> · <a href="dungeon-gen.html">ダンジョン生成</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>格子点の乱数値をスムーズに補間 → なだらかな高低</li>
+          <li>オクターブを足すと細部（尾根・海岸線）が増える</li>
+          <li>しきい値で海 / 浜 / 陸 / 山 / 雪に色分け</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="nt-canvas" class="gl-canvas nt-canvas" width="640" height="400"></canvas>
+        <div id="nt-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="seed">シード</label>
+          <input type="number" id="seed" class="mc-num" value="11" min="1" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="octaves">オクターブ <span id="octaves-val">3</span></label>
+          <input type="range" id="octaves" class="ttt-range" min="1" max="6" value="3" step="1" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="freq">基本周波数 <span id="freq-val">0.080</span></label>
+          <input type="range" id="freq" class="ttt-range" min="0.02" max="0.2" value="0.08" step="0.005" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="sea">海面しきい値 <span id="sea-val">0.40</span></label>
+          <input type="range" id="sea" class="ttt-range" min="0.15" max="0.7" value="0.4" step="0.01" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <button type="button" id="btn-gen" class="btn btn-primary">再生成</button>
+        </div>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="プロシージャル · ノイズ"></footer>
+  <script type="module" src="../js/noise-terrain.js"></script>
+</body>
+</html>

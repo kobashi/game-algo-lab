@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>速度による移動 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="physics" data-active="velocity-motion"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 物理・判定 / 速度による移動</p>
+      <h1>速度による移動</h1>
+      <p class="page-header-lead">
+        最も基本的な運動モデル <strong>p ← p + v·dt</strong>。
+        前段: <a href="game-loop.html">ゲームループ</a>。次: 加減速・重力。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>位置は速度×時間だけ進む（加速度なし）</li>
+          <li>黄色矢印 = 速度ベクトル</li>
+          <li>壁バウンスは速度の符号を反転するだけの簡易処理</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="vm-canvas" class="gl-canvas" width="640" height="360"></canvas>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+            <button type="button" id="btn-step" class="btn btn-ghost">1ステップ</button>
+            <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+          </div>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="vx">vx <span id="vx-val">120</span></label>
+          <input type="range" id="vx" class="ttt-range" min="-240" max="240" value="120" step="5" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="vy">vy <span id="vy-val">-40</span></label>
+          <input type="range" id="vy" class="ttt-range" min="-240" max="240" value="-40" step="5" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="dt">1ステップ dt <span id="dt-val">16.7</span> ms</label>
+          <input type="range" id="dt" class="ttt-range" min="5" max="50" value="16.7" step="0.5" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="ttt-check"><input type="checkbox" id="bounce" checked /> 壁でバウンス</label>
+        </div>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="物理 · 速度"></footer>
+  <script type="module" src="../js/velocity-motion.js"></script>
+</body>
+</html>

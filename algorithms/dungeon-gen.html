@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ダンジョン生成 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="procgen" data-active="dungeon-gen"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / プロシージャル / ダンジョン生成</p>
+      <h1>ダンジョン生成</h1>
+      <p class="page-header-lead">
+        <strong>部屋を配置</strong>し、<strong>L 字通路</strong>でつなぐ。シードで再現。
+        前段: <a href="maze-gen.html">迷路生成</a> · <a href="constrained-gen.html">制約付き生成</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>重ならない矩形部屋をランダム配置</li>
+          <li>隣接する部屋中心を L 字で接続</li>
+          <li>迷路（全セル通路寄り）との違い: 部屋の「たまり場」</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="dg-canvas" class="gl-canvas" width="574" height="350"></canvas>
+        <div id="dg-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+        <div id="result-compare" class="result-compare" hidden></div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="seed">シード</label>
+          <input type="number" id="seed" class="mc-num" value="7" min="1" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="room-attempts">部屋試行 <span id="rooms-val">18</span></label>
+          <input type="range" id="room-attempts" class="ttt-range" min="4" max="40" value="18" step="1" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-gen" class="btn btn-primary">一括生成</button>
+            <button type="button" id="btn-step" class="btn btn-ghost">1ステップ</button>
+            <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="プロシージャル · ダンジョン"></footer>
+  <script type="module" src="../js/dungeon-gen.js"></script>
+</body>
+</html>

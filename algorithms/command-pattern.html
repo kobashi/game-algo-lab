@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>コマンドパターン — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="command-pattern"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 設計パターン / コマンドパターン</p>
+      <h1>コマンドパターン</h1>
+      <p class="page-header-lead">
+        操作を <strong>execute / undo</strong> を持つオブジェクトにし、履歴スタックで Undo。
+        関連: <a href="event-system.html">イベントシステム</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>Move / Paint がコマンド（実行可能なオブジェクト）</li>
+          <li>実行のたびに履歴へ push、Undo で pop + 逆操作</li>
+          <li>リプレイやネット同期の基礎にもなる</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="cmd-canvas" class="gl-canvas" width="288" height="288"></canvas>
+        <h2 class="gl-block-title">履歴</h2>
+        <div id="cmd-history" class="es-log-panel" role="log"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-n" class="btn btn-ghost">↑</button>
+            <button type="button" id="btn-s" class="btn btn-ghost">↓</button>
+            <button type="button" id="btn-w" class="btn btn-ghost">←</button>
+            <button type="button" id="btn-e" class="btn btn-ghost">→</button>
+          </div>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-paint" class="btn btn-primary">塗る</button>
+            <button type="button" id="btn-undo" class="btn btn-ghost">Undo</button>
+            <button type="button" id="btn-clear" class="btn btn-ghost">クリア</button>
+          </div>
+        </div>
+        <p class="footer-muted">矢印キー · Space=塗る · Ctrl/⌘+Z=Undo</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="設計パターン · コマンド"></footer>
+  <script type="module" src="../js/command-pattern.js"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>イベントと効果音 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="sfx-events"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / サウンド / イベントと効果音</p>
+      <h1>イベントと効果音</h1>
+      <p class="page-header-lead">
+        ゲームイベントを Emit → SFX が購読してトーン再生。
+        前段: <a href="event-system.html">イベントシステム</a>。
+      </p>
+    </div>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <h2 class="gl-block-title">ゲーム風イベント</h2>
+        <div class="control-row">
+          <button type="button" id="btn-jump" class="btn btn-primary">Jump</button>
+          <button type="button" id="btn-land" class="btn btn-ghost">Land</button>
+          <button type="button" id="btn-hit" class="btn btn-ghost">Hit</button>
+          <button type="button" id="btn-pick" class="btn btn-ghost">Pickup</button>
+        </div>
+        <h2 class="gl-block-title">直接 Emit</h2>
+        <div id="sfx-btns" class="control-row" style="flex-wrap:wrap;gap:0.35rem"></div>
+        <h2 class="gl-block-title">ログ</h2>
+        <div id="sfx-log" class="es-log-panel" role="log"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <label class="ttt-check"><input type="checkbox" id="mute" /> ミュート（ログのみ）</label>
+        <p class="footer-muted">初回クリックで AudioContext が起動します。無音環境はミュートでログ確認。</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Audio · SFX イベント"></footer>
+  <script type="module" src="../js/sfx-events.js"></script>
+</body>
+</html>

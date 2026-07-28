@@ -8,7 +8,7 @@ Game Algo Lab の **方針・仕様・分業** はここに集約する。
 |--|-----|
 | **GitHub Pages（教材）** | https://kobashi.github.io/game-algo-lab/ |
 | リポジトリ | https://github.com/kobashi/game-algo-lab |
-| 最新 Release（試作） | https://github.com/kobashi/game-algo-lab/releases/tag/v0.9.8 |
+| 最新 Release（試作） | https://github.com/kobashi/game-algo-lab/releases/tag/v0.10.0 |
 
 利用者向けの起動方法・トピック一覧の概要はリポジトリ直下の [README.md](../README.md)。
 
@@ -16,6 +16,7 @@ Game Algo Lab の **方針・仕様・分業** はここに集約する。
 |------|------|
 | **[interactive_game_programming_material_plan.docx](./interactive_game_programming_material_plan.docx)** | **計画の正本**（構想・設計資料）。**策定: 2026年7月** |
 | [ROADMAP.md](./ROADMAP.md) | 正本の要約・実装対応・**企画中トピック/カテゴリ**・バックログ（E2E / i18n） |
+| [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) | **難易度順の実装計画**（簡単なものから・Wave A〜F） |
 | （サイト）学習項目見出し | トップ `#curriculum` ← `js/curriculum-outline.js`（**デモなし**） |
 | [PLATFORM.md](./PLATFORM.md) | 全トピック共通の教材仕様（現行静的サイト） |
 | [WORKFLOW.md](./WORKFLOW.md) | Git 運用と実装フロー |

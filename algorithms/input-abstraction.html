@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>入力抽象化 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="fundamentals" data-active="input-abstraction"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / HCI / 入力抽象化</p>
+      <h1>入力抽象化</h1>
+      <p class="page-header-lead">
+        物理キーと<strong>論理アクション</strong>を分離。バインド差し替え。
+        前段: <a href="input-basics.html">入力の基礎</a>。
+      </p>
+    </div>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="ia-canvas" class="gl-canvas" width="640" height="200" tabindex="0"></canvas>
+        <h2 class="gl-block-title">アクション状態</h2>
+        <div id="ia-actions" class="es-log-panel"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <label class="controls-label" for="preset">プリセット</label>
+        <select id="preset" class="bandit-select"></select>
+        <h2 class="gl-block-title">バインド表</h2>
+        <table class="coord-table"><tbody id="ia-binds"></tbody></table>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="HCI · 入力抽象"></footer>
+  <script type="module" src="../js/input-abstraction.js"></script>
+</body>
+</html>

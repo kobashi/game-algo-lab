@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sweep and Prune — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="spatial" data-active="sweep-and-prune"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 空間探索 / Sweep and Prune</p>
+      <h1>Sweep and Prune</h1>
+      <p class="page-header-lead">
+        1 軸の区間をソートし、<strong>重なる区間だけ</strong>を Broad 候補にする。
+        前段: <a href="broad-narrow-phase.html">Broad/Narrow</a> · <a href="uniform-grid.html">グリッド</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>下の帯が各 AABB の X 投影</li>
+          <li>黄線 = X が重なる候補、赤線 = 2D AABB も重なる</li>
+          <li>ソート + sweep で候補を絞る（実装は毎フレーム再ソート）</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="sap-canvas" class="gl-canvas" width="640" height="360"></canvas>
+        <div id="sap-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+            <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+          </div>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="count-n">個数 n <span id="n-val">18</span></label>
+          <input type="range" id="count-n" class="ttt-range" min="4" max="40" value="18" step="1" />
+        </div>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="空間分割 · Sweep and Prune"></footer>
+  <script type="module" src="../js/sweep-and-prune.js"></script>
+</body>
+</html>

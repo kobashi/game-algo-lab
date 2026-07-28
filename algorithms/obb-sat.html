@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OBB / SAT — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="physics" data-active="obb-sat"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 物理・判定 / OBB·SAT</p>
+      <h1>OBB / 分離軸定理 (SAT)</h1>
+      <p class="page-header-lead">
+        回転した矩形同士は <strong>SAT</strong>（全候補軸への投影が重なる）で判定。
+        前段: <a href="collision.html">AABB</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>軸 = 各 OBB の辺の法線（2D では 4 軸）</li>
+          <li>1 軸でも投影が分離 → 非衝突</li>
+          <li>すべて重なる → 衝突</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="obb-canvas" class="gl-canvas" width="640" height="360"></canvas>
+        <div id="obb-stats" class="coord-readout"></div>
+        <div id="obb-axes" class="es-log-panel"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="a-ang">A 角度 <span id="a-ang-val">17</span>°</label>
+          <input type="range" id="a-ang" class="ttt-range" min="-90" max="90" value="17" step="1" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="b-ang">B 角度 <span id="b-ang-val">-29</span>°</label>
+          <input type="range" id="b-ang" class="ttt-range" min="-90" max="90" value="-29" step="1" />
+        </div>
+        <p class="footer-muted">矩形をドラッグして重ねる / 離す</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="物理 · OBB/SAT"></footer>
+  <script type="module" src="../js/obb-sat.js"></script>
+</body>
+</html>

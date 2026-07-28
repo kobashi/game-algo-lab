@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>コヨーテタイム — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="fundamentals" data-active="coyote-time"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 入力・操作感 / コヨーテタイム</p>
+      <h1>コヨーテタイム</h1>
+      <p class="page-header-lead">
+        接地を離れた直後の<strong>短い猶予</strong>でもジャンプを許可する。
+        ON/OFF で崖際の操作感を比較。前段: <a href="input-basics.html">入力の基礎</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>接地中はコヨーテタイマーを満タンにリセット</li>
+          <li>空中ではタイマー減少。残っている間はジャンプ可（ON 時）</li>
+          <li>OFF だと厳密接地のみ — 崖を少し踏み外すと失敗しやすい</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="ct-canvas" class="gl-canvas" width="640" height="300" tabindex="0" aria-label="プラットフォーマ"></canvas>
+        <div id="ct-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+            <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+          </div>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="ttt-check"><input type="checkbox" id="coyote-on" checked /> コヨーテ ON</label>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="coyote-ms">猶予 <span id="coyote-ms-val">120</span> ms</label>
+          <input type="range" id="coyote-ms" class="ttt-range" min="0" max="400" value="120" step="10" />
+        </div>
+        <p class="footer-muted"><kbd>←</kbd><kbd>→</kbd> 移動 · <kbd>Space</kbd> ジャンプ</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="HCI · コヨーテタイム"></footer>
+  <script type="module" src="../js/coyote-time.js"></script>
+</body>
+</html>

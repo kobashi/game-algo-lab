@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leader Following — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="steering" data-active="steering-leader"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / ステアリング / Leader Following</p>
+      <h1>Leader Following</h1>
+      <p class="page-header-lead">
+        リーダー後方の<strong>スロット</strong>へ Arrive する追従。
+        前段: <a href="steering-seek-flee.html">Seek/Arrive</a> · <a href="boids.html">Boids</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>追従点 = リーダー位置 − 進行方向 × 距離 × スロット番号</li>
+          <li>Arrive で近距離減速</li>
+          <li>自動 / 手動（WASD）でリーダー操作</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="lf-canvas" class="gl-canvas" width="640" height="360" tabindex="0"></canvas>
+        <div id="lf-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+            <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+          </div>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="ttt-check"><input type="checkbox" id="auto-leader" checked /> リーダー自動</label>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="follow-dist">間隔 <span id="dist-val">36</span></label>
+          <input type="range" id="follow-dist" class="ttt-range" min="16" max="80" value="36" step="2" />
+        </div>
+        <p class="footer-muted">自動 OFF 時: <kbd>WASD</kbd> / 矢印</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="ステアリング · Leader Following"></footer>
+  <script type="module" src="../js/steering-leader.js"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>凹形状の凸分割 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="physics" data-active="concave-compound"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 物理 / 凹形状</p>
+      <h1>凹形状の凸分割・複合コライダー</h1>
+      <p class="page-header-lead">
+        L 字を<strong>2 つの AABB</strong>で近似。外接 AABB との誤ヒットを比較。
+        前段: <a href="collision.html">AABB</a>。
+      </p>
+    </div>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="ccx-canvas" class="gl-canvas" width="640" height="360"></canvas>
+        <div id="ccx-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <label class="ttt-check"><input type="checkbox" id="show-parts" checked /> 凸部品</label>
+        <label class="ttt-check"><input type="checkbox" id="show-union" checked /> 外接 AABB</label>
+        <p class="footer-muted">点をドラッグして欠部に置くと誤ヒットが分かる</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="物理 · 複合コライダー"></footer>
+  <script type="module" src="../js/concave-compound.js"></script>
+</body>
+</html>

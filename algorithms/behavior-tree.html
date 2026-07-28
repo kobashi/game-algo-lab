@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ビヘイビアツリー — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="steering" data-active="behavior-tree"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / ゲーム AI / ビヘイビアツリー</p>
+      <h1>ビヘイビアツリー</h1>
+      <p class="page-header-lead">
+        <strong>Selector / Sequence</strong> で優先行動を決める。
+        視界内なら Chase、否则 Patrol。関連: <a href="fsm.html">FSM</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>Selector: 左から試し、Failure でなければ採用</li>
+          <li>Sequence: すべて Success が必要（途中 Failure で中断）</li>
+          <li>各 Tick でノードの Success/Failure/Running を着色</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="bt-canvas" class="gl-canvas" width="640" height="320" tabindex="0"></canvas>
+        <h2 class="gl-block-title">ツリー（最終 Tick）</h2>
+        <div id="bt-tree" class="bt-panel"></div>
+        <div id="bt-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-play" class="btn btn-primary">連続 Tick</button>
+            <button type="button" id="btn-tick" class="btn btn-ghost">1 Tick</button>
+            <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+          </div>
+        </div>
+        <p class="footer-muted"><kbd>WASD</kbd> / 矢印でプレイヤー（赤）を動かし、NPC の視界に入る</p>
+        <p class="footer-muted">緑=Success · 赤=Failure · 黄=Running</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="ゲーム AI · ビヘイビアツリー"></footer>
+  <script type="module" src="../js/behavior-tree.js"></script>
+</body>
+</html>

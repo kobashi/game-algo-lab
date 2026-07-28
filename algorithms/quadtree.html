@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>四分木 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="spatial" data-active="quadtree"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 空間探索 / 四分木</p>
+      <h1>四分木</h1>
+      <p class="page-header-lead">
+        容量を超えた領域を<strong>4 分割</strong>する適応的空間構造。
+        前段: <a href="uniform-grid.html">一様グリッド</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>点が多い領域だけ細かく割れる</li>
+          <li>クエリ矩形と交差する葉の点だけを候補にする</li>
+          <li>容量・最大深さが分割の様子を変える</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="qt-canvas" class="gl-canvas" width="640" height="360"></canvas>
+        <div id="qt-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-rebuild" class="btn btn-primary">再構築</button>
+            <button type="button" id="btn-clear-q" class="btn btn-ghost">クエリ解除</button>
+          </div>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="point-count">点数 <span id="pts-val">48</span></label>
+          <input type="range" id="point-count" class="ttt-range" min="8" max="120" value="48" step="1" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="capacity">容量 <span id="cap-val">4</span></label>
+          <input type="range" id="capacity" class="ttt-range" min="1" max="12" value="4" step="1" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="max-depth">最大深さ <span id="depth-val">6</span></label>
+          <input type="range" id="max-depth" class="ttt-range" min="1" max="8" value="6" step="1" />
+        </div>
+        <p class="footer-muted">キャンバスをドラッグしてクエリ矩形</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="空間分割 · 四分木"></footer>
+  <script type="module" src="../js/quadtree.js"></script>
+</body>
+</html>

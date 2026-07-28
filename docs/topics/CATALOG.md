@@ -1,6 +1,6 @@
 # トピックカタログ
 
-最終更新: 2026-07-23（`maze-gen` 実装 — プロシージャル入口）  
+最終更新: 2026-07-28（ready 67 · 物理締め + HCI + Audio 入口）  
 
 - **実装の正**: この表 と `js/main.js` の `TOPICS`（ずれたら両方直す）  
 - **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable` + **修正回数** + **更新日**）  
@@ -86,8 +86,12 @@
 | id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
 |----|----------|-------|--------|------|------|--------|------|----------|
 | `maze-gen` | 迷路生成 | ✅ | **一発** | 0 | 2026-07-23 | `algorithms/maze-gen.html` | [SPEC](./maze-gen/SPEC.md) | Recursive Backtracker / Prim 風。Mulberry32 シード。1ステップ可視化 |
+| `weighted-random` | 重み付き抽選・分布 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/weighted-random.html` | [SPEC](./weighted-random/SPEC.md) | 累積重み抽選 + ヒストグラム。Fisher–Yates 対比。Mulberry32 |
+| `constrained-gen` | 制約付き生成 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/constrained-gen.html` | [SPEC](./constrained-gen/SPEC.md) | 乱択壁 + BFS 到達性棄却ループ |
+| `dungeon-gen` | ダンジョン生成 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/dungeon-gen.html` | [SPEC](./dungeon-gen/SPEC.md) | 部屋配置 + L 字通路。1ステップ可視化 |
+| `noise-terrain` | ノイズと地形 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/noise-terrain.html` | [SPEC](./noise-terrain/SPEC.md) | Value Noise + fBm。海陸色分け |
 
-**学習ストーリー**: 乱数とシード → 迷路生成 →（予定）ダンジョン・ノイズ・制約付き生成  
+**学習ストーリー**: 乱数 → 迷路 → 重み付き → 制約付き → ダンジョン → ノイズ（**procgen Wave A 完了**）  
 
 ---
 
@@ -95,7 +99,23 @@
 
 | id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
 |----|----------|-------|--------|------|------|--------|------|----------|
+| `grid-pseudo-physics` | グリッド擬似物理 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/grid-pseudo-physics.html` | [SPEC](./grid-pseudo-physics/SPEC.md) | マス落下。連続速度なし |
+| `velocity-motion` | 速度による移動 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/velocity-motion.html` | [SPEC](./velocity-motion/SPEC.md) | p←p+v·dt。軌跡・速度矢印・壁バウンス |
+| `accel-decel` | 加減速 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/accel-decel.html` | [SPEC](./accel-decel/SPEC.md) | 加速・最高速度・ブレーキ |
+| `accel-gravity` | 加速度と重力 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/accel-gravity.html` | [SPEC](./accel-gravity/SPEC.md) | v+=g·dt; p+=v·dt。放物線・反発 |
+| `friction-bounce` | 摩擦・反発 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/friction-bounce.html` | [SPEC](./friction-bounce/SPEC.md) | 床バウンス e · 接地摩擦 |
 | `collision` | AABB 衝突判定 | ✅ | **調整** | 2 | 2026-07-17 | `algorithms/collision.html` | [SPEC](./collision/SPEC.md) | 非マップ説明UI。重なり/分離の二重実装と比較 |
+| `circle-collision` | 円同士・円と AABB | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/circle-collision.html` | [SPEC](./circle-collision/SPEC.md) | 中心距離・Clamp 最近点 |
+| `momentum-1d` | 質量と運動量（1D） | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/momentum-1d.html` | [SPEC](./momentum-1d/SPEC.md) | 弾性/非弾性 · Σp/KE |
+| `raycast-shapes` | 線分・レイキャスト | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/raycast-shapes.html` | [SPEC](./raycast-shapes/SPEC.md) | 円・AABB への最近 t |
+| `collision-response` | 衝突応答 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/collision-response.html` | [SPEC](./collision-response/SPEC.md) | 分離 + 法線インパルス |
+| `obb-sat` | OBB / SAT | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/obb-sat.html` | [SPEC](./obb-sat/SPEC.md) | 回転矩形 · 分離軸 |
+| `swept-aabb` | Swept AABB / TOI | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/swept-aabb.html` | [SPEC](./swept-aabb/SPEC.md) | 連続衝突 · トンネル比較 |
+| `rotational-motion` | 回転運動 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/rotational-motion.html` | [SPEC](./rotational-motion/SPEC.md) | トルク · ω · 作用点 |
+| `rotating-collision` | 回転中の衝突 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/rotating-collision.html` | [SPEC](./rotating-collision/SPEC.md) | 回転 OBB + SAT 応答 |
+| `concave-compound` | 凹形状の凸分割 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/concave-compound.html` | [SPEC](./concave-compound/SPEC.md) | 複合 AABB · 誤ヒット比較 |
+
+**学習ストーリー**: 擬似→…→回転 → 回転衝突 · 複合コライダー（物理シリーズ一通り）  
 
 ---
 
@@ -104,15 +124,92 @@
 | id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
 |----|----------|-------|--------|------|------|--------|------|----------|
 | `fsm` | ステートマシン | ✅ | **一発** | 0 | 2026-07-17 | `algorithms/fsm.html` | [SPEC](./fsm/SPEC.md) | 状態図・イベント・遷移表の初版 |
+| `event-system` | イベントシステム | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/event-system.html` | [SPEC](./event-system/SPEC.md) | On/Off/Emit の pub/sub。購読ログ可視化 |
+| `object-pool` | オブジェクトプール | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/object-pool.html` | [SPEC](./object-pool/SPEC.md) | 弾の Acquire/Release。created/reused 比較 |
+| `command-pattern` | コマンドパターン | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/command-pattern.html` | [SPEC](./command-pattern/SPEC.md) | execute/undo 履歴スタック |
+| `component-vs-inheritance` | 継承 vs コンポーネント | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/component-vs-inheritance.html` | [SPEC](./component-vs-inheritance/SPEC.md) | 階層 vs 能力トグル比較 |
+| `ecs-intro` | ECS 入門 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/ecs-intro.html` | [SPEC](./ecs-intro/SPEC.md) | Entity/Component/System 表 |
+
+**学習ストーリー**: FSM → イベント → プール → コマンド → 継承/Comp → ECS  
 
 ---
 
-## 成熟度サマリ（2026-07-23・24 トピック ready）
+## カテゴリ: 入力・操作感 (`hci`)
+
+| id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
+|----|----------|-------|--------|------|------|--------|------|----------|
+| `coyote-time` | コヨーテタイム | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/coyote-time.html` | [SPEC](./coyote-time/SPEC.md) | 崖際ジャンプ猶予 ON/OFF 比較 |
+| `input-buffer` | 入力バッファ | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/input-buffer.html` | [SPEC](./input-buffer/SPEC.md) | 着地前ジャンプの先読み窓 |
+
+**学習ストーリー**: 入力の基礎 → コヨーテタイム → 入力バッファ →（予定）入力抽象化  
+
+---
+
+## カテゴリ: 空間探索・最適化 (`spatial`)
+
+| id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
+|----|----------|-------|--------|------|------|--------|------|----------|
+| `brute-force-pairs` | 総当たり O(n²) | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/brute-force-pairs.html` | [SPEC](./brute-force-pairs/SPEC.md) | 全ペア検査ベースライン |
+| `uniform-grid` | 一様グリッド | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/uniform-grid.html` | [SPEC](./uniform-grid/SPEC.md) | 近傍セルのみ。総当たり比較 |
+| `broad-narrow-phase` | Broad / Narrow Phase | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/broad-narrow-phase.html` | [SPEC](./broad-narrow-phase/SPEC.md) | 候補 vs 精密ヒット |
+| `sweep-and-prune` | Sweep and Prune | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/sweep-and-prune.html` | [SPEC](./sweep-and-prune/SPEC.md) | X 軸区間ソート |
+| `quadtree` | 四分木 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/quadtree.html` | [SPEC](./quadtree/SPEC.md) | 適応的4分割 · 範囲クエリ |
+| `bvh-overview` | BVH 概説 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/bvh-overview.html` | [SPEC](./bvh-overview/SPEC.md) | 物体 AABB 階層 · クエリ剪定 |
+
+**学習ストーリー**: 総当たり → グリッド → Broad/Narrow → SaP → 四分木 → BVH  
+
+---
+
+## カテゴリ: ゲーム AI・ステアリング (`ai-steering`)
+
+| id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
+|----|----------|-------|--------|------|------|--------|------|----------|
+| `steering-seek-flee` | Seek / Flee / Arrive | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/steering-seek-flee.html` | [SPEC](./steering-seek-flee/SPEC.md) | 舵力ベクトル可視化 |
+| `steering-wander-avoid` | Wander / Avoidance | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/steering-wander-avoid.html` | [SPEC](./steering-wander-avoid/SPEC.md) | 揺らぎ + 障害回避 |
+| `boids` | Boids / Flocking | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/boids.html` | [SPEC](./boids/SPEC.md) | 分離・整列・結合 |
+| `steering-leader` | Leader Following | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/steering-leader.html` | [SPEC](./steering-leader/SPEC.md) | 後方スロットへ Arrive |
+| `behavior-tree` | ビヘイビアツリー | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/behavior-tree.html` | [SPEC](./behavior-tree/SPEC.md) | Selector/Sequence · Chase/Patrol |
+
+**学習ストーリー**: Seek → Wander → Boids → Leader → BT（FSM 対比）  
+
+---
+
+## カテゴリ: 設計・品質 (`quality`)
+
+| id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
+|----|----------|-------|--------|------|------|--------|------|----------|
+| `save-load` | セーブ・ロード | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/save-load.html` | [SPEC](./save-load/SPEC.md) | version + マイグレーション · localStorage |
+| `replay-determinism` | リプレイと決定性 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/replay-determinism.html` | [SPEC](./replay-determinism/SPEC.md) | 入力記録 + シード |
+| `debug-overlays` | デバッグ可視化 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/debug-overlays.html` | [SPEC](./debug-overlays/SPEC.md) | コライダー/速度/AI レイヤ |
+| `profiling-loop` | プロファイリング循環 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/profiling-loop.html` | [SPEC](./profiling-loop/SPEC.md) | 測定→改善→再測定 |
+
+**学習ストーリー**: セーブ → リプレイ → デバッグ → プロファイリング  
+
+---
+
+## カテゴリ: 入力・操作感 (`hci`) 追記
+
+| id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
+|----|----------|-------|--------|------|------|--------|------|----------|
+| `input-abstraction` | 入力抽象化 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/input-abstraction.html` | [SPEC](./input-abstraction/SPEC.md) | アクションマップ |
+| `command-input` | コマンド入力 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/command-input.html` | [SPEC](./command-input/SPEC.md) | 技コマンド照合 |
+
+---
+
+## カテゴリ: サウンド (`audio`)
+
+| id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
+|----|----------|-------|--------|------|------|--------|------|----------|
+| `sfx-events` | イベントと効果音 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-events.html` | [SPEC](./sfx-events/SPEC.md) | Emit → Web Audio |
+
+---
+
+## 成熟度サマリ（2026-07-28·67 トピック ready）
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | 11 | fsm, tic-tac-toe, mcts, nim, othello-4x4, bidirectional-search, game-loop, time-management, input-basics, coordinates, maze-gen |
-| 調整 (`revised`) | 13 | bfs, dfs, dijkstra, best-first, astar, collision, and-or, minimax, alpha-beta, monte-carlo, multi-armed-bandit, chopsticks, rng-seed |
+| 一発 (`oneshot`) | 54 | 詳細は TOPIC_META |
+| 調整 (`revised`) | 13 | bfs〜rng-seed 等 |
 | 安定 (`stable`) | 0 | — |
 
 Fable5 起点のコード改訂 ↔ 成熟度の対応表: [MATURITY.md](./MATURITY.md) の「Fable5 レビュー → 成熟度の突き合わせ」。
@@ -121,8 +218,8 @@ Fable5 起点のコード改訂 ↔ 成熟度の対応表: [MATURITY.md](./MATUR
 
 ## 企画中（本カタログ外）
 
-実装済み以外のカテゴリ（`ai-steering`, `spatial`, `hci`, `networking`, `audio`, `graphics`, `quality` 等）および  
-（`fundamentals` 完了 / `procgen` は maze-gen 実装済）  
+実装済み以外のカテゴリ（`networking`, `audio`, `graphics`, `quality` 等）および  
+（`fundamentals` / `procgen` / `spatial` 入口 / `ai-steering` 入口 は着手済）  
 
 物理段階・Boids・通信 等のトピックは **[ROADMAP.md §2.4](../ROADMAP.md)** に **企画中** として列挙する。  
 着手するまで ready 行を増やさない。

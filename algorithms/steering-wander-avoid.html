@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wander / Avoid — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="steering" data-active="steering-wander-avoid"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / ステアリング / Wander·Avoid</p>
+      <h1>Wander / Obstacle Avoidance</h1>
+      <p class="page-header-lead">
+        前方円上の揺らぎ点を Seek する <strong>Wander</strong> と、
+        前方の障害をかわす <strong>Avoidance</strong>。
+        前段: <a href="steering-seek-flee.html">Seek/Flee/Arrive</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>Wander: 進行方向前方の円上で角度を jitter</li>
+          <li>Avoid: 前方サンプリング円が障害に入ったら横へ押す</li>
+          <li>両方 ON で「うろつきつつ衝突を避ける」</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="wa-canvas" class="gl-canvas" width="640" height="360"></canvas>
+        <div id="wa-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+            <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+          </div>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="ttt-check"><input type="checkbox" id="wander-on" checked /> Wander</label>
+          <label class="ttt-check"><input type="checkbox" id="avoid-on" checked /> Avoidance</label>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="jitter">Jitter <span id="jitter-val">40</span></label>
+          <input type="range" id="jitter" class="ttt-range" min="5" max="120" value="40" step="5" />
+        </div>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="ステアリング · Wander/Avoid"></footer>
+  <script type="module" src="../js/steering-wander-avoid.js"></script>
+</body>
+</html>

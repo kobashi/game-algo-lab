@@ -1,6 +1,6 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-07-27（v0.9.8 リリース）  
+最終更新: 2026-07-28（ready 67 · 物理締め/HCI/SFX）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）
 
 新セッション開始時の指示例:
@@ -48,9 +48,24 @@
 
 **2026-07-23 `maze-gen` 実装（Grok4.5）**: プロシージャル入口。Recursive Backtracker / Prim 風、シード付き、1ステップ可視化。[SPEC](docs/topics/maze-gen/SPEC.md)。ready: true・`oneshot`。
 
-**次の実装ターゲット**: (1) `dungeon-gen` 等 procgen 続き (2) 第3期物理 (3) 指摘9 platform。
+**2026-07-27 Wave A 直近スプリント 8 本実装（Grok）**:  
+1. `weighted-random` — 累積重み + Fisher–Yates  
+2. `velocity-motion` — p←p+v·dt  
+3. `event-system` — On/Off/Emit  
+4. `object-pool` — Acquire/Release  
+5. `coyote-time` — 崖際ジャンプ猶予 ON/OFF  
+6. `grid-pseudo-physics` — マス落下  
+7. `constrained-gen` — 乱択 + BFS 到達性棄却  
+8. `accel-gravity` — v+=g·dt; p+=v·dt  
+いずれも `oneshot`。
+
+**2026-07-28 続き**:  
+`rotating-collision` · `concave-compound` · `input-abstraction` · `command-input` · `profiling-loop` · `sfx-events`。ready **67**。
+
+**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: a11y / unit-test / BGM / graphics / net。
 
 ---
+
 
 ## プロジェクト概要
 
@@ -122,6 +137,49 @@
 | 22 | 座標変換 | `algorithms/coordinates.html` | `js/maps/coordinates-config.js` | `CoordinatesExample.cs` | ローカル/ワールド/スクリーン |
 | 23 | 乱数とシード | `algorithms/rng-seed.html` | `js/maps/rng-seed-config.js` | `RngSeedExample.cs` | Mulberry32/XorShift/LCG・周期体験 |
 | 24 | 迷路生成 | `algorithms/maze-gen.html` | `js/maps/maze-gen-config.js` | `MazeGenExample.cs` | Backtracker/Prim・シード付き |
+| 25 | 重み付き抽選 | `algorithms/weighted-random.html` | `js/maps/weighted-random-config.js` | `WeightedRandomExample.cs` | 累積重み抽選・Fisher–Yates 対比 |
+| 26 | 速度による移動 | `algorithms/velocity-motion.html` | `js/maps/velocity-motion-config.js` | `VelocityMotionExample.cs` | p←p+v·dt・軌跡・バウンス |
+| 27 | イベントシステム | `algorithms/event-system.html` | `js/maps/event-system-config.js` | `EventSystemExample.cs` | On/Off/Emit pub/sub |
+| 28 | オブジェクトプール | `algorithms/object-pool.html` | `js/maps/object-pool-config.js` | `ObjectPoolExample.cs` | Acquire/Release・created/reused |
+| 29 | コヨーテタイム | `algorithms/coyote-time.html` | `js/maps/coyote-time-config.js` | `CoyoteTimeExample.cs` | 崖際ジャンプ猶予 ON/OFF |
+| 30 | グリッド擬似物理 | `algorithms/grid-pseudo-physics.html` | `js/maps/grid-pseudo-physics-config.js` | `GridPseudoPhysicsExample.cs` | マス落下 |
+| 31 | 制約付き生成 | `algorithms/constrained-gen.html` | `js/maps/constrained-gen-config.js` | `ConstrainedGenExample.cs` | 乱択+BFS 到達性 |
+| 32 | 加速度と重力 | `algorithms/accel-gravity.html` | `js/maps/accel-gravity-config.js` | `AccelGravityExample.cs` | v+=g·dt; p+=v·dt |
+| 33 | 入力バッファ | `algorithms/input-buffer.html` | `js/maps/input-buffer-config.js` | `InputBufferExample.cs` | 着地前ジャンプ先読み |
+| 34 | コマンドパターン | `algorithms/command-pattern.html` | `js/maps/command-pattern-config.js` | `CommandPatternExample.cs` | execute/undo 履歴 |
+| 35 | 継承 vs コンポーネント | `algorithms/component-vs-inheritance.html` | `js/maps/component-vs-inheritance-config.js` | `ComponentVsInheritanceExample.cs` | 階層 vs 能力トグル |
+| 36 | ダンジョン生成 | `algorithms/dungeon-gen.html` | `js/maps/dungeon-gen-config.js` | `DungeonGenExample.cs` | 部屋+L字通路 |
+| 37 | ノイズと地形 | `algorithms/noise-terrain.html` | `js/maps/noise-terrain-config.js` | `NoiseTerrainExample.cs` | Value Noise + fBm |
+| 38 | 加減速 | `algorithms/accel-decel.html` | `js/maps/accel-decel-config.js` | `AccelDecelExample.cs` | 加速・max・ブレーキ |
+| 39 | 摩擦・反発 | `algorithms/friction-bounce.html` | `js/maps/friction-bounce-config.js` | `FrictionBounceExample.cs` | e と摩擦 |
+| 40 | 円同士・円と AABB | `algorithms/circle-collision.html` | `js/maps/circle-collision-config.js` | `CircleCollisionExample.cs` | 距離・Clamp |
+| 41 | 質量と運動量（1D） | `algorithms/momentum-1d.html` | `js/maps/momentum-1d-config.js` | `Momentum1dExample.cs` | 弾性/非弾性 |
+| 42 | 線分・レイキャスト | `algorithms/raycast-shapes.html` | `js/maps/raycast-shapes-config.js` | `RaycastShapesExample.cs` | 円・AABB へ t |
+| 43 | 衝突応答 | `algorithms/collision-response.html` | `js/maps/collision-response-config.js` | `CollisionResponseExample.cs` | 分離+インパルス |
+| 44 | 総当たり O(n²) | `algorithms/brute-force-pairs.html` | `js/maps/brute-force-pairs-config.js` | `BruteForcePairsExample.cs` | 全ペアベースライン |
+| 45 | 一様グリッド | `algorithms/uniform-grid.html` | `js/maps/uniform-grid-config.js` | `UniformGridExample.cs` | 近傍セル検査 |
+| 46 | Broad / Narrow | `algorithms/broad-narrow-phase.html` | `js/maps/broad-narrow-phase-config.js` | `BroadNarrowPhaseExample.cs` | 候補 vs ヒット |
+| 47 | Sweep and Prune | `algorithms/sweep-and-prune.html` | `js/maps/sweep-and-prune-config.js` | `SweepAndPruneExample.cs` | X 軸区間ソート |
+| 48 | 四分木 | `algorithms/quadtree.html` | `js/maps/quadtree-config.js` | `QuadtreeExample.cs` | 適応的4分割 |
+| 49 | Seek/Flee/Arrive | `algorithms/steering-seek-flee.html` | `js/maps/steering-seek-flee-config.js` | `SteeringSeekFleeExample.cs` | 舵力ベクトル |
+| 50 | Wander/Avoid | `algorithms/steering-wander-avoid.html` | `js/maps/steering-wander-avoid-config.js` | `SteeringWanderAvoidExample.cs` | 揺らぎ+回避 |
+| 51 | Boids | `algorithms/boids.html` | `js/maps/boids-config.js` | `BoidsExample.cs` | 分離・整列・結合 |
+| 52 | ビヘイビアツリー | `algorithms/behavior-tree.html` | `js/maps/behavior-tree-config.js` | `BehaviorTreeExample.cs` | Selector/Sequence |
+| 53 | Leader Following | `algorithms/steering-leader.html` | `js/maps/steering-leader-config.js` | `SteeringLeaderExample.cs` | 後方スロット追従 |
+| 54 | BVH 概説 | `algorithms/bvh-overview.html` | `js/maps/bvh-overview-config.js` | `BvhOverviewExample.cs` | 階層 AABB 剪定 |
+| 55 | ECS 入門 | `algorithms/ecs-intro.html` | `js/maps/ecs-intro-config.js` | `EcsIntroExample.cs` | E/C/S 表と System |
+| 56 | OBB / SAT | `algorithms/obb-sat.html` | `js/maps/obb-sat-config.js` | `ObbSatExample.cs` | 回転矩形・分離軸 |
+| 57 | Swept AABB | `algorithms/swept-aabb.html` | `js/maps/swept-aabb-config.js` | `SweptAabbExample.cs` | TOI・トンネル |
+| 58 | セーブ・ロード | `algorithms/save-load.html` | `js/maps/save-load-config.js` | `SaveLoadExample.cs` | version 移行 |
+| 59 | 回転運動 | `algorithms/rotational-motion.html` | `js/maps/rotational-motion-config.js` | `RotationalMotionExample.cs` | トルク·ω |
+| 60 | リプレイと決定性 | `algorithms/replay-determinism.html` | `js/maps/replay-determinism-config.js` | `ReplayDeterminismExample.cs` | 入力+シード |
+| 61 | デバッグ可視化 | `algorithms/debug-overlays.html` | `js/maps/debug-overlays-config.js` | `DebugOverlaysExample.cs` | レイヤ ON/OFF |
+| 62 | 回転中の衝突 | `algorithms/rotating-collision.html` | `js/maps/rotating-collision-config.js` | `RotatingCollisionExample.cs` | 回転 OBB 応答 |
+| 63 | 凹形状の凸分割 | `algorithms/concave-compound.html` | `js/maps/concave-compound-config.js` | `ConcaveCompoundExample.cs` | 複合コライダー |
+| 64 | 入力抽象化 | `algorithms/input-abstraction.html` | `js/maps/input-abstraction-config.js` | `InputAbstractionExample.cs` | アクションマップ |
+| 65 | コマンド入力 | `algorithms/command-input.html` | `js/maps/command-input-config.js` | `CommandInputExample.cs` | 技コマンド |
+| 66 | プロファイリング | `algorithms/profiling-loop.html` | `js/maps/profiling-loop-config.js` | `ProfilingLoopExample.cs` | 測定循環 |
+| 67 | イベントと効果音 | `algorithms/sfx-events.html` | `js/maps/sfx-events-config.js` | `SfxEventsExample.cs` | SFX Emit |
 
 共通:
 

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>加減速 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="physics" data-active="accel-decel"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 物理・判定 / 加減速</p>
+      <h1>加減速</h1>
+      <p class="page-header-lead">
+        入力方向へ<strong>加速</strong>し<strong>最高速度</strong>でクランプ。離すと<strong>ブレーキ</strong>。
+        前段: <a href="velocity-motion.html">速度による移動</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>v += input · accel · dt（入力中）</li>
+          <li>|v| を maxSpeed で制限</li>
+          <li>入力なし: 指数減衰で減速（慣性が残る）</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="ad-canvas" class="gl-canvas" width="640" height="220" tabindex="0"></canvas>
+        <div id="ad-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+            <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+          </div>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="accel">加速 <span id="accel-val">520</span></label>
+          <input type="range" id="accel" class="ttt-range" min="100" max="1000" value="520" step="20" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="max-speed">最高速度 <span id="max-val">220</span></label>
+          <input type="range" id="max-speed" class="ttt-range" min="60" max="400" value="220" step="10" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="brake">ブレーキ <span id="brake-val">4.5</span></label>
+          <input type="range" id="brake" class="ttt-range" min="0.5" max="12" value="4.5" step="0.5" />
+        </div>
+        <p class="footer-muted"><kbd>←</kbd><kbd>→</kbd> または <kbd>A</kbd><kbd>D</kbd></p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="物理 · 加減速"></footer>
+  <script type="module" src="../js/accel-decel.js"></script>
+</body>
+</html>

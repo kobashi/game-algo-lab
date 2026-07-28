@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="重み付き抽選と Fisher–Yates の可視化。" />
+  <title>重み付き抽選 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="procgen" data-active="weighted-random"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / プロシージャル / 重み付き抽選</p>
+      <h1>重み付き抽選・分布</h1>
+      <p class="page-header-lead">
+        ドロップやガチャの基本。<strong>累積重み + 一様乱数</strong>で偏った抽選を行い、
+        回数を増やすと理論確率に近づく様子を見る。対比として <strong>Fisher–Yates</strong>。
+        乱数: <a href="rng-seed.html">乱数とシード</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>重み w_i のとき確率 = w_i / Σw</li>
+          <li>実装: 累積和に rng()·合計 を当てて区間を選ぶ</li>
+          <li>シャッフルは「各要素ちょうど1回」— 抽選（置換あり）とは別物</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <h2 class="gl-block-title">分布</h2>
+        <canvas id="wr-canvas" class="gl-canvas" width="640" height="280"></canvas>
+        <div id="wr-table" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+        <div id="result-compare" class="result-compare" hidden></div>
+      </section>
+      <aside class="gl-side">
+        <h2 class="gl-block-title">操作</h2>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="seed">シード</label>
+          <input type="number" id="seed" class="mc-num" value="42" min="1" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="draws">抽選回数 <span id="draws-val">200</span></label>
+          <input type="range" id="draws" class="ttt-range" min="20" max="2000" value="200" step="20" />
+        </div>
+        <div id="weight-inputs" class="wr-weights"></div>
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-run" class="btn btn-primary">重み付き抽選</button>
+            <button type="button" id="btn-shuffle" class="btn btn-ghost">Fisher–Yates</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// 読み込み中…</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="プロシージャル · 重み付き抽選"></footer>
+  <script type="module" src="../js/weighted-random.js"></script>
+</body>
+</html>

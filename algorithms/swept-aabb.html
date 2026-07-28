@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Swept AABB — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="physics" data-active="swept-aabb"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 物理・判定 / Swept AABB</p>
+      <h1>Swept AABB / TOI</h1>
+      <p class="page-header-lead">
+        移動区間の<strong>最初の衝突時刻 t</strong>を求め、貫通（トンネリング）を防ぐ。
+        前段: <a href="collision.html">AABB</a> · <a href="raycast-shapes.html">レイ</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>離散: 移動後にだけ判定 → 高速だと壁を抜け得る</li>
+          <li>Swept: 相対移動をスラブ交差し t∈[0,1] の最初を取る</li>
+          <li>t で位置を止めると壁の手前で止まる</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="sw-canvas" class="gl-canvas" width="640" height="320"></canvas>
+        <div id="sw-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+            <button type="button" id="btn-step" class="btn btn-ghost">1フレーム</button>
+            <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+          </div>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="mode">モード</label>
+          <select id="mode" class="bandit-select">
+            <option value="swept">Swept (連続)</option>
+            <option value="discrete">離散のみ</option>
+          </select>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="vx">vx <span id="vx-val">420</span></label>
+          <input type="range" id="vx" class="ttt-range" min="50" max="900" value="420" step="10" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="vy">vy <span id="vy-val">0</span></label>
+          <input type="range" id="vy" class="ttt-range" min="-200" max="200" value="0" step="10" />
+        </div>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="物理 · Swept AABB"></footer>
+  <script type="module" src="../js/swept-aabb.js"></script>
+</body>
+</html>

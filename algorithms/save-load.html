@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>セーブ・ロード — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="save-load"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 設計・品質 / セーブ・ロード</p>
+      <h1>セーブ・ロード</h1>
+      <p class="page-header-lead">
+        JSON + <strong>version</strong> とマイグレーション。localStorage で永続化。
+        関連: <a href="ecs-intro.html">ECS</a>（状態の切り出し）。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>セーブに version を必ず含める</li>
+          <li>v1（hasKey なし）→ v2 へ読むとき既定値で補完</li>
+          <li>表示 JSON を編集して Import も可能</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="sl-canvas" class="gl-canvas" width="480" height="220"></canvas>
+        <p>スコア: <strong id="score-val">0</strong>
+          <label class="ttt-check" style="margin-left:1rem"><input type="checkbox" id="has-key" /> 鍵を持っている (v2)</label>
+        </p>
+        <h2 class="gl-block-title">JSON</h2>
+        <pre class="code-block" id="json-view" style="min-height:8rem"></pre>
+        <h2 class="gl-block-title">ログ</h2>
+        <div id="sl-log" class="es-log-panel" role="log"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-save" class="btn btn-primary">Save</button>
+            <button type="button" id="btn-load" class="btn btn-ghost">Load</button>
+          </div>
+          <div class="control-row" style="margin-top:0.4rem">
+            <button type="button" id="btn-export" class="btn btn-ghost">JSON 更新</button>
+            <button type="button" id="btn-import" class="btn btn-ghost">Import</button>
+          </div>
+          <div class="control-row" style="margin-top:0.4rem">
+            <button type="button" id="btn-fake-v1" class="btn btn-ghost">v1 形式にする</button>
+            <button type="button" id="btn-score" class="btn btn-ghost">+10 点</button>
+            <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+          </div>
+        </div>
+        <p class="footer-muted">キャンバスクリックで位置変更 → Save → 別タブでも同一 origin なら Load 可</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="品質 · セーブ/ロード"></footer>
+  <script type="module" src="../js/save-load.js"></script>
+</body>
+</html>

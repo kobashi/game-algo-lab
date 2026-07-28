@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>線分・レイキャスト — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="physics" data-active="raycast-shapes"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 物理・判定 / 線分・レイキャスト</p>
+      <h1>線分・レイキャストと図形の交差</h1>
+      <p class="page-header-lead">
+        レイ p(t)=o+d·t の<strong>最近ヒット</strong>（t≥0 最小）を円と AABB に対して求める。
+        関連: <a href="circle-collision.html">円衝突</a> · <a href="collision.html">AABB</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>円: 二次方程式の小さい非負解 t</li>
+          <li>AABB: スラブ法（各軸の t 区間の交差）</li>
+          <li>複数ヒットがあるとき最も近い t を採用</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="rc-canvas" class="gl-canvas" width="640" height="360"></canvas>
+        <div id="rc-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+        </div>
+        <p class="footer-muted">緑点=原点 · 黄点=方向 · 円/箱もドラッグ可</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="物理 · レイキャスト"></footer>
+  <script type="module" src="../js/raycast-shapes.js"></script>
+</body>
+</html>

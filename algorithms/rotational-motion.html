@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>回転運動 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="physics" data-active="rotational-motion"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 物理・判定 / 回転運動</p>
+      <h1>回転運動</h1>
+      <p class="page-header-lead">
+        <strong>τ = r × F</strong> → α = τ/I → ω·θ の更新。作用点オフセットで回転が変わる。
+        前段: <a href="accel-gravity.html">加速度と重力</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>中心に力 → 並進のみ（トルク 0）</li>
+          <li>端に力 → 並進 + 回転</li>
+          <li>I が大きいほど回りにくい</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="rm-canvas" class="gl-canvas" width="640" height="360"></canvas>
+        <div id="rm-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+            <button type="button" id="btn-impulse" class="btn btn-ghost">インパルス</button>
+            <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+          </div>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="force">力 F <span id="force-val">400</span></label>
+          <input type="range" id="force" class="ttt-range" min="50" max="900" value="400" step="10" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="offset">作用点 offset <span id="offset-val">30</span></label>
+          <input type="range" id="offset" class="ttt-range" min="-50" max="50" value="30" step="1" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="inertia">慣性 I <span id="inert-val">8000</span></label>
+          <input type="range" id="inertia" class="ttt-range" min="1000" max="20000" value="8000" step="100" />
+        </div>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="物理 · 回転"></footer>
+  <script type="module" src="../js/rotational-motion.js"></script>
+</body>
+</html>

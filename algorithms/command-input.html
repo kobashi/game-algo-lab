@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>コマンド入力 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="fundamentals" data-active="command-input"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / HCI / コマンド入力</p>
+      <h1>コマンド入力</h1>
+      <p class="page-header-lead">
+        方向・ボタンの<strong>時系列</strong>を窓時間内で技表と照合。
+        前段: <a href="input-buffer.html">入力バッファ</a>。
+      </p>
+    </div>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <p>バッファ: <code id="cmd-buf">（空）</code></p>
+        <h2 class="gl-block-title">技表</h2>
+        <ul id="cmd-list"></ul>
+        <h2 class="gl-block-title">ログ</h2>
+        <div id="cmd-log" class="es-log-panel" role="log"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <label class="controls-label" for="window-ms">窓 <span id="window-val">800</span> ms</label>
+        <input type="range" id="window-ms" class="ttt-range" min="200" max="2000" value="800" step="50" />
+        <button type="button" id="btn-clear" class="btn btn-ghost">バッファクリア</button>
+        <p class="footer-muted"><kbd>↓→</kbd> + <kbd>A</kbd>/<kbd>Z</kbd> = Hadouken<br/>
+        方向: 矢印 · A=A/Z · B=S/X</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="HCI · コマンド入力"></footer>
+  <script type="module" src="../js/command-input.js"></script>
+</body>
+</html>

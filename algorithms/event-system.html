@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>イベントシステム — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="event-system"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 設計パターン / イベントシステム</p>
+      <h1>イベントシステム</h1>
+      <p class="page-header-lead">
+        <strong>Emit（発行）</strong>と<strong>On（購読）</strong>で、送信側が受信側を知らなくても通知できる。
+        関連: <a href="fsm.html">ステートマシン</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>1 イベントに複数リスナ</li>
+          <li>購読解除（off）</li>
+          <li>疎結合: 発行側は誰が聞くか知らなくてよい</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <h2 class="gl-block-title">購読者</h2>
+        <div id="listener-list" class="es-listeners"></div>
+        <h2 class="gl-block-title">ログ</h2>
+        <div id="event-log" class="es-log-panel" role="log"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="event-type">イベント</label>
+          <select id="event-type" class="bandit-select"></select>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-sub" class="btn btn-primary">購読 (on)</button>
+            <button type="button" id="btn-emit" class="btn btn-ghost">発行 (emit)</button>
+          </div>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <div class="control-row">
+            <button type="button" id="btn-unsub" class="btn btn-ghost">直近を off</button>
+            <button type="button" id="btn-clear" class="btn btn-ghost">クリア</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="設計パターン · イベント"></footer>
+  <script type="module" src="../js/event-system.js"></script>
+</body>
+</html>
