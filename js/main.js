@@ -147,12 +147,12 @@ const TOPICS = [
     id: "coordinates",
     title: "座標変換",
     description:
-      "ローカル / ワールド / スクリーン。親子の回転合成とカメラ。",
+      "ローカル / ワールド / スクリーン。親子の回転合成とカメラ。CG 入口兼用。",
     href: "algorithms/coordinates.html",
     badge: "基礎実行",
     category: "基礎実行モデル",
     ready: true,
-    maturity: "oneshot",
+    maturity: "revised",
   },
   {
     id: "rng-seed",

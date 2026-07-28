@@ -148,7 +148,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 | `networking` | 通信・データ | **実装済** | 第5期 | p2p〜DB・チート検証まで一通り ready |
 | `audio` | ゲームサウンド | **実装済** | 第5期 | SFX〜レイヤー BGM まで一通り ready |
-| `graphics` | ゲーム CG | **実装済**（一部企画中） | 第4期 | GPU〜UI·Mesh ready。gfx-coordinates は coordinates と重複 |
+| `graphics` | ゲーム CG | **実装済** | 第4期 | GPU〜UI·Mesh ready。gfx-coordinates は coordinates に統合 |
 | `quality` | 設計・品質 | **実装済**（一部企画中） | 横断 | save/replay/debug ready。計測・テストは企画中 |
 | `procgen` | プロシージャル・確率・バランス | **実装済**（一部企画中） | 第2〜4期 | maze〜noise · balance-sim ready |
 
@@ -321,7 +321,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
-| `gfx-coordinates` | 座標系と変換 | **企画中** | Unity / Web のどちらでやるか SPEC で決定 |
+| `gfx-coordinates` | 座標系と変換 | **統合済** | 正本は `coordinates`（基礎実行）。重複デモは作らず導線のみ |
 | `gfx-camera` | カメラと投影 | **実装済** | [SPEC](./topics/gfx-camera/SPEC.md) |
 | `gfx-sprite-2d` | 2D スプライト | **実装済** | [SPEC](./topics/gfx-sprite-2d/SPEC.md) |
 | `gfx-mesh-uv` | メッシュ・UV・マテリアル | **実装済** | [SPEC](./topics/gfx-mesh-uv/SPEC.md) |

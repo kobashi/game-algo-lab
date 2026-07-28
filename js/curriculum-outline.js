@@ -74,10 +74,8 @@ export const CURRICULUM_OUTLINE = [
     id: "graphics",
     title: "ゲーム CG",
     phase: "第4期",
-    blurb: "デモあり（GPU〜UI·Mesh）。gfx-coordinates は coordinates と統合検討。",
-    items: [
-      { id: "gfx-coordinates", title: "座標系と変換（coordinates と重複検討）" },
-    ],
+    blurb: "デモあり（GPU〜UI·Mesh）。座標系は coordinates に統合済み。",
+    items: [],
   },
   {
     id: "quality",

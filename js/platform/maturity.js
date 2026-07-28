@@ -57,7 +57,7 @@ export const TOPIC_META = {
     updated: "2026-07-22",
   },
   "input-basics": { maturity: "oneshot", revisions: 0, updated: "2026-07-22" },
-  coordinates: { maturity: "oneshot", revisions: 0, updated: "2026-07-23" },
+  coordinates: { maturity: "revised", revisions: 1, updated: "2026-07-28" },
   "rng-seed": { maturity: "revised", revisions: 1, updated: "2026-07-23" },
   "maze-gen": { maturity: "oneshot", revisions: 0, updated: "2026-07-23" },
   "weighted-random": {

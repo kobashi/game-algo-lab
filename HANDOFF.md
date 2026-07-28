@@ -1,9 +1,9 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-07-28（ready **95** · UI / mesh / DB / anti-cheat）  
+最終更新: 2026-07-28（ready **95** · **v0.11.0** · Wave F 一通り）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
-Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.10.0
+Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.11.0
 
 新セッション開始時の指示例:
 
@@ -104,9 +104,13 @@ ready **91**。いずれも `oneshot`。**Audio カテゴリは ROADMAP 上ほ�
 2. `gfx-mesh-uv` — 三角形 + UV + マテリアル色  
 3. `net-db-transaction` — 購入 COMMIT/ROLLBACK  
 4. `net-anti-cheat` — 速度·スコア検証  
-ready **95**。**Networking も一通り完了。** Graphics 残りは `gfx-coordinates`（`coordinates` と統合検討）程度。
+ready **95**。**Audio / Networking / Graphics（主要）一通り完了。**
 
-**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: gfx-coordinates 統合判断 / oneshot 改訂 / Release タグ。
+**2026-07-28 統合・Release**:  
+- `gfx-coordinates` → **`coordinates` に統合**（重複デモは作らず CG 導線を追加）。coordinates を oneshot→**revised**。  
+- **Release `v0.11.0`**（ready 67→95、Wave F 本線）。ノート: `RELEASE_NOTES_v0.11.0.md`。
+
+**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: oneshot 改訂 · 授業向け stable 選定。
 
 ---
 

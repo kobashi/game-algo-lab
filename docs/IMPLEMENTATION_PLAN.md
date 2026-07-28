@@ -143,7 +143,7 @@
 | 群 | id 例 | 難度 | 備考 |
 |----|--------|------|------|
 | Audio | SFX〜レイヤー BGM | **M〜H** | ✅ カテゴリ一通り 2026-07-28 |
-| Graphics | GPU〜UI·Mesh ✅ | **M〜H** | gfx-coordinates は coordinates と統合検討のみ残 |
+| Graphics | GPU〜UI·Mesh ✅ | **M〜H** | gfx-coordinates → coordinates に統合済（2026-07-28） |
 | GPU | `gfx-gpu-concepts` | **E〜M** | ✅ **実装済** 2026-07-28（図解中心） |
 | Networking | p2p〜DB·anti-cheat ✅ | **H** | ✅ カテゴリ一通り 2026-07-28 |
 
@@ -166,8 +166,8 @@
 | 7 | **`constrained-gen`** | 中 | maze-gen + bfs 到達性 | ✅ |
 | 8 | **`accel-gravity`** | 小〜中 | velocity の次 | ✅ |
 
-**ready 95**: gfx-ui-canvas · gfx-mesh-uv · net-anti-cheat · net-db-transaction まで。  
-Wave F 主要 id は概ね完了。次: gfx-coordinates 統合判断 / oneshot 改訂 / Release。
+**ready 95**: Wave F 主要 id 完了。gfx-coordinates は coordinates に統合。  
+**v0.11.0**: ready 67→95 の大型拡張を Release。次: oneshot 改訂・授業向け stable 選定。
 
 ---
 

@@ -508,6 +508,8 @@ export const FOOTER_RELATED = {
   ],
   coordinates: [
     { href: "input-basics.html", label: "入力の基礎（前段）" },
+    { href: "gfx-camera.html", label: "カメラ（CG）" },
+    { href: "gfx-ui-canvas.html", label: "UI Anchor（CG）" },
     { href: "rng-seed.html", label: "次: 乱数とシード" },
   ],
   "rng-seed": [

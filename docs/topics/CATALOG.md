@@ -1,6 +1,6 @@
 # トピックカタログ
 
-最終更新: 2026-07-28（ready 95）  
+最終更新: 2026-07-28（ready 95 · v0.11.0）  
 
 - **実装の正**: この表 と `js/main.js` の `TOPICS`（ずれたら両方直す）  
 - **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable` + **修正回数** + **更新日**）  
@@ -74,7 +74,7 @@
 | `game-loop` | ゲームループ | ✅ | **一発** | 0 | 2026-07-22 | `algorithms/game-loop.html` | [SPEC](./game-loop/SPEC.md) | 可変/固定 timestep。跳ねるボール。人工遅延・MAX_STEPS でスパイラル防止を観察。説明特化 UI |
 | `time-management` | 時間管理 | ✅ | **一発** | 0 | 2026-07-22 | `algorithms/time-management.html` | [SPEC](./time-management/SPEC.md) | 壁時計 vs ゲーム内時間。time scale・ポーズ。往復キャラは game time 駆動 |
 | `input-basics` | 入力の基礎 | ✅ | **一発** | 0 | 2026-07-22 | `algorithms/input-basics.html` | [SPEC](./input-basics/SPEC.md) | held / down / up。Jump=edge、Fire=held 連射対比、Charge=長押し |
-| `coordinates` | 座標変換 | ✅ | **一発** | 0 | 2026-07-23 | `algorithms/coordinates.html` | [SPEC](./coordinates/SPEC.md) | ローカル/ワールド/スクリーン。親子回転合成・カメラ・クリック逆変換 |
+| `coordinates` | 座標変換 | ✅ | **調整** | 1 | 2026-07-28 | `algorithms/coordinates.html` | [SPEC](./coordinates/SPEC.md) | gfx-coordinates 統合・CG 導線（カメラ/UI/Mesh） |
 | `rng-seed` | 乱数とシード | ✅ | **調整** | 1 | 2026-07-23 | `algorithms/rng-seed.html` | [SPEC](./rng-seed/SPEC.md) | Mulberry32/XorShift/LCG 切替。LCG は a,c,m プリセット（質の悪い例〜実用寄り）と周期計測・ヒストグラム |
 
 **学習ストーリー**: ゲームループ → 時間管理 → 入力 → 座標 → 乱数とシード（**カテゴリ一通り完了**）  
@@ -250,8 +250,8 @@
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | 82 | 詳細は TOPIC_META |
-| 調整 (`revised`) | 13 | bfs〜rng-seed 等 |
+| 一発 (`oneshot`) | 81 | 詳細は TOPIC_META |
+| 調整 (`revised`) | 14 | bfs〜rng-seed · coordinates 等 |
 | 安定 (`stable`) | 0 | — |
 
 Fable5 起点のコード改訂 ↔ 成熟度の対応表: [MATURITY.md](./MATURITY.md) の「Fable5 レビュー → 成熟度の突き合わせ」。
