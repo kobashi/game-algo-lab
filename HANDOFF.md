@@ -536,7 +536,9 @@ ready **95**。**Audio / Networking / Graphics（主要）一通り完了。**
 - 既定ブランチ: `main`（ローカルは `origin/main` と同期済み想定）  
 - **GitHub Pages（試作運用中）**: https://kobashi.github.io/game-algo-lab/  
   - Source: `main` / `/ (root)`  
-- **Release 試作版**: https://github.com/kobashi/game-algo-lab/releases/tag/v0.9.8  
+- **Release 試作版**: https://github.com/kobashi/game-algo-lab/releases/tag/v0.11.0  
+  - 前版: `v0.10.0` / `v0.9.8`  
+
   - タグ `v0.9.8`（prerelease）— `RELEASE_NOTES_v0.9.8.md`（迷路生成）  
   - 前版: `v0.9.7` / `v0.9.6`  
 - 再公開: `./scripts/publish-github.sh game-algo-lab v0.9.8`（または新タグ）  
