@@ -1,6 +1,6 @@
 # トピックカタログ
 
-最終更新: 2026-07-28（ready **95** · v0.11.1）  
+最終更新: 2026-07-28（ready **99** · Sprint S1）  
 
 - **実装の正**: この表 と `js/main.js` の `TOPICS`（ずれたら両方直す）  
 - **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable` + **修正回数** + **更新日**）  
@@ -89,6 +89,7 @@
 | `constrained-gen` | 制約付き生成 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/constrained-gen.html` | [SPEC](./constrained-gen/SPEC.md) | 乱択壁 + BFS 到達性棄却ループ |
 | `dungeon-gen` | ダンジョン生成 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/dungeon-gen.html` | [SPEC](./dungeon-gen/SPEC.md) | 部屋配置 + L 字通路。1ステップ可視化 |
 | `noise-terrain` | ノイズと地形 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/noise-terrain.html` | [SPEC](./noise-terrain/SPEC.md) | Value Noise + fBm。海陸色分け |
+| `cellular-automata` | セルオートマトン（洞窟） | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/cellular-automata.html` | [SPEC](./cellular-automata/SPEC.md) | 近傍規則 · 反復 |
 | `balance-sim` | ゲームバランス分析 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/balance-sim.html` | [SPEC](./balance-sim/SPEC.md) | 簡易戦闘 N 回 · 勝率バー |
 
 **学習ストーリー**: 乱数 → 迷路 → 重み付き → 制約付き → ダンジョン → ノイズ → **バランス分析**  
@@ -124,6 +125,7 @@
 | id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
 |----|----------|-------|--------|------|------|--------|------|----------|
 | `fsm` | ステートマシン | ✅ | **一発** | 0 | 2026-07-17 | `algorithms/fsm.html` | [SPEC](./fsm/SPEC.md) | 状態図・イベント・遷移表の初版 |
+| `dirty-flag` | Dirty Flag パターン | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/dirty-flag.html` | [SPEC](./dirty-flag/SPEC.md) | 変換キャッシュ · dirty 連鎖 |
 | `event-system` | イベントシステム | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/event-system.html` | [SPEC](./event-system/SPEC.md) | On/Off/Emit の pub/sub。購読ログ可視化 |
 | `object-pool` | オブジェクトプール | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/object-pool.html` | [SPEC](./object-pool/SPEC.md) | 弾の Acquire/Release。created/reused 比較 |
 | `command-pattern` | コマンドパターン | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/command-pattern.html` | [SPEC](./command-pattern/SPEC.md) | execute/undo 履歴スタック |
@@ -155,6 +157,7 @@
 | `sweep-and-prune` | Sweep and Prune | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/sweep-and-prune.html` | [SPEC](./sweep-and-prune/SPEC.md) | X 軸区間ソート |
 | `quadtree` | 四分木 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/quadtree.html` | [SPEC](./quadtree/SPEC.md) | 適応的4分割 · 範囲クエリ |
 | `bvh-overview` | BVH 概説 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/bvh-overview.html` | [SPEC](./bvh-overview/SPEC.md) | 物体 AABB 階層 · クエリ剪定 |
+| `spatial-hash` | 空間ハッシュ | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/spatial-hash.html` | [SPEC](./spatial-hash/SPEC.md) | セル鍵 · 3×3 候補 |
 
 **学習ストーリー**: 総当たり → グリッド → Broad/Narrow → SaP → 四分木 → BVH  
 
@@ -229,6 +232,7 @@
 | `gfx-lod-culling` | LOD・カリング | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-lod-culling.html` | [SPEC](./gfx-lod-culling/SPEC.md) | フラスタム · LOD0/1/2 |
 | `gfx-ui-canvas` | UI 描画（Anchor・Pivot） | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-ui-canvas.html` | [SPEC](./gfx-ui-canvas/SPEC.md) | Anchor·Pivot·解像度 |
 | `gfx-mesh-uv` | メッシュ・UV・マテリアル | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-mesh-uv.html` | [SPEC](./gfx-mesh-uv/SPEC.md) | 2tris · UV · tint |
+| `sprite-anim-fsm` | スプライトアニメ × FSM | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sprite-anim-fsm.html` | [SPEC](./sprite-anim-fsm/SPEC.md) | idle/run/jump クリップ |
 
 ---
 
@@ -245,11 +249,11 @@
 
 ---
 
-## 成熟度サマリ（2026-07-28·95 トピック ready）
+## 成熟度サマリ（2026-07-28·99 トピック ready）
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | ≈80 | 詳細は TOPIC_META（ready 95 本） |
+| 一発 (`oneshot`) | ≈84 | 詳細は TOPIC_META（ready 99 本） |
 | 調整 (`revised`) | ≈15 | bfs〜rng-seed · coordinates 等 |
 | 安定 (`stable`) | 0 | — |
 

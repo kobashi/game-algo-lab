@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>セルオートマトン — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="procgen" data-active="cellular-automata"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / プロシージャル / セルオートマトン</p>
+      <h1>セルオートマトン（洞窟生成）</h1>
+      <p class="page-header-lead">
+        近傍の壁数で各セルを更新し、<strong>洞窟状</strong>のマップを得る。
+        前段: <a href="maze-gen.html">迷路生成</a> ·
+        <a href="noise-terrain.html">ノイズ</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>局所規則だけで大域的な形が生まれる</li>
+          <li>反復でノイズがまとまり洞窟になる</li>
+          <li>境界は常に壁として数える</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="ca-canvas" class="gl-canvas" width="480" height="320"></canvas>
+        <div id="ca-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <label class="controls-label" for="seed">シード</label>
+        <input type="number" id="seed" class="mc-num" value="42" min="1" />
+        <label class="controls-label" for="fill">初期壁率 <span id="fill-val">0.45</span></label>
+        <input type="range" id="fill" class="ttt-range" min="0.2" max="0.65" value="0.45" step="0.01" />
+        <label class="controls-label" for="steps">一括世代 <span id="steps-val">5</span></label>
+        <input type="range" id="steps" class="ttt-range" min="1" max="20" value="5" />
+        <div class="control-row">
+          <button type="button" id="btn-init" class="btn btn-ghost">初期化</button>
+          <button type="button" id="btn-step" class="btn btn-primary">1 世代</button>
+          <button type="button" id="btn-run" class="btn btn-ghost">N 世代</button>
+        </div>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Procgen · CA"></footer>
+  <script type="module" src="../js/cellular-automata.js"></script>
+</body>
+</html>

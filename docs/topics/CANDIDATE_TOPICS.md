@@ -62,6 +62,7 @@
 | `cellular-automata` | セルオートマトン（洞窟生成） | procgen | **E〜M** | maze-gen · noise | 近傍ルールで壁/床が進化 | 高 | 実装が軽く、迷路・ノイズと並ぶ生成三本目。 |
 | `sprite-anim-fsm` | スプライトアニメ × FSM | Graphics · patterns | **E〜M** | gfx-sprite-2d · fsm | 状態ごとにクリップ切替・遷移 | 高 | 既存 2 トピックの接続。実践感が高い。 |
 | `snapshot-interp` | スナップショット補間 | networking | **M** | net-prediction · net-p2p | 受信状態をバッファし描画を遅延補間 | 高 | 予測の対になる「リモート表示」側。静的疑似ネットで可。 |
+| （参考）`net-anti-cheat` | サーバ権威とチート対策 | networking | — | **実装済** | 速度上限・スコア再計算 | — | 入門として十分。本格 anti-cheat は ROADMAP §4.2 範囲外 |
 
 ### 2.2 優先度 B（中期・少し重い or 狭い）
 
@@ -124,12 +125,12 @@
 
 難易度と依存を踏まえた **案**（確定の実装指示ではない）。
 
-### Sprint S1 — 低〜中・接続が強い（4 本目安）
+### Sprint S1 — 低〜中・接続が強い（4 本）— **実装済 2026-07-28**
 
-1. `cellular-automata`（E〜M）  
-2. `spatial-hash`（E〜M）  
-3. `sprite-anim-fsm`（E〜M）  
-4. `dirty-flag` または `double-buffer`（E）
+1. `cellular-automata` ✅  
+2. `spatial-hash` ✅  
+3. `sprite-anim-fsm` ✅  
+4. `dirty-flag` ✅
 
 ### Sprint S2 — 経路・AI の「次の現実」（3 本）
 

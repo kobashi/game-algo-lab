@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>スプライトアニメ × FSM — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="sprite-anim-fsm"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / ゲーム CG / アニメ FSM</p>
+      <h1>スプライトアニメ × FSM</h1>
+      <p class="page-header-lead">
+        状態 <strong>idle / run / jump</strong> ごとにクリップを切り替え、フレームを進める。
+        前段: <a href="gfx-sprite-2d.html">2D スプライト</a> ·
+        <a href="fsm.html">ステートマシン</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>状態 → アニメクリップの対応表</li>
+          <li>イベントで遷移（jump 終了で idle へ）</li>
+          <li>ループクリップとワンショットクリップ</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="saf-canvas" class="gl-canvas" width="640" height="320"></canvas>
+        <p>現在状態: <strong id="saf-state">idle</strong></p>
+        <div id="saf-log" class="es-log-panel" role="log"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="control-row">
+          <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+        </div>
+        <div class="control-row" style="flex-wrap:wrap;gap:0.35rem">
+          <button type="button" id="btn-idle" class="btn btn-ghost">→ idle</button>
+          <button type="button" id="btn-run" class="btn btn-ghost">→ run</button>
+          <button type="button" id="btn-jump" class="btn btn-ghost">→ jump</button>
+        </div>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Graphics · Anim FSM"></footer>
+  <script type="module" src="../js/sprite-anim-fsm.js"></script>
+</body>
+</html>

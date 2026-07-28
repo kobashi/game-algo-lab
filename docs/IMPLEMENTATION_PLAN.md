@@ -169,8 +169,9 @@
 **ready 95**: Wave F 主要 id 完了。gfx-coordinates は coordinates に統合。  
 **v0.11.0**: ready 67→95 の大型拡張を Release。  
 **v0.11.1**: docs 実装状況表記の同期 · 経路探索 6 本の疑似コード行同期。  
-次: oneshot 改訂 · stable 選定 · 計測パネル統一 ·「戻る」。  
-**追加候補の調査**: [topics/CANDIDATE_TOPICS.md](./topics/CANDIDATE_TOPICS.md)（Sprint S1〜S4 案）。
+**Sprint S1 実装済（ready 99）**: cellular-automata · spatial-hash · sprite-anim-fsm · dirty-flag。  
+次: Sprint S2 · oneshot 改訂 · 計測パネル統一 ·「戻る」。  
+**候補**: [topics/CANDIDATE_TOPICS.md](./topics/CANDIDATE_TOPICS.md)。**範囲外**: ROADMAP §4.2。
 
 ---
 

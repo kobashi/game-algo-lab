@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>空間ハッシュ — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="spatial" data-active="spatial-hash"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 空間 / 空間ハッシュ</p>
+      <h1>空間ハッシュ</h1>
+      <p class="page-header-lead">
+        座標をセル鍵に写し、<strong>3×3 近傍バケット</strong>だけを候補にする。
+        前段: <a href="uniform-grid.html">一様グリッド</a> ·
+        <a href="brute-force-pairs.html">総当たり</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>鍵 = floor(x/cell), floor(y/cell)</li>
+          <li>クエリは自分セル＋8 近傍</li>
+          <li>候補数 ≪ 総当たり を表で確認</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="sh-canvas" class="gl-canvas" width="400" height="400" tabindex="0"></canvas>
+        <div id="sh-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <label class="controls-label" for="cell-size">セルサイズ <span id="cell-val">40</span></label>
+        <input type="range" id="cell-size" class="ttt-range" min="20" max="100" value="40" step="4" />
+        <label class="controls-label" for="count">物体数 <span id="count-val">40</span></label>
+        <input type="range" id="count" class="ttt-range" min="10" max="100" value="40" step="5" />
+        <div class="control-row">
+          <button type="button" id="btn-rebuild" class="btn btn-primary">再配置</button>
+        </div>
+        <p class="footer-muted">点をクリックでクエリ対象を変更。赤=クエリ、黄=候補。</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Spatial · Hash"></footer>
+  <script type="module" src="../js/spatial-hash.js"></script>
+</body>
+</html>

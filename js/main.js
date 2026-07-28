@@ -221,6 +221,17 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "cellular-automata",
+    title: "セルオートマトン（洞窟）",
+    description:
+      "近傍壁数の規則で反復し洞窟状マップを得る。",
+    href: "algorithms/cellular-automata.html",
+    badge: "プロシージャル",
+    category: "プロシージャル",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "and-or",
     title: "AND-OR 探索",
     description:
@@ -628,6 +639,17 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "spatial-hash",
+    title: "空間ハッシュ",
+    description:
+      "座標をセル鍵に写し 3×3 近傍だけを候補にする。総当たりと比較。",
+    href: "algorithms/spatial-hash.html",
+    badge: "空間分割",
+    category: "空間探索・最適化",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "ecs-intro",
     title: "ECS 入門",
     description:
@@ -969,6 +991,17 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "sprite-anim-fsm",
+    title: "スプライトアニメ × FSM",
+    description:
+      "idle/run/jump の状態ごとにクリップを切り替えフレーム進行。",
+    href: "algorithms/sprite-anim-fsm.html",
+    badge: "ゲーム CG",
+    category: "ゲーム CG",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "net-p2p-demo",
     title: "P2P 通信の観察",
     description:
@@ -1040,6 +1073,17 @@ const TOPICS = [
     description:
       "状態・イベント・遷移表。キャラ行動を FSM でモデル化（非マップ UI）。",
     href: "algorithms/fsm.html",
+    badge: "設計パターン",
+    category: "設計パターン",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "dirty-flag",
+    title: "Dirty Flag パターン",
+    description:
+      "変換変更時だけワールドを再計算。毎フレ全計算と比較。",
+    href: "algorithms/dirty-flag.html",
     badge: "設計パターン",
     category: "設計パターン",
     ready: true,

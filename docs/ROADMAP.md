@@ -7,7 +7,7 @@
 | **正本改訂** | **2026-07-19** — Fable5 レビュー全件承認を反映（§2 実在ルール優先原則、§4 procgen 行、§6.1 三目並べ、§6.4 割り箸 新設、§15 第2期追記）。レビュー記録: [reviews/2026-07-19-docx-minigames-review.md](./reviews/2026-07-19-docx-minigames-review.md)、変更履歴版: [interactive_game_programming_material_plan_fable5_review.docx](./interactive_game_programming_material_plan_fable5_review.docx) |
 | **リポジトリ登録** | 2026-07-17（`docs/` に配置し Git 管理開始） |
 | **本 Markdown** | 正本の要約・**実装状況の対応表**・Game Algo Lab 運用メモ（エージェント／GitHub 向け） |
-| **最終更新（md）** | 2026-07-28（候補トピック調査 [topics/CANDIDATE_TOPICS.md](./topics/CANDIDATE_TOPICS.md) を追加） |
+| **最終更新（md）** | 2026-07-28（§4 サイト範囲・範囲外メモ · Sprint S1 着手） |
 
 正本の変更や方針の大きな見直しは **Docx を更新したうえで本ファイルを同期**する。  
 細部の図表・講義向け長文は正本を開き、日々の実装判断は本ファイルと [topics/CATALOG.md](./topics/CATALOG.md) を優先する。
@@ -159,7 +159,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `procgen` | プロシージャル・確率・バランス | **実装済** | 第2〜4期 | 迷路〜ノイズ・balance-sim |
 
 実装済みトピックの詳細・成熟度は [topics/CATALOG.md](./topics/CATALOG.md) / [topics/MATURITY.md](./topics/MATURITY.md)。  
-**ready 合計: 95**（2026-07-28 · v0.11.1 時点）。
+**ready 合計: 99**（2026-07-28 · Sprint S1 後）。
 
 > **`patterns` / `quality` 分割について**: 正本 §13 は「ソフトウェア設計・品質」という **単一領域**（イベント〜プロファイリングまで）。本サイトはメニュー UI の都合で `patterns`（設計パターン寄り）と `quality`（品質・計測寄り）の **2 カテゴリに分割**している。上表の「第2〜3期」「横断」という期の目安は **正本 §15 に明記はなく、サイト運用上の便宜的な推定**。正本との対応は 1 領域 → 2 カテゴリの意図的な分割であり、矛盾ではなく **サイト独自の実装分類**として扱う。
 
@@ -175,7 +175,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 | | 件数の目安 |
 |--|-----------|
-| 実装済（メニュー掲載） | **95** |
+| 実装済（メニュー掲載） | **99** |
 | アイディアメモ（当面未実装） | 2（`path-compare` · `game-tree-engine`） |
 | **追加候補の調査** | [topics/CANDIDATE_TOPICS.md](./topics/CANDIDATE_TOPICS.md)（2026-07-28 · 優先度 A〜C） |
 
@@ -400,19 +400,45 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 ---
 
-## 4. やらないこと（当面・サイト実装）
+## 4. サイトの範囲（やる / やらない）
 
-- ビルドツール必須化（Webpack 等）。静的 HTML/CSS/JS を維持  
-- バックエンド・ログイン（通信教材は別途 SPEC。現サイトは静的）  
+### 4.1 このサイトで扱う（範囲内）
+
+| 方針 | 内容 |
+|------|------|
+| 形態 | 静的 HTML/CSS/JS。ビルド必須化しない |
+| 可視化 | 内部状態（DS・ベクトル・スコア・パケット・検証結果）を見せる |
+| 通信・チート | **疑似ネット**で遅延・権威・検証の型を教える（`net-*` · **`net-anti-cheat` 実装済**） |
+| チート教材の核 | 「クライアント報告を信じない」· 速度上限 · スコア再計算 · REJECT/クランプの観察 |
+| 追加トピック | [topics/CANDIDATE_TOPICS.md](./topics/CANDIDATE_TOPICS.md) の優先度 A〜B を段階追加 |
+
+### 4.2 このサイトの範囲を超えるもの（メモ・当面やらない）
+
+実装・本番運用をこのリポジトリに持ち込まない。講義での口頭説明や発展課題としては触れてよい。
+
+| メモ id | 内容 | 超える理由 |
+|---------|------|------------|
+| `out-of-scope-real-server` | 実サーバ・ログイン・永続 DB の本番運用 | 静的 Pages 前提。通信は疑似のみ |
+| `out-of-scope-full-anticheat` | メモリ改変・外部チートツール・カーネル検知・反チート商用 SDK | クライアント側検知は教材で再現困難・倫理/環境依存 |
+| `out-of-scope-replay-tamper` | リプレイ改ざんの本格検知（署名・サーバ保管） | サーバ実体と鍵管理が必要 |
+| `out-of-scope-ml-cheat` | ML による異常行動検知の学習パイプライン | データ・学習ループが重い |
+| `out-of-scope-unity-replace` | 正本 Unity 教材へのサイト全面置き換え | 現行静的サイトと併存は可だが急がない |
+| `out-of-scope-build-toolchain` | Webpack/Vite 必須化 | 方針に反する |
+| `out-of-scope-pbr-full` / `skeletal-2d` / `rl-agents` 等 | CANDIDATE §2.3 の C 群 | 工数・依存がサイト規模を超える |
+
+**チート対策の切り分け**: `net-anti-cheat` は **サーバ権威 + 検証の入門**まで。本格 anti-cheat 製品相当は上表の範囲外メモ。
+
+### 4.3 その他やらないこと（当面・サイト実装）
+
 - 仕様なしの大規模リファクタ  
-- **E2E** / **i18n**（下記バックログ）  
-- 正本の Unity 全面移行を、現サイトの置き換えとして急がない  
+- **E2E** / **i18n**（§5）  
+- 実マルチプレイの本番マッチメイキング  
 
 ---
 
 ## 5. 今後の課題（バックログ・着手保留）
 
-優先度はトピック追加や基盤の小さな改善より**下**。
+優先度はトピック追加や基盤の小さな改善より**下**（ただし **追加候補の実装**は CANDIDATE の Sprint を正とする）。
 
 | 課題 | 意図（やるなら） | いまやらない理由 |
 |------|------------------|------------------|
@@ -420,6 +446,18 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | **i18n** | 多言語受講・公開 | 日本語教材が主。文言キー化の波及が大きい |
 | **`path-compare`（経路アルゴリズム同時比較）** | 同一地図で BFS/Dijkstra/A* 等を並べて再生・計測 | アイディアメモ段階。UI・共通エンジンの工大。双方向デモの比較パネルや個別トピックの切替で当面足りる。**優先度低・着手保留** |
 | **`game-tree-engine`（共通探索エンジン）** | 合法手・終局・評価を差し替え可能な横断 solver | アイディアメモ段階。抽象化の設計コストが大きく、教材効果は薄い。各デモの純関数 export + platform 共有で当面足りる。**優先度低・着手保留** |
+| **計測パネル統一 / 1ステップ戻る** | 正本の共通 UI に寄せる | 重要だが Wave 追加と並行。継続バックログ |
+| **oneshot → revised / stable** | 教材品質 | レビュー工数。Fable5 等と計画的に |
+
+### 5.1 追加トピック（調査済み・実装候補）
+
+詳細・スプリント案: **[topics/CANDIDATE_TOPICS.md](./topics/CANDIDATE_TOPICS.md)**  
+
+| 波 | id 例 | 状態 |
+|----|--------|------|
+| Sprint S1 | `cellular-automata` · `spatial-hash` · `sprite-anim-fsm` · `dirty-flag` | **実装済**（2026-07-28） |
+| Sprint S2〜 | navmesh · flow-field · utility-ai · … | 調査済・未着手 |
+| 範囲外 | §4.2 のメモ id | 実装しない（口頭・発展課題のみ） |
 
 ### E2E 目安
 

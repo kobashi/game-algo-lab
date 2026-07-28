@@ -76,6 +76,8 @@ export const NAV_GROUPS = {
     { id: "gfx-lod-culling", label: "LOD", href: "gfx-lod-culling.html" },
     { id: "gfx-ui-canvas", label: "UI", href: "gfx-ui-canvas.html" },
     { id: "gfx-mesh-uv", label: "Mesh", href: "gfx-mesh-uv.html" },
+    { id: "sprite-anim-fsm", label: "AnimFSM", href: "sprite-anim-fsm.html" },
+    { id: "dirty-flag", label: "Dirty", href: "dirty-flag.html" },
     { id: "net-p2p-demo", label: "P2P", href: "net-p2p-demo.html" },
     { id: "net-prediction", label: "予測", href: "net-prediction.html" },
     { id: "net-client-server", label: "C/S", href: "net-client-server.html" },
@@ -112,6 +114,7 @@ export const NAV_GROUPS = {
     { id: "sweep-and-prune", label: "SaP", href: "sweep-and-prune.html" },
     { id: "quadtree", label: "四分木", href: "quadtree.html" },
     { id: "bvh-overview", label: "BVH", href: "bvh-overview.html" },
+    { id: "spatial-hash", label: "空間Hash", href: "spatial-hash.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
   ],
   steering: [
@@ -146,6 +149,7 @@ export const NAV_GROUPS = {
     { id: "constrained-gen", label: "制約生成", href: "constrained-gen.html" },
     { id: "dungeon-gen", label: "ダンジョン", href: "dungeon-gen.html" },
     { id: "noise-terrain", label: "ノイズ", href: "noise-terrain.html" },
+    { id: "cellular-automata", label: "CA", href: "cellular-automata.html" },
     { id: "balance-sim", label: "バランス", href: "balance-sim.html" },
     { id: "rng-seed", label: "乱数", href: "rng-seed.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
@@ -352,6 +356,22 @@ export const FOOTER_RELATED = {
   "gfx-mesh-uv": [
     { href: "gfx-gpu-concepts.html", label: "GPU（前段）" },
     { href: "coordinates.html", label: "座標" },
+  ],
+  "cellular-automata": [
+    { href: "maze-gen.html", label: "迷路生成" },
+    { href: "noise-terrain.html", label: "ノイズ" },
+  ],
+  "spatial-hash": [
+    { href: "uniform-grid.html", label: "一様グリッド（前段）" },
+    { href: "brute-force-pairs.html", label: "総当たり" },
+  ],
+  "sprite-anim-fsm": [
+    { href: "gfx-sprite-2d.html", label: "スプライト（前段）" },
+    { href: "fsm.html", label: "FSM" },
+  ],
+  "dirty-flag": [
+    { href: "coordinates.html", label: "座標（前段）" },
+    { href: "fsm.html", label: "FSM" },
   ],
   "net-p2p-demo": [
     { href: "time-management.html", label: "時間管理（関連）" },

@@ -1,6 +1,6 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-07-28（ready **95** · **v0.11.1** · docs 同期 + 疑似コード）  
+最終更新: 2026-07-28（ready **99** · Sprint S1 + 範囲メモ）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.11.1
@@ -118,9 +118,12 @@ ready **95**。**Audio / Networking / Graphics（主要）一通り完了。**
 
 **2026-07-28 docs 同期 · v0.11.1**: ROADMAP/CATALOG/index の古い「企画中」表記を修正。本線カテゴリは実装済に揃えた。
 
-**2026-07-28 候補調査**: [docs/topics/CANDIDATE_TOPICS.md](docs/topics/CANDIDATE_TOPICS.md) — 追加可能トピックを優先度 A〜C で記録（navmesh / flow-field / utility-ai / WFC / Verlet 等）。
+**2026-07-28 候補調査**: [docs/topics/CANDIDATE_TOPICS.md](docs/topics/CANDIDATE_TOPICS.md)。ROADMAP §4 にサイト範囲・**範囲外メモ**（本格 anti-cheat 等）。
 
-**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: oneshot 改訂 · 候補 Sprint S1 · 計測パネル統一。
+**2026-07-28 Sprint S1（ready 99）**:  
+`cellular-automata` · `spatial-hash` · `sprite-anim-fsm` · `dirty-flag`。
+
+**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: Sprint S2（navmesh / flow-field / utility）または oneshot 改訂。
 
 ---
 
