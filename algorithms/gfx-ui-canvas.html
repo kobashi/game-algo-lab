@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="UI の Anchor・Pivot・解像度対応。" />
+  <title>UI 描画 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="gfx-ui-canvas"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / ゲーム CG / UI</p>
+      <h1>UI 描画（Canvas・Anchor・Pivot）</h1>
+      <p class="page-header-lead">
+        親画面の <strong>Anchor</strong> に貼り、要素の <strong>Pivot</strong> を原点にオフセット。
+        解像度を変えても端に追従する。前段: <a href="coordinates.html">座標</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>Anchor = 親の正規化座標（0〜1）</li>
+          <li>Pivot = 自分のどの点を Anchor+Offset に合わせるか</li>
+          <li>解像度変更で絶対 px 固定 UI は破綻しやすい</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="ui-canvas" class="gl-canvas" width="640" height="360" tabindex="0"></canvas>
+        <div id="ui-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <label class="controls-label" for="res">仮想解像度</label>
+        <select id="res" class="bandit-select">
+          <option value="640x360">640×360</option>
+          <option value="800x450">800×450</option>
+          <option value="480x320">480×320</option>
+          <option value="960x540">960×540</option>
+        </select>
+        <label class="controls-label" for="anchor">Anchor プリセット</label>
+        <select id="anchor" class="bandit-select">
+          <option value="top-left">左上</option>
+          <option value="top-right">右上</option>
+          <option value="center">中央</option>
+          <option value="bottom-right" selected>右下</option>
+          <option value="bottom-stretch">下中央</option>
+        </select>
+        <label class="controls-label" for="pivot-x">Pivot X <span id="pivot-x-val">0.50</span></label>
+        <input type="range" id="pivot-x" class="ttt-range" min="0" max="1" value="0.5" step="0.05" />
+        <label class="controls-label" for="pivot-y">Pivot Y <span id="pivot-y-val">0.50</span></label>
+        <input type="range" id="pivot-y" class="ttt-range" min="0" max="1" value="0.5" step="0.05" />
+        <p class="footer-muted">ボタンをドラッグして Offset を変更。</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Graphics · UI"></footer>
+  <script type="module" src="../js/gfx-ui-canvas.js"></script>
+</body>
+</html>

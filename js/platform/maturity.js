@@ -367,6 +367,26 @@ export const TOPIC_META = {
     revisions: 0,
     updated: "2026-07-28",
   },
+  "gfx-ui-canvas": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-28",
+  },
+  "gfx-mesh-uv": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-28",
+  },
+  "net-anti-cheat": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-28",
+  },
+  "net-db-transaction": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-28",
+  },
   "and-or": { maturity: "revised", revisions: 1, updated: "2026-07-19" },
 
   minimax: { maturity: "revised", revisions: 1, updated: "2026-07-19" },

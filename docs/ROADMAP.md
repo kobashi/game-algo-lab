@@ -146,9 +146,9 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `spatial` | 空間探索・最適化 | **実装済**（一部企画中） | 第3〜4期 | 総当たり〜BVH ready |
 | `hci` | 入力・操作感・HCI | **実装済**（一部企画中） | 第3期 | coyote-time / input-buffer ready |
 
-| `networking` | 通信・データ | **実装済**（一部企画中） | 第5期 | p2p〜同期モード ready。anti-cheat 発展・DB は企画中 |
+| `networking` | 通信・データ | **実装済** | 第5期 | p2p〜DB・チート検証まで一通り ready |
 | `audio` | ゲームサウンド | **実装済** | 第5期 | SFX〜レイヤー BGM まで一通り ready |
-| `graphics` | ゲーム CG | **実装済**（一部企画中） | 第4期 | GPU〜ポスト・LOD ready。mesh/UI 等は企画中 |
+| `graphics` | ゲーム CG | **実装済**（一部企画中） | 第4期 | GPU〜UI·Mesh ready。gfx-coordinates は coordinates と重複 |
 | `quality` | 設計・品質 | **実装済**（一部企画中） | 横断 | save/replay/debug ready。計測・テストは企画中 |
 | `procgen` | プロシージャル・確率・バランス | **実装済**（一部企画中） | 第2〜4期 | maze〜noise · balance-sim ready |
 
@@ -295,8 +295,8 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `net-client-server` | クライアント・サーバ | **実装済** | [SPEC](./topics/net-client-server/SPEC.md) |
 | `net-sync-modes` | 状態同期 vs 入力同期 | **実装済** | [SPEC](./topics/net-sync-modes/SPEC.md) |
 | `net-prediction` | 補間・予測・補正 | **実装済** | [SPEC](./topics/net-prediction/SPEC.md) |
-| `net-anti-cheat` | サーバ権威とチート対策 | **企画中** | 速度・スコア検証の疑似 |
-| `net-db-transaction` | DB とトランザクション | **企画中** | 購入の COMMIT/ROLLBACK 概念 |
+| `net-anti-cheat` | サーバ権威とチート対策 | **実装済** | [SPEC](./topics/net-anti-cheat/SPEC.md) |
+| `net-db-transaction` | DB とトランザクション | **実装済** | [SPEC](./topics/net-db-transaction/SPEC.md) |
 
 ---
 
@@ -324,12 +324,12 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `gfx-coordinates` | 座標系と変換 | **企画中** | Unity / Web のどちらでやるか SPEC で決定 |
 | `gfx-camera` | カメラと投影 | **実装済** | [SPEC](./topics/gfx-camera/SPEC.md) |
 | `gfx-sprite-2d` | 2D スプライト | **実装済** | [SPEC](./topics/gfx-sprite-2d/SPEC.md) |
-| `gfx-mesh-uv` | メッシュ・UV・マテリアル | **企画中** | |
+| `gfx-mesh-uv` | メッシュ・UV・マテリアル | **実装済** | [SPEC](./topics/gfx-mesh-uv/SPEC.md) |
 | `gfx-lighting-alpha` | ライティング・透明度 | **実装済** | [SPEC](./topics/gfx-lighting-alpha/SPEC.md) |
 | `gfx-animation-vfx` | アニメーション・パーティクル | **実装済** | [SPEC](./topics/gfx-animation-vfx/SPEC.md) |
 | `gfx-postprocess` | ポストプロセス | **実装済** | [SPEC](./topics/gfx-postprocess/SPEC.md) |
 | `gfx-lod-culling` | LOD・カリング | **実装済** | [SPEC](./topics/gfx-lod-culling/SPEC.md) |
-| `gfx-ui-canvas` | UI 描画 | **企画中** | Canvas・Anchor・Pivot・解像度対応（正本 §12.1） |
+| `gfx-ui-canvas` | UI 描画 | **実装済** | [SPEC](./topics/gfx-ui-canvas/SPEC.md) |
 | `gfx-gpu-concepts` | GPU パイプライン概説 | **実装済** | [SPEC](./topics/gfx-gpu-concepts/SPEC.md) |
 
 ---

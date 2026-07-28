@@ -60,11 +60,8 @@ export const CURRICULUM_OUTLINE = [
     id: "networking",
     title: "通信・データ",
     phase: "第5期",
-    blurb: "デモあり（P2P · 予測 · C/S · 同期モード）。DB・発展 anti-cheat は企画中。",
-    items: [
-      { id: "net-anti-cheat", title: "サーバ権威とチート対策（発展）" },
-      { id: "net-db-transaction", title: "DB とトランザクション" },
-    ],
+    blurb: "デモあり（P2P〜DB・チート検証まで一通り）。",
+    items: [],
   },
   {
     id: "audio",
@@ -77,11 +74,9 @@ export const CURRICULUM_OUTLINE = [
     id: "graphics",
     title: "ゲーム CG",
     phase: "第4期",
-    blurb: "デモあり（GPU〜ポスト・LOD）。mesh/UI 等は企画中。",
+    blurb: "デモあり（GPU〜UI·Mesh）。gfx-coordinates は coordinates と統合検討。",
     items: [
-      { id: "gfx-coordinates", title: "座標系と変換" },
-      { id: "gfx-mesh-uv", title: "メッシュ・UV・マテリアル" },
-      { id: "gfx-ui-canvas", title: "UI 描画" },
+      { id: "gfx-coordinates", title: "座標系と変換（coordinates と重複検討）" },
     ],
   },
   {

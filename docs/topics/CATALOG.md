@@ -1,6 +1,6 @@
 # トピックカタログ
 
-最終更新: 2026-07-28（ready 91）  
+最終更新: 2026-07-28（ready 95）  
 
 - **実装の正**: この表 と `js/main.js` の `TOPICS`（ずれたら両方直す）  
 - **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable` + **修正回数** + **更新日**）  
@@ -228,6 +228,8 @@
 | `gfx-lighting-alpha` | ライティング・透明度 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-lighting-alpha.html` | [SPEC](./gfx-lighting-alpha/SPEC.md) | 点光源 · α/加算 |
 | `gfx-postprocess` | ポストプロセス | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-postprocess.html` | [SPEC](./gfx-postprocess/SPEC.md) | 彩度·ビネット·ブルーム |
 | `gfx-lod-culling` | LOD・カリング | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-lod-culling.html` | [SPEC](./gfx-lod-culling/SPEC.md) | フラスタム · LOD0/1/2 |
+| `gfx-ui-canvas` | UI 描画（Anchor・Pivot） | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-ui-canvas.html` | [SPEC](./gfx-ui-canvas/SPEC.md) | Anchor·Pivot·解像度 |
+| `gfx-mesh-uv` | メッシュ・UV・マテリアル | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-mesh-uv.html` | [SPEC](./gfx-mesh-uv/SPEC.md) | 2tris · UV · tint |
 
 ---
 
@@ -239,14 +241,16 @@
 | `net-prediction` | 補間・予測・補正 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/net-prediction.html` | [SPEC](./net-prediction/SPEC.md) | クライアント予測 · 権威補正 |
 | `net-client-server` | クライアント・サーバ（権威） | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/net-client-server.html` | [SPEC](./net-client-server/SPEC.md) | maxSpeed クランプ |
 | `net-sync-modes` | 状態同期 vs 入力同期 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/net-sync-modes.html` | [SPEC](./net-sync-modes/SPEC.md) | 帯域・誤差比較 |
+| `net-anti-cheat` | サーバ権威とチート対策 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/net-anti-cheat.html` | [SPEC](./net-anti-cheat/SPEC.md) | 速度·スコア検証 |
+| `net-db-transaction` | DB とトランザクション | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/net-db-transaction.html` | [SPEC](./net-db-transaction/SPEC.md) | COMMIT/ROLLBACK |
 
 ---
 
-## 成熟度サマリ（2026-07-28·91 トピック ready）
+## 成熟度サマリ（2026-07-28·95 トピック ready）
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | 78 | 詳細は TOPIC_META |
+| 一発 (`oneshot`) | 82 | 詳細は TOPIC_META |
 | 調整 (`revised`) | 13 | bfs〜rng-seed 等 |
 | 安定 (`stable`) | 0 | — |
 

@@ -1,6 +1,6 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-07-28（ready **91** · interactive / post / LOD / sync）  
+最終更新: 2026-07-28（ready **95** · UI / mesh / DB / anti-cheat）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.10.0
@@ -99,7 +99,14 @@ ready **87**。いずれも `oneshot`。
 4. `net-sync-modes` — 状態同期 vs 入力同期  
 ready **91**。いずれも `oneshot`。**Audio カテゴリは ROADMAP 上ほぼ完了。**
 
-**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: gfx-ui-canvas / gfx-mesh-uv / net-db-transaction。
+**2026-07-28 続き 4 本**:  
+1. `gfx-ui-canvas` — Anchor / Pivot / 解像度  
+2. `gfx-mesh-uv` — 三角形 + UV + マテリアル色  
+3. `net-db-transaction` — 購入 COMMIT/ROLLBACK  
+4. `net-anti-cheat` — 速度·スコア検証  
+ready **95**。**Networking も一通り完了。** Graphics 残りは `gfx-coordinates`（`coordinates` と統合検討）程度。
+
+**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: gfx-coordinates 統合判断 / oneshot 改訂 / Release タグ。
 
 ---
 
@@ -241,6 +248,10 @@ ready **91**。いずれも `oneshot`。**Audio カテゴリは ROADMAP 上ほ�
 | 89 | ポストプロセス | `algorithms/gfx-postprocess.html` | `js/maps/gfx-postprocess-config.js` | `GfxPostprocessExample.cs` | 彩度·ブルーム |
 | 90 | LOD・カリング | `algorithms/gfx-lod-culling.html` | `js/maps/gfx-lod-culling-config.js` | `GfxLodCullingExample.cs` | 描画削減 |
 | 91 | 同期モード | `algorithms/net-sync-modes.html` | `js/maps/net-sync-modes-config.js` | `NetSyncModesExample.cs` | state/input |
+| 92 | UI Canvas | `algorithms/gfx-ui-canvas.html` | `js/maps/gfx-ui-canvas-config.js` | `GfxUiCanvasExample.cs` | Anchor/Pivot |
+| 93 | Mesh/UV | `algorithms/gfx-mesh-uv.html` | `js/maps/gfx-mesh-uv-config.js` | `GfxMeshUvExample.cs` | テクスチャ貼り |
+| 94 | チート検証 | `algorithms/net-anti-cheat.html` | `js/maps/net-anti-cheat-config.js` | `NetAntiCheatExample.cs` | 速度·スコア |
+| 95 | DB トランザクション | `algorithms/net-db-transaction.html` | `js/maps/net-db-transaction-config.js` | `NetDbTransactionExample.cs` | COMMIT/ROLLBACK |
 
 共通:
 

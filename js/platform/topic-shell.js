@@ -74,10 +74,14 @@ export const NAV_GROUPS = {
     { id: "gfx-lighting-alpha", label: "光/α", href: "gfx-lighting-alpha.html" },
     { id: "gfx-postprocess", label: "ポスト", href: "gfx-postprocess.html" },
     { id: "gfx-lod-culling", label: "LOD", href: "gfx-lod-culling.html" },
+    { id: "gfx-ui-canvas", label: "UI", href: "gfx-ui-canvas.html" },
+    { id: "gfx-mesh-uv", label: "Mesh", href: "gfx-mesh-uv.html" },
     { id: "net-p2p-demo", label: "P2P", href: "net-p2p-demo.html" },
     { id: "net-prediction", label: "予測", href: "net-prediction.html" },
     { id: "net-client-server", label: "C/S", href: "net-client-server.html" },
     { id: "net-sync-modes", label: "同期", href: "net-sync-modes.html" },
+    { id: "net-anti-cheat", label: "検証", href: "net-anti-cheat.html" },
+    { id: "net-db-transaction", label: "DB", href: "net-db-transaction.html" },
     { id: "balance-sim", label: "バランス", href: "balance-sim.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
   ],
@@ -341,6 +345,14 @@ export const FOOTER_RELATED = {
     { href: "gfx-camera.html", label: "カメラ（前段）" },
     { href: "profiling-loop.html", label: "計測" },
   ],
+  "gfx-ui-canvas": [
+    { href: "coordinates.html", label: "座標（前段）" },
+    { href: "gfx-sprite-2d.html", label: "スプライト" },
+  ],
+  "gfx-mesh-uv": [
+    { href: "gfx-gpu-concepts.html", label: "GPU（前段）" },
+    { href: "coordinates.html", label: "座標" },
+  ],
   "net-p2p-demo": [
     { href: "time-management.html", label: "時間管理（関連）" },
     { href: "net-prediction.html", label: "次: 予測・補正" },
@@ -355,7 +367,15 @@ export const FOOTER_RELATED = {
   ],
   "net-sync-modes": [
     { href: "net-client-server.html", label: "C/S（前段）" },
-    { href: "net-p2p-demo.html", label: "P2P" },
+    { href: "net-anti-cheat.html", label: "次: チート検証" },
+  ],
+  "net-anti-cheat": [
+    { href: "net-client-server.html", label: "C/S（前段）" },
+    { href: "net-db-transaction.html", label: "次: DB" },
+  ],
+  "net-db-transaction": [
+    { href: "save-load.html", label: "セーブ（関連）" },
+    { href: "net-anti-cheat.html", label: "チート検証" },
   ],
   "accessibility-basics": [
     { href: "input-abstraction.html", label: "入力抽象（前段）" },

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="購入処理の BEGIN/COMMIT/ROLLBACK。" />
+  <title>DB とトランザクション — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="net-db-transaction"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 通信 / DB</p>
+      <h1>DB とトランザクション</h1>
+      <p class="page-header-lead">
+        ショップ購入を <strong>BEGIN → 更新 → COMMIT / ROLLBACK</strong> で表現。
+        途中失敗では残高も在庫も戻る（原子性）。
+        関連: <a href="save-load.html">セーブ・ロード</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>複数 UPDATE を一つのトランザクションにまとめる</li>
+          <li>ROLLBACK で作業コピーを捨て、確定状態は不変</li>
+          <li>在庫切れ・通信失敗をシナリオで再現</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <h2 class="gl-block-title">確定状態（COMMIT 後）</h2>
+        <div id="db-state" class="coord-readout"></div>
+        <h2 class="gl-block-title">トランザクションログ</h2>
+        <div id="db-log" class="es-log-panel" role="log"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <label class="controls-label" for="scenario">シナリオ</label>
+        <select id="scenario" class="bandit-select">
+          <option value="ok">成功購入</option>
+          <option value="nostock">在庫切れ</option>
+          <option value="fail">途中エラー → ROLLBACK</option>
+        </select>
+        <div class="control-row">
+          <button type="button" id="btn-buy" class="btn btn-primary">購入</button>
+          <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+        </div>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Networking · DB"></footer>
+  <script type="module" src="../js/net-db-transaction.js"></script>
+</body>
+</html>

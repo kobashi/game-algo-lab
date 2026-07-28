@@ -947,6 +947,28 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "gfx-ui-canvas",
+    title: "UI 描画（Anchor・Pivot）",
+    description:
+      "親の Anchor と要素 Pivot で UI を配置。解像度変更に追従。",
+    href: "algorithms/gfx-ui-canvas.html",
+    badge: "ゲーム CG",
+    category: "ゲーム CG",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "gfx-mesh-uv",
+    title: "メッシュ・UV・マテリアル",
+    description:
+      "三角形メッシュに UV テクスチャ。オフセット・スケール・色。",
+    href: "algorithms/gfx-mesh-uv.html",
+    badge: "ゲーム CG",
+    category: "ゲーム CG",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "net-p2p-demo",
     title: "P2P 通信の観察",
     description:
@@ -985,6 +1007,28 @@ const TOPICS = [
     description:
       "位置スナップショット送信と入力のみ送信の帯域・誤差を比較。",
     href: "algorithms/net-sync-modes.html",
+    badge: "通信・データ",
+    category: "通信・データ",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "net-anti-cheat",
+    title: "サーバ権威とチート対策",
+    description:
+      "速度クランプとスコア再計算でクライアント報告を検証。",
+    href: "algorithms/net-anti-cheat.html",
+    badge: "通信・データ",
+    category: "通信・データ",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "net-db-transaction",
+    title: "DB とトランザクション",
+    description:
+      "購入の BEGIN→更新→COMMIT/ROLLBACK。失敗時は状態不変。",
+    href: "algorithms/net-db-transaction.html",
     badge: "通信・データ",
     category: "通信・データ",
     ready: true,
