@@ -12,6 +12,7 @@ import {
   createStatus,
   createResultPanel,
   createPlayback,
+  createPseudocode,
   loadTextSample,
   bindMapPaint,
   mountTopicShellFromDataset,
@@ -24,6 +25,20 @@ import {
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
+
+const BI_PSEUDO = [
+  { id: "init", text: "queueF ← { S }; queueB ← 全 G（multi-source）" },
+  { id: "loop", text: "while 両 queue が空でない:" },
+  { id: "choose", text: "  side ← 小さい側優先 / 交互" },
+  { id: "expand-f", text: "  前向き: u を dequeue し隣接を拡大" },
+  { id: "expand-b", text: "  後ろ向き: u を dequeue し隣接を拡大" },
+  { id: "meet", text: "  相手側 already-seen に触れたら出会点 → 経路接合" },
+  { id: "fail", text: "経路なし（どちらかの queue が尽きた）" },
+];
+const pseudo = createPseudocode(document.getElementById("pseudo-panel"), {
+  lines: BI_PSEUDO,
+  title: "双方向 BFS",
+});
 
 const COLS = PF.COLS;
 const ROWS = PF.ROWS;
@@ -176,6 +191,7 @@ function resetSearch() {
     finished = true;
     found = true;
     meetCell = { ...start };
+    pseudo.setActive("meet");
     reportResult([{ ...start }]);
     setStatus("スタートがゴールです — 経路長 0");
     draw();
@@ -184,6 +200,7 @@ function resetSearch() {
   }
 
   resultPanel.hide();
+  pseudo.setActive("init");
   setStatus(
     "準備完了 — 青=前向き(S) / 橙=後ろ向き(G)。再生で両側から探索"
   );
@@ -369,9 +386,11 @@ function chooseSide() {
 function stepOnce() {
   if (finished) return false;
 
+  pseudo.setActive("loop");
   if (!queueF.length || !queueB.length) {
     finished = true;
     found = false;
+    pseudo.setActive("fail");
     setStatus("経路が見つかりませんでした（両側の探索が尽きました）");
     stopAuto();
     draw();
@@ -379,13 +398,16 @@ function stepOnce() {
     return false;
   }
 
+  pseudo.setActive("choose");
   const side = chooseSide();
+  pseudo.setActive(side === "F" ? "expand-f" : "expand-b");
   const meet = expandOne(side);
 
   if (meet) {
     finished = true;
     found = true;
     meetCell = meet;
+    pseudo.setActive("meet");
     const path = reconstructPath(meet);
     paintPath(path);
     reportResult(path);

@@ -114,7 +114,9 @@ ready **95**。**Audio / Networking / Graphics（主要）一通り完了。**
 
 **2026-07-28 疑似コード横展開**: DFS · Dijkstra · 最良優先 · A* にも接続（経路探索本線 5 本）。
 
-**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: 双方向にも疑似コード · oneshot 改訂 · stable 選定。
+**2026-07-28 疑似コード完了（経路探索）**: `bidirectional-search` にも接続 — **6 本すべて**。
+
+**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: oneshot 改訂 · stable 選定 · 計測パネル統一。
 
 ---
 
