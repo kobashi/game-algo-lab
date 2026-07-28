@@ -1,6 +1,6 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-07-28（**v0.10.0** 公開 · ready 67）  
+最終更新: 2026-07-28（ready **71** · a11y/test/nav/voice）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.10.0
@@ -62,9 +62,9 @@ Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.10.0
 いずれも `oneshot`。
 
 **2026-07-28 続き**:  
-`rotating-collision` · `concave-compound` · `input-abstraction` · `command-input` · `profiling-loop` · `sfx-events`。ready **67**。
+`accessibility-basics` · `unit-test-gameplay` · `obstacle-avoidance-nav` · `sfx-voice-limit`。ready **71**。
 
-**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: a11y / unit-test / BGM / graphics / net。
+**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: balance-sim / BGM / graphics / net。
 
 ---
 
@@ -182,6 +182,10 @@ Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.10.0
 | 65 | コマンド入力 | `algorithms/command-input.html` | `js/maps/command-input-config.js` | `CommandInputExample.cs` | 技コマンド |
 | 66 | プロファイリング | `algorithms/profiling-loop.html` | `js/maps/profiling-loop-config.js` | `ProfilingLoopExample.cs` | 測定循環 |
 | 67 | イベントと効果音 | `algorithms/sfx-events.html` | `js/maps/sfx-events-config.js` | `SfxEventsExample.cs` | SFX Emit |
+| 68 | アクセシビリティ | `algorithms/accessibility-basics.html` | `js/maps/accessibility-basics-config.js` | `AccessibilityBasicsExample.cs` | 設定パネル |
+| 69 | ユニットテスト | `algorithms/unit-test-gameplay.html` | `js/maps/unit-test-gameplay-config.js` | `UnitTestGameplayExample.cs` | 純関数検証 |
+| 70 | ナビ連携回避 | `algorithms/obstacle-avoidance-nav.html` | `js/maps/obstacle-avoidance-nav-config.js` | `ObstacleAvoidanceNavExample.cs` | BFS+Seek |
+| 71 | 同時発音制限 | `algorithms/sfx-voice-limit.html` | `js/maps/sfx-voice-limit-config.js` | `SfxVoiceLimitExample.cs` | steal/drop |
 
 共通:
 

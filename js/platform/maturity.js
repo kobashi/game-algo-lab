@@ -247,6 +247,26 @@ export const TOPIC_META = {
     revisions: 0,
     updated: "2026-07-28",
   },
+  "accessibility-basics": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-28",
+  },
+  "unit-test-gameplay": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-28",
+  },
+  "obstacle-avoidance-nav": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-28",
+  },
+  "sfx-voice-limit": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-28",
+  },
   "and-or": { maturity: "revised", revisions: 1, updated: "2026-07-19" },
 
   minimax: { maturity: "revised", revisions: 1, updated: "2026-07-19" },

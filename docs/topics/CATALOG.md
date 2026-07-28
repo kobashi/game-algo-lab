@@ -1,6 +1,6 @@
 # トピックカタログ
 
-最終更新: 2026-07-28（ready 67 · 物理締め + HCI + Audio 入口）  
+最終更新: 2026-07-28（ready 71）  
 
 - **実装の正**: この表 と `js/main.js` の `TOPICS`（ずれたら両方直す）  
 - **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable` + **修正回数** + **更新日**）  
@@ -169,8 +169,9 @@
 | `boids` | Boids / Flocking | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/boids.html` | [SPEC](./boids/SPEC.md) | 分離・整列・結合 |
 | `steering-leader` | Leader Following | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/steering-leader.html` | [SPEC](./steering-leader/SPEC.md) | 後方スロットへ Arrive |
 | `behavior-tree` | ビヘイビアツリー | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/behavior-tree.html` | [SPEC](./behavior-tree/SPEC.md) | Selector/Sequence · Chase/Patrol |
+| `obstacle-avoidance-nav` | 障害物回避（ナビ連携） | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/obstacle-avoidance-nav.html` | [SPEC](./obstacle-avoidance-nav/SPEC.md) | BFS 経路 + 局所回避 |
 
-**学習ストーリー**: Seek → Wander → Boids → Leader → BT（FSM 対比）  
+**学習ストーリー**: Seek → Wander → Boids → Leader → BT → ナビ連携回避  
 
 ---
 
@@ -182,8 +183,9 @@
 | `replay-determinism` | リプレイと決定性 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/replay-determinism.html` | [SPEC](./replay-determinism/SPEC.md) | 入力記録 + シード |
 | `debug-overlays` | デバッグ可視化 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/debug-overlays.html` | [SPEC](./debug-overlays/SPEC.md) | コライダー/速度/AI レイヤ |
 | `profiling-loop` | プロファイリング循環 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/profiling-loop.html` | [SPEC](./profiling-loop/SPEC.md) | 測定→改善→再測定 |
+| `unit-test-gameplay` | ゲームロジックのテスト | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/unit-test-gameplay.html` | [SPEC](./unit-test-gameplay/SPEC.md) | 純関数 PASS/FAIL |
 
-**学習ストーリー**: セーブ → リプレイ → デバッグ → プロファイリング  
+**学習ストーリー**: セーブ → リプレイ → デバッグ → 計測 → ユニットテスト  
 
 ---
 
@@ -193,6 +195,7 @@
 |----|----------|-------|--------|------|------|--------|------|----------|
 | `input-abstraction` | 入力抽象化 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/input-abstraction.html` | [SPEC](./input-abstraction/SPEC.md) | アクションマップ |
 | `command-input` | コマンド入力 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/command-input.html` | [SPEC](./command-input/SPEC.md) | 技コマンド照合 |
+| `accessibility-basics` | アクセシビリティ基礎 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/accessibility-basics.html` | [SPEC](./accessibility-basics/SPEC.md) | 色・字幕・動き・文字 |
 
 ---
 
@@ -201,14 +204,15 @@
 | id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
 |----|----------|-------|--------|------|------|--------|------|----------|
 | `sfx-events` | イベントと効果音 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-events.html` | [SPEC](./sfx-events/SPEC.md) | Emit → Web Audio |
+| `sfx-voice-limit` | 同時発音・重複制御 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-voice-limit.html` | [SPEC](./sfx-voice-limit/SPEC.md) | steal / drop |
 
 ---
 
-## 成熟度サマリ（2026-07-28·67 トピック ready）
+## 成熟度サマリ（2026-07-28·71 トピック ready）
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | 54 | 詳細は TOPIC_META |
+| 一発 (`oneshot`) | 58 | 詳細は TOPIC_META |
 | 調整 (`revised`) | 13 | bfs〜rng-seed 等 |
 | 安定 (`stable`) | 0 | — |
 

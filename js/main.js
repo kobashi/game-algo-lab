@@ -593,6 +593,17 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "obstacle-avoidance-nav",
+    title: "障害物回避（ナビ連携）",
+    description:
+      "BFS 経路のウェイポイントへ Seek + 局所壁回避。",
+    href: "algorithms/obstacle-avoidance-nav.html",
+    badge: "ステアリング",
+    category: "ゲーム AI・ステアリング",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "steering-leader",
     title: "Leader Following",
     description:
@@ -670,6 +681,17 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "unit-test-gameplay",
+    title: "ゲームロジックのテスト",
+    description:
+      "描画なしの純関数を PASS/FAIL で検証。衝突・ダメージ境界。",
+    href: "algorithms/unit-test-gameplay.html",
+    badge: "品質",
+    category: "設計・品質",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "coyote-time",
     title: "コヨーテタイム",
     description:
@@ -714,11 +736,33 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "accessibility-basics",
+    title: "アクセシビリティ基礎",
+    description:
+      "色覚・字幕・動き抑制・文字サイズを設定として反映。",
+    href: "algorithms/accessibility-basics.html",
+    badge: "入力・操作感",
+    category: "入力・操作感",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "sfx-events",
     title: "イベントと効果音",
     description:
       "ゲームイベントを Emit して SE を再生。Web Audio トーン + ログ。",
     href: "algorithms/sfx-events.html",
+    badge: "サウンド",
+    category: "サウンド",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "sfx-voice-limit",
+    title: "同時発音・重複制御",
+    description:
+      "ボイス数上限。steal / drop 方策と連打の飽和を観察。",
+    href: "algorithms/sfx-voice-limit.html",
     badge: "サウンド",
     category: "サウンド",
     ready: true,

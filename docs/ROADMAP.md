@@ -258,7 +258,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `steering-leader` | Leader Following | **実装済** | [SPEC](./topics/steering-leader/SPEC.md) |
 | `boids` | Boids / Flocking | **実装済** | [SPEC](./topics/boids/SPEC.md) |
 | `behavior-tree` | ビヘイビアツリー | **実装済** | [SPEC](./topics/behavior-tree/SPEC.md) |
-| `obstacle-avoidance-nav` | 障害物回避（ナビ連携） | **企画中** | 経路探索との接続 |
+| `obstacle-avoidance-nav` | 障害物回避（ナビ連携） | **実装済** | [SPEC](./topics/obstacle-avoidance-nav/SPEC.md) |
 
 ---
 
@@ -283,7 +283,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `coyote-time` | コヨーテタイム | **実装済** | 猶予の有無比較。[SPEC](./topics/coyote-time/SPEC.md) |
 | `input-abstraction` | 入力抽象化 | **実装済** | [SPEC](./topics/input-abstraction/SPEC.md) |
 | `command-input` | コマンド入力 | **実装済** | [SPEC](./topics/command-input/SPEC.md) |
-| `accessibility-basics` | アクセシビリティ基礎 | **企画中** | キー設定・字幕・色覚等 |
+| `accessibility-basics` | アクセシビリティ基礎 | **実装済** | [SPEC](./topics/accessibility-basics/SPEC.md) |
 
 ---
 
@@ -305,7 +305,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
 | `sfx-events` | イベントと効果音 | **実装済** | [SPEC](./topics/sfx-events/SPEC.md) |
-| `sfx-voice-limit` | 同時発音・重複制御 | **企画中** | |
+| `sfx-voice-limit` | 同時発音・重複制御 | **実装済** | [SPEC](./topics/sfx-voice-limit/SPEC.md) |
 | `sfx-randomize` | ランダム化 | **企画中** | 音量・ピッチの揺らぎ、シャッフルバッグ（正本 §11.1） |
 | `sfx-material` | 材質別・衝突強度と音 | **企画中** | |
 | `sfx-spatial` | 距離・パン・優先順位 | **企画中** | |
@@ -342,7 +342,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `replay-determinism` | リプレイと決定性 | **実装済** | [SPEC](./topics/replay-determinism/SPEC.md) |
 | `debug-overlays` | デバッグ可視化 | **実装済** | [SPEC](./topics/debug-overlays/SPEC.md) |
 | `profiling-loop` | プロファイリング循環 | **実装済** | [SPEC](./topics/profiling-loop/SPEC.md) |
-| `unit-test-gameplay` | ゲームロジックのテスト | **企画中** | 衝突・ダメージ等 |
+| `unit-test-gameplay` | ゲームロジックのテスト | **実装済** | [SPEC](./topics/unit-test-gameplay/SPEC.md) |
 
 ---
 

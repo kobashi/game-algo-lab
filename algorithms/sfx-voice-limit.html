@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>同時発音制限 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="sfx-voice-limit"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / サウンド / 同時発音</p>
+      <h1>同時発音・重複制御</h1>
+      <p class="page-header-lead">
+        ボイス数に上限。超過時は<strong>steal</strong>（最古停止）か<strong>drop</strong>（新規破棄）。
+        前段: <a href="sfx-events.html">イベントと効果音</a>。
+      </p>
+    </div>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <p>アクティブ: <span id="voice-active"></span></p>
+        <div id="voice-stats" class="coord-readout"></div>
+        <div id="voice-log" class="es-log-panel" role="log"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="control-row">
+          <button type="button" id="btn-fire" class="btn btn-primary">1 発</button>
+          <button type="button" id="btn-burst" class="btn btn-ghost">8 連</button>
+          <button type="button" id="btn-clear" class="btn btn-ghost">全停止</button>
+        </div>
+        <label class="controls-label" for="max-voices">上限 <span id="max-val">4</span></label>
+        <input type="range" id="max-voices" class="ttt-range" min="1" max="12" value="4" />
+        <label class="controls-label" for="policy">超過時</label>
+        <select id="policy" class="bandit-select">
+          <option value="steal">steal（最古を止める）</option>
+          <option value="drop">drop（新規を捨てる）</option>
+        </select>
+        <label class="ttt-check"><input type="checkbox" id="mute" /> ミュート（仮想ボイスのみ）</label>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Audio · ボイス制限"></footer>
+  <script type="module" src="../js/sfx-voice-limit.js"></script>
+</body>
+</html>

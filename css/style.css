@@ -5113,3 +5113,68 @@ main.container.container-wide.topic-main:has(.mcts-tree-panel) {
   text-align: right;
   color: var(--text-muted);
 }
+
+/* —— a11y / unit-test / voice —— */
+.a11y-sub {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(0, 0, 0, 0.65);
+  border: 1px solid rgba(242, 204, 143, 0.4);
+  border-radius: 6px;
+  color: #f2cc8f;
+}
+.a11y-large {
+  font-size: 1.1em;
+}
+.ut-summary {
+  margin: 0.75rem 0;
+  font-size: 1.05rem;
+}
+.ut-summary.ut-ok {
+  color: #6bcb8f;
+}
+.ut-summary.ut-fail {
+  color: #e07a5f;
+}
+.ut-results {
+  display: grid;
+  gap: 0.4rem;
+  margin: 1rem 0;
+}
+.ut-row {
+  display: grid;
+  grid-template-columns: 3.5rem 1fr auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.45rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  font-size: 0.9rem;
+}
+.ut-pass {
+  background: rgba(107, 203, 143, 0.08);
+}
+.ut-fail-row {
+  background: rgba(224, 122, 95, 0.1);
+}
+.ut-badge {
+  font-family: ui-monospace, monospace;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+.ut-pass .ut-badge {
+  color: #6bcb8f;
+}
+.ut-fail-row .ut-badge {
+  color: #e07a5f;
+}
+.voice-chip {
+  display: inline-block;
+  margin: 0.15rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(91, 159, 212, 0.2);
+  border: 1px solid #5b9fd4;
+  font-family: ui-monospace, monospace;
+  font-size: 0.8rem;
+}

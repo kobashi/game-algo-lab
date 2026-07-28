@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>障害物回避（ナビ） — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="steering" data-active="obstacle-avoidance-nav"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / AI / ナビ連携回避</p>
+      <h1>障害物回避（ナビ連携）</h1>
+      <p class="page-header-lead">
+        <strong>BFS 経路</strong>のウェイポイントへ Seek + 局所壁回避。
+        前段: <a href="steering-seek-flee.html">Seek</a> · <a href="bfs.html">BFS</a>。
+      </p>
+    </div>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="oan-canvas" class="gl-canvas" width="560" height="336"></canvas>
+        <div id="oan-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="control-row">
+          <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+          <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+        </div>
+        <label class="ttt-check"><input type="checkbox" id="use-nav" checked /> ナビ経路 (BFS)</label>
+        <label class="ttt-check"><input type="checkbox" id="use-avoid" checked /> 局所壁回避</label>
+        <p class="footer-muted">ナビ OFF で直進 Seek すると壁に突っ込みやすい</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="AI · ナビ+回避"></footer>
+  <script type="module" src="../js/obstacle-avoidance-nav.js"></script>
+</body>
+</html>

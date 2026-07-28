@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>アクセシビリティ基礎 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="fundamentals" data-active="accessibility-basics"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / HCI / アクセシビリティ</p>
+      <h1>アクセシビリティ基礎</h1>
+      <p class="page-header-lead">
+        色覚・字幕・動き抑制・文字サイズを<strong>設定</strong>として分離し、表示に反映する。
+        前段: <a href="input-abstraction.html">入力抽象化</a>。
+      </p>
+    </div>
+    <div class="gl-layout">
+      <section class="gl-main" id="a11y-preview">
+        <canvas id="a11y-canvas" class="gl-canvas" width="640" height="240"></canvas>
+        <div id="subtitle-box" class="a11y-sub" hidden></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <label class="controls-label" for="palette">カラーパレット</label>
+        <select id="palette" class="bandit-select">
+          <option value="default">標準</option>
+          <option value="protanopia">1型近似</option>
+          <option value="deuteranopia">2型近似</option>
+          <option value="highContrast">高コントラスト</option>
+        </select>
+        <label class="ttt-check"><input type="checkbox" id="subtitles" /> 字幕</label>
+        <label class="ttt-check"><input type="checkbox" id="reduce-motion" /> 動きを抑える</label>
+        <label class="ttt-check"><input type="checkbox" id="large-font" /> 大きめ文字</label>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="HCI · アクセシビリティ"></footer>
+  <script type="module" src="../js/accessibility-basics.js"></script>
+</body>
+</html>

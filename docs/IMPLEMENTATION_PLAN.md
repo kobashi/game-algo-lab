@@ -3,11 +3,11 @@
 | 項目 | 内容 |
 |------|------|
 | **根拠** | [ROADMAP.md](./ROADMAP.md) §2.3–2.4・§5 |
-| **現状** | ready **67** トピック（2026-07-28 時点） |
+| **現状** | ready **71** トピック（2026-07-28 時点） |
 | **方針** | **簡単なものから順に** SPEC → 実装 → smoke →（区切りで）Release |
 | **除外** | §5 着手保留: E2E / i18n / `path-compare` / `game-tree-engine` |
 
-最終更新: **2026-07-28**（物理締め + HCI + 計測 + SFX）
+最終更新: **2026-07-28**（a11y / unit-test / ナビ回避 / voice-limit）
 
 ---
 
@@ -117,7 +117,7 @@
 | 33 | `steering-leader` | Leader Following | **M** | ✅ **実装済** 2026-07-27 |
 | 34 | `boids` | Boids | **M〜H** | ✅ **実装済** |
 | 35 | `behavior-tree` | ビヘイビアツリー | **M** | ✅ **実装済** |
-| 36 | `obstacle-avoidance-nav` | 障害物回避（ナビ連携） | **H** | pathfinding 接続 |
+| 36 | `obstacle-avoidance-nav` | 障害物回避（ナビ連携） | **H** | ✅ **実装済** 2026-07-28 |
 
 ---
 
@@ -131,9 +131,9 @@
 | 40 | `replay-determinism` | リプレイと決定性 | **M** | ✅ **実装済** 2026-07-27 |
 | 41 | `debug-overlays` | デバッグ可視化 | **E〜M** | ✅ **実装済** 2026-07-27 |
 | 42 | `save-load` | セーブ・ロード | **M** | ✅ **実装済** |
-| 43 | `unit-test-gameplay` | ゲームロジックのテスト | **M** | Node 検証スクリプト文化に合う |
-| 44 | `profiling-loop` | プロファイリング循環 | **M** | ✅ **実装済** 2026-07-28 |
-| 45 | `accessibility-basics` | アクセシビリティ基礎 | **E〜M** | 設定パネル中心 |
+| 43 | `unit-test-gameplay` | ゲームロジックのテスト | **M** | ✅ **実装済** 2026-07-28 |
+| 44 | `profiling-loop` | プロファイリング循環 | **M** | ✅ **実装済** |
+| 45 | `accessibility-basics` | アクセシビリティ基礎 | **E〜M** | ✅ **実装済** 2026-07-28 |
 | 46 | `balance-sim` | ゲームバランス分析 | **H** | 自動プレイ・統計 |
 
 ---
@@ -167,8 +167,8 @@
 | 7 | **`constrained-gen`** | 中 | maze-gen + bfs 到達性 | ✅ |
 | 8 | **`accel-gravity`** | 小〜中 | velocity の次 | ✅ |
 
-**提案スプリント完了（ready 67）**: 物理締め · HCI · 計測 · SFX 入口。  
-次: accessibility / unit-test / balance-sim / BGM / graphics / net。
+**ready 71**: a11y · unit-test · ナビ回避 · voice-limit まで。  
+次: balance-sim / BGM / graphics / net。
 
 ---
 

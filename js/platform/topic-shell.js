@@ -56,7 +56,9 @@ export const NAV_GROUPS = {
     { id: "replay-determinism", label: "リプレイ", href: "replay-determinism.html" },
     { id: "debug-overlays", label: "デバッグ", href: "debug-overlays.html" },
     { id: "profiling-loop", label: "計測", href: "profiling-loop.html" },
+    { id: "unit-test-gameplay", label: "テスト", href: "unit-test-gameplay.html" },
     { id: "sfx-events", label: "SFX", href: "sfx-events.html" },
+    { id: "sfx-voice-limit", label: "ボイス", href: "sfx-voice-limit.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
   ],
   physics: [
@@ -95,6 +97,7 @@ export const NAV_GROUPS = {
     { id: "boids", label: "Boids", href: "boids.html" },
     { id: "steering-leader", label: "Leader", href: "steering-leader.html" },
     { id: "behavior-tree", label: "BT", href: "behavior-tree.html" },
+    { id: "obstacle-avoidance-nav", label: "ナビ回避", href: "obstacle-avoidance-nav.html" },
     { id: "fsm", label: "FSM", href: "fsm.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
   ],
@@ -107,6 +110,7 @@ export const NAV_GROUPS = {
     { id: "input-buffer", label: "バッファ", href: "input-buffer.html" },
     { id: "input-abstraction", label: "抽象入力", href: "input-abstraction.html" },
     { id: "command-input", label: "コマンド", href: "command-input.html" },
+    { id: "accessibility-basics", label: "a11y", href: "accessibility-basics.html" },
     { id: "coordinates", label: "座標", href: "coordinates.html" },
     { id: "rng-seed", label: "乱数", href: "rng-seed.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
@@ -246,6 +250,21 @@ export const FOOTER_RELATED = {
   ],
   "sfx-events": [
     { href: "event-system.html", label: "イベント（前段）" },
+    { href: "sfx-voice-limit.html", label: "次: 同時発音制限" },
+  ],
+  "sfx-voice-limit": [
+    { href: "sfx-events.html", label: "SFX イベント（前段）" },
+  ],
+  "accessibility-basics": [
+    { href: "input-abstraction.html", label: "入力抽象（前段）" },
+  ],
+  "unit-test-gameplay": [
+    { href: "collision.html", label: "AABB" },
+    { href: "profiling-loop.html", label: "プロファイリング" },
+  ],
+  "obstacle-avoidance-nav": [
+    { href: "steering-seek-flee.html", label: "Seek（前段）" },
+    { href: "bfs.html", label: "BFS" },
   ],
   "save-load": [
     { href: "ecs-intro.html", label: "ECS（状態の切り出し）" },

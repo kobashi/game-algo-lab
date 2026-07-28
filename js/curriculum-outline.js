@@ -39,10 +39,8 @@ export const CURRICULUM_OUTLINE = [
     id: "ai-steering",
     title: "ゲーム AI・自律移動",
     phase: "第4期",
-    blurb: "デモあり（Seek〜Leader・Boids・BT）。FSM は設計パターンにデモあり。",
-    items: [
-      { id: "obstacle-avoidance-nav", title: "障害物回避（ナビ連携）" },
-    ],
+    blurb: "デモあり（Seek〜ナビ連携・Boids・BT）。FSM は設計パターンにデモあり。",
+    items: [],
   },
   {
     id: "spatial",
@@ -55,10 +53,8 @@ export const CURRICULUM_OUTLINE = [
     id: "hci",
     title: "入力・操作感・HCI",
     phase: "第3期",
-    blurb: "デモあり（コヨーテ・バッファ・抽象入力・コマンド）。",
-    items: [
-      { id: "accessibility-basics", title: "アクセシビリティ基礎" },
-    ],
+    blurb: "デモあり（コヨーテ〜a11y・コマンド入力）。",
+    items: [],
   },
   {
     id: "networking",
@@ -114,10 +110,8 @@ export const CURRICULUM_OUTLINE = [
     id: "quality",
     title: "設計・品質",
     phase: "横断",
-    blurb: "デモあり（セーブ・リプレイ・デバッグ・計測）。",
-    items: [
-      { id: "unit-test-gameplay", title: "ゲームロジックのテスト" },
-    ],
+    blurb: "デモあり（セーブ〜計測・ユニットテスト）。",
+    items: [],
   },
   {
     id: "procgen",
