@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="パーティクル VFX と上限プール。" />
+  <title>アニメーション・パーティクル — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="gfx-animation-vfx"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / ゲーム CG / パーティクル</p>
+      <h1>アニメーション・パーティクル</h1>
+      <p class="page-header-lead">
+        lifetime / 速度 / 重力の粒子シミュレーション。最大数でコストを抑える。
+        前段: <a href="gfx-sprite-2d.html">2D スプライト</a> ·
+        <a href="object-pool.html">オブジェクトプール</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>粒子 = 位置・速度・寿命の小さな状態機械</li>
+          <li>バーストと連続放出</li>
+          <li>上限到達で新規生成を捨てる（プール発想）</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="vfx-canvas" class="gl-canvas" width="720" height="360" tabindex="0"></canvas>
+        <div id="vfx-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="control-row">
+          <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+          <button type="button" id="btn-burst" class="btn btn-ghost">バースト</button>
+          <button type="button" id="btn-clear" class="btn btn-ghost">クリア</button>
+        </div>
+        <label class="ttt-check"><input type="checkbox" id="emit" /> 連続放出</label>
+        <label class="controls-label" for="max-p">最大粒子 <span id="max-val">120</span></label>
+        <input type="range" id="max-p" class="ttt-range" min="20" max="300" value="120" step="10" />
+        <label class="controls-label" for="life">寿命 s <span id="life-val">0.90</span></label>
+        <input type="range" id="life" class="ttt-range" min="0.2" max="2.5" value="0.9" step="0.05" />
+        <label class="controls-label" for="grav">重力 <span id="grav-val">280</span></label>
+        <input type="range" id="grav" class="ttt-range" min="0" max="600" value="280" step="10" />
+        <p class="footer-muted">キャンバスクリックでもバースト。</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Graphics · VFX"></footer>
+  <script type="module" src="../js/gfx-animation-vfx.js"></script>
+</body>
+</html>

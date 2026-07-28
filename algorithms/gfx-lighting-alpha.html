@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="点光源減衰とアルファ合成の可視化。" />
+  <title>ライティング・透明度 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="gfx-lighting-alpha"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / ゲーム CG / ライティング</p>
+      <h1>ライティング・透明度</h1>
+      <p class="page-header-lead">
+        点光源の距離減衰と、<strong>アルファ合成</strong> / <strong>加算</strong>ブレンド。
+        前段: <a href="gfx-gpu-concepts.html">GPU パイプライン</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>明るさ ≈ ambient + (1−ambient)×減衰</li>
+          <li>out = src·α + dst·(1−α)</li>
+          <li>加算は光・炎エフェクト向き</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="lit-canvas" class="gl-canvas" width="720" height="360" tabindex="0"></canvas>
+        <div id="lit-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <p class="footer-muted">黄色い点 = 光源（ドラッグ）</p>
+        <label class="controls-label" for="alpha">スプライト α <span id="alpha-val">0.55</span></label>
+        <input type="range" id="alpha" class="ttt-range" min="0.05" max="1" value="0.55" step="0.05" />
+        <label class="controls-label" for="ambient">環境光 <span id="amb-val">0.18</span></label>
+        <input type="range" id="ambient" class="ttt-range" min="0" max="0.6" value="0.18" step="0.02" />
+        <label class="controls-label" for="blend">ブレンド</label>
+        <select id="blend" class="bandit-select">
+          <option value="alpha">アルファ（over）</option>
+          <option value="additive">加算</option>
+        </select>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Graphics · 光と α"></footer>
+  <script type="module" src="../js/gfx-lighting-alpha.js"></script>
+</body>
+</html>

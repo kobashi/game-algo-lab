@@ -1,6 +1,6 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-07-28（ready **83** · material / quantize / camera / prediction）  
+最終更新: 2026-07-28（ready **87** · transition / VFX / light / C-S）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.10.0
@@ -85,7 +85,14 @@ ready **79**。いずれも `oneshot`。
 4. `net-prediction` — クライアント予測 · 権威補正  
 ready **83**。いずれも `oneshot`。
 
-**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: bgm-transition-compare / gfx-animation-vfx / net-client-server。
+**2026-07-28 続き 4 本**:  
+1. `bgm-transition-compare` — 即時/クロスフェード/拍同期  
+2. `gfx-animation-vfx` — パーティクル · 上限プール  
+3. `gfx-lighting-alpha` — 点光源 · α/加算  
+4. `net-client-server` — サーバ権威 · maxSpeed クランプ  
+ready **87**。いずれも `oneshot`。
+
+**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: bgm-interactive / gfx-postprocess / net-sync-modes / gfx-ui-canvas。
 
 ---
 
@@ -219,6 +226,10 @@ ready **83**。いずれも `oneshot`。
 | 81 | 量子化 | `algorithms/bgm-quantize.html` | `js/maps/bgm-quantize-config.js` | `BgmQuantizeExample.cs` | 拍/小節 |
 | 82 | カメラ | `algorithms/gfx-camera.html` | `js/maps/gfx-camera-config.js` | `GfxCameraExample.cs` | 2D フォロー |
 | 83 | 予測・補正 | `algorithms/net-prediction.html` | `js/maps/net-prediction-config.js` | `NetPredictionExample.cs` | クライアント予測 |
+| 84 | BGM 切替比較 | `algorithms/bgm-transition-compare.html` | `js/maps/bgm-transition-compare-config.js` | `BgmTransitionCompareExample.cs` | 即時/クロス/拍 |
+| 85 | パーティクル | `algorithms/gfx-animation-vfx.html` | `js/maps/gfx-animation-vfx-config.js` | `GfxAnimationVfxExample.cs` | VFX プール |
+| 86 | 光と α | `algorithms/gfx-lighting-alpha.html` | `js/maps/gfx-lighting-alpha-config.js` | `GfxLightingAlphaExample.cs` | 点光源+合成 |
+| 87 | C/S 権威 | `algorithms/net-client-server.html` | `js/maps/net-client-server-config.js` | `NetClientServerExample.cs` | maxSpeed |
 
 共通:
 

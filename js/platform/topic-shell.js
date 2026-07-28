@@ -65,11 +65,15 @@ export const NAV_GROUPS = {
     { id: "audio-bus-ducking", label: "バス", href: "audio-bus-ducking.html" },
     { id: "bgm-loop", label: "BGM", href: "bgm-loop.html" },
     { id: "bgm-quantize", label: "量子化", href: "bgm-quantize.html" },
+    { id: "bgm-transition-compare", label: "BGM切替", href: "bgm-transition-compare.html" },
     { id: "gfx-gpu-concepts", label: "GPU", href: "gfx-gpu-concepts.html" },
     { id: "gfx-sprite-2d", label: "スプライト", href: "gfx-sprite-2d.html" },
     { id: "gfx-camera", label: "カメラ", href: "gfx-camera.html" },
+    { id: "gfx-animation-vfx", label: "VFX", href: "gfx-animation-vfx.html" },
+    { id: "gfx-lighting-alpha", label: "光/α", href: "gfx-lighting-alpha.html" },
     { id: "net-p2p-demo", label: "P2P", href: "net-p2p-demo.html" },
     { id: "net-prediction", label: "予測", href: "net-prediction.html" },
+    { id: "net-client-server", label: "C/S", href: "net-client-server.html" },
     { id: "balance-sim", label: "バランス", href: "balance-sim.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
   ],
@@ -287,7 +291,11 @@ export const FOOTER_RELATED = {
   ],
   "bgm-quantize": [
     { href: "bgm-loop.html", label: "BGM ループ（前段）" },
-    { href: "time-management.html", label: "時間管理" },
+    { href: "bgm-transition-compare.html", label: "次: 切替比較" },
+  ],
+  "bgm-transition-compare": [
+    { href: "bgm-quantize.html", label: "量子化（前段）" },
+    { href: "audio-bus-ducking.html", label: "バス" },
   ],
   "sfx-material": [
     { href: "sfx-events.html", label: "SFX イベント（前段）" },
@@ -307,7 +315,15 @@ export const FOOTER_RELATED = {
   ],
   "gfx-camera": [
     { href: "gfx-sprite-2d.html", label: "スプライト（前段）" },
-    { href: "coordinates.html", label: "座標" },
+    { href: "gfx-animation-vfx.html", label: "次: VFX" },
+  ],
+  "gfx-animation-vfx": [
+    { href: "gfx-sprite-2d.html", label: "スプライト（前段）" },
+    { href: "object-pool.html", label: "プール" },
+  ],
+  "gfx-lighting-alpha": [
+    { href: "gfx-gpu-concepts.html", label: "GPU（前段）" },
+    { href: "gfx-sprite-2d.html", label: "スプライト" },
   ],
   "net-p2p-demo": [
     { href: "time-management.html", label: "時間管理（関連）" },
@@ -315,6 +331,11 @@ export const FOOTER_RELATED = {
   ],
   "net-prediction": [
     { href: "net-p2p-demo.html", label: "P2P（前段）" },
+    { href: "net-client-server.html", label: "次: C/S 権威" },
+  ],
+  "net-client-server": [
+    { href: "net-prediction.html", label: "予測（前段）" },
+    { href: "net-p2p-demo.html", label: "P2P" },
   ],
   "accessibility-basics": [
     { href: "input-abstraction.html", label: "入力抽象（前段）" },

@@ -837,6 +837,17 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "bgm-transition-compare",
+    title: "BGM 切替方式の比較",
+    description:
+      "即時 / クロスフェード / 拍同期フェードで曲 A↔B のゲイン遷移を比較。",
+    href: "algorithms/bgm-transition-compare.html",
+    badge: "サウンド",
+    category: "サウンド",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "balance-sim",
     title: "ゲームバランス分析",
     description:
@@ -881,6 +892,28 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "gfx-animation-vfx",
+    title: "アニメーション・パーティクル",
+    description:
+      "lifetime/速度/重力の粒子。バースト・連続放出と最大数プール。",
+    href: "algorithms/gfx-animation-vfx.html",
+    badge: "ゲーム CG",
+    category: "ゲーム CG",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "gfx-lighting-alpha",
+    title: "ライティング・透明度",
+    description:
+      "点光源の距離減衰とアルファ/加算ブレンドの可視化。",
+    href: "algorithms/gfx-lighting-alpha.html",
+    badge: "ゲーム CG",
+    category: "ゲーム CG",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "net-p2p-demo",
     title: "P2P 通信の観察",
     description:
@@ -897,6 +930,17 @@ const TOPICS = [
     description:
       "クライアント予測で即応し、権威到着で再シミュ補正。",
     href: "algorithms/net-prediction.html",
+    badge: "通信・データ",
+    category: "通信・データ",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "net-client-server",
+    title: "クライアント・サーバ（権威）",
+    description:
+      "位置主張をサーバが maxSpeed で受理/クランプ。チート速度の拒否。",
+    href: "algorithms/net-client-server.html",
     badge: "通信・データ",
     category: "通信・データ",
     ready: true,
