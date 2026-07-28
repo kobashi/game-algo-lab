@@ -1,12 +1,11 @@
 # トピックカタログ
 
-最終更新: 2026-07-28（ready 95 · v0.11.0）  
+最終更新: 2026-07-28（ready **95** · v0.11.1）  
 
 - **実装の正**: この表 と `js/main.js` の `TOPICS`（ずれたら両方直す）  
 - **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable` + **修正回数** + **更新日**）  
 - **Web 表示の正**: `js/platform/maturity.js` の `TOPIC_META`（`maturity` / `revisions` / `updated`）  
-- **未実装のカテゴリ・トピック（企画中のみ）**: [../ROADMAP.md](../ROADMAP.md) の **§2.3 / §2.4**。メニュー未掲載。  
-- **準備中**（SPEC あり・未 ready）: 下表の ready 空欄行、および ROADMAP §2.4。
+- **実装状況の対応表**: [../ROADMAP.md](../ROADMAP.md) §2.3 / §2.4（本線 id はほぼ実装済。未実装は path-compare 等のアイディアメモのみ）
 
 ### 成熟度の略号
 
@@ -250,21 +249,24 @@
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | 81 | 詳細は TOPIC_META |
-| 調整 (`revised`) | 14 | bfs〜rng-seed · coordinates 等 |
+| 一発 (`oneshot`) | ≈80 | 詳細は TOPIC_META（ready 95 本） |
+| 調整 (`revised`) | ≈15 | bfs〜rng-seed · coordinates 等 |
 | 安定 (`stable`) | 0 | — |
 
 Fable5 起点のコード改訂 ↔ 成熟度の対応表: [MATURITY.md](./MATURITY.md) の「Fable5 レビュー → 成熟度の突き合わせ」。
 
 ---
 
-## 企画中（本カタログ外）
+## カタログ外・当面未実装
 
-実装済み以外のカテゴリ（`networking`, `audio`, `graphics`, `quality` 等）および  
-（`fundamentals` / `procgen` / `spatial` 入口 / `ai-steering` 入口 は着手済）  
+本線カテゴリのデモは **一通り ready**。残る未実装は次のみ（いずれも **アイディアメモ・着手保留**）:
 
-物理段階・Boids・通信 等のトピックは **[ROADMAP.md §2.4](../ROADMAP.md)** に **企画中** として列挙する。  
-着手するまで ready 行を増やさない。
+| id | メモ |
+|----|------|
+| `path-compare` | 経路の同時比較 UI（低優先） |
+| `game-tree-engine` | 共通探索エンジン（低優先） |
+
+詳細: [ROADMAP.md §5](../ROADMAP.md)。E2E / i18n も同節のバックログ。
 
 ---
 

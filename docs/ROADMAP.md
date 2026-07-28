@@ -7,7 +7,7 @@
 | **正本改訂** | **2026-07-19** — Fable5 レビュー全件承認を反映（§2 実在ルール優先原則、§4 procgen 行、§6.1 三目並べ、§6.4 割り箸 新設、§15 第2期追記）。レビュー記録: [reviews/2026-07-19-docx-minigames-review.md](./reviews/2026-07-19-docx-minigames-review.md)、変更履歴版: [interactive_game_programming_material_plan_fable5_review.docx](./interactive_game_programming_material_plan_fable5_review.docx) |
 | **リポジトリ登録** | 2026-07-17（`docs/` に配置し Git 管理開始） |
 | **本 Markdown** | 正本の要約・**実装状況の対応表**・Game Algo Lab 運用メモ（エージェント／GitHub 向け） |
-| **最終更新（md）** | 2026-07-27（難易度順の実装計画 [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) を追加） |
+| **最終更新（md）** | 2026-07-28（ready 95 同期・表記ズレ修正 · v0.11.1） |
 
 正本の変更や方針の大きな見直しは **Docx を更新したうえで本ファイルを同期**する。  
 細部の図表・講義向け長文は正本を開き、日々の実装判断は本ファイルと [topics/CATALOG.md](./topics/CATALOG.md) を優先する。
@@ -79,7 +79,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 | 期 | 正本のねらい | Game Algo Lab 現状（2026-07-17） | 次の実装候補（例） |
 |----|--------------|----------------------------------|-------------------|
-| **第1期** | 既存探索教材の完成と共通 UI | 経路探索 6 本 `ready`（双方向含む）。platform・スモーク・Pages 試作 | 疑似コード同期、計測パネル統一、迷路エディタ強化（同時比較は低優先のアイディアメモ） |
+| **第1期** | 既存探索教材の完成と共通 UI | 経路探索 6 本 `ready`（双方向含む）。疑似コード同期済。platform・スモーク・Pages | 計測パネル統一、「戻る」、迷路エディタ強化（同時比較は低優先のアイディアメモ） |
 | **第2期** | ゲーム木と状態空間 | AND-OR〜バンディット 5 本 `ready`・多く **一発**。AABB・FSM も試作 | **三目並べ**（全解析・対称性除去）、**割り箸**（循環グラフ・後退解析）、**MCTS**、**ニム**（完全解析→剰余/nim-sum）、**4×4 オセロ**（符号化・対称正規化）、ゲーム木の教材改訂 |
 | **第3期** | 2D アクション共通基盤 | AABB のみ（説明 UI） | 擬似物理→速度/加速度、OBB/SAT/連続衝突、入力バッファ・コヨーテ、スプライト統合（将来 Unity と接続可） |
 | **第4期** | 群集・高速化・CG | 未着手 | ステアリング・Boids、空間分割、大量オブジェクト、CG 実験室 |
@@ -99,14 +99,16 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 - **状態**: BFS / DFS / ダイクストラ / 最良優先 / A* / **双方向** が `ready: true`
 - 地図ペイント（コスト・壁・複数ゴール G）、DS 可視化、platform 寄せ済み
-- **残（優先）**: 疑似コード行同期は **経路探索 6 本すべて**（双方向含む）に導入済み（`createPseudocode`）。計測表示の統一は継続  
+- **済**: 疑似コード行同期は **経路探索 6 本すべて**（`createPseudocode`、2026-07-28）  
+- **残（優先）**: 計測表示の統一、「戻る」操作の共通 API  
 - **低優先（アイディアメモ）**: 経路アルゴリズム同時比較（`path-compare`）— 当面着手しない
 
 #### Phase B — 共通基盤 — **概ね完了（試作）**
 
 - [x] PLATFORM / `js/platform/*` / TOPIC_SCAFFOLD / シェル / smoke  
 - [x] トップの成熟度可視化（一発 / 調整 / 安定）  
-- 残: 正本が求める「戻る」「疑似コード強調」「計測」の共通 API 化
+- [x] 疑似コード行同期（経路探索 6 本）  
+- 残: 正本が求める「戻る」、計測パネルの横断統一
 
 #### Phase C — ゲーム木（第2期の前半）
 
@@ -116,75 +118,79 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 - [x] 割り箸（循環ゲームグラフ・後退解析。正本 §6.4、2026-07-19 新設・同日実装）  
 - [x] MCTS（正本明記）— **2026-07-21 実装**: 題材=**三目並べ**。4相+UCB1、完全解/素の MC 比較。[SPEC](./topics/mcts/SPEC.md)  
 - [x] 4×4 オセロ（転置表・対称正規化・パス処理・3段計測。正本 §6.3、2026-07-19 実装）  
-- 既存 5 本の教材改訂（成熟度 oneshot → revised）
+- [x] 教材改訂の一部（Min-Max 等 oneshot → revised）。残 oneshot の改訂は継続  
 - 学習進行の目安（正本 §6）: 三目並べ → **MCTS（同一題材で UCT）** → ニム → 割り箸 → 4×4 オセロ  
 - 第2期ゲーム木（アルゴリズム可視化 + 実在ゲーム4本 + MCTS）は **一通り出揃った**
 
-#### Phase D — その他カテゴリ（第2〜3期の入口）
+#### Phase D — その他カテゴリ（第2〜5期）
 
-- [x] AABB（説明特化）  
-- [x] ステートマシン  
-- [ ] 物理段階シリーズ、ステアリング、通信・サウンド・CG（第3期以降）
+- [x] AABB（説明特化）・ステートマシン  
+- [x] 物理段階シリーズ（擬似〜回転衝突・複合）  
+- [x] 空間分割（総当たり〜BVH）  
+- [x] ステアリング / Boids / BT / ナビ連携  
+- [x] 設計パターン・品質（FSM〜ECS、セーブ〜ユニットテスト）  
+- [x] HCI（コヨーテ〜a11y）  
+- [x] プロシージャル（迷路〜バランス分析）  
+- [x] サウンド・CG・通信（Wave F 一通り、v0.11.0）
 
-### 2.3 カテゴリ一覧（実装済み + 企画中）
+### 2.3 カテゴリ一覧（実装状況）
 
 **状態の意味**
 
 | 状態 | 意味 |
 |------|------|
 | **実装済** | `ready: true`。メニューからデモを開ける（[CATALOG.md](./topics/CATALOG.md)） |
-| **企画中** | 正本に基づき計画のみ。**SPEC 未着手・HTML/JS 未追加・TOPICS 未登録**。着手時は CATALOG → SPEC → 実装の順 |
+| **アイディアメモ** | 低優先・当面 SPEC/実装しない（§5 バックログ） |
 
 | カテゴリ ID（案） | 表示名 | 状態 | 期の目安 | 備考 |
 |-------------------|--------|------|----------|------|
-| `pathfinding` | 経路探索 | **実装済** | 第1期 | 6 本実装済（双方向含む）。同時比較はアイディアメモ（低優先） |
-| `game-tree` | ゲーム木 | **実装済** | 第2期 | 10 本実装済（MCTS + 実在ゲーム4本を含む） |
-| `physics` | 物理・判定 | **実装済**（一部企画中） | 第3期 | 擬似〜回転・OBB/Swept。回転衝突・複合は企画中 |
-| `patterns` | 設計パターン | **実装済**（一部企画中） | 第2〜3期 | FSM〜ECS 実装済 |
-| `fundamentals` | 基礎実行モデル | **実装済** | 第1〜3期 | 5 本すべて ready（game-loop〜rng-seed） |
-| `ai-steering` | ゲーム AI・自律移動 | **実装済**（一部企画中） | 第4期 | Seek〜Leader・BT ready。ナビ連携は企画中 |
-| `spatial` | 空間探索・最適化 | **実装済**（一部企画中） | 第3〜4期 | 総当たり〜BVH ready |
-| `hci` | 入力・操作感・HCI | **実装済**（一部企画中） | 第3期 | coyote-time / input-buffer ready |
-
-| `networking` | 通信・データ | **実装済** | 第5期 | p2p〜DB・チート検証まで一通り ready |
-| `audio` | ゲームサウンド | **実装済** | 第5期 | SFX〜レイヤー BGM まで一通り ready |
-| `graphics` | ゲーム CG | **実装済** | 第4期 | GPU〜UI·Mesh ready。gfx-coordinates は coordinates に統合 |
-| `quality` | 設計・品質 | **実装済**（一部企画中） | 横断 | save/replay/debug ready。計測・テストは企画中 |
-| `procgen` | プロシージャル・確率・バランス | **実装済**（一部企画中） | 第2〜4期 | maze〜noise · balance-sim ready |
+| `pathfinding` | 経路探索 | **実装済** | 第1期 | 6 本 + 疑似コード同期。同時比較はアイディアメモ |
+| `game-tree` | ゲーム木 | **実装済** | 第2期 | 10 本（MCTS + 実在ゲーム4本を含む） |
+| `physics` | 物理・判定 | **実装済** | 第3期 | 擬似〜回転衝突・複合コライダーまで |
+| `patterns` | 設計パターン | **実装済** | 第2〜3期 | FSM〜ECS |
+| `fundamentals` | 基礎実行モデル | **実装済** | 第1〜3期 | 5 本（game-loop〜rng-seed） |
+| `ai-steering` | ゲーム AI・自律移動 | **実装済** | 第4期 | Seek〜Leader・BT・ナビ連携 |
+| `spatial` | 空間探索・最適化 | **実装済** | 第3〜4期 | 総当たり〜BVH |
+| `hci` | 入力・操作感・HCI | **実装済** | 第3期 | コヨーテ〜a11y・コマンド入力 |
+| `networking` | 通信・データ | **実装済** | 第5期 | p2p〜DB・チート検証 |
+| `audio` | ゲームサウンド | **実装済** | 第5期 | SFX〜レイヤー BGM |
+| `graphics` | ゲーム CG | **実装済** | 第4期 | GPU〜UI·Mesh。座標は `coordinates` に統合 |
+| `quality` | 設計・品質 | **実装済** | 横断 | セーブ〜計測・ユニットテスト |
+| `procgen` | プロシージャル・確率・バランス | **実装済** | 第2〜4期 | 迷路〜ノイズ・balance-sim |
 
 実装済みトピックの詳細・成熟度は [topics/CATALOG.md](./topics/CATALOG.md) / [topics/MATURITY.md](./topics/MATURITY.md)。  
-**企画中の id は仮**。着手時に衝突を避けて確定する。
+**ready 合計: 95**（2026-07-28 · v0.11.1 時点）。
 
 > **`patterns` / `quality` 分割について**: 正本 §13 は「ソフトウェア設計・品質」という **単一領域**（イベント〜プロファイリングまで）。本サイトはメニュー UI の都合で `patterns`（設計パターン寄り）と `quality`（品質・計測寄り）の **2 カテゴリに分割**している。上表の「第2〜3期」「横断」という期の目安は **正本 §15 に明記はなく、サイト運用上の便宜的な推定**。正本との対応は 1 領域 → 2 カテゴリの意図的な分割であり、矛盾ではなく **サイト独自の実装分類**として扱う。
 
 ---
 
-## 2.4 企画中トピック一覧（実装しない・計画のみ）
+## 2.4 トピック対応表（実装状態付き）
 
-> 本節は **カタログ拡張の予約表**。デモ実装・SPEC は着手時まで作らない。  
-> **学習項目の見出しだけ** トップページ `#curriculum` に掲載する（`js/curriculum-outline.js`、デモ・リンクなし）。  
-> 正本 §5〜§14・§15 を id 候補に落としたもの。優先は上の期表に従う。
+> 正本 §5〜§14 の id をサイト側に落とした対応表。  
+> 大半は **実装済**。未実装のまま残すのは **アイディアメモ**（`path-compare` / `game-tree-engine`）のみ。  
+> トップの `#curriculum` は企画中見出し用だったが、現状は各カテゴリともデモ済みのため outline の `items` は空。
 
 ### 状態サマリ
 
 | | 件数の目安 |
 |--|-----------|
-| 実装済（メニュー掲載） | 15（経路 5 + ゲーム木 8 + AABB + FSM） |
-| 企画中（本節） | 下記の各表（カテゴリ横断で多数） |
+| 実装済（メニュー掲載） | **95** |
+| アイディアメモ（当面未実装） | 2（`path-compare` · `game-tree-engine`） |
 
 ---
 
-### `pathfinding` — 経路探索（追加分は企画中）
+### `pathfinding` — 経路探索
 
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
-| `bfs` … `astar` | （既存 5 本） | 実装済 | CATALOG 参照 |
+| `bfs` … `astar` | （既存 5 本） | **実装済** | CATALOG 参照。疑似コード同期済み |
 | `bidirectional-search` | 双方向探索 | **実装済** | 双方向 BFS・出会点接合・一方向との展開数比較。[SPEC](./topics/bidirectional-search/SPEC.md) |
 | `path-compare` | 経路アルゴリズム同時比較 | **アイディアメモ（低優先）** | 同一地図・複数方式の同時実行 UI の構想のみ。**当面 SPEC・実装しない**。双方向デモ内の「一方向との展開数比較」で比較学習の一部は既にカバー。優先度は E2E/i18n と同様バックログ側（§5 参照） |
 
 ---
 
-### `game-tree` — ゲーム木（追加分は企画中）
+### `game-tree` — ゲーム木
 
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
@@ -198,7 +204,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 ---
 
-### `physics` — 物理・判定（追加分は企画中）
+### `physics` — 物理・判定
 
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
@@ -220,7 +226,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 ---
 
-### `patterns` — 設計パターン（追加分は企画中）
+### `patterns` — 設計パターン
 
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
@@ -247,7 +253,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 ---
 
-### `ai-steering` — ゲーム AI・自律移動（カテゴリごと企画中）
+### `ai-steering` — ゲーム AI・自律移動
 
 > **FSM の分類について**: 正本 §4 の領域表ではステートマシンは本カテゴリ（ゲームAI・自律移動）に属する。しかし本サイトは実装済みの UI 型（説明特化・非マップ）の都合で `patterns`（設計パターン）カテゴリに置いている。これは正本の体系からの **意図的なサイト側分類**であり、今後 FSM を本カテゴリへ移す予定はない（変更する場合は `js/main.js` の `category`/`badge`、CATALOG、本 ROADMAP を同時に更新する）。
 
@@ -275,7 +281,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 ---
 
-### `hci` — 入力・操作感・HCI（カテゴリごと企画中）
+### `hci` — 入力・操作感・HCI
 
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
@@ -287,7 +293,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 ---
 
-### `networking` — 通信・データ（カテゴリごと企画中）
+### `networking` — 通信・データ
 
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
@@ -300,7 +306,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 ---
 
-### `audio` — ゲームサウンド（カテゴリごと企画中）
+### `audio` — ゲームサウンド
 
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
@@ -317,7 +323,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 ---
 
-### `graphics` — ゲーム CG（カテゴリごと企画中）
+### `graphics` — ゲーム CG
 
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
@@ -334,7 +340,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 ---
 
-### `quality` — 設計・品質（カテゴリごと企画中）
+### `quality` — 設計・品質
 
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
@@ -361,15 +367,14 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 ---
 
-### 企画中トピックの着手ルール
+### 新規トピックの着手ルール（参考）
 
-1. 本表の id を [topics/CATALOG.md](./topics/CATALOG.md) に **ready ❌ / 状態: 企画中→準備中** で転記  
+1. 本表または正本に id を確保し [topics/CATALOG.md](./topics/CATALOG.md) に行を追加  
 2. `docs/topics/<id>/SPEC.md` を作成（学習目標・操作・成功条件）  
-3. 実装ブランチ → デモ → `ready: true`・成熟度 `oneshot`  
+3. 実装 → デモ → `ready: true`・成熟度 `oneshot`  
 4. **本 ROADMAP の該当行を「実装済」に更新**（CATALOG と揃える）  
-5. この更新作業では **コード・HTML・main.js は触らない**
 
-**実装の優先順位（難易度順）**は [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) を正とする。簡単なものから Wave A → B → … と進める。
+**現状**: 正本に対応する本線 id はほぼ実装済。優先作業は **oneshot 改訂 / stable 選定 / 計測・戻る**（[IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md)）。
 
 ---
 
@@ -430,7 +435,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 1. **方針・体系・期分けの変更** → 正本 Docx を更新し、**策定/改訂日**を Docx と本表に記録  
 2. **実装の進捗** → 本ファイル §2 / §2.4 と CATALOG / HANDOFF を更新（毎回 Docx を書き直す必要はない）  
 3. Git に載せる Docx は `docs/*.docx` のみ（ルートの下書きは `.gitignore`）  
-4. 新規トピックは **§2.4 企画中表 → CATALOG → SPEC → 実装**。企画中のままコードを増やさない  
+4. 新規トピックは **§2.4 対応表 → CATALOG → SPEC → 実装**。未 SPEC のまま大きなコードを増やさない  
 
 ---
 

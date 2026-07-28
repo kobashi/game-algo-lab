@@ -1248,17 +1248,18 @@ function renderTopics() {
 }
 
 /**
- * ROADMAP の企画中トピックを「見出しのみ」掲載（デモ・リンクなし）
+ * カテゴリ概要（ロードマップ）。本線はデモ済みのため blurb 中心。
+ * items に残があれば「見出しのみ」として併記（現状は空）。
  */
 function renderCurriculumOutline() {
   const root = document.getElementById("curriculum-outline");
   if (!root) return;
 
   const fragment = document.createDocumentFragment();
-  let itemCount = 0;
+  let pendingItems = 0;
 
   for (const cat of CURRICULUM_OUTLINE) {
-    itemCount += cat.items.length;
+    pendingItems += cat.items.length;
 
     const section = document.createElement("section");
     section.className = "curriculum-category";
@@ -1275,11 +1276,16 @@ function renderCurriculumOutline() {
     const badges = document.createElement("div");
     badges.className = "curriculum-category-badges";
 
-    const planned = document.createElement("span");
-    planned.className = "curriculum-badge curriculum-badge-planned";
-    planned.textContent = "企画中";
+    const status = document.createElement("span");
+    if (cat.items.length === 0) {
+      status.className = "curriculum-badge curriculum-badge-ready";
+      status.textContent = "デモあり";
+    } else {
+      status.className = "curriculum-badge curriculum-badge-planned";
+      status.textContent = "一部企画中";
+    }
+    badges.append(status);
 
-    badges.append(planned);
     if (cat.phase) {
       const phase = document.createElement("span");
       phase.className = "curriculum-badge curriculum-badge-phase";
@@ -1298,36 +1304,40 @@ function renderCurriculumOutline() {
       section.append(head);
     }
 
-    const list = document.createElement("ul");
-    list.className = "curriculum-item-list";
-    list.setAttribute("aria-label", `${cat.title}の学習項目`);
+    if (cat.items.length) {
+      const list = document.createElement("ul");
+      list.className = "curriculum-item-list";
+      list.setAttribute("aria-label", `${cat.title}の未実装項目`);
 
-    for (const item of cat.items) {
-      const li = document.createElement("li");
-      li.className = "curriculum-item";
-      li.dataset.id = item.id;
+      for (const item of cat.items) {
+        const li = document.createElement("li");
+        li.className = "curriculum-item";
+        li.dataset.id = item.id;
 
-      const title = document.createElement("span");
-      title.className = "curriculum-item-title";
-      title.textContent = item.title;
+        const title = document.createElement("span");
+        title.className = "curriculum-item-title";
+        title.textContent = item.title;
 
-      // デモなし: リンク・ボタンは付けない（見出しのみ）
-      const mark = document.createElement("span");
-      mark.className = "curriculum-item-mark";
-      mark.textContent = "見出しのみ";
-      mark.title = "デモ未実装。学習項目として掲載";
+        const mark = document.createElement("span");
+        mark.className = "curriculum-item-mark";
+        mark.textContent = "見出しのみ";
+        mark.title = "デモ未実装。学習項目として掲載";
 
-      li.append(title, mark);
-      list.appendChild(li);
+        li.append(title, mark);
+        list.appendChild(li);
+      }
+      section.append(list);
     }
 
-    section.append(list);
     fragment.appendChild(section);
   }
 
   const summary = document.createElement("p");
   summary.className = "curriculum-summary";
-  summary.textContent = `カテゴリ ${CURRICULUM_OUTLINE.length} · 学習項目（企画中） ${itemCount} — デモは上の「学習トピック」を参照`;
+  summary.textContent =
+    pendingItems > 0
+      ? `カテゴリ ${CURRICULUM_OUTLINE.length} · 未実装見出し ${pendingItems} — 操作デモは上の「学習トピック」`
+      : `カテゴリ ${CURRICULUM_OUTLINE.length} · 本線デモ一通り ready — 操作は上の「学習トピック」から`;
 
   root.replaceChildren(summary, fragment);
 }

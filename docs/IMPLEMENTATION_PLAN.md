@@ -168,7 +168,8 @@
 
 **ready 95**: Wave F 主要 id 完了。gfx-coordinates は coordinates に統合。  
 **v0.11.0**: ready 67→95 の大型拡張を Release。  
-**基盤**: `createPseudocode` を経路探索 6 本（双方向含む）に接続済み。次: oneshot 改訂 · stable 選定 · 計測パネル統一。
+**v0.11.1**: docs 実装状況表記の同期 · 経路探索 6 本の疑似コード行同期。  
+次: oneshot 改訂 · stable 選定 · 計測パネル統一 ·「戻る」。
 
 ---
 

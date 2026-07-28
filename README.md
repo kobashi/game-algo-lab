@@ -11,9 +11,9 @@ GitHub Pages での公開を前提に、ビルド不要の静的サイト（HTML
 |--|-----|
 | **教材トップ** | https://kobashi.github.io/game-algo-lab/ |
 | リポジトリ | https://github.com/kobashi/game-algo-lab |
-| 最新試作 Release | https://github.com/kobashi/game-algo-lab/releases/tag/v0.11.0 |
+| 最新試作 Release | https://github.com/kobashi/game-algo-lab/releases/tag/v0.11.1 |
 
-**ready 95 トピック**（v0.11.0）。経路探索・ゲーム木・物理・空間・AI・設計・品質・HCI・プロシージャル・**サウンド**・**ゲーム CG**・**通信**まで一通り揃っています。
+**ready 95 トピック**（v0.11.1）。経路探索・ゲーム木・物理・空間・AI・設計・品質・HCI・プロシージャル・**サウンド**・**ゲーム CG**・**通信**まで一通り揃っています。
 
 主なデモ例:
 

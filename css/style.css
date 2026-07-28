@@ -2449,6 +2449,12 @@ main.container.container-wide.topic-main:has(.mcts-tree-panel) {
   background: rgba(212, 168, 75, 0.1);
 }
 
+.curriculum-badge-ready {
+  border-color: rgba(107, 203, 143, 0.55);
+  color: #6bcb8f;
+  background: rgba(107, 203, 143, 0.12);
+}
+
 .curriculum-badge-phase {
   border-color: rgba(154, 171, 191, 0.45);
   color: var(--text-muted);

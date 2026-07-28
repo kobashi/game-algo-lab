@@ -1,9 +1,9 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-07-28（ready **95** · **v0.11.0** · Wave F 一通り）  
+最終更新: 2026-07-28（ready **95** · **v0.11.1** · docs 同期 + 疑似コード）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
-Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.11.0
+Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.11.1
 
 新セッション開始時の指示例:
 
@@ -116,6 +116,8 @@ ready **95**。**Audio / Networking / Graphics（主要）一通り完了。**
 
 **2026-07-28 疑似コード完了（経路探索）**: `bidirectional-search` にも接続 — **6 本すべて**。
 
+**2026-07-28 docs 同期 · v0.11.1**: ROADMAP/CATALOG/index の古い「企画中」表記を修正。本線カテゴリは実装済に揃えた。
+
 **実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: oneshot 改訂 · stable 選定 · 計測パネル統一。
 
 ---
@@ -157,7 +159,7 @@ ready **95**。**Audio / Networking / Graphics（主要）一通り完了。**
 - **i18n**（多言語 UI）— 当面は日本語固定  
 
 計画の正本: [docs/interactive_game_programming_material_plan.docx](docs/interactive_game_programming_material_plan.docx)（**策定 2026年7月**）。  
-実装対応・**企画中トピック一覧**・バックログは [docs/ROADMAP.md](docs/ROADMAP.md)（§2.3–2.4）。  
+実装対応・トピック対応表・バックログは [docs/ROADMAP.md](docs/ROADMAP.md)（§2.3–2.4 · §5）。  
 サイト上の **見出しのみ掲載**（デモなし）: トップ `#curriculum` ← `js/curriculum-outline.js`。  
 索引: [docs/README.md](docs/README.md)
 
@@ -542,12 +544,9 @@ ready **95**。**Audio / Networking / Graphics（主要）一通り完了。**
 - 既定ブランチ: `main`（ローカルは `origin/main` と同期済み想定）  
 - **GitHub Pages（試作運用中）**: https://kobashi.github.io/game-algo-lab/  
   - Source: `main` / `/ (root)`  
-- **Release 試作版**: https://github.com/kobashi/game-algo-lab/releases/tag/v0.11.0  
-  - 前版: `v0.10.0` / `v0.9.8`  
-
-  - タグ `v0.9.8`（prerelease）— `RELEASE_NOTES_v0.9.8.md`（迷路生成）  
-  - 前版: `v0.9.7` / `v0.9.6`  
-- 再公開: `./scripts/publish-github.sh game-algo-lab v0.9.8`（または新タグ）  
+- **Release 試作版**: https://github.com/kobashi/game-algo-lab/releases/tag/v0.11.1  
+  - 前版: `v0.11.0` / `v0.10.0` / `v0.9.8`  
+- 再公開: `./scripts/publish-github.sh game-algo-lab v0.11.1`（または新タグ）  
 - 旧ローカルタグ `v1.0.0` は初期準備用。正式版は別途 `v1.0.0` を切り直す想定  
 
 ### リモートブランチ（不要マーク・削除しない）
