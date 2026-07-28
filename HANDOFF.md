@@ -1,6 +1,6 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-07-28（ready **75** · balance / sfx-random / GPU / P2P）  
+最終更新: 2026-07-28（ready **79** · spatial / bus / BGM / sprite）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.10.0
@@ -71,7 +71,14 @@ Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.10.0
 4. `net-p2p-demo` — 疑似遅延/欠落/順序（networking カテゴリ入口）  
 ready **75**。いずれも `oneshot`。
 
-**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: BGM 系 / gfx-coordinates 等 / net-prediction 等。
+**2026-07-28 Audio/GFX 続き 4 本**:  
+1. `sfx-spatial` — 距離減衰 + ステレオパン  
+2. `audio-bus-ducking` — Master/BGM/SE · ダック  
+3. `bgm-loop` — イントロ＋ループ再生ヘッド  
+4. `gfx-sprite-2d` — シートフレーム · Y ソート  
+ready **79**。いずれも `oneshot`。
+
+**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: bgm-quantize / gfx-camera / net-prediction / sfx-material。
 
 ---
 
@@ -197,6 +204,10 @@ ready **75**。いずれも `oneshot`。
 | 73 | SE ランダム化 | `algorithms/sfx-randomize.html` | `js/maps/sfx-randomize-config.js` | `SfxRandomizeExample.cs` | ピッチ+バッグ |
 | 74 | GPU パイプライン | `algorithms/gfx-gpu-concepts.html` | `js/maps/gfx-gpu-concepts-config.js` | `GfxGpuConceptsExample.cs` | 概念段階 |
 | 75 | P2P 観察 | `algorithms/net-p2p-demo.html` | `js/maps/net-p2p-demo-config.js` | `NetP2pDemoExample.cs` | 疑似ネット |
+| 76 | 距離・パン | `algorithms/sfx-spatial.html` | `js/maps/sfx-spatial-config.js` | `SfxSpatialExample.cs` | 空間 SE |
+| 77 | バス/ダック | `algorithms/audio-bus-ducking.html` | `js/maps/audio-bus-ducking-config.js` | `AudioBusDuckingExample.cs` | Mixer |
+| 78 | BGM ループ | `algorithms/bgm-loop.html` | `js/maps/bgm-loop-config.js` | `BgmLoopExample.cs` | intro+loop |
+| 79 | 2D スプライト | `algorithms/gfx-sprite-2d.html` | `js/maps/gfx-sprite-2d-config.js` | `GfxSprite2dExample.cs` | シート+Yソート |
 
 共通:
 

@@ -60,7 +60,11 @@ export const NAV_GROUPS = {
     { id: "sfx-events", label: "SFX", href: "sfx-events.html" },
     { id: "sfx-voice-limit", label: "ボイス", href: "sfx-voice-limit.html" },
     { id: "sfx-randomize", label: "ランダムSE", href: "sfx-randomize.html" },
+    { id: "sfx-spatial", label: "空間SE", href: "sfx-spatial.html" },
+    { id: "audio-bus-ducking", label: "バス", href: "audio-bus-ducking.html" },
+    { id: "bgm-loop", label: "BGM", href: "bgm-loop.html" },
     { id: "gfx-gpu-concepts", label: "GPU", href: "gfx-gpu-concepts.html" },
+    { id: "gfx-sprite-2d", label: "スプライト", href: "gfx-sprite-2d.html" },
     { id: "net-p2p-demo", label: "P2P", href: "net-p2p-demo.html" },
     { id: "balance-sim", label: "バランス", href: "balance-sim.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
@@ -263,6 +267,18 @@ export const FOOTER_RELATED = {
   ],
   "sfx-randomize": [
     { href: "sfx-voice-limit.html", label: "ボイス制限（前段）" },
+    { href: "sfx-spatial.html", label: "次: 距離・パン" },
+  ],
+  "sfx-spatial": [
+    { href: "sfx-randomize.html", label: "SE ランダム（前段）" },
+    { href: "audio-bus-ducking.html", label: "次: バス/ダック" },
+  ],
+  "audio-bus-ducking": [
+    { href: "sfx-spatial.html", label: "空間 SE（前段）" },
+    { href: "bgm-loop.html", label: "次: BGM ループ" },
+  ],
+  "bgm-loop": [
+    { href: "audio-bus-ducking.html", label: "バス（前段）" },
     { href: "sfx-events.html", label: "SFX イベント" },
   ],
   "balance-sim": [
@@ -271,6 +287,11 @@ export const FOOTER_RELATED = {
   ],
   "gfx-gpu-concepts": [
     { href: "coordinates.html", label: "座標変換（関連）" },
+    { href: "gfx-sprite-2d.html", label: "次: 2D スプライト" },
+  ],
+  "gfx-sprite-2d": [
+    { href: "gfx-gpu-concepts.html", label: "GPU 概念（前段）" },
+    { href: "coordinates.html", label: "座標" },
   ],
   "net-p2p-demo": [
     { href: "time-management.html", label: "時間管理（関連）" },

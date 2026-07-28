@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="距離減衰とステレオパンの可視化。" />
+  <title>距離・パン — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="sfx-spatial"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / サウンド / 距離・パン</p>
+      <h1>距離・パン・空間 SE</h1>
+      <p class="page-header-lead">
+        音源とリスナーの<strong>距離</strong>で音量減衰、<strong>左右位置</strong>でステレオパン。
+        前段: <a href="sfx-events.html">イベントと効果音</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>距離が遠いほど gain が下がる（線形減衰モデル）</li>
+          <li>リスナーから見て右の音源は pan &gt; 0</li>
+          <li>本格 3D 空間音の前に 2D で十分教えられる</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="sp-canvas" class="gl-canvas" width="640" height="320" tabindex="0"></canvas>
+        <div id="sp-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="control-row">
+          <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+        </div>
+        <label class="ttt-check"><input type="checkbox" id="mute" /> ミュート（数値のみ）</label>
+        <p class="footer-muted">青い Source をドラッグしてから再生。</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Audio · 空間 SE"></footer>
+  <script type="module" src="../js/sfx-spatial.js"></script>
+</body>
+</html>

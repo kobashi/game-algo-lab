@@ -142,9 +142,9 @@
 
 | 群 | id 例 | 難度 | 備考 |
 |----|--------|------|------|
-| Audio 入門 | `sfx-events`, `sfx-voice-limit`, `sfx-randomize` | **M** | ✅ 3 本実装済（Web Audio + ログ） |
-| Audio 高度 | `bgm-loop`, `bgm-quantize`, `bgm-interactive`, … | **H** | 拍同期は実装コスト大 |
-| Graphics | `gfx-sprite-2d`, `gfx-camera`, … | **M〜H** | `coordinates` と重複する `gfx-coordinates` は **統合 or スコープ縮小** を SPEC で決める |
+| Audio 入門 | `sfx-events`〜`sfx-spatial`, bus, `bgm-loop` | **M** | ✅ 実装済 2026-07-28 |
+| Audio 高度 | `bgm-quantize`, `bgm-interactive`, `bgm-transition-compare` | **H** | 拍同期は実装コスト大 |
+| Graphics | `gfx-sprite-2d` ✅, `gfx-camera`, … | **M〜H** | `gfx-coordinates` は coordinates と統合検討 |
 | GPU | `gfx-gpu-concepts` | **E〜M** | ✅ **実装済** 2026-07-28（図解中心） |
 | Networking | `net-p2p-demo` + `net-*` | **H** | ✅ p2p 入口実装済。他は疑似遅延·権威シム |
 
@@ -167,8 +167,8 @@
 | 7 | **`constrained-gen`** | 中 | maze-gen + bfs 到達性 | ✅ |
 | 8 | **`accel-gravity`** | 小〜中 | velocity の次 | ✅ |
 
-**ready 75**: balance-sim · sfx-randomize · gfx-gpu-concepts · net-p2p-demo まで。  
-次: BGM 系 / gfx-sprite-2d 等 / net-prediction 等。
+**ready 79**: sfx-spatial · audio-bus-ducking · bgm-loop · gfx-sprite-2d まで。  
+次: bgm-quantize / gfx-camera / net-prediction / sfx-material。
 
 ---
 

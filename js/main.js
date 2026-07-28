@@ -782,6 +782,39 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "sfx-spatial",
+    title: "距離・パン・空間 SE",
+    description:
+      "音源とリスナーの距離減衰とステレオパンをキャンバスで観察。",
+    href: "algorithms/sfx-spatial.html",
+    badge: "サウンド",
+    category: "サウンド",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "audio-bus-ducking",
+    title: "サウンドバスとダッキング",
+    description:
+      "Master / BGM / SE バス。SE 中に BGM を一時減衰。",
+    href: "algorithms/audio-bus-ducking.html",
+    badge: "サウンド",
+    category: "サウンド",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "bgm-loop",
+    title: "BGM ループ / イントロ＋ループ",
+    description:
+      "再生ヘッドがイントロ後は loopStart〜End だけを繰り返す。",
+    href: "algorithms/bgm-loop.html",
+    badge: "サウンド",
+    category: "サウンド",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "balance-sim",
     title: "ゲームバランス分析",
     description:
@@ -798,6 +831,17 @@ const TOPICS = [
     description:
       "頂点→ラスタ→ピクセル→結合→表示の段階を概念キャンバスで辿る。",
     href: "algorithms/gfx-gpu-concepts.html",
+    badge: "ゲーム CG",
+    category: "ゲーム CG",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "gfx-sprite-2d",
+    title: "2D スプライト",
+    description:
+      "スプライトシートのフレーム切替と Y ソートによる前後描画。",
+    href: "algorithms/gfx-sprite-2d.html",
     badge: "ゲーム CG",
     category: "ゲーム CG",
     ready: true,

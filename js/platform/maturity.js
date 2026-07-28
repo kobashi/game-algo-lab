@@ -287,6 +287,26 @@ export const TOPIC_META = {
     revisions: 0,
     updated: "2026-07-28",
   },
+  "sfx-spatial": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-28",
+  },
+  "audio-bus-ducking": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-28",
+  },
+  "bgm-loop": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-28",
+  },
+  "gfx-sprite-2d": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-28",
+  },
   "and-or": { maturity: "revised", revisions: 1, updated: "2026-07-19" },
 
   minimax: { maturity: "revised", revisions: 1, updated: "2026-07-19" },

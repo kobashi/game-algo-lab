@@ -1,6 +1,6 @@
 # トピックカタログ
 
-最終更新: 2026-07-28（ready 75）  
+最終更新: 2026-07-28（ready 79）  
 
 - **実装の正**: この表 と `js/main.js` の `TOPICS`（ずれたら両方直す）  
 - **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable` + **修正回数** + **更新日**）  
@@ -207,6 +207,9 @@
 | `sfx-events` | イベントと効果音 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-events.html` | [SPEC](./sfx-events/SPEC.md) | Emit → Web Audio |
 | `sfx-voice-limit` | 同時発音・重複制御 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-voice-limit.html` | [SPEC](./sfx-voice-limit/SPEC.md) | steal / drop |
 | `sfx-randomize` | SE のランダム化 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-randomize.html` | [SPEC](./sfx-randomize/SPEC.md) | ピッチ/音量 + シャッフルバッグ |
+| `sfx-spatial` | 距離・パン・空間 SE | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-spatial.html` | [SPEC](./sfx-spatial/SPEC.md) | 距離減衰 + ステレオパン |
+| `audio-bus-ducking` | サウンドバスとダッキング | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/audio-bus-ducking.html` | [SPEC](./audio-bus-ducking/SPEC.md) | Master/BGM/SE · ダック |
+| `bgm-loop` | BGM ループ / イントロ＋ループ | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/bgm-loop.html` | [SPEC](./bgm-loop/SPEC.md) | 再生ヘッド · loopStart |
 
 ---
 
@@ -215,6 +218,7 @@
 | id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
 |----|----------|-------|--------|------|------|--------|------|----------|
 | `gfx-gpu-concepts` | GPU パイプライン概説 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-gpu-concepts.html` | [SPEC](./gfx-gpu-concepts/SPEC.md) | 概念デモ · 実 GPU API なし |
+| `gfx-sprite-2d` | 2D スプライト | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-sprite-2d.html` | [SPEC](./gfx-sprite-2d/SPEC.md) | シートフレーム · Y ソート |
 
 ---
 
@@ -226,11 +230,11 @@
 
 ---
 
-## 成熟度サマリ（2026-07-28·75 トピック ready）
+## 成熟度サマリ（2026-07-28·79 トピック ready）
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | 62 | 詳細は TOPIC_META |
+| 一発 (`oneshot`) | 66 | 詳細は TOPIC_META |
 | 調整 (`revised`) | 13 | bfs〜rng-seed 等 |
 | 安定 (`stable`) | 0 | — |
 
