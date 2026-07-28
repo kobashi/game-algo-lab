@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="彩度・ビネット・ブルーム等のポストプロセス。" />
+  <title>ポストプロセス — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="gfx-postprocess"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / ゲーム CG / ポストプロセス</p>
+      <h1>ポストプロセス</h1>
+      <p class="page-header-lead">
+        シーン描画のあと画面全体に <strong>彩度・コントラスト・ビネット・ブルーム</strong> をかける。
+        前段: <a href="gfx-lighting-alpha.html">ライティング</a> ·
+        <a href="gfx-gpu-concepts.html">GPU</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>ポストは最終フレームバッファへの後処理</li>
+          <li>彩度はグレーとの線形補間、ビネットは中心距離</li>
+          <li>ブルームは明るい部分のぼかし加算（簡易）</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="pp-canvas" class="gl-canvas" width="640" height="360"></canvas>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <button type="button" id="btn-reset" class="btn btn-ghost">既定値</button>
+        <label class="controls-label" for="sat">彩度 <span id="sat-val">1.00</span></label>
+        <input type="range" id="sat" class="ttt-range" min="0" max="2" value="1" step="0.05" />
+        <label class="controls-label" for="contrast">コントラスト <span id="con-val">1.00</span></label>
+        <input type="range" id="contrast" class="ttt-range" min="0.5" max="1.8" value="1" step="0.05" />
+        <label class="controls-label" for="vignette">ビネット <span id="vig-val">0.35</span></label>
+        <input type="range" id="vignette" class="ttt-range" min="0" max="1" value="0.35" step="0.05" />
+        <label class="controls-label" for="bloom">ブルーム <span id="bloom-val">0.25</span></label>
+        <input type="range" id="bloom" class="ttt-range" min="0" max="1" value="0.25" step="0.05" />
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Graphics · ポスト"></footer>
+  <script type="module" src="../js/gfx-postprocess.js"></script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # トピックカタログ
 
-最終更新: 2026-07-28（ready 87）  
+最終更新: 2026-07-28（ready 91）  
 
 - **実装の正**: この表 と `js/main.js` の `TOPICS`（ずれたら両方直す）  
 - **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable` + **修正回数** + **更新日**）  
@@ -213,6 +213,7 @@
 | `sfx-material` | 材質別・衝突強度と音 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-material.html` | [SPEC](./sfx-material/SPEC.md) | 材質ペア · 強度スケール |
 | `bgm-quantize` | 量子化（拍・小節） | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/bgm-quantize.html` | [SPEC](./bgm-quantize/SPEC.md) | 即時/次拍/次小節 |
 | `bgm-transition-compare` | BGM 切替方式の比較 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/bgm-transition-compare.html` | [SPEC](./bgm-transition-compare/SPEC.md) | 即時/クロス/拍同期 |
+| `bgm-interactive` | 拍同期・レイヤー型 BGM | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/bgm-interactive.html` | [SPEC](./bgm-interactive/SPEC.md) | 層 gain · 次小節 |
 
 ---
 
@@ -225,6 +226,8 @@
 | `gfx-camera` | カメラと投影（2D フォロー） | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-camera.html` | [SPEC](./gfx-camera/SPEC.md) | デッドゾーン · world→screen |
 | `gfx-animation-vfx` | アニメーション・パーティクル | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-animation-vfx.html` | [SPEC](./gfx-animation-vfx/SPEC.md) | lifetime · 上限プール |
 | `gfx-lighting-alpha` | ライティング・透明度 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-lighting-alpha.html` | [SPEC](./gfx-lighting-alpha/SPEC.md) | 点光源 · α/加算 |
+| `gfx-postprocess` | ポストプロセス | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-postprocess.html` | [SPEC](./gfx-postprocess/SPEC.md) | 彩度·ビネット·ブルーム |
+| `gfx-lod-culling` | LOD・カリング | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-lod-culling.html` | [SPEC](./gfx-lod-culling/SPEC.md) | フラスタム · LOD0/1/2 |
 
 ---
 
@@ -235,14 +238,15 @@
 | `net-p2p-demo` | P2P 通信の観察 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/net-p2p-demo.html` | [SPEC](./net-p2p-demo/SPEC.md) | 疑似遅延・欠落・順序 |
 | `net-prediction` | 補間・予測・補正 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/net-prediction.html` | [SPEC](./net-prediction/SPEC.md) | クライアント予測 · 権威補正 |
 | `net-client-server` | クライアント・サーバ（権威） | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/net-client-server.html` | [SPEC](./net-client-server/SPEC.md) | maxSpeed クランプ |
+| `net-sync-modes` | 状態同期 vs 入力同期 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/net-sync-modes.html` | [SPEC](./net-sync-modes/SPEC.md) | 帯域・誤差比較 |
 
 ---
 
-## 成熟度サマリ（2026-07-28·87 トピック ready）
+## 成熟度サマリ（2026-07-28·91 トピック ready）
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | 74 | 詳細は TOPIC_META |
+| 一発 (`oneshot`) | 78 | 詳細は TOPIC_META |
 | 調整 (`revised`) | 13 | bfs〜rng-seed 等 |
 | 安定 (`stable`) | 0 | — |
 

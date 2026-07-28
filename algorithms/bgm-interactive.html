@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="レイヤー型 interactive BGM と小節同期。" />
+  <title>拍同期・レイヤー型 BGM — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="bgm-interactive"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / サウンド / レイヤー BGM</p>
+      <h1>拍同期・レイヤー型 BGM</h1>
+      <p class="page-header-lead">
+        ベース／ドラム／ボス層を重ね、戦闘フラグを<strong>次小節頭</strong>で反映。
+        前段: <a href="bgm-quantize.html">量子化</a> ·
+        <a href="bgm-transition-compare.html">切替比較</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>1 曲を差し替えずレイヤー gain で雰囲気を変える</li>
+          <li>状態変化は小節境界に揃えると音楽的</li>
+          <li>目標 gain へ時間をかけて寄せる（フェード）</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="ix-canvas" class="gl-canvas" width="720" height="260"></canvas>
+        <div id="ix-meters" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="control-row">
+          <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+        </div>
+        <label class="ttt-check"><input type="checkbox" id="combat" /> 戦闘（ボス層）</label>
+        <label class="controls-label" for="bpm">BPM <span id="bpm-val">120</span></label>
+        <input type="range" id="bpm" class="ttt-range" min="80" max="160" value="120" />
+        <label class="ttt-check"><input type="checkbox" id="mute" /> ミュート</label>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Audio · Interactive BGM"></footer>
+  <script type="module" src="../js/bgm-interactive.js"></script>
+</body>
+</html>

@@ -146,9 +146,9 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `spatial` | 空間探索・最適化 | **実装済**（一部企画中） | 第3〜4期 | 総当たり〜BVH ready |
 | `hci` | 入力・操作感・HCI | **実装済**（一部企画中） | 第3期 | coyote-time / input-buffer ready |
 
-| `networking` | 通信・データ | **実装済**（一部企画中） | 第5期 | p2p · prediction · C/S 権威 ready。同期モード・DB は企画中 |
-| `audio` | ゲームサウンド | **実装済**（一部企画中） | 第5期 | SFX〜BGM 切替 ready。レイヤー型 interactive は企画中 |
-| `graphics` | ゲーム CG | **実装済**（一部企画中） | 第4期 | GPU〜VFX・光/α ready。ポストプロセス等は企画中 |
+| `networking` | 通信・データ | **実装済**（一部企画中） | 第5期 | p2p〜同期モード ready。anti-cheat 発展・DB は企画中 |
+| `audio` | ゲームサウンド | **実装済** | 第5期 | SFX〜レイヤー BGM まで一通り ready |
+| `graphics` | ゲーム CG | **実装済**（一部企画中） | 第4期 | GPU〜ポスト・LOD ready。mesh/UI 等は企画中 |
 | `quality` | 設計・品質 | **実装済**（一部企画中） | 横断 | save/replay/debug ready。計測・テストは企画中 |
 | `procgen` | プロシージャル・確率・バランス | **実装済**（一部企画中） | 第2〜4期 | maze〜noise · balance-sim ready |
 
@@ -293,7 +293,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 |----------|----------|------|------|
 | `net-p2p-demo` | P2P 通信の観察 | **実装済** | [SPEC](./topics/net-p2p-demo/SPEC.md) |
 | `net-client-server` | クライアント・サーバ | **実装済** | [SPEC](./topics/net-client-server/SPEC.md) |
-| `net-sync-modes` | 状態同期 vs 入力同期 | **企画中** | |
+| `net-sync-modes` | 状態同期 vs 入力同期 | **実装済** | [SPEC](./topics/net-sync-modes/SPEC.md) |
 | `net-prediction` | 補間・予測・補正 | **実装済** | [SPEC](./topics/net-prediction/SPEC.md) |
 | `net-anti-cheat` | サーバ権威とチート対策 | **企画中** | 速度・スコア検証の疑似 |
 | `net-db-transaction` | DB とトランザクション | **企画中** | 購入の COMMIT/ROLLBACK 概念 |
@@ -313,7 +313,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `bgm-loop` | BGM ループ / イントロ＋ループ | **実装済** | [SPEC](./topics/bgm-loop/SPEC.md) |
 | `bgm-transition-compare` | 切替方式の比較 | **実装済** | [SPEC](./topics/bgm-transition-compare/SPEC.md) |
 | `bgm-quantize` | 量子化 | **実装済** | [SPEC](./topics/bgm-quantize/SPEC.md) |
-| `bgm-interactive` | 拍同期・レイヤー型 BGM | **企画中** | ボス登場デモ（正本共通環境） |
+| `bgm-interactive` | 拍同期・レイヤー型 BGM | **実装済** | [SPEC](./topics/bgm-interactive/SPEC.md) |
 
 ---
 
@@ -327,8 +327,8 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `gfx-mesh-uv` | メッシュ・UV・マテリアル | **企画中** | |
 | `gfx-lighting-alpha` | ライティング・透明度 | **実装済** | [SPEC](./topics/gfx-lighting-alpha/SPEC.md) |
 | `gfx-animation-vfx` | アニメーション・パーティクル | **実装済** | [SPEC](./topics/gfx-animation-vfx/SPEC.md) |
-| `gfx-postprocess` | ポストプロセス | **企画中** | Bloom・色調・Vignette（正本 §12.1） |
-| `gfx-lod-culling` | LOD・カリング | **企画中** | 負荷計測とセット |
+| `gfx-postprocess` | ポストプロセス | **実装済** | [SPEC](./topics/gfx-postprocess/SPEC.md) |
+| `gfx-lod-culling` | LOD・カリング | **実装済** | [SPEC](./topics/gfx-lod-culling/SPEC.md) |
 | `gfx-ui-canvas` | UI 描画 | **企画中** | Canvas・Anchor・Pivot・解像度対応（正本 §12.1） |
 | `gfx-gpu-concepts` | GPU パイプライン概説 | **実装済** | [SPEC](./topics/gfx-gpu-concepts/SPEC.md) |
 

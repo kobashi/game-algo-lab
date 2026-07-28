@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="状態同期と入力同期の比較。" />
+  <title>状態同期 vs 入力同期 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="net-sync-modes"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 通信 / 同期モード</p>
+      <h1>状態同期 vs 入力同期</h1>
+      <p class="page-header-lead">
+        <strong>状態同期</strong>は位置スナップショットを送り、
+        <strong>入力同期</strong>は入力だけ送って両端で同じシミュレーション。
+        前段: <a href="net-p2p-demo.html">P2P</a> ·
+        <a href="net-prediction.html">予測</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>状態同期: パケット大きめ・実装しやすい・サーバ権威と相性良</li>
+          <li>入力同期: 帯域小・決定性必須・格闘など</li>
+          <li>累計バイトと誤差でトレードオフを観察</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="sync-canvas" class="gl-canvas" width="640" height="260" tabindex="0"></canvas>
+        <div id="sync-stats" class="coord-readout"></div>
+        <div id="sync-log" class="es-log-panel" role="log"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="control-row">
+          <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+          <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+        </div>
+        <p class="footer-muted">← → / A D で Host を移動</p>
+        <label class="controls-label" for="mode">同期モード</label>
+        <select id="mode" class="bandit-select">
+          <option value="state">状態同期（位置）</option>
+          <option value="input">入力同期（dx）</option>
+        </select>
+        <label class="controls-label" for="latency">遅延 ms <span id="lat-val">80</span></label>
+        <input type="range" id="latency" class="ttt-range" min="0" max="300" value="80" step="10" />
+        <label class="controls-label" for="hz">送信 Hz <span id="hz-val">10</span></label>
+        <input type="range" id="hz" class="ttt-range" min="2" max="30" value="10" />
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Networking · 同期"></footer>
+  <script type="module" src="../js/net-sync-modes.js"></script>
+</body>
+</html>

@@ -142,11 +142,10 @@
 
 | 群 | id 例 | 難度 | 備考 |
 |----|--------|------|------|
-| Audio 入門 | SFX〜BGM 切替・量子化 | **M** | ✅ 実装済 2026-07-28 |
-| Audio 高度 | `bgm-interactive` | **H** | レイヤー型 BGM 残 |
-| Graphics | sprite · camera · VFX · light/α ✅ | **M〜H** | ポスト·LOD·UI 残。coordinates 統合検討 |
+| Audio | SFX〜レイヤー BGM | **M〜H** | ✅ カテゴリ一通り 2026-07-28 |
+| Graphics | GPU〜ポスト·LOD ✅ | **M〜H** | mesh·UI 残。coordinates 統合検討 |
 | GPU | `gfx-gpu-concepts` | **E〜M** | ✅ **実装済** 2026-07-28（図解中心） |
-| Networking | p2p · prediction · C/S ✅ | **H** | sync-modes · DB は企画中 |
+| Networking | p2p〜sync-modes ✅ | **H** | DB · 発展 anti-cheat は企画中 |
 
 **通信·本格 BGM·Unity 本線は「静的サイトでどこまで見せるか」を各 SPEC の未決事項で固定してから着手。**
 
@@ -167,8 +166,8 @@
 | 7 | **`constrained-gen`** | 中 | maze-gen + bfs 到達性 | ✅ |
 | 8 | **`accel-gravity`** | 小〜中 | velocity の次 | ✅ |
 
-**ready 87**: bgm-transition-compare · gfx-animation-vfx · gfx-lighting-alpha · net-client-server まで。  
-次: bgm-interactive / gfx-postprocess / net-sync-modes / gfx-ui-canvas。
+**ready 91**: bgm-interactive · gfx-postprocess · gfx-lod-culling · net-sync-modes まで。  
+次: gfx-ui-canvas / gfx-mesh-uv / net-db-transaction。
 
 ---
 

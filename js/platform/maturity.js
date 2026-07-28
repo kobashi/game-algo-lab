@@ -347,6 +347,26 @@ export const TOPIC_META = {
     revisions: 0,
     updated: "2026-07-28",
   },
+  "bgm-interactive": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-28",
+  },
+  "gfx-postprocess": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-28",
+  },
+  "gfx-lod-culling": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-28",
+  },
+  "net-sync-modes": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-28",
+  },
   "and-or": { maturity: "revised", revisions: 1, updated: "2026-07-19" },
 
   minimax: { maturity: "revised", revisions: 1, updated: "2026-07-19" },

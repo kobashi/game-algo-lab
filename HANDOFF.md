@@ -1,6 +1,6 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-07-28（ready **87** · transition / VFX / light / C-S）  
+最終更新: 2026-07-28（ready **91** · interactive / post / LOD / sync）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.10.0
@@ -92,7 +92,14 @@ ready **83**。いずれも `oneshot`。
 4. `net-client-server` — サーバ権威 · maxSpeed クランプ  
 ready **87**。いずれも `oneshot`。
 
-**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: bgm-interactive / gfx-postprocess / net-sync-modes / gfx-ui-canvas。
+**2026-07-28 続き 4 本**:  
+1. `bgm-interactive` — レイヤー BGM · 次小節でボス層  
+2. `gfx-postprocess` — 彩度·ビネット·ブルーム  
+3. `gfx-lod-culling` — フラスタム · LOD0/1/2  
+4. `net-sync-modes` — 状態同期 vs 入力同期  
+ready **91**。いずれも `oneshot`。**Audio カテゴリは ROADMAP 上ほぼ完了。**
+
+**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: gfx-ui-canvas / gfx-mesh-uv / net-db-transaction。
 
 ---
 
@@ -230,6 +237,10 @@ ready **87**。いずれも `oneshot`。
 | 85 | パーティクル | `algorithms/gfx-animation-vfx.html` | `js/maps/gfx-animation-vfx-config.js` | `GfxAnimationVfxExample.cs` | VFX プール |
 | 86 | 光と α | `algorithms/gfx-lighting-alpha.html` | `js/maps/gfx-lighting-alpha-config.js` | `GfxLightingAlphaExample.cs` | 点光源+合成 |
 | 87 | C/S 権威 | `algorithms/net-client-server.html` | `js/maps/net-client-server-config.js` | `NetClientServerExample.cs` | maxSpeed |
+| 88 | レイヤー BGM | `algorithms/bgm-interactive.html` | `js/maps/bgm-interactive-config.js` | `BgmInteractiveExample.cs` | 小節同期 |
+| 89 | ポストプロセス | `algorithms/gfx-postprocess.html` | `js/maps/gfx-postprocess-config.js` | `GfxPostprocessExample.cs` | 彩度·ブルーム |
+| 90 | LOD・カリング | `algorithms/gfx-lod-culling.html` | `js/maps/gfx-lod-culling-config.js` | `GfxLodCullingExample.cs` | 描画削減 |
+| 91 | 同期モード | `algorithms/net-sync-modes.html` | `js/maps/net-sync-modes-config.js` | `NetSyncModesExample.cs` | state/input |
 
 共通:
 

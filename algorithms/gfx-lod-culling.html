@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="LOD 切替とフラスタムカリングの可視化。" />
+  <title>LOD・カリング — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="gfx-lod-culling"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / ゲーム CG / LOD・カリング</p>
+      <h1>LOD・カリング</h1>
+      <p class="page-header-lead">
+        画面外を描かない（カリング）と、距離で詳細度を落とす（LOD）。
+        前段: <a href="gfx-camera.html">カメラ</a> ·
+        <a href="profiling-loop.html">計測</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>フラスタム外は描画コスト 0 にできる</li>
+          <li>LOD0 近距離・高詳細、LOD2 遠距離・低詳細</li>
+          <li>描画数 × LOD コストで負荷の感覚を掴む</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="lod-canvas" class="gl-canvas" width="720" height="400" tabindex="0"></canvas>
+        <div id="lod-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="control-row">
+          <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+          <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+        </div>
+        <p class="footer-muted">WASD / 矢印でカメラ移動</p>
+        <label class="ttt-check"><input type="checkbox" id="use-cull" checked /> フラスタムカリング</label>
+        <label class="controls-label" for="lod-near">LOD0 距離 <span id="near-val">120</span></label>
+        <input type="range" id="lod-near" class="ttt-range" min="40" max="250" value="120" step="5" />
+        <label class="controls-label" for="lod-far">LOD1 距離 <span id="far-val">280</span></label>
+        <input type="range" id="lod-far" class="ttt-range" min="100" max="500" value="280" step="10" />
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Graphics · LOD"></footer>
+  <script type="module" src="../js/gfx-lod-culling.js"></script>
+</body>
+</html>

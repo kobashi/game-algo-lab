@@ -848,6 +848,17 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "bgm-interactive",
+    title: "拍同期・レイヤー型 BGM",
+    description:
+      "ベース/ドラム/ボス層の合成。戦闘フラグを次小節頭で反映。",
+    href: "algorithms/bgm-interactive.html",
+    badge: "サウンド",
+    category: "サウンド",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "balance-sim",
     title: "ゲームバランス分析",
     description:
@@ -914,6 +925,28 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "gfx-postprocess",
+    title: "ポストプロセス",
+    description:
+      "彩度・コントラスト・ビネット・簡易ブルームを画面全体に適用。",
+    href: "algorithms/gfx-postprocess.html",
+    badge: "ゲーム CG",
+    category: "ゲーム CG",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "gfx-lod-culling",
+    title: "LOD・カリング",
+    description:
+      "フラスタムカリングと距離 LOD で描画数・コストを削減。",
+    href: "algorithms/gfx-lod-culling.html",
+    badge: "ゲーム CG",
+    category: "ゲーム CG",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "net-p2p-demo",
     title: "P2P 通信の観察",
     description:
@@ -941,6 +974,17 @@ const TOPICS = [
     description:
       "位置主張をサーバが maxSpeed で受理/クランプ。チート速度の拒否。",
     href: "algorithms/net-client-server.html",
+    badge: "通信・データ",
+    category: "通信・データ",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "net-sync-modes",
+    title: "状態同期 vs 入力同期",
+    description:
+      "位置スナップショット送信と入力のみ送信の帯域・誤差を比較。",
+    href: "algorithms/net-sync-modes.html",
     badge: "通信・データ",
     category: "通信・データ",
     ready: true,

@@ -66,14 +66,18 @@ export const NAV_GROUPS = {
     { id: "bgm-loop", label: "BGM", href: "bgm-loop.html" },
     { id: "bgm-quantize", label: "量子化", href: "bgm-quantize.html" },
     { id: "bgm-transition-compare", label: "BGM切替", href: "bgm-transition-compare.html" },
+    { id: "bgm-interactive", label: "レイヤーBGM", href: "bgm-interactive.html" },
     { id: "gfx-gpu-concepts", label: "GPU", href: "gfx-gpu-concepts.html" },
     { id: "gfx-sprite-2d", label: "スプライト", href: "gfx-sprite-2d.html" },
     { id: "gfx-camera", label: "カメラ", href: "gfx-camera.html" },
     { id: "gfx-animation-vfx", label: "VFX", href: "gfx-animation-vfx.html" },
     { id: "gfx-lighting-alpha", label: "光/α", href: "gfx-lighting-alpha.html" },
+    { id: "gfx-postprocess", label: "ポスト", href: "gfx-postprocess.html" },
+    { id: "gfx-lod-culling", label: "LOD", href: "gfx-lod-culling.html" },
     { id: "net-p2p-demo", label: "P2P", href: "net-p2p-demo.html" },
     { id: "net-prediction", label: "予測", href: "net-prediction.html" },
     { id: "net-client-server", label: "C/S", href: "net-client-server.html" },
+    { id: "net-sync-modes", label: "同期", href: "net-sync-modes.html" },
     { id: "balance-sim", label: "バランス", href: "balance-sim.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
   ],
@@ -295,7 +299,11 @@ export const FOOTER_RELATED = {
   ],
   "bgm-transition-compare": [
     { href: "bgm-quantize.html", label: "量子化（前段）" },
-    { href: "audio-bus-ducking.html", label: "バス" },
+    { href: "bgm-interactive.html", label: "次: レイヤー BGM" },
+  ],
+  "bgm-interactive": [
+    { href: "bgm-transition-compare.html", label: "切替比較（前段）" },
+    { href: "bgm-quantize.html", label: "量子化" },
   ],
   "sfx-material": [
     { href: "sfx-events.html", label: "SFX イベント（前段）" },
@@ -323,7 +331,15 @@ export const FOOTER_RELATED = {
   ],
   "gfx-lighting-alpha": [
     { href: "gfx-gpu-concepts.html", label: "GPU（前段）" },
-    { href: "gfx-sprite-2d.html", label: "スプライト" },
+    { href: "gfx-postprocess.html", label: "次: ポスト" },
+  ],
+  "gfx-postprocess": [
+    { href: "gfx-lighting-alpha.html", label: "光/α（前段）" },
+    { href: "gfx-lod-culling.html", label: "次: LOD" },
+  ],
+  "gfx-lod-culling": [
+    { href: "gfx-camera.html", label: "カメラ（前段）" },
+    { href: "profiling-loop.html", label: "計測" },
   ],
   "net-p2p-demo": [
     { href: "time-management.html", label: "時間管理（関連）" },
@@ -335,6 +351,10 @@ export const FOOTER_RELATED = {
   ],
   "net-client-server": [
     { href: "net-prediction.html", label: "予測（前段）" },
+    { href: "net-sync-modes.html", label: "次: 同期モード" },
+  ],
+  "net-sync-modes": [
+    { href: "net-client-server.html", label: "C/S（前段）" },
     { href: "net-p2p-demo.html", label: "P2P" },
   ],
   "accessibility-basics": [
