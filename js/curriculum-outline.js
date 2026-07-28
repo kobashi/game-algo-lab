@@ -60,9 +60,8 @@ export const CURRICULUM_OUTLINE = [
     id: "networking",
     title: "通信・データ",
     phase: "第5期",
-    blurb: "カテゴリごと企画中。",
+    blurb: "デモあり（P2P 疑似遅延）。サーバ権威・予測等は企画中。",
     items: [
-      { id: "net-p2p-demo", title: "P2P 通信の観察" },
       { id: "net-client-server", title: "クライアント・サーバ" },
       { id: "net-sync-modes", title: "状態同期 vs 入力同期" },
       { id: "net-prediction", title: "補間・予測・補正" },
@@ -74,11 +73,8 @@ export const CURRICULUM_OUTLINE = [
     id: "audio",
     title: "ゲームサウンド",
     phase: "第5期",
-    blurb: "カテゴリごと企画中。",
+    blurb: "デモあり（SFX イベント〜ランダム化）。BGM 等は企画中。",
     items: [
-      { id: "sfx-events", title: "イベントと効果音" },
-      { id: "sfx-voice-limit", title: "同時発音・重複制御" },
-      { id: "sfx-randomize", title: "ランダム化（音量・ピッチ・シャッフルバッグ）" },
       { id: "sfx-material", title: "材質別・衝突強度と音" },
       { id: "sfx-spatial", title: "距離・パン・優先順位" },
       { id: "audio-bus-ducking", title: "サウンドバスとダッキング" },
@@ -92,7 +88,7 @@ export const CURRICULUM_OUTLINE = [
     id: "graphics",
     title: "ゲーム CG",
     phase: "第4期",
-    blurb: "カテゴリごと企画中。",
+    blurb: "デモあり（GPU パイプライン概念）。座標・カメラ等は企画中。",
     items: [
       { id: "gfx-coordinates", title: "座標系と変換" },
       { id: "gfx-camera", title: "カメラと投影" },
@@ -103,7 +99,6 @@ export const CURRICULUM_OUTLINE = [
       { id: "gfx-postprocess", title: "ポストプロセス" },
       { id: "gfx-lod-culling", title: "LOD・カリング" },
       { id: "gfx-ui-canvas", title: "UI 描画" },
-      { id: "gfx-gpu-concepts", title: "GPU パイプライン概説" },
     ],
   },
   {
@@ -117,9 +112,7 @@ export const CURRICULUM_OUTLINE = [
     id: "procgen",
     title: "プロシージャル・確率・バランス",
     phase: "第2〜4期",
-    blurb: "デモあり（迷路〜ノイズ）。乱数は基礎実行にデモあり。",
-    items: [
-      { id: "balance-sim", title: "ゲームバランス分析" },
-    ],
+    blurb: "デモあり（迷路〜ノイズ・バランス分析）。乱数は基礎実行にデモあり。",
+    items: [],
   },
 ];

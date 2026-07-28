@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="疑似ネットワークで遅延・欠落・順序入れ替えを観察する。" />
+  <title>P2P 通信の観察 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="net-p2p-demo"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 通信 / P2P 観察</p>
+      <h1>P2P 通信の観察</h1>
+      <p class="page-header-lead">
+        実ネットは使わず、<strong>遅延・ジッタ・パケロス・順序入れ替え</strong>付きの疑似キューで
+        Local 位置と Remote に見える位置のズレを観察する。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>「送った瞬間に相手が見える」は理想であり、実際は遅延がある</li>
+          <li>欠落・順序入れ替えで状態がさらに崩れうる</li>
+          <li>予測・補間・サーバ権威はこうした問題への対策（後続トピック）</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="net-canvas" class="gl-canvas" width="640" height="280" tabindex="0"></canvas>
+        <div id="net-stats" class="coord-readout"></div>
+        <div id="net-log" class="es-log-panel" role="log"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="control-row">
+          <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+          <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+          <button type="button" id="btn-send" class="btn btn-ghost">1 パケット送信</button>
+        </div>
+        <p class="footer-muted">← → / A D で Local を移動（再生中）</p>
+        <label class="controls-label" for="latency">遅延 ms <span id="lat-val">80</span></label>
+        <input type="range" id="latency" class="ttt-range" min="0" max="400" value="80" step="10" />
+        <label class="controls-label" for="jitter">ジッタ ms <span id="jit-val">30</span></label>
+        <input type="range" id="jitter" class="ttt-range" min="0" max="150" value="30" step="5" />
+        <label class="controls-label" for="drop">欠落率 <span id="drop-val">0.05</span></label>
+        <input type="range" id="drop" class="ttt-range" min="0" max="0.5" value="0.05" step="0.01" />
+        <label class="controls-label" for="reorder">順序乱れ率 <span id="reo-val">0.10</span></label>
+        <input type="range" id="reorder" class="ttt-range" min="0" max="0.5" value="0.1" step="0.01" />
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Networking · 疑似 P2P"></footer>
+  <script type="module" src="../js/net-p2p-demo.js"></script>
+</body>
+</html>

@@ -59,6 +59,10 @@ export const NAV_GROUPS = {
     { id: "unit-test-gameplay", label: "テスト", href: "unit-test-gameplay.html" },
     { id: "sfx-events", label: "SFX", href: "sfx-events.html" },
     { id: "sfx-voice-limit", label: "ボイス", href: "sfx-voice-limit.html" },
+    { id: "sfx-randomize", label: "ランダムSE", href: "sfx-randomize.html" },
+    { id: "gfx-gpu-concepts", label: "GPU", href: "gfx-gpu-concepts.html" },
+    { id: "net-p2p-demo", label: "P2P", href: "net-p2p-demo.html" },
+    { id: "balance-sim", label: "バランス", href: "balance-sim.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
   ],
   physics: [
@@ -122,6 +126,7 @@ export const NAV_GROUPS = {
     { id: "constrained-gen", label: "制約生成", href: "constrained-gen.html" },
     { id: "dungeon-gen", label: "ダンジョン", href: "dungeon-gen.html" },
     { id: "noise-terrain", label: "ノイズ", href: "noise-terrain.html" },
+    { id: "balance-sim", label: "バランス", href: "balance-sim.html" },
     { id: "rng-seed", label: "乱数", href: "rng-seed.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
   ],
@@ -254,6 +259,21 @@ export const FOOTER_RELATED = {
   ],
   "sfx-voice-limit": [
     { href: "sfx-events.html", label: "SFX イベント（前段）" },
+    { href: "sfx-randomize.html", label: "次: SE ランダム化" },
+  ],
+  "sfx-randomize": [
+    { href: "sfx-voice-limit.html", label: "ボイス制限（前段）" },
+    { href: "sfx-events.html", label: "SFX イベント" },
+  ],
+  "balance-sim": [
+    { href: "weighted-random.html", label: "重み付き抽選" },
+    { href: "rng-seed.html", label: "乱数とシード" },
+  ],
+  "gfx-gpu-concepts": [
+    { href: "coordinates.html", label: "座標変換（関連）" },
+  ],
+  "net-p2p-demo": [
+    { href: "time-management.html", label: "時間管理（関連）" },
   ],
   "accessibility-basics": [
     { href: "input-abstraction.html", label: "入力抽象（前段）" },

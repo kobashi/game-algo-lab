@@ -1,6 +1,6 @@
 # トピックカタログ
 
-最終更新: 2026-07-28（ready 71）  
+最終更新: 2026-07-28（ready 75）  
 
 - **実装の正**: この表 と `js/main.js` の `TOPICS`（ずれたら両方直す）  
 - **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable` + **修正回数** + **更新日**）  
@@ -90,8 +90,9 @@
 | `constrained-gen` | 制約付き生成 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/constrained-gen.html` | [SPEC](./constrained-gen/SPEC.md) | 乱択壁 + BFS 到達性棄却ループ |
 | `dungeon-gen` | ダンジョン生成 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/dungeon-gen.html` | [SPEC](./dungeon-gen/SPEC.md) | 部屋配置 + L 字通路。1ステップ可視化 |
 | `noise-terrain` | ノイズと地形 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/noise-terrain.html` | [SPEC](./noise-terrain/SPEC.md) | Value Noise + fBm。海陸色分け |
+| `balance-sim` | ゲームバランス分析 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/balance-sim.html` | [SPEC](./balance-sim/SPEC.md) | 簡易戦闘 N 回 · 勝率バー |
 
-**学習ストーリー**: 乱数 → 迷路 → 重み付き → 制約付き → ダンジョン → ノイズ（**procgen Wave A 完了**）  
+**学習ストーリー**: 乱数 → 迷路 → 重み付き → 制約付き → ダンジョン → ノイズ → **バランス分析**  
 
 ---
 
@@ -205,14 +206,31 @@
 |----|----------|-------|--------|------|------|--------|------|----------|
 | `sfx-events` | イベントと効果音 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-events.html` | [SPEC](./sfx-events/SPEC.md) | Emit → Web Audio |
 | `sfx-voice-limit` | 同時発音・重複制御 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-voice-limit.html` | [SPEC](./sfx-voice-limit/SPEC.md) | steal / drop |
+| `sfx-randomize` | SE のランダム化 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-randomize.html` | [SPEC](./sfx-randomize/SPEC.md) | ピッチ/音量 + シャッフルバッグ |
 
 ---
 
-## 成熟度サマリ（2026-07-28·71 トピック ready）
+## カテゴリ: ゲーム CG (`graphics`)
+
+| id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
+|----|----------|-------|--------|------|------|--------|------|----------|
+| `gfx-gpu-concepts` | GPU パイプライン概説 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-gpu-concepts.html` | [SPEC](./gfx-gpu-concepts/SPEC.md) | 概念デモ · 実 GPU API なし |
+
+---
+
+## カテゴリ: 通信・データ (`networking`)
+
+| id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
+|----|----------|-------|--------|------|------|--------|------|----------|
+| `net-p2p-demo` | P2P 通信の観察 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/net-p2p-demo.html` | [SPEC](./net-p2p-demo/SPEC.md) | 疑似遅延・欠落・順序 |
+
+---
+
+## 成熟度サマリ（2026-07-28·75 トピック ready）
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | 58 | 詳細は TOPIC_META |
+| 一発 (`oneshot`) | 62 | 詳細は TOPIC_META |
 | 調整 (`revised`) | 13 | bfs〜rng-seed 等 |
 | 安定 (`stable`) | 0 | — |
 

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="SE のピッチ・音量揺らぎとシャッフルバッグ。" />
+  <title>SE のランダム化 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="sfx-randomize"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / サウンド / ランダム化</p>
+      <h1>SE のランダム化</h1>
+      <p class="page-header-lead">
+        同じ SE の連打を<strong>ピッチ／音量の揺らぎ</strong>と
+        <strong>シャッフルバッグ</strong>（バリアントの重複抑制）で自然にする。
+        前段: <a href="sfx-events.html">イベントと効果音</a> ·
+        <a href="sfx-voice-limit.html">同時発音</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>毎回同じピッチだと機械的に聞こえる → 微小な揺らぎ</li>
+          <li>シャッフルバッグ: 袋が空になるまで重複を避ける</li>
+          <li>シード付き乱数ならデバッグ時も再現できる</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <h2 class="gl-block-title">バッグ残り</h2>
+        <div id="bag-view" class="coord-readout"></div>
+        <h2 class="gl-block-title">再生ログ</h2>
+        <div id="sr-log" class="es-log-panel" role="log"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="control-row">
+          <button type="button" id="btn-play" class="btn btn-primary">1 発</button>
+          <button type="button" id="btn-burst" class="btn btn-ghost">6 連</button>
+        </div>
+        <label class="controls-label" for="pitch-range">ピッチ揺らぎ幅 <span id="pitch-val">0.20</span></label>
+        <input type="range" id="pitch-range" class="ttt-range" min="0" max="0.8" value="0.2" step="0.02" />
+        <label class="controls-label" for="vol-range">音量揺らぎ幅 <span id="vol-val">0.40</span></label>
+        <input type="range" id="vol-range" class="ttt-range" min="0" max="1" value="0.4" step="0.05" />
+        <label class="ttt-check"><input type="checkbox" id="use-bag" checked /> シャッフルバッグ</label>
+        <label class="ttt-check"><input type="checkbox" id="mute" /> ミュート（ログのみ）</label>
+        <label class="controls-label" for="seed">シード</label>
+        <input type="number" id="seed" class="mc-num" value="7" min="1" />
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Audio · SE ランダム化"></footer>
+  <script type="module" src="../js/sfx-randomize.js"></script>
+</body>
+</html>

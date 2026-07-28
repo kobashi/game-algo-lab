@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="簡易戦闘の自動シミュレーションで勝率を比較する。" />
+  <title>ゲームバランス分析 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="procgen" data-active="balance-sim"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / プロシージャル / バランス分析</p>
+      <h1>ゲームバランス分析</h1>
+      <p class="page-header-lead">
+        2 体の簡易ターン戦闘を N 回自動対戦し、<strong>勝率</strong>を見る。
+        攻撃力を動かして「強すぎる／弱すぎる」を数値で確認する入口。
+        乱数: <a href="rng-seed.html">乱数とシード</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>バランスは「体感」だけでなく試行回数付きの統計で測れる</li>
+          <li>ダメージに乱数幅があると、期待値だけでは見えない揺らぎがある</li>
+          <li>パラメータを1つずつ変え、勝率がどう動くかを観察する</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <h2 class="gl-block-title">勝率</h2>
+        <div id="bal-bars" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+        <div id="result-compare" class="result-compare" hidden></div>
+      </section>
+      <aside class="gl-side">
+        <h2 class="gl-block-title">パラメータ</h2>
+        <label class="controls-label" for="trials">試行回数 <span id="trials-val">500</span></label>
+        <input type="range" id="trials" class="ttt-range" min="50" max="5000" value="500" step="50" />
+        <label class="controls-label" for="atk-a">A 攻撃力 <span id="atk-a-val">12</span></label>
+        <input type="range" id="atk-a" class="ttt-range" min="1" max="40" value="12" />
+        <label class="controls-label" for="atk-b">B 攻撃力 <span id="atk-b-val">10</span></label>
+        <input type="range" id="atk-b" class="ttt-range" min="1" max="40" value="10" />
+        <label class="controls-label" for="hp">初期 HP（双方） <span id="hp-val">40</span></label>
+        <input type="range" id="hp" class="ttt-range" min="10" max="120" value="40" step="5" />
+        <label class="controls-label" for="seed">シード</label>
+        <input type="number" id="seed" class="mc-num" value="42" min="1" />
+        <div class="control-row">
+          <button type="button" id="btn-run" class="btn btn-primary">シミュレート</button>
+        </div>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Procgen · バランス分析"></footer>
+  <script type="module" src="../js/balance-sim.js"></script>
+</body>
+</html>

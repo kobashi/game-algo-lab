@@ -134,21 +134,21 @@
 | 43 | `unit-test-gameplay` | ゲームロジックのテスト | **M** | ✅ **実装済** 2026-07-28 |
 | 44 | `profiling-loop` | プロファイリング循環 | **M** | ✅ **実装済** |
 | 45 | `accessibility-basics` | アクセシビリティ基礎 | **E〜M** | ✅ **実装済** 2026-07-28 |
-| 46 | `balance-sim` | ゲームバランス分析 | **H** | 自動プレイ・統計 |
+| 46 | `balance-sim` | ゲームバランス分析 | **H** | ✅ **実装済** 2026-07-28 |
 
 ---
 
-### Wave F — サウンド・CG・通信（後段・難度高 or 方針依存）
+### Wave F — サウンド·CG·通信（後段·難度高 or 方針依存）
 
 | 群 | id 例 | 難度 | 備考 |
 |----|--------|------|------|
-| Audio 入門 | `sfx-events`, `sfx-voice-limit`, `sfx-randomize` | **M** | Web Audio。無音環境でもログ可視化を併用 |
+| Audio 入門 | `sfx-events`, `sfx-voice-limit`, `sfx-randomize` | **M** | ✅ 3 本実装済（Web Audio + ログ） |
 | Audio 高度 | `bgm-loop`, `bgm-quantize`, `bgm-interactive`, … | **H** | 拍同期は実装コスト大 |
 | Graphics | `gfx-sprite-2d`, `gfx-camera`, … | **M〜H** | `coordinates` と重複する `gfx-coordinates` は **統合 or スコープ縮小** を SPEC で決める |
-| GPU | `gfx-gpu-concepts` | **E〜M** | 図解中心で可 |
-| Networking | `net-*` | **H** | 静的サイトでは疑似遅延・権威シミュレーション。サーバ実体は持たない |
+| GPU | `gfx-gpu-concepts` | **E〜M** | ✅ **実装済** 2026-07-28（図解中心） |
+| Networking | `net-p2p-demo` + `net-*` | **H** | ✅ p2p 入口実装済。他は疑似遅延·権威シム |
 
-**通信・本格 BGM・Unity 本線は「静的サイトでどこまで見せるか」を各 SPEC の未決事項で固定してから着手。**
+**通信·本格 BGM·Unity 本線は「静的サイトでどこまで見せるか」を各 SPEC の未決事項で固定してから着手。**
 
 ---
 
@@ -167,8 +167,8 @@
 | 7 | **`constrained-gen`** | 中 | maze-gen + bfs 到達性 | ✅ |
 | 8 | **`accel-gravity`** | 小〜中 | velocity の次 | ✅ |
 
-**ready 71**: a11y · unit-test · ナビ回避 · voice-limit まで。  
-次: balance-sim / BGM / graphics / net。
+**ready 75**: balance-sim · sfx-randomize · gfx-gpu-concepts · net-p2p-demo まで。  
+次: BGM 系 / gfx-sprite-2d 等 / net-prediction 等。
 
 ---
 

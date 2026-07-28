@@ -43,6 +43,8 @@ const CATEGORY_ORDER = [
   "設計・品質",
   "入力・操作感",
   "サウンド",
+  "ゲーム CG",
+  "通信・データ",
 ];
 
 /** @type {Topic[]} */
@@ -765,6 +767,50 @@ const TOPICS = [
     href: "algorithms/sfx-voice-limit.html",
     badge: "サウンド",
     category: "サウンド",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "sfx-randomize",
+    title: "SE のランダム化",
+    description:
+      "ピッチ/音量の揺らぎとシャッフルバッグで連打の機械感を抑える。",
+    href: "algorithms/sfx-randomize.html",
+    badge: "サウンド",
+    category: "サウンド",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "balance-sim",
+    title: "ゲームバランス分析",
+    description:
+      "簡易戦闘を N 回自動対戦。勝率バーでパラメータ感度を見る。",
+    href: "algorithms/balance-sim.html",
+    badge: "プロシージャル",
+    category: "プロシージャル",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "gfx-gpu-concepts",
+    title: "GPU パイプライン概説",
+    description:
+      "頂点→ラスタ→ピクセル→結合→表示の段階を概念キャンバスで辿る。",
+    href: "algorithms/gfx-gpu-concepts.html",
+    badge: "ゲーム CG",
+    category: "ゲーム CG",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "net-p2p-demo",
+    title: "P2P 通信の観察",
+    description:
+      "疑似ネットの遅延・欠落・順序乱れ。Local と Remote 位置のズレ。",
+    href: "algorithms/net-p2p-demo.html",
+    badge: "通信・データ",
+    category: "通信・データ",
     ready: true,
     maturity: "oneshot",
   },

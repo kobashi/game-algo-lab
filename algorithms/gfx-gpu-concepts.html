@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="GPU パイプラインの段階を概念デモで辿る。" />
+  <title>GPU パイプライン概説 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="gfx-gpu-concepts"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / ゲーム CG / GPU パイプライン</p>
+      <h1>GPU パイプライン概説</h1>
+      <p class="page-header-lead">
+        実 GPU API は使わず、<strong>CPU → 頂点 → ラスタ → ピクセル → 結合 → 表示</strong>
+        の段階をキャンバス上で辿る概念デモ。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>描画は「一気に絵」ではなく段階パイプライン</li>
+          <li>頂点処理とピクセル処理は別ステージ</li>
+          <li>深度・ブレンドは最終段で起きる</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="gpu-canvas" class="gl-canvas" width="720" height="320" tabindex="0"></canvas>
+        <div id="gpu-detail" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <h2 class="gl-block-title">段階</h2>
+        <div id="gpu-stages" class="gpu-stage-list"></div>
+        <div class="control-row">
+          <button type="button" id="btn-prev" class="btn btn-ghost">← 前</button>
+          <button type="button" id="btn-next" class="btn btn-primary">次 →</button>
+          <button type="button" id="btn-play" class="btn btn-ghost">自動再生</button>
+        </div>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Graphics · GPU 概念"></footer>
+  <script type="module" src="../js/gfx-gpu-concepts.js"></script>
+</body>
+</html>

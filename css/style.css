@@ -5178,3 +5178,27 @@ main.container.container-wide.topic-main:has(.mcts-tree-panel) {
   font-family: ui-monospace, monospace;
   font-size: 0.8rem;
 }
+.gpu-stage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+.gpu-stage-btn {
+  text-align: left;
+  padding: 0.4rem 0.55rem;
+  border-radius: 6px;
+  border: 1px solid #3d4f66;
+  background: rgba(26, 35, 50, 0.8);
+  color: #e8eef7;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.gpu-stage-btn:hover {
+  border-color: #5b9fd4;
+}
+.gpu-stage-btn.is-active {
+  border-color: #6bcb8f;
+  background: rgba(107, 203, 143, 0.15);
+  color: #e8eef7;
+}

@@ -1,6 +1,6 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-07-28（ready **71** · a11y/test/nav/voice）  
+最終更新: 2026-07-28（ready **75** · balance / sfx-random / GPU / P2P）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.10.0
@@ -64,7 +64,14 @@ Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.10.0
 **2026-07-28 続き**:  
 `accessibility-basics` · `unit-test-gameplay` · `obstacle-avoidance-nav` · `sfx-voice-limit`。ready **71**。
 
-**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: balance-sim / BGM / graphics / net。
+**2026-07-28 ドメイン入口 4 本**:  
+1. `balance-sim` — 簡易戦闘 N 回 · 勝率バー  
+2. `sfx-randomize` — ピッチ/音量揺らぎ + シャッフルバッグ  
+3. `gfx-gpu-concepts` — GPU パイプライン概念（graphics カテゴリ入口）  
+4. `net-p2p-demo` — 疑似遅延/欠落/順序（networking カテゴリ入口）  
+ready **75**。いずれも `oneshot`。
+
+**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: BGM 系 / gfx-coordinates 等 / net-prediction 等。
 
 ---
 
@@ -186,6 +193,10 @@ Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.10.0
 | 69 | ユニットテスト | `algorithms/unit-test-gameplay.html` | `js/maps/unit-test-gameplay-config.js` | `UnitTestGameplayExample.cs` | 純関数検証 |
 | 70 | ナビ連携回避 | `algorithms/obstacle-avoidance-nav.html` | `js/maps/obstacle-avoidance-nav-config.js` | `ObstacleAvoidanceNavExample.cs` | BFS+Seek |
 | 71 | 同時発音制限 | `algorithms/sfx-voice-limit.html` | `js/maps/sfx-voice-limit-config.js` | `SfxVoiceLimitExample.cs` | steal/drop |
+| 72 | バランス分析 | `algorithms/balance-sim.html` | `js/maps/balance-sim-config.js` | `BalanceSimExample.cs` | 勝率シミュ |
+| 73 | SE ランダム化 | `algorithms/sfx-randomize.html` | `js/maps/sfx-randomize-config.js` | `SfxRandomizeExample.cs` | ピッチ+バッグ |
+| 74 | GPU パイプライン | `algorithms/gfx-gpu-concepts.html` | `js/maps/gfx-gpu-concepts-config.js` | `GfxGpuConceptsExample.cs` | 概念段階 |
+| 75 | P2P 観察 | `algorithms/net-p2p-demo.html` | `js/maps/net-p2p-demo-config.js` | `NetP2pDemoExample.cs` | 疑似ネット |
 
 共通:
 

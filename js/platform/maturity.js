@@ -267,6 +267,26 @@ export const TOPIC_META = {
     revisions: 0,
     updated: "2026-07-28",
   },
+  "sfx-randomize": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-28",
+  },
+  "balance-sim": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-28",
+  },
+  "gfx-gpu-concepts": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-28",
+  },
+  "net-p2p-demo": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-28",
+  },
   "and-or": { maturity: "revised", revisions: 1, updated: "2026-07-19" },
 
   minimax: { maturity: "revised", revisions: 1, updated: "2026-07-19" },

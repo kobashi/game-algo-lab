@@ -146,11 +146,11 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `spatial` | 空間探索・最適化 | **実装済**（一部企画中） | 第3〜4期 | 総当たり〜BVH ready |
 | `hci` | 入力・操作感・HCI | **実装済**（一部企画中） | 第3期 | coyote-time / input-buffer ready |
 
-| `networking` | 通信・データ | **企画中** | 第5期 | P2P / サーバ権威・予測・DB（静的サイトでは疑似遅延中心） |
-| `audio` | ゲームサウンド | **実装済**（一部企画中） | 第5期 | sfx-events ready。BGM 等は企画中 |
-| `graphics` | ゲーム CG | **企画中** | 第4期 | 当面は Web 概念デモ or Unity 連携を SPEC で決める |
+| `networking` | 通信・データ | **実装済**（一部企画中） | 第5期 | net-p2p-demo ready。サーバ権威・予測等は企画中 |
+| `audio` | ゲームサウンド | **実装済**（一部企画中） | 第5期 | sfx-events〜randomize ready。BGM 等は企画中 |
+| `graphics` | ゲーム CG | **実装済**（一部企画中） | 第4期 | gfx-gpu-concepts ready。座標・カメラ等は企画中 |
 | `quality` | 設計・品質 | **実装済**（一部企画中） | 横断 | save/replay/debug ready。計測・テストは企画中 |
-| `procgen` | プロシージャル・確率・バランス | **実装済**（一部企画中） | 第2〜4期 | maze〜noise ready。balance-sim は企画中 |
+| `procgen` | プロシージャル・確率・バランス | **実装済**（一部企画中） | 第2〜4期 | maze〜noise · balance-sim ready |
 
 実装済みトピックの詳細・成熟度は [topics/CATALOG.md](./topics/CATALOG.md) / [topics/MATURITY.md](./topics/MATURITY.md)。  
 **企画中の id は仮**。着手時に衝突を避けて確定する。
@@ -291,7 +291,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 
 | id（案） | タイトル | 状態 | メモ |
 |----------|----------|------|------|
-| `net-p2p-demo` | P2P 通信の観察 | **企画中** | 遅延・欠落・信頼問題（疑似可） |
+| `net-p2p-demo` | P2P 通信の観察 | **実装済** | [SPEC](./topics/net-p2p-demo/SPEC.md) |
 | `net-client-server` | クライアント・サーバ | **企画中** | サーバ権威 |
 | `net-sync-modes` | 状態同期 vs 入力同期 | **企画中** | |
 | `net-prediction` | 補間・予測・補正 | **企画中** | |
@@ -306,7 +306,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 |----------|----------|------|------|
 | `sfx-events` | イベントと効果音 | **実装済** | [SPEC](./topics/sfx-events/SPEC.md) |
 | `sfx-voice-limit` | 同時発音・重複制御 | **実装済** | [SPEC](./topics/sfx-voice-limit/SPEC.md) |
-| `sfx-randomize` | ランダム化 | **企画中** | 音量・ピッチの揺らぎ、シャッフルバッグ（正本 §11.1） |
+| `sfx-randomize` | ランダム化 | **実装済** | [SPEC](./topics/sfx-randomize/SPEC.md) |
 | `sfx-material` | 材質別・衝突強度と音 | **企画中** | |
 | `sfx-spatial` | 距離・パン・優先順位 | **企画中** | |
 | `audio-bus-ducking` | サウンドバスとダッキング | **企画中** | BGM/SE/UI/Voice の分類と一時減衰（正本 §11.1） |
@@ -330,7 +330,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `gfx-postprocess` | ポストプロセス | **企画中** | Bloom・色調・Vignette（正本 §12.1） |
 | `gfx-lod-culling` | LOD・カリング | **企画中** | 負荷計測とセット |
 | `gfx-ui-canvas` | UI 描画 | **企画中** | Canvas・Anchor・Pivot・解像度対応（正本 §12.1） |
-| `gfx-gpu-concepts` | GPU パイプライン概説 | **企画中** | 説明中心（正本 §12.2） |
+| `gfx-gpu-concepts` | GPU パイプライン概説 | **実装済** | [SPEC](./topics/gfx-gpu-concepts/SPEC.md) |
 
 ---
 
@@ -357,7 +357,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `noise-terrain` | ノイズと地形 | **実装済** | Value Noise + fBm。[SPEC](./topics/noise-terrain/SPEC.md) |
 | `constrained-gen` | 制約付き生成 | **実装済** | 到達可能性検証。[SPEC](./topics/constrained-gen/SPEC.md) |
 | `weighted-random` | 重み付き抽選・分布 | **実装済** | Fisher–Yates 等。[SPEC](./topics/weighted-random/SPEC.md) |
-| `balance-sim` | ゲームバランス分析 | **企画中** | 自動プレイで勝率比較 |
+| `balance-sim` | ゲームバランス分析 | **実装済** | [SPEC](./topics/balance-sim/SPEC.md) |
 
 ---
 
