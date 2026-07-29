@@ -82,6 +82,8 @@ export const NAV_GROUPS = {
     { id: "dirty-flag", label: "Dirty", href: "dirty-flag.html" },
     { id: "net-p2p-demo", label: "P2P", href: "net-p2p-demo.html" },
     { id: "net-prediction", label: "予測", href: "net-prediction.html" },
+    { id: "snapshot-interp", label: "補間", href: "snapshot-interp.html" },
+    { id: "interest-mgmt", label: "AOI", href: "interest-mgmt.html" },
     { id: "net-client-server", label: "C/S", href: "net-client-server.html" },
     { id: "net-sync-modes", label: "同期", href: "net-sync-modes.html" },
     { id: "net-anti-cheat", label: "検証", href: "net-anti-cheat.html" },
@@ -409,7 +411,15 @@ export const FOOTER_RELATED = {
   ],
   "net-prediction": [
     { href: "net-p2p-demo.html", label: "P2P（前段）" },
-    { href: "net-client-server.html", label: "次: C/S 権威" },
+    { href: "snapshot-interp.html", label: "次: スナップ補間" },
+  ],
+  "snapshot-interp": [
+    { href: "net-prediction.html", label: "予測（前段）" },
+    { href: "interest-mgmt.html", label: "次: 関心管理" },
+  ],
+  "interest-mgmt": [
+    { href: "snapshot-interp.html", label: "補間（前段）" },
+    { href: "spatial-hash.html", label: "空間ハッシュ" },
   ],
   "net-client-server": [
     { href: "net-prediction.html", label: "予測（前段）" },

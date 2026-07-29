@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>スナップショット補間 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="snapshot-interp"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 通信 / スナップショット補間</p>
+      <h1>スナップショット補間</h1>
+      <p class="page-header-lead">
+        リモートの見た目は<strong>最新パケット</strong>ではなく、バッファした過去2点を
+        <strong>線形補間</strong>して描く。前段:
+        <a href="net-prediction.html">予測・補正</a> ·
+        <a href="net-p2p-demo.html">P2P</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>権威は連続移動、ネットは間欠スナップショット</li>
+          <li>描画時刻 = 現在 − 補間遅延（バッファ内をサンプル）</li>
+          <li>予測はローカル操作感、補間はリモートの見た目</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="si-canvas" class="gl-canvas" width="640" height="320"></canvas>
+        <div id="si-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="control-row">
+          <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+          <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+        </div>
+        <label class="controls-label" for="latency">遅延 ms <span id="lat-val">80</span></label>
+        <input type="range" id="latency" class="ttt-range" min="0" max="300" value="80" step="10" />
+        <label class="controls-label" for="interp-delay">描画遅延 ms <span id="delay-val">100</span></label>
+        <input type="range" id="interp-delay" class="ttt-range" min="0" max="250" value="100" step="10" />
+        <label class="controls-label" for="snap-interval">送信間隔 ms <span id="int-val">100</span></label>
+        <input type="range" id="snap-interval" class="ttt-range" min="40" max="250" value="100" step="10" />
+        <label class="ttt-check"><input type="checkbox" id="use-interp" checked /> 補間 ON</label>
+        <p class="footer-muted">赤=権威 · 青枠=最新受信 · 緑=描画</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Networking · Snapshot interp"></footer>
+  <script type="module" src="../js/snapshot-interp.js"></script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>関心管理（AOI）— Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="interest-mgmt"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 通信 / 関心管理</p>
+      <h1>関心管理（AOI）</h1>
+      <p class="page-header-lead">
+        <strong>関心領域</strong>内のエンティティだけを送ると帯域が下がる。
+        前段: <a href="net-p2p-demo.html">P2P</a> ·
+        <a href="spatial-hash.html">空間ハッシュ</a> ·
+        <a href="net-sync-modes.html">同期モード</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>サーバは「全部」ではなく「見える範囲」を優先送信</li>
+          <li>半径・個体数で B/s がどう変わるか表で確認</li>
+          <li>空間分割と組み合わせると距離判定を間引ける（概念）</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="aoi-canvas" class="gl-canvas" width="640" height="360" tabindex="0"></canvas>
+        <div id="aoi-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="control-row">
+          <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+          <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+        </div>
+        <label class="controls-label" for="aoi-r">AOI 半径 <span id="rad-val">120</span></label>
+        <input type="range" id="aoi-r" class="ttt-range" min="40" max="220" value="120" step="10" />
+        <label class="controls-label" for="ent-count">エンティティ数 <span id="count-val">40</span></label>
+        <input type="range" id="ent-count" class="ttt-range" min="10" max="80" value="40" step="5" />
+        <p class="footer-muted">WASD / 矢印で視点（赤）。青=送信 · 灰=関心外。</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Networking · Interest / AOI"></footer>
+  <script type="module" src="../js/interest-mgmt.js"></script>
+</body>
+</html>

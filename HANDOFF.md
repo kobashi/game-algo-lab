@@ -1,6 +1,6 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-07-29（ready **105** · Sprint S3）  
+最終更新: 2026-07-29（ready **107** · Sprint S4）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.11.1
@@ -133,7 +133,11 @@ ready **95**。**Audio / Networking / Graphics（主要）一通り完了。**
 2. `verlet-integration` — 位置履歴積分 + 距離拘束ロープ  
 3. `jps` — Jump Point Search · A* 展開数比較  
 
-**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: Sprint S4（snapshot-interp / interest-mgmt）または oneshot 改訂 · Release。
+**2026-07-29 Sprint S4（ready 107）**:  
+1. `snapshot-interp` — 遅延バッファ + 線形補間（リモート見た目）  
+2. `interest-mgmt` — AOI 内のみ送信 · B/s 削減  
+
+**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: 優先度 B 候補 · oneshot 改訂 · **Release（例 v0.12.0）**。
 
 ---
 

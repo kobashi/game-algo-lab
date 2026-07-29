@@ -61,7 +61,7 @@
 | `wfc-intro` | Wave Function Collapse 入門 | procgen | **M〜H** | constrained-gen · weighted-random | タイル制約で局所一貫したマップ生成 | 高 | **実装済**（2026-07-29 · Sprint S3） |
 | `cellular-automata` | セルオートマトン（洞窟生成） | procgen | **E〜M** | maze-gen · noise | 近傍ルールで壁/床が進化 | 高 | 実装が軽く、迷路・ノイズと並ぶ生成三本目。 |
 | `sprite-anim-fsm` | スプライトアニメ × FSM | Graphics · patterns | **E〜M** | gfx-sprite-2d · fsm | 状態ごとにクリップ切替・遷移 | 高 | 既存 2 トピックの接続。実践感が高い。 |
-| `snapshot-interp` | スナップショット補間 | networking | **M** | net-prediction · net-p2p | 受信状態をバッファし描画を遅延補間 | 高 | 予測の対になる「リモート表示」側。静的疑似ネットで可。 |
+| `snapshot-interp` | スナップショット補間 | networking | **M** | net-prediction · net-p2p | 受信状態をバッファし描画を遅延補間 | 高 | **実装済**（2026-07-29 · Sprint S4） |
 | （参考）`net-anti-cheat` | サーバ権威とチート対策 | networking | — | **実装済** | 速度上限・スコア再計算 | — | 入門として十分。本格 anti-cheat は ROADMAP §4.2 範囲外 |
 
 ### 2.2 優先度 B（中期・少し重い or 狭い）
@@ -81,7 +81,7 @@
 | `autotile` | オートタイル / bitmask | gfx · procgen | **M** | dungeon-gen · gfx-sprite-2d | 近傍 4/8 でタイル ID。 |
 | `parallax-scroll` | 視差スクロール | gfx | **E** | gfx-camera | レイヤ速度差。カメラの応用。 |
 | `palette-swap` | パレットスワップ | gfx | **E** | gfx-sprite-2d | 色テーブル差し替え。 |
-| `interest-mgmt` | 関心管理（AOI） | networking | **M** | net-p2p · spatial | 視野内エンティティだけ送る。 |
+| `interest-mgmt` | 関心管理（AOI） | networking | **M** | net-p2p · spatial | **実装済**（2026-07-29 · Sprint S4）。視野内エンティティだけ送る。 |
 | `delta-compress` | 差分圧縮の概念 | networking | **M** | net-sync-modes | 前回スナップショットとの差分。バイト数比較。 |
 | `elo-rating` | レーティング（Elo） | balance · net | **E〜M** | balance-sim | 対戦後のレート更新。統計教材。 |
 | `cooldown-resource` | クールダウン・リソース | ゲームロジック | **E** | game-loop · input | GCD・MP 消費。UI ゲージ可視化。 |
@@ -144,10 +144,10 @@
 2. `verlet-integration`（M） ✅  
 3. `jps`（M〜H） ✅
 
-### Sprint S4 — ネット表示の完成（2 本）
+### Sprint S4 — ネット表示の完成（2 本）— **実装済 2026-07-29**
 
-1. `snapshot-interp`（M）  
-2. `interest-mgmt`（M）
+1. `snapshot-interp`（M） ✅  
+2. `interest-mgmt`（M） ✅
 
 ---
 
@@ -186,5 +186,5 @@ NavMesh は「グラフ探索 + string pulling + ステアリング」の三段�
 | 実装完了 | 本表から削除 or 「実装済 → CATALOG」と 1 行残す |
 | 調査の再見直し | 年 1 回または Wave 完了時。日付を表紙に更新 |
 
-**次の人間/エージェント向け**: 実装指示が「候補から進めて」のときは、§4 の Sprint S4 から選ぶと安全（S1〜S3 実装済）。  
+**次の人間/エージェント向け**: S1〜S4 実装済。次は優先度 B（influence-map / goap-lite 等）· oneshot 改訂 · Release。  
 低優先の `path-compare` / `game-tree-engine` は本表の推奨スプリントに入れない。

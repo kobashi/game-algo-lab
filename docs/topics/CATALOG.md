@@ -1,6 +1,6 @@
 # トピックカタログ
 
-最終更新: 2026-07-29（ready **105** · Sprint S3）  
+最終更新: 2026-07-29（ready **107** · Sprint S4）  
 
 - **実装の正**: この表 と `js/main.js` の `TOPICS`（ずれたら両方直す）  
 - **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable` + **修正回数** + **更新日**）  
@@ -248,6 +248,8 @@
 |----|----------|-------|--------|------|------|--------|------|----------|
 | `net-p2p-demo` | P2P 通信の観察 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/net-p2p-demo.html` | [SPEC](./net-p2p-demo/SPEC.md) | 疑似遅延・欠落・順序 |
 | `net-prediction` | 補間・予測・補正 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/net-prediction.html` | [SPEC](./net-prediction/SPEC.md) | クライアント予測 · 権威補正 |
+| `snapshot-interp` | スナップショット補間 | ✅ | **一発** | 0 | 2026-07-29 | `algorithms/snapshot-interp.html` | [SPEC](./snapshot-interp/SPEC.md) | 遅延バッファ · 線形補間 |
+| `interest-mgmt` | 関心管理（AOI） | ✅ | **一発** | 0 | 2026-07-29 | `algorithms/interest-mgmt.html` | [SPEC](./interest-mgmt/SPEC.md) | 関心円内のみ送信 · B/s |
 | `net-client-server` | クライアント・サーバ（権威） | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/net-client-server.html` | [SPEC](./net-client-server/SPEC.md) | maxSpeed クランプ |
 | `net-sync-modes` | 状態同期 vs 入力同期 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/net-sync-modes.html` | [SPEC](./net-sync-modes/SPEC.md) | 帯域・誤差比較 |
 | `net-anti-cheat` | サーバ権威とチート対策 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/net-anti-cheat.html` | [SPEC](./net-anti-cheat/SPEC.md) | 速度·スコア検証 |
@@ -255,11 +257,11 @@
 
 ---
 
-## 成熟度サマリ（2026-07-29·105 トピック ready）
+## 成熟度サマリ（2026-07-29·107 トピック ready）
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | ≈90 | 詳細は TOPIC_META（ready 105 本） |
+| 一発 (`oneshot`) | ≈92 | 詳細は TOPIC_META（ready 107 本） |
 | 調整 (`revised`) | ≈15 | bfs〜rng-seed · coordinates 等 |
 | 安定 (`stable`) | 0 | — |
 

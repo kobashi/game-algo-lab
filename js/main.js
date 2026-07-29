@@ -1090,6 +1090,28 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "snapshot-interp",
+    title: "スナップショット補間",
+    description:
+      "リモート描画を遅延バッファ＋線形補間。予測の対になる見た目側。",
+    href: "algorithms/snapshot-interp.html",
+    badge: "通信・データ",
+    category: "通信・データ",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "interest-mgmt",
+    title: "関心管理（AOI）",
+    description:
+      "関心円内エンティティだけ送信。帯域削減を B/s で観察。",
+    href: "algorithms/interest-mgmt.html",
+    badge: "通信・データ",
+    category: "通信・データ",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "net-client-server",
     title: "クライアント・サーバ（権威）",
     description:

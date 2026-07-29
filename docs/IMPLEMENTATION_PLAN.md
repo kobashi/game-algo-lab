@@ -172,7 +172,8 @@
 **Sprint S1 実装済（ready 99）**: cellular-automata · spatial-hash · sprite-anim-fsm · dirty-flag。  
 **Sprint S2 実装済（ready 102）**: navmesh-intro · flow-field · utility-ai。  
 **Sprint S3 実装済（ready 105）**: wfc-intro · verlet-integration · jps。  
-次: Sprint S4 · oneshot 改訂 · 計測パネル統一 ·「戻る」。  
+**Sprint S4 実装済（ready 107）**: snapshot-interp · interest-mgmt。  
+次: CANDIDATE 優先度 B · oneshot 改訂 · Release · 計測パネル統一 ·「戻る」。  
 **候補**: [topics/CANDIDATE_TOPICS.md](./topics/CANDIDATE_TOPICS.md)。**範囲外**: ROADMAP §4.2。
 
 ---

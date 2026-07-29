@@ -7,7 +7,7 @@
 | **正本改訂** | **2026-07-19** — Fable5 レビュー全件承認を反映（§2 実在ルール優先原則、§4 procgen 行、§6.1 三目並べ、§6.4 割り箸 新設、§15 第2期追記）。レビュー記録: [reviews/2026-07-19-docx-minigames-review.md](./reviews/2026-07-19-docx-minigames-review.md)、変更履歴版: [interactive_game_programming_material_plan_fable5_review.docx](./interactive_game_programming_material_plan_fable5_review.docx) |
 | **リポジトリ登録** | 2026-07-17（`docs/` に配置し Git 管理開始） |
 | **本 Markdown** | 正本の要約・**実装状況の対応表**・Game Algo Lab 運用メモ（エージェント／GitHub 向け） |
-| **最終更新（md）** | 2026-07-29（Sprint S3: wfc · verlet · jps · ready 105） |
+| **最終更新（md）** | 2026-07-29（Sprint S4: snapshot-interp · interest-mgmt · ready 107） |
 
 正本の変更や方針の大きな見直しは **Docx を更新したうえで本ファイルを同期**する。  
 細部の図表・講義向け長文は正本を開き、日々の実装判断は本ファイルと [topics/CATALOG.md](./topics/CATALOG.md) を優先する。
@@ -159,7 +159,7 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | `procgen` | プロシージャル・確率・バランス | **実装済** | 第2〜4期 | 迷路〜ノイズ・balance-sim |
 
 実装済みトピックの詳細・成熟度は [topics/CATALOG.md](./topics/CATALOG.md) / [topics/MATURITY.md](./topics/MATURITY.md)。  
-**ready 合計: 105**（2026-07-29 · Sprint S3 後）。
+**ready 合計: 107**（2026-07-29 · Sprint S4 後）。
 
 > **`patterns` / `quality` 分割について**: 正本 §13 は「ソフトウェア設計・品質」という **単一領域**（イベント〜プロファイリングまで）。本サイトはメニュー UI の都合で `patterns`（設計パターン寄り）と `quality`（品質・計測寄り）の **2 カテゴリに分割**している。上表の「第2〜3期」「横断」という期の目安は **正本 §15 に明記はなく、サイト運用上の便宜的な推定**。正本との対応は 1 領域 → 2 カテゴリの意図的な分割であり、矛盾ではなく **サイト独自の実装分類**として扱う。
 
@@ -458,7 +458,8 @@ https://github.com/kobashi/game-algo-lab/blob/main/docs/interactive_game_program
 | Sprint S1 | `cellular-automata` · `spatial-hash` · `sprite-anim-fsm` · `dirty-flag` | **実装済**（2026-07-28） |
 | Sprint S2 | `navmesh-intro` · `flow-field` · `utility-ai` | **実装済**（2026-07-28） |
 | Sprint S3 | `wfc-intro` · `verlet-integration` · `jps` | **実装済**（2026-07-29） |
-| Sprint S4〜 | snapshot-interp · interest-mgmt · … | 調査済・未着手 |
+| Sprint S4 | `snapshot-interp` · `interest-mgmt` | **実装済**（2026-07-29） |
+| 以降候補 | influence-map · goap-lite · theta-star · … | 調査済・未着手（CANDIDATE 優先度 B） |
 | 範囲外 | §4.2 のメモ id | 実装しない（口頭・発展課題のみ） |
 
 ### E2E 目安
