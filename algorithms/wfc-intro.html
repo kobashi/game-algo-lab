@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WFC 入門 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="procgen" data-active="wfc-intro"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / プロシージャル / WFC 入門</p>
+      <h1>Wave Function Collapse 入門</h1>
+      <p class="page-header-lead">
+        各セルの<strong>候補集合（波動）</strong>をエントロピー最小から崩壊させ、隣接辺制約を伝播する。
+        前段: <a href="constrained-gen.html">制約生成</a> ·
+        <a href="weighted-random.html">重み付き乱択</a> ·
+        <a href="cellular-automata.html">CA</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>未確定セル = 複数タイル候補（数字は候補数）</li>
+          <li>エントロピー最小を 1 枚に確定 → 隣へ制約伝播</li>
+          <li>候補 0 = 矛盾。シードを変えて再試行</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="wfc-canvas" class="gl-canvas" width="432" height="288"></canvas>
+        <div id="wfc-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <label class="controls-label" for="seed">シード</label>
+        <input type="number" id="seed" class="mc-num" value="42" min="1" />
+        <div class="control-row">
+          <button type="button" id="btn-init" class="btn btn-ghost">初期化</button>
+          <button type="button" id="btn-step" class="btn btn-primary">1 崩壊</button>
+          <button type="button" id="btn-run" class="btn btn-ghost">完了まで</button>
+        </div>
+        <p class="footer-muted">色付き確定 · 青の数字=候補数 · 赤=矛盾</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Procgen · WFC"></footer>
+  <script type="module" src="../js/wfc-intro.js"></script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # トピックカタログ
 
-最終更新: 2026-07-28（ready **102** · Sprint S2）  
+最終更新: 2026-07-29（ready **105** · Sprint S3）  
 
 - **実装の正**: この表 と `js/main.js` の `TOPICS`（ずれたら両方直す）  
 - **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable` + **修正回数** + **更新日**）  
@@ -30,8 +30,9 @@
 | `astar` | A* 探索 | ✅ | **調整** | 3 | 2026-07-17 | `algorithms/astar.html` | 実装先行 | f/g/h・負コスト・複数G・初期地図調整 |
 | `bidirectional-search` | 双方向探索 | ✅ | **一発** | 0 | 2026-07-22 | `algorithms/bidirectional-search.html` | [SPEC](./bidirectional-search/SPEC.md) | 双方向 BFS。前=S / 後=全G（multi-source）。出会点で接合。展開数を一方向 BFS と比較。拡張方策: 小さい側優先 / 交互 |
 | `navmesh-intro` | ナビメッシュ入門（2D） | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/navmesh-intro.html` | [SPEC](./navmesh-intro/SPEC.md) | ポリゴン中心 A* · 簡易 string pull |
+| `jps` | Jump Point Search | ✅ | **一発** | 0 | 2026-07-29 | `algorithms/jps.html` | [SPEC](./jps/SPEC.md) | 対称刈り込み · A* 展開数比較 |
 
-**学習ストーリー**: 歩数（BFS）→ 深さ（DFS）→ コスト g → 見積り h → 統合 f=g+h → **双方向（両端から）** → **ナビメッシュ**  
+**学習ストーリー**: 歩数（BFS）→ 深さ（DFS）→ コスト g → 見積り h → 統合 f=g+h → **双方向** → **ナビメッシュ** → **JPS**  
 
 **成熟度メモ**: いずれも一発実装後に機能・教材表示の改訂あり → `revised`。授業で据え置くなら `stable` へ昇格。
 
@@ -91,9 +92,10 @@
 | `dungeon-gen` | ダンジョン生成 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/dungeon-gen.html` | [SPEC](./dungeon-gen/SPEC.md) | 部屋配置 + L 字通路。1ステップ可視化 |
 | `noise-terrain` | ノイズと地形 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/noise-terrain.html` | [SPEC](./noise-terrain/SPEC.md) | Value Noise + fBm。海陸色分け |
 | `cellular-automata` | セルオートマトン（洞窟） | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/cellular-automata.html` | [SPEC](./cellular-automata/SPEC.md) | 近傍規則 · 反復 |
+| `wfc-intro` | Wave Function Collapse 入門 | ✅ | **一発** | 0 | 2026-07-29 | `algorithms/wfc-intro.html` | [SPEC](./wfc-intro/SPEC.md) | エントロピー崩壊 · 辺制約伝播 |
 | `balance-sim` | ゲームバランス分析 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/balance-sim.html` | [SPEC](./balance-sim/SPEC.md) | 簡易戦闘 N 回 · 勝率バー |
 
-**学習ストーリー**: 乱数 → 迷路 → 重み付き → 制約付き → ダンジョン → ノイズ → **バランス分析**  
+**学習ストーリー**: 乱数 → 迷路 → 重み付き → 制約付き → ダンジョン → ノイズ → CA → **WFC** → バランス分析  
 
 ---
 
@@ -106,6 +108,7 @@
 | `accel-decel` | 加減速 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/accel-decel.html` | [SPEC](./accel-decel/SPEC.md) | 加速・最高速度・ブレーキ |
 | `accel-gravity` | 加速度と重力 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/accel-gravity.html` | [SPEC](./accel-gravity/SPEC.md) | v+=g·dt; p+=v·dt。放物線・反発 |
 | `friction-bounce` | 摩擦・反発 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/friction-bounce.html` | [SPEC](./friction-bounce/SPEC.md) | 床バウンス e · 接地摩擦 |
+| `verlet-integration` | Verlet 積分 · 距離拘束 | ✅ | **一発** | 0 | 2026-07-29 | `algorithms/verlet-integration.html` | [SPEC](./verlet-integration/SPEC.md) | 位置履歴積分 · ロープ拘束 |
 | `collision` | AABB 衝突判定 | ✅ | **調整** | 2 | 2026-07-17 | `algorithms/collision.html` | [SPEC](./collision/SPEC.md) | 非マップ説明UI。重なり/分離の二重実装と比較 |
 | `circle-collision` | 円同士・円と AABB | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/circle-collision.html` | [SPEC](./circle-collision/SPEC.md) | 中心距離・Clamp 最近点 |
 | `momentum-1d` | 質量と運動量（1D） | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/momentum-1d.html` | [SPEC](./momentum-1d/SPEC.md) | 弾性/非弾性 · Σp/KE |
@@ -252,11 +255,11 @@
 
 ---
 
-## 成熟度サマリ（2026-07-28·102 トピック ready）
+## 成熟度サマリ（2026-07-29·105 トピック ready）
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | ≈87 | 詳細は TOPIC_META（ready 102 本） |
+| 一発 (`oneshot`) | ≈90 | 詳細は TOPIC_META（ready 105 本） |
 | 調整 (`revised`) | ≈15 | bfs〜rng-seed · coordinates 等 |
 | 安定 (`stable`) | 0 | — |
 

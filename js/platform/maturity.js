@@ -422,6 +422,21 @@ export const TOPIC_META = {
     revisions: 0,
     updated: "2026-07-28",
   },
+  "wfc-intro": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-29",
+  },
+  "verlet-integration": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-29",
+  },
+  jps: {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-07-29",
+  },
   "and-or": { maturity: "revised", revisions: 1, updated: "2026-07-19" },
 
   minimax: { maturity: "revised", revisions: 1, updated: "2026-07-19" },

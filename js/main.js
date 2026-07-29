@@ -122,6 +122,17 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "jps",
+    title: "Jump Point Search",
+    description:
+      "一様コスト格子で対称経路を刈り込み。A* より展開数を減らす。",
+    href: "algorithms/jps.html",
+    badge: "経路探索",
+    category: "経路探索",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "game-loop",
     title: "ゲームループ",
     description:
@@ -237,6 +248,17 @@ const TOPICS = [
     description:
       "近傍壁数の規則で反復し洞窟状マップを得る。",
     href: "algorithms/cellular-automata.html",
+    badge: "プロシージャル",
+    category: "プロシージャル",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "wfc-intro",
+    title: "Wave Function Collapse 入門",
+    description:
+      "候補タイル集合をエントロピー最小から崩壊。隣接辺制約を伝播。",
+    href: "algorithms/wfc-intro.html",
     badge: "プロシージャル",
     category: "プロシージャル",
     ready: true,
@@ -402,6 +424,17 @@ const TOPICS = [
     description:
       "床バウンスで vy を反発係数で縮め、接地中は摩擦で vx を減衰。",
     href: "algorithms/friction-bounce.html",
+    badge: "物理・判定",
+    category: "物理・判定",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "verlet-integration",
+    title: "Verlet 積分 · 距離拘束",
+    description:
+      "位置履歴で積分し距離拘束でロープを保つ。速度ベースの別系統。",
+    href: "algorithms/verlet-integration.html",
     badge: "物理・判定",
     category: "物理・判定",
     ready: true,

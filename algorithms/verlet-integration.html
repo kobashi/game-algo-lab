@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verlet 積分 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="physics" data-active="verlet-integration"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 物理 / Verlet 積分</p>
+      <h1>Verlet 積分 · 距離拘束</h1>
+      <p class="page-header-lead">
+        速度を陽に持たず<strong>位置履歴</strong>で積分し、棒の長さを反復拘束で保つ（ロープ）。
+        前段: <a href="velocity-motion.html">速度移動</a> ·
+        <a href="momentum-1d.html">運動量</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>x' = x + (x − x_prev) + a·dt²</li>
+          <li>距離拘束を複数回解くとロープが硬く見える</li>
+          <li>赤=固定点 · 緑=自由 · ドラッグ可</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="vl-canvas" class="gl-canvas" width="640" height="360" tabindex="0"></canvas>
+        <div id="vl-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <label class="controls-label" for="grav">重力 <span id="grav-val">420</span></label>
+        <input type="range" id="grav" class="ttt-range" min="0" max="900" value="420" step="20" />
+        <label class="controls-label" for="iter">拘束反復 <span id="iter-val">4</span></label>
+        <input type="range" id="iter" class="ttt-range" min="1" max="12" value="4" step="1" />
+        <label class="ttt-check"><input type="checkbox" id="pin-end" /> 末端も固定（弦）</label>
+        <div class="control-row">
+          <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+          <button type="button" id="btn-step" class="btn btn-ghost">1 ステップ</button>
+          <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+        </div>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Physics · Verlet"></footer>
+  <script type="module" src="../js/verlet-integration.js"></script>
+</body>
+</html>

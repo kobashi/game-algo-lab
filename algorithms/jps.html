@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jump Point Search — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="pathfinding" data-active="jps"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / 経路探索 / Jump Point Search</p>
+      <h1>Jump Point Search (JPS)</h1>
+      <p class="page-header-lead">
+        一様コスト格子で<strong>対称な経路を刈り込み</strong>、ジャンプ点だけを展開する A* の高速化。
+        前段: <a href="astar.html">A*</a> ·
+        <a href="bidirectional-search.html">双方向</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>同じ方向へ直線ジャンプし、強制近傍で停止</li>
+          <li>open に入れるのはジャンプ点中心 → 展開数が減る</li>
+          <li>A* と同じ最適経路を目指しつつノード数を比較</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="jps-canvas" class="gl-canvas" width="560" height="392" tabindex="0"></canvas>
+        <div id="jps-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <label class="controls-label" for="mode">表示アルゴリズム</label>
+        <select id="mode" class="mc-select">
+          <option value="jps">JPS</option>
+          <option value="astar">A*（比較）</option>
+        </select>
+        <div class="control-row">
+          <button type="button" id="btn-run" class="btn btn-primary">再計算</button>
+          <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+        </div>
+        <p class="footer-muted">S/G ドラッグ · Shift+クリックで壁。青=展開 · 黄枠=ジャンプ点 · 緑=経路</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Pathfinding · JPS"></footer>
+  <script type="module" src="../js/jps.js"></script>
+</body>
+</html>

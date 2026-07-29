@@ -1,6 +1,6 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-07-28（ready **102** · Sprint S2）  
+最終更新: 2026-07-29（ready **105** · Sprint S3）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.11.1
@@ -128,7 +128,12 @@ ready **95**。**Audio / Networking / Graphics（主要）一通り完了。**
 2. `flow-field` — ゴール BFS コスト場 · 勾配フロー · 多数エージェント  
 3. `utility-ai` — 空腹/脅威/エネルギー → 行動スコア arg max  
 
-**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: Sprint S3（influence-map / jps 等）または oneshot 改訂。
+**2026-07-29 Sprint S3（ready 105）**:  
+1. `wfc-intro` — エントロピー崩壊 · 辺制約伝播（簡易 WFC）  
+2. `verlet-integration` — 位置履歴積分 + 距離拘束ロープ  
+3. `jps` — Jump Point Search · A* 展開数比較  
+
+**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: Sprint S4（snapshot-interp / interest-mgmt）または oneshot 改訂 · Release。
 
 ---
 

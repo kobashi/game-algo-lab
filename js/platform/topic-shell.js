@@ -26,6 +26,7 @@ export const NAV_GROUPS = {
     { id: "astar", label: "A*", href: "astar.html" },
     { id: "bidirectional-search", label: "双方向", href: "bidirectional-search.html" },
     { id: "navmesh-intro", label: "NavMesh", href: "navmesh-intro.html" },
+    { id: "jps", label: "JPS", href: "jps.html" },
   ],
   "game-tree": [
     { id: "home", label: "ホーム", href: "../index.html" },
@@ -95,6 +96,7 @@ export const NAV_GROUPS = {
     { id: "accel-decel", label: "加減速", href: "accel-decel.html" },
     { id: "accel-gravity", label: "重力", href: "accel-gravity.html" },
     { id: "friction-bounce", label: "摩擦", href: "friction-bounce.html" },
+    { id: "verlet-integration", label: "Verlet", href: "verlet-integration.html" },
     { id: "collision", label: "AABB", href: "collision.html" },
     { id: "circle-collision", label: "円", href: "circle-collision.html" },
     { id: "momentum-1d", label: "運動量", href: "momentum-1d.html" },
@@ -153,6 +155,7 @@ export const NAV_GROUPS = {
     { id: "dungeon-gen", label: "ダンジョン", href: "dungeon-gen.html" },
     { id: "noise-terrain", label: "ノイズ", href: "noise-terrain.html" },
     { id: "cellular-automata", label: "CA", href: "cellular-automata.html" },
+    { id: "wfc-intro", label: "WFC", href: "wfc-intro.html" },
     { id: "balance-sim", label: "バランス", href: "balance-sim.html" },
     { id: "rng-seed", label: "乱数", href: "rng-seed.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
@@ -387,6 +390,18 @@ export const FOOTER_RELATED = {
   "utility-ai": [
     { href: "fsm.html", label: "FSM（前段）" },
     { href: "behavior-tree.html", label: "BT" },
+  ],
+  "wfc-intro": [
+    { href: "constrained-gen.html", label: "制約生成（前段）" },
+    { href: "cellular-automata.html", label: "CA" },
+  ],
+  "verlet-integration": [
+    { href: "velocity-motion.html", label: "速度（前段）" },
+    { href: "momentum-1d.html", label: "運動量" },
+  ],
+  jps: [
+    { href: "astar.html", label: "A*（前段）" },
+    { href: "bidirectional-search.html", label: "双方向" },
   ],
   "net-p2p-demo": [
     { href: "time-management.html", label: "時間管理（関連）" },
