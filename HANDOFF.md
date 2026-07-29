@@ -1,6 +1,6 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-07-29（ready **107** · Sprint S4）  
+最終更新: 2026-07-29（ready **110** · Sprint S5）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.11.1
@@ -137,7 +137,12 @@ ready **95**。**Audio / Networking / Graphics（主要）一通り完了。**
 1. `snapshot-interp` — 遅延バッファ + 線形補間（リモート見た目）  
 2. `interest-mgmt` — AOI 内のみ送信 · B/s 削減  
 
-**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: 優先度 B 候補 · oneshot 改訂 · **Release（例 v0.12.0）**。
+**2026-07-29 Sprint S5（ready 110）**:  
+1. `influence-map` — 脅威/興味スカラー場 · 勾配追従  
+2. `poisson-disk` — Bridson 最小距離サンプリング  
+3. `decision-tree` — 条件分岐ルール AI  
+
+**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: 優先度 B 続き · oneshot 改訂 · **Release（例 v0.12.0）**。
 
 ---
 

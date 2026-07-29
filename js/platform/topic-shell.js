@@ -132,6 +132,8 @@ export const NAV_GROUPS = {
     { id: "obstacle-avoidance-nav", label: "ナビ回避", href: "obstacle-avoidance-nav.html" },
     { id: "flow-field", label: "Flow", href: "flow-field.html" },
     { id: "utility-ai", label: "Utility", href: "utility-ai.html" },
+    { id: "influence-map", label: "影響", href: "influence-map.html" },
+    { id: "decision-tree", label: "決定木", href: "decision-tree.html" },
     { id: "fsm", label: "FSM", href: "fsm.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
   ],
@@ -158,6 +160,7 @@ export const NAV_GROUPS = {
     { id: "noise-terrain", label: "ノイズ", href: "noise-terrain.html" },
     { id: "cellular-automata", label: "CA", href: "cellular-automata.html" },
     { id: "wfc-intro", label: "WFC", href: "wfc-intro.html" },
+    { id: "poisson-disk", label: "Poisson", href: "poisson-disk.html" },
     { id: "balance-sim", label: "バランス", href: "balance-sim.html" },
     { id: "rng-seed", label: "乱数", href: "rng-seed.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
@@ -420,6 +423,18 @@ export const FOOTER_RELATED = {
   "interest-mgmt": [
     { href: "snapshot-interp.html", label: "補間（前段）" },
     { href: "spatial-hash.html", label: "空間ハッシュ" },
+  ],
+  "influence-map": [
+    { href: "flow-field.html", label: "フローフィールド（前段）" },
+    { href: "steering-seek-flee.html", label: "Seek/Flee" },
+  ],
+  "poisson-disk": [
+    { href: "rng-seed.html", label: "乱数（前段）" },
+    { href: "weighted-random.html", label: "重み付き" },
+  ],
+  "decision-tree": [
+    { href: "fsm.html", label: "FSM（前段）" },
+    { href: "utility-ai.html", label: "Utility" },
   ],
   "net-client-server": [
     { href: "net-prediction.html", label: "予測（前段）" },

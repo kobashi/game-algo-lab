@@ -265,6 +265,17 @@ const TOPICS = [
     maturity: "oneshot",
   },
   {
+    id: "poisson-disk",
+    title: "Poisson disk サンプリング",
+    description:
+      "最小距離を保つ点配置。木・敵の満遍ない散布。一様と比較。",
+    href: "algorithms/poisson-disk.html",
+    badge: "プロシージャル",
+    category: "プロシージャル",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
     id: "and-or",
     title: "AND-OR 探索",
     description:
@@ -688,6 +699,28 @@ const TOPICS = [
     description:
       "空腹・脅威・エネルギーから行動スコアを計算し最大を選ぶ。",
     href: "algorithms/utility-ai.html",
+    badge: "ステアリング",
+    category: "ゲーム AI・ステアリング",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "influence-map",
+    title: "影響マップ",
+    description:
+      "脅威・興味のスカラー場。勾配で逃げる/寄る戦術ヒートマップ。",
+    href: "algorithms/influence-map.html",
+    badge: "ステアリング",
+    category: "ゲーム AI・ステアリング",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "decision-tree",
+    title: "決定木（ルール AI）",
+    description:
+      "条件分岐の木を辿り葉の行動を選ぶ。FSM/Utility との対比。",
+    href: "algorithms/decision-tree.html",
     badge: "ステアリング",
     category: "ゲーム AI・ステアリング",
     ready: true,

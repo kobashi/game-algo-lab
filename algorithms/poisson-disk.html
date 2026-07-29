@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Poisson disk — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="procgen" data-active="poisson-disk"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / プロシージャル / Poisson disk</p>
+      <h1>Poisson disk サンプリング</h1>
+      <p class="page-header-lead">
+        点同士の<strong>最小距離</strong>を保ちつつ空間を満遍なく埋める（Bridson 法）。
+        前段: <a href="rng-seed.html">乱数</a> ·
+        <a href="weighted-random.html">重み付き</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>各点の周りに半径 r の禁制領域</li>
+          <li>アクティブリスト + 環状乱択で候補生成</li>
+          <li>一様乱択よりクラスタが少なく、木・敵配置に向く</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="pd-canvas" class="gl-canvas" width="480" height="320"></canvas>
+        <div id="pd-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <label class="controls-label" for="seed">シード</label>
+        <input type="number" id="seed" class="mc-num" value="42" min="1" />
+        <label class="controls-label" for="min-dist">最小距離 r <span id="min-val">28</span></label>
+        <input type="range" id="min-dist" class="ttt-range" min="12" max="48" value="28" step="2" />
+        <label class="controls-label" for="k-tries">試行 k <span id="k-val">30</span></label>
+        <input type="range" id="k-tries" class="ttt-range" min="10" max="50" value="30" step="5" />
+        <div class="control-row">
+          <button type="button" id="btn-gen" class="btn btn-primary">生成</button>
+          <button type="button" id="btn-uniform" class="btn btn-ghost">一様と比較</button>
+        </div>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Procgen · Poisson"></footer>
+  <script type="module" src="../js/poisson-disk.js"></script>
+</body>
+</html>

@@ -69,14 +69,14 @@
 | id 案 | タイトル | カテゴリ | 難度 | 依存 | メモ |
 |-------|----------|----------|------|------|------|
 | `theta-star` | Theta* / 任意角経路 | 経路 | **M** | A* · raycast | 視線が通れば親を飛ばし滑らかな経路。 |
-| `influence-map` | 影響マップ | AI | **M** | flow-field · steering | 脅威・興味のスカラー場。戦術 AI の入口。 |
+| `influence-map` | 影響マップ | AI | **M** | flow-field · steering | **実装済**（2026-07-29 · Sprint S5） |
 | `goap-lite` | GOAP 入門（小状態） | AI | **H** | BT · utility | 目標→前提→行動計画。状態数を極小にしないと爆発。 |
-| `decision-tree` | 決定木（ルール AI） | AI | **E** | FSM | 条件分岐の木。簡単だが FSM と差別化が必要。 |
+| `decision-tree` | 決定木（ルール AI） | AI | **E** | FSM | **実装済**（2026-07-29 · Sprint S5） |
 | `blackboard` | ブラックボード | patterns · AI | **E〜M** | event-system · BT | 共有キーバリュー。BT と組み合わせデモ。 |
 | `distance-joint` | 距離ジョイント | 物理 | **M** | verlet または impulse | 2 点間距離拘束。振り子。 |
 | `platformer-slope` | スロープ接地 | 物理 · HCI | **M** | accel-gravity · collision-response | 法線に沿った移動。2D アクション定番の穴。 |
 | `character-controller-2d` | キネマティック CC | 物理 | **M** | slope · swept-aabb | 速度入力→安全な移動解決。 |
-| `poisson-disk` | Poisson disk サンプリング | procgen | **M** | rng-seed | 点の最小距離配置。木・敵の配置。 |
+| `poisson-disk` | Poisson disk サンプリング | procgen | **M** | rng-seed | **実装済**（2026-07-29 · Sprint S5） |
 | `marching-squares` | Marching Squares | procgen · gfx | **M** | noise-terrain | スカラー場→輪郭。地形の次。 |
 | `autotile` | オートタイル / bitmask | gfx · procgen | **M** | dungeon-gen · gfx-sprite-2d | 近傍 4/8 でタイル ID。 |
 | `parallax-scroll` | 視差スクロール | gfx | **E** | gfx-camera | レイヤ速度差。カメラの応用。 |
@@ -149,6 +149,12 @@
 1. `snapshot-interp`（M） ✅  
 2. `interest-mgmt`（M） ✅
 
+### Sprint S5 — 優先度 B の入口（3 本）— **実装済 2026-07-29**
+
+1. `influence-map`（M） ✅  
+2. `poisson-disk`（M） ✅  
+3. `decision-tree`（E） ✅  
+
 ---
 
 ## 5. 盛り込み判定チェックリスト（候補を落とすとき）
@@ -186,5 +192,5 @@ NavMesh は「グラフ探索 + string pulling + ステアリング」の三段�
 | 実装完了 | 本表から削除 or 「実装済 → CATALOG」と 1 行残す |
 | 調査の再見直し | 年 1 回または Wave 完了時。日付を表紙に更新 |
 
-**次の人間/エージェント向け**: S1〜S4 実装済。次は優先度 B（influence-map / goap-lite 等）· oneshot 改訂 · Release。  
+**次の人間/エージェント向け**: S1〜S5 実装済。次は優先度 B 残り（theta-star / goap-lite / blackboard 等）· oneshot 改訂 · Release。  
 低優先の `path-compare` / `game-tree-engine` は本表の推奨スプリントに入れない。

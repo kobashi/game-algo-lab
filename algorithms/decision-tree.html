@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>決定木 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="steering" data-active="decision-tree"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / ゲーム AI / 決定木</p>
+      <h1>決定木（ルール AI）</h1>
+      <p class="page-header-lead">
+        <strong>条件分岐の木</strong>を根から辿り、葉の行動を選ぶ。
+        前段: <a href="fsm.html">FSM</a> ·
+        <a href="utility-ai.html">効用 AI</a> ·
+        <a href="behavior-tree.html">BT</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>if/else の入れ子 = 決定木</li>
+          <li>パラメータで辿る枝が変わり葉の行動が決まる</li>
+          <li>FSM=状態保持、Utility=連続スコア、DT=静的ルール表</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <div id="dt-tree" class="bt-panel"></div>
+        <div id="dt-path" class="result-compare"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <label class="controls-label" for="hp">HP <span id="hp-val">70%</span></label>
+        <input type="range" id="hp" class="ttt-range" min="0" max="1" value="0.7" step="0.05" />
+        <label class="ttt-check"><input type="checkbox" id="enemy-near" checked /> 敵が近い <span id="enemy-val">近い</span></label>
+        <label class="controls-label" for="ammo">弾薬 <span id="ammo-val">5</span></label>
+        <input type="range" id="ammo" class="ttt-range" min="0" max="10" value="5" step="1" />
+        <p class="footer-muted">緑ハイライト = 今回辿った節・葉</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="AI · Decision Tree"></footer>
+  <script type="module" src="../js/decision-tree.js"></script>
+</body>
+</html>

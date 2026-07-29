@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>影響マップ — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="steering" data-active="influence-map"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / ゲーム AI / 影響マップ</p>
+      <h1>影響マップ</h1>
+      <p class="page-header-lead">
+        脅威・興味を<strong>スカラー場</strong>に載せ、勾配でエージェントが避ける/寄る。
+        前段: <a href="flow-field.html">フローフィールド</a> ·
+        <a href="steering-seek-flee.html">Seek/Flee</a>。
+      </p>
+    </div>
+    <details class="lesson-details" open>
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>ソースから距離減衰で場を合成（赤=脅威 · 青=興味）</li>
+          <li>勾配に沿って flee / seek</li>
+          <li>戦術 AI・カバー評価の入口</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout">
+      <section class="gl-main">
+        <canvas id="im-canvas" class="gl-canvas" width="616" height="396" tabindex="0"></canvas>
+        <div id="im-stats" class="coord-readout"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <label class="controls-label" for="decay">減衰 <span id="decay-val">0.12</span></label>
+        <input type="range" id="decay" class="ttt-range" min="0.04" max="0.35" value="0.12" step="0.01" />
+        <label class="controls-label" for="mode">エージェント</label>
+        <select id="mode" class="mc-select">
+          <option value="flee">脅威から逃げる</option>
+          <option value="seek">勾配に乗る（興味寄り）</option>
+        </select>
+        <p class="footer-muted">配置:</p>
+        <label class="ttt-check"><input type="radio" name="paint-kind" value="threat" checked /> 脅威</label>
+        <label class="ttt-check"><input type="radio" name="paint-kind" value="interest" /> 興味</label>
+        <div class="control-row">
+          <button type="button" id="btn-play" class="btn btn-primary">再生</button>
+          <button type="button" id="btn-rebuild" class="btn btn-ghost">再計算</button>
+          <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
+        </div>
+        <p class="footer-muted">クリックでソース · Shift+クリックで削除</p>
+      </aside>
+    </div>
+    <section class="code-section">
+      <h2>C# 実装例</h2>
+      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="AI · Influence Map"></footer>
+  <script type="module" src="../js/influence-map.js"></script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # トピックカタログ
 
-最終更新: 2026-07-29（ready **107** · Sprint S4）  
+最終更新: 2026-07-29（ready **110** · Sprint S5）  
 
 - **実装の正**: この表 と `js/main.js` の `TOPICS`（ずれたら両方直す）  
 - **成熟度の定義**: [MATURITY.md](./MATURITY.md)（`oneshot` / `revised` / `stable` + **修正回数** + **更新日**）  
@@ -93,9 +93,10 @@
 | `noise-terrain` | ノイズと地形 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/noise-terrain.html` | [SPEC](./noise-terrain/SPEC.md) | Value Noise + fBm。海陸色分け |
 | `cellular-automata` | セルオートマトン（洞窟） | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/cellular-automata.html` | [SPEC](./cellular-automata/SPEC.md) | 近傍規則 · 反復 |
 | `wfc-intro` | Wave Function Collapse 入門 | ✅ | **一発** | 0 | 2026-07-29 | `algorithms/wfc-intro.html` | [SPEC](./wfc-intro/SPEC.md) | エントロピー崩壊 · 辺制約伝播 |
+| `poisson-disk` | Poisson disk サンプリング | ✅ | **一発** | 0 | 2026-07-29 | `algorithms/poisson-disk.html` | [SPEC](./poisson-disk/SPEC.md) | 最小距離配置 · Bridson |
 | `balance-sim` | ゲームバランス分析 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/balance-sim.html` | [SPEC](./balance-sim/SPEC.md) | 簡易戦闘 N 回 · 勝率バー |
 
-**学習ストーリー**: 乱数 → 迷路 → 重み付き → 制約付き → ダンジョン → ノイズ → CA → **WFC** → バランス分析  
+**学習ストーリー**: 乱数 → 迷路 → 重み付き → 制約 → ダンジョン → ノイズ → CA → WFC → **Poisson** → バランス  
 
 ---
 
@@ -179,8 +180,10 @@
 | `obstacle-avoidance-nav` | 障害物回避（ナビ連携） | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/obstacle-avoidance-nav.html` | [SPEC](./obstacle-avoidance-nav/SPEC.md) | BFS 経路 + 局所回避 |
 | `flow-field` | フローフィールド | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/flow-field.html` | [SPEC](./flow-field/SPEC.md) | コスト場 + 勾配追従 · 多数エージェント |
 | `utility-ai` | 効用 AI（Utility） | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/utility-ai.html` | [SPEC](./utility-ai/SPEC.md) | スコア曲線 · arg max |
+| `influence-map` | 影響マップ | ✅ | **一発** | 0 | 2026-07-29 | `algorithms/influence-map.html` | [SPEC](./influence-map/SPEC.md) | 脅威/興味スカラー場 · 勾配 |
+| `decision-tree` | 決定木（ルール AI） | ✅ | **一発** | 0 | 2026-07-29 | `algorithms/decision-tree.html` | [SPEC](./decision-tree/SPEC.md) | 条件分岐木 · 葉の行動 |
 
-**学習ストーリー**: Seek → Wander → Boids → Leader → BT → ナビ連携回避 → **Flow** → **Utility**  
+**学習ストーリー**: Seek → Wander → Boids → Leader → BT → Flow → Utility → **影響マップ** → **決定木**  
 
 ---
 
@@ -257,11 +260,11 @@
 
 ---
 
-## 成熟度サマリ（2026-07-29·107 トピック ready）
+## 成熟度サマリ（2026-07-29·110 トピック ready）
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | ≈92 | 詳細は TOPIC_META（ready 107 本） |
+| 一発 (`oneshot`) | ≈95 | 詳細は TOPIC_META（ready 110 本） |
 | 調整 (`revised`) | ≈15 | bfs〜rng-seed · coordinates 等 |
 | 安定 (`stable`) | 0 | — |
 
