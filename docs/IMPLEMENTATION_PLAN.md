@@ -174,7 +174,8 @@
 **Sprint S3 実装済（ready 105）**: wfc-intro · verlet-integration · jps。  
 **Sprint S4 実装済（ready 107）**: snapshot-interp · interest-mgmt。  
 **Sprint S5 実装済（ready 110）**: influence-map · poisson-disk · decision-tree。  
-次: 優先度 B 続き · oneshot 改訂 · Release · 計測パネル統一 ·「戻る」。  
+**Release `v0.12.0`（2026-07-30）**: ready 95→110（S1〜S5）を試作タグで区切り。  
+次: 優先度 B 続き · oneshot 改訂 · 計測パネル統一 ·「戻る」。  
 **候補**: [topics/CANDIDATE_TOPICS.md](./topics/CANDIDATE_TOPICS.md)。**範囲外**: ROADMAP §4.2。
 
 ---

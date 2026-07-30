@@ -1,9 +1,9 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-07-29（ready **110** · Sprint S5）  
+最終更新: 2026-07-30（ready **110** · Release **v0.12.0**）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
-Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.11.1
+Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.12.0
 
 新セッション開始時の指示例:
 
@@ -142,7 +142,9 @@ ready **95**。**Audio / Networking / Graphics（主要）一通り完了。**
 2. `poisson-disk` — Bridson 最小距離サンプリング  
 3. `decision-tree` — 条件分岐ルール AI  
 
-**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: 優先度 B 続き · oneshot 改訂 · **Release（例 v0.12.0）**。
+**2026-07-30 Release `v0.12.0`**: ready 95→110（Sprint S1〜S5）。ノート: `RELEASE_NOTES_v0.12.0.md`。
+
+**実装計画**: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)。**次**: 優先度 B 続き · oneshot 改訂。
 
 ---
 
@@ -568,9 +570,9 @@ ready **95**。**Audio / Networking / Graphics（主要）一通り完了。**
 - 既定ブランチ: `main`（ローカルは `origin/main` と同期済み想定）  
 - **GitHub Pages（試作運用中）**: https://kobashi.github.io/game-algo-lab/  
   - Source: `main` / `/ (root)`  
-- **Release 試作版**: https://github.com/kobashi/game-algo-lab/releases/tag/v0.11.1  
+- **Release 試作版**: https://github.com/kobashi/game-algo-lab/releases/tag/v0.12.0  
   - 前版: `v0.11.0` / `v0.10.0` / `v0.9.8`  
-- 再公開: `./scripts/publish-github.sh game-algo-lab v0.11.1`（または新タグ）  
+- 再公開: `./scripts/publish-github.sh game-algo-lab v0.12.0`（または新タグ）  
 - 旧ローカルタグ `v1.0.0` は初期準備用。正式版は別途 `v1.0.0` を切り直す想定  
 
 ### リモートブランチ（不要マーク・削除しない）
