@@ -159,21 +159,20 @@ function updateDsViz() {
   const qItems = queue.map((c) => cellLabel(c.x, c.y));
 
   const inQueue = new Set(queue.map((c) => key(c.x, c.y)));
+  // 発見順（cameFrom の挿入順）。renderSet が新しい順（上が直近）に並べ替える
   const visitedItems = [];
-  for (let y = 0; y < ROWS; y++) {
-    for (let x = 0; x < COLS; x++) {
-      if (hopDist[y][x] < 0) continue;
-      const k = key(x, y);
-      // キュー上のみのフロンティアは「探索済み」から外す
-      if (inQueue.has(k) && marks[y][x] === Mark.FRONTIER) continue;
-      if (
-        marks[y][x] === Mark.VISITED ||
-        marks[y][x] === Mark.PATH ||
-        isStart(x, y) ||
-        (isGoal(x, y) && finished)
-      ) {
-        visitedItems.push(`${cellLabel(x, y)} s${hopDist[y][x]}`);
-      }
+  for (const [k] of cameFrom.entries()) {
+    const [x, y] = k.split(",").map(Number);
+    if (hopDist[y][x] < 0) continue;
+    // キュー上のみのフロンティアは「探索済み」から外す
+    if (inQueue.has(k) && marks[y][x] === Mark.FRONTIER) continue;
+    if (
+      marks[y][x] === Mark.VISITED ||
+      marks[y][x] === Mark.PATH ||
+      isStart(x, y) ||
+      (isGoal(x, y) && finished)
+    ) {
+      visitedItems.push(`${cellLabel(x, y)} s${hopDist[y][x]}`);
     }
   }
 

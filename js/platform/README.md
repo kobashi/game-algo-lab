@@ -6,7 +6,7 @@
 |----------|------|
 | `text.js` | `escapeHtml` / `escapeXml` |
 | `dom.js` | ステータス、結果パネル、C# テキスト読込 |
-| `pseudocode.js` | 疑似コード行ハイライト（`createPseudocode`）— 実行ステップと同期 |
+| `pseudocode.js` | 疑似コード行ハイライト（`createPseudocode`）— 実行ステップと同期。強調行は **パネル内だけ** スクロール（ウィンドウ／Map は動かさない） |
 | `playback.js` | 再生・一時停止・速度スケジュール |
 | `chunked-run.js` | ジェネレータを時間分割で駆動する `runChunked`（重い解析で UI を固めない） |
 | `rng.js` | シード付き PRNG（再現実験） |
@@ -24,7 +24,7 @@
 
 | パス | 役割 |
 |------|------|
-| `js/ds-viz.js` | Queue / Stack / Set / 親ポインタ等の DS 可視化 |
+| `js/ds-viz.js` | Queue / Stack / Set / 親ポインタ等の DS 可視化。集合・親ポインタリスト・コールスタックは新しい要素が上。キューは FIFO（左が先頭） |
 | `js/map-format.js` | 経路探索グリッド地図パーサ |
 | `css/style.css` | 見た目の共通トークン・レイアウト |
 

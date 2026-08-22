@@ -443,6 +443,8 @@ main.container.container-wide.topic-main:has(.mcts-tree-panel) {
   max-height: none;
   overflow: visible;
   min-height: 0;
+  /* 再生中に DS が増えてもページが追従スクロールしない */
+  overflow-anchor: none;
 }
 
 .ds-section-workspace h2 {
@@ -1078,6 +1080,7 @@ main.container.container-wide.topic-main:has(.mcts-tree-panel) {
 .ds-panels {
   display: grid;
   gap: 1rem;
+  overflow-anchor: none;
 }
 
 @media (min-width: 720px) {
@@ -1119,15 +1122,26 @@ main.container.container-wide.topic-main:has(.mcts-tree-panel) {
 
 .ds-queue {
   align-items: stretch;
+  overflow-x: hidden;
 }
 
-/* コールスタック（DFS 再帰） */
+/* FIFO: 前（取り出し）は左。折り返さず横スクロールにして高さ増を抑える */
+.ds-queue .ds-cells {
+  flex: 1 1 auto;
+  flex-wrap: nowrap;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+/* コールスタック（DFS 再帰） — 上が現在（新しいフレーム） */
 .call-stack {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
-  max-height: none;
-  overflow: visible;
+  max-height: 16rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overflow-anchor: none;
   padding: 0.25rem 0;
 }
 
@@ -1196,6 +1210,10 @@ main.container.container-wide.topic-main:has(.mcts-tree-panel) {
   align-items: center;
 }
 
+.ds-set {
+  align-content: flex-start;
+}
+
 .ds-cell {
   position: relative;
   display: inline-flex;
@@ -1251,8 +1269,10 @@ main.container.container-wide.topic-main:has(.mcts-tree-panel) {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
-  max-height: none;
-  overflow: visible;
+  max-height: 16rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overflow-anchor: none;
 }
 
 /* 親ポインタ: 固定タブ + ツリー（HTML に常駐） */
@@ -1407,9 +1427,9 @@ main.container.container-wide.topic-main:has(.mcts-tree-panel) {
   min-width: 0;
   max-width: 100%;
   width: 100%;
-  max-height: none;
+  max-height: min(42vh, 22rem);
   height: auto;
-  overflow: visible;
+  overflow: auto;
   padding: 0.5rem;
   box-sizing: border-box;
   border: 1px solid var(--border);
@@ -1639,8 +1659,10 @@ main.container.container-wide.topic-main:has(.mcts-tree-panel) {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
-  max-height: none;
-  overflow: visible;
+  max-height: 16rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overflow-anchor: none;
 }
 
 .ds-pri-row {

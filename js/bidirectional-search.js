@@ -531,6 +531,8 @@ function updateDsViz() {
         label: "計測",
         typeNote: "bidirectional",
         items: stats,
+        newestFirst: false,
+        limit: null,
       })
   );
 }

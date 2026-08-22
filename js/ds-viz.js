@@ -17,18 +17,63 @@ function currentTreeScale() {
   return TREE_SCALE_STEPS[treeScaleIndex] ?? 1;
 }
 
+/** 集合・親ポインタリストなど、増える系列の既定の表示件数 */
+const DS_VISIBLE_LIMIT = 32;
+
+/**
+ * 表示用に切り出す。newestFirst なら末尾（直近）が先頭になる。
+ * @param {unknown[]} items
+ * @param {{ newestFirst?: boolean, limit?: number }} [opts]
+ */
+function takeVisible(items, { newestFirst = false, limit = DS_VISIBLE_LIMIT } = {}) {
+  const src = newestFirst ? [...items].reverse() : items;
+  if (limit == null || src.length <= limit) {
+    return { shown: src, hidden: 0, total: items.length };
+  }
+  return {
+    shown: src.slice(0, limit),
+    hidden: src.length - limit,
+    total: items.length,
+  };
+}
+
+function moreCaption(hidden, total, newestFirst) {
+  if (hidden <= 0) return "";
+  const order = newestFirst ? "新しい順" : "先頭側";
+  return `<p class="ds-caption">${order} ${total - hidden} 件のみ（全 ${total} 件）</p>`;
+}
+
+/**
+ * innerHTML 更新でウィンドウが追従スクロールしないようにする。
+ * 再生中に Map が画面外へ押し出されるのを防ぐ。
+ * @param {() => void} fn
+ */
+function withPreservedWindowScroll(fn) {
+  if (typeof window === "undefined") {
+    fn();
+    return;
+  }
+  const x = window.scrollX;
+  const y = window.scrollY;
+  fn();
+  window.scrollTo({ left: x, top: y, behavior: "instant" });
+}
+
 /**
  * @param {HTMLElement|null} el
  * @param {string} html
  */
 export function setPanel(el, html) {
   if (!el) return;
-  el.innerHTML = html;
+  withPreservedWindowScroll(() => {
+    el.innerHTML = html;
+  });
 }
 
 /**
  * コールスタック（再帰呼び出しのイメージ）
  * 配列の末尾 = スタックトップ（現在の呼び出し）
+ * 表示は頂→底（上が現在＝新しいフレーム、下が最初の呼び出し）
  * @param {{label?: string, frames: {title: string, detail?: string}[], emptyText?: string}} opts
  */
 export function renderCallStack({
@@ -46,10 +91,12 @@ export function renderCallStack({
     `;
   }
 
-  // 表示は底→頂（上が古い、下が現在）
-  const rows = frames
-    .map((f, i) => {
-      const isTop = i === frames.length - 1;
+  const last = frames.length - 1;
+  const rows = [...frames]
+    .reverse()
+    .map((f, vis) => {
+      const i = last - vis;
+      const isTop = vis === 0;
       return `
       <div class="call-frame${isTop ? " is-top" : ""}">
         <span class="call-depth">#${i}</span>
@@ -63,12 +110,12 @@ export function renderCallStack({
   return `
     <div class="ds-block">
       <div class="ds-title">${escapeHtml(label)} <span class="ds-type">Call Stack / 再帰</span></div>
-      <div class="call-stack" aria-label="コールスタック（下が現在の呼び出し）">
-        <div class="call-stack-end">底（最初の呼び出し）</div>
-        ${rows}
+      <div class="call-stack" aria-label="コールスタック（上が現在の呼び出し）">
         <div class="call-stack-end">頂（現在）</div>
+        ${rows}
+        <div class="call-stack-end">底（最初の呼び出し）</div>
       </div>
-      <p class="ds-caption">深さ = 再帰のネスト。行き止まりで return → バックトラック</p>
+      <p class="ds-caption">上が現在の呼び出し。深さ = 再帰のネスト。行き止まりで return → バックトラック</p>
     </div>
   `;
 }
@@ -96,27 +143,32 @@ export function renderQueue({ label, items, emptyText = "（空）" }) {
         <div class="ds-cells">${cells}</div>
         <span class="ds-end-label">後</span>
       </div>
-      <p class="ds-caption">C# イメージ: <code>Queue&lt;T&gt;</code> や <code>List&lt;T&gt;</code> の先頭削除</p>
+      <p class="ds-caption">左が先頭（取り出し）。新しい要素は右へ。C# イメージ: <code>Queue&lt;T&gt;</code></p>
     </div>
   `;
 }
 
 /**
  * リスト（順序付きの値の並び）
- * @param {{label: string, typeNote?: string, items: string[], emptyText?: string}} opts
+ * 既定は新しい要素が上（先頭）に来る。インデックスは元の配列位置。
+ * @param {{label: string, typeNote?: string, items: string[], emptyText?: string, newestFirst?: boolean, limit?: number}} opts
  */
 export function renderList({
   label,
   typeNote = "List",
   items,
   emptyText = "（空）",
+  newestFirst = true,
+  limit = DS_VISIBLE_LIMIT,
 }) {
+  const indexed = items.map((v, i) => ({ v, i }));
+  const { shown, hidden, total } = takeVisible(indexed, { newestFirst, limit });
   const cells =
     items.length === 0
       ? `<span class="ds-empty">${escapeHtml(emptyText)}</span>`
-      : items
+      : shown
           .map(
-            (v, i) =>
+            ({ v, i }) =>
               `<span class="ds-cell"><span class="ds-idx">${i}</span>${escapeHtml(v)}</span>`
           )
           .join("");
@@ -127,26 +179,38 @@ export function renderList({
       <div class="ds-row">
         <div class="ds-cells">${cells}</div>
       </div>
+      ${moreCaption(hidden, total, newestFirst)}
     </div>
   `;
 }
 
 /**
  * 集合（順序は教材上の表示順）
- * @param {{label: string, typeNote?: string, items: string[], emptyText?: string}} opts
+ * 既定は新しい要素が上（先頭）に来る。再生中に Map を押し出さないため。
+ * @param {{label: string, typeNote?: string, items: string[], emptyText?: string, newestFirst?: boolean, limit?: number}} opts
  */
 export function renderSet({
   label,
   typeNote = "HashSet",
   items,
   emptyText = "（空）",
+  newestFirst = true,
+  limit = DS_VISIBLE_LIMIT,
 }) {
+  const { shown, hidden, total } = takeVisible(items, { newestFirst, limit });
   const cells =
     items.length === 0
       ? `<span class="ds-empty">${escapeHtml(emptyText)}</span>`
-      : items
+      : shown
           .map((v) => `<span class="ds-cell ds-set-cell">${escapeHtml(v)}</span>`)
           .join("");
+
+  const orderNote =
+    items.length === 0
+      ? ""
+      : newestFirst
+        ? `<p class="ds-caption">新しい順（上が直近）</p>`
+        : "";
 
   return `
     <div class="ds-block">
@@ -154,6 +218,8 @@ export function renderSet({
       <div class="ds-row">
         <div class="ds-cells ds-set">${cells}</div>
       </div>
+      ${moreCaption(hidden, total, newestFirst)}
+      ${hidden > 0 ? "" : orderNote}
     </div>
   `;
 }
@@ -166,57 +232,58 @@ export function renderSet({
 export function updateParentMapPanels({ edges, root }) {
   bindParentMapTabsOnce();
 
-  const rootEl = document.getElementById("ds-parent-root");
-  const listEl = document.getElementById("ds-parent-list");
-  const treeEl = document.getElementById("ds-parent-tree");
+  withPreservedWindowScroll(() => {
+    const rootEl = document.getElementById("ds-parent-root");
+    const listEl = document.getElementById("ds-parent-list");
+    const treeEl = document.getElementById("ds-parent-tree");
 
-  if (rootEl) {
-    rootEl.innerHTML = root
-      ? `根（スタート）: <strong>${escapeHtml(root)}</strong>`
-      : "";
-  }
+    if (rootEl) {
+      rootEl.innerHTML = root
+        ? `根（スタート）: <strong>${escapeHtml(root)}</strong>`
+        : "";
+    }
 
-  if (listEl) {
-    if (!edges.length) {
-      listEl.innerHTML = `<p class="ds-empty">（まだ辺なし）</p>
+    if (listEl) {
+      if (!edges.length) {
+        listEl.innerHTML = `<p class="ds-empty">（まだ辺なし）</p>
         <p class="ds-caption">子 ← 親 の対応表。経路復元はゴールから親をたどる。</p>`;
-    } else {
-      const rows = edges
-        .slice(-32)
-        .map(
-          (e) =>
-            `<div class="ds-edge"><span class="ds-node">${escapeHtml(e.to)}</span>
+      } else {
+        const { shown, hidden, total } = takeVisible(edges, {
+          newestFirst: true,
+          limit: DS_VISIBLE_LIMIT,
+        });
+        const rows = shown
+          .map(
+            (e) =>
+              `<div class="ds-edge"><span class="ds-node">${escapeHtml(e.to)}</span>
              <span class="ds-arrow">← 親</span>
              <span class="ds-node is-parent">${escapeHtml(e.from ?? "null")}</span></div>`
-        )
-        .join("");
-      const more =
-        edges.length > 32
-          ? `<p class="ds-caption">直近 32 件のみ（全 ${edges.length} 件）</p>`
-          : "";
-      listEl.innerHTML = `
+          )
+          .join("");
+        listEl.innerHTML = `
         <div class="ds-tree ds-tree-list">${rows}</div>
-        ${more}
-        <p class="ds-caption">子 ← 親 の対応表。経路復元はゴールから親をたどる。</p>`;
+        ${moreCaption(hidden, total, true)}
+        <p class="ds-caption">新しい順（上が直近）。子 ← 親 の対応表。経路復元はゴールから親をたどる。</p>`;
+      }
     }
-  }
 
-  if (treeEl) {
-    if (!edges.length) {
-      treeEl.innerHTML = `<p class="ds-empty">（まだ辺なし）</p>
+    if (treeEl) {
+      if (!edges.length) {
+        treeEl.innerHTML = `<p class="ds-empty">（まだ辺なし）</p>
         <p class="ds-caption">探索が進むとスタートを根とした木が伸びます。</p>`;
-    } else {
-      const scale = currentTreeScale();
-      treeEl.innerHTML = `
+      } else {
+        const scale = currentTreeScale();
+        treeEl.innerHTML = `
         <div class="ds-node-tree${scale < 1 ? " is-compact" : ""}" id="ds-node-tree-scroll" data-tree-scale="${scale}">
           <div class="tree-scale-inner" id="tree-scale-inner" style="--tree-zoom:${scale}">${renderParentTree(edges, root)}</div>
         </div>
         <p class="ds-caption">同じ深さは同じ高さ。枝で接続。縮小／拡大ボタンでサイズ変更（${Math.round(scale * 100)}%）。</p>`;
+      }
     }
-  }
 
-  applyParentMapTabs(document);
-  applyTreeZoomUi();
+    applyParentMapTabs(document);
+    applyTreeZoomUi();
+  });
 }
 
 /**
@@ -231,8 +298,9 @@ export function renderParentMap({ label, edges, root }) {
         <p class="ds-empty">（まだ辺なし）</p>
       </div>`;
   }
-  const rows = edges
+  const rows = [...edges]
     .slice(-24)
+    .reverse()
     .map(
       (e) =>
         `<div class="ds-edge"><span class="ds-node">${escapeHtml(e.to)}</span>

@@ -277,15 +277,13 @@ function updateDsViz() {
     };
   });
 
-  const dead = [];
-  const onPath = [];
-  for (let y = 0; y < ROWS; y++) {
-    for (let x = 0; x < COLS; x++) {
-      if (!visited[y][x]) continue;
-      const lab = `${cellLabel(x, y)} d${depthAt[y][x]}`;
-      if (marks[y][x] === Mark.DEAD) dead.push(lab);
-      else onPath.push(lab);
-    }
+  // 発見順（cameFrom の挿入順）。renderSet が新しい順（上が直近）に並べ替える
+  const visitedItems = [];
+  for (const [k] of cameFrom.entries()) {
+    const [x, y] = k.split(",").map(Number);
+    if (!visited[y]?.[x]) continue;
+    const lab = `${cellLabel(x, y)} d${depthAt[y][x]}`;
+    visitedItems.push(marks[y][x] === Mark.DEAD ? `${lab} ←bt` : lab);
   }
 
   const edgeList = [];
@@ -304,7 +302,7 @@ function updateDsViz() {
       renderSet({
         label: "訪問済み（バックトラック後含む）",
         typeNote: "HashSet / visited",
-        items: [...onPath, ...dead.map((s) => s + " ←bt")],
+        items: visitedItems,
       })
   );
   updateParentMapPanels({

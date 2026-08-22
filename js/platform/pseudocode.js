@@ -47,6 +47,22 @@ export function createPseudocode(root, opts) {
   `;
 
   /**
+   * 疑似コードパネル内だけスクロールする。
+   * Element.scrollIntoView はウィンドウまで動かし、再生中に Map が画面外へ出る。
+   * @param {Element} li
+   */
+  function scrollLineIntoPanel(li) {
+    const er = li.getBoundingClientRect();
+    const cr = root.getBoundingClientRect();
+    const pad = 4;
+    if (er.top < cr.top + pad) {
+      root.scrollTop -= cr.top - er.top + pad;
+    } else if (er.bottom > cr.bottom - pad) {
+      root.scrollTop += er.bottom - cr.bottom + pad;
+    }
+  }
+
+  /**
    * @param {string | null} id
    */
   function setActive(id) {
@@ -56,7 +72,7 @@ export function createPseudocode(root, opts) {
       li.classList.toggle("is-active", on);
       if (on) {
         li.setAttribute("aria-current", "step");
-        li.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        scrollLineIntoPanel(li);
       } else {
         li.removeAttribute("aria-current");
       }
