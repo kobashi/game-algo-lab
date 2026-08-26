@@ -363,7 +363,11 @@ function renderParentTree(edges, root) {
    */
   function walk(id, depth, path, isRoot) {
     if (count >= MAX_NODES) {
-      return `<li class="tree-li tree-li-omit"><span class="tree-node-chip is-cycle">…</span></li>`;
+      return `<li class="tree-li tree-li-omit is-leaf">
+        <div class="tree-node-box">
+          <span class="tree-node-chip is-cycle">…</span>
+        </div>
+      </li>`;
     }
     if (path.has(id)) {
       return `<li class="tree-li">

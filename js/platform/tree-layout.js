@@ -18,6 +18,18 @@
  */
 
 /**
+ * `children` のうち、実際に `nodes` に存在する子だけ。
+ * 欠けた id には座標も枝も作らない。
+ * @param {Record<string, TreeNodeLike>} nodes
+ * @param {string} id
+ * @returns {string[]}
+ */
+export function existingChildIds(nodes, id) {
+  const kids = nodes[id]?.children ?? [];
+  return kids.filter((cid) => nodes[cid] != null);
+}
+
+/**
  * @param {Record<string, TreeNodeLike>} nodes
  * @param {string} rootId
  * @param {TreeLayoutOptions} [opts]
@@ -42,8 +54,11 @@ export function layoutTree(nodes, rootId, opts = {}) {
 
   function subtreeWidth(id) {
     if (widthCache[id] != null) return widthCache[id];
-    const n = nodes[id];
-    const kids = n?.children ?? [];
+    if (nodes[id] == null) {
+      widthCache[id] = 0;
+      return 0;
+    }
+    const kids = existingChildIds(nodes, id);
     if (!kids.length) {
       widthCache[id] = NODE_W;
       return NODE_W;
@@ -61,8 +76,8 @@ export function layoutTree(nodes, rootId, opts = {}) {
   const layout = {};
 
   function place(id, xLeft, depth) {
-    const n = nodes[id];
-    const kids = n?.children ?? [];
+    if (nodes[id] == null) return;
+    const kids = existingChildIds(nodes, id);
     const w = subtreeWidth(id);
     const cx = xLeft + w / 2;
     const cy = PAD + depth * GAP_Y + NODE_H / 2;
@@ -83,7 +98,7 @@ export function layoutTree(nodes, rootId, opts = {}) {
   }
 
   function maxDepth(id) {
-    const kids = nodes[id]?.children ?? [];
+    const kids = existingChildIds(nodes, id);
     if (!kids.length) return 0;
     return 1 + Math.max(...kids.map(maxDepth));
   }

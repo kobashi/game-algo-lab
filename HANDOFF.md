@@ -1,9 +1,11 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-08-22（ready **110** · Release **v0.12.0**）  
+最終更新: 2026-08-26（ready **110** · Release **v0.12.0**）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.12.0
+
+**2026-08-26 ツリー枝**: ノードが無い先へ枝を引かない。親ポインタ CSS は子チップがある li だけに縦横の枝。`layoutTree` は `nodes` に無い `children` id を無視（ゲーム木 SVG も同様）。
 
 **2026-08-22 探索 DS スクロール**: 再生中にデータ構造が増えると Map が画面外へ出ていた。集合・親ポインタリスト・コールスタックは新しい要素を上へ追加。キューは FIFO（左が先頭）のまま折り返さず横スクロール。疑似コード `scrollIntoView` はウィンドウを動かさずパネル内だけスクロール。`setPanel` は window scroll を保持。
 

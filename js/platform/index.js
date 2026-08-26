@@ -19,7 +19,7 @@ export { createPseudocode } from "./pseudocode.js";
 export { createPlayback } from "./playback.js";
 export { runChunked } from "./chunked-run.js";
 export { mulberry32, randomIndex } from "./rng.js";
-export { layoutTree, applySvgSize } from "./tree-layout.js";
+export { layoutTree, applySvgSize, existingChildIds } from "./tree-layout.js";
 export {
   canvasCellFromEvent,
   parsePaintMode,

@@ -171,6 +171,7 @@ function draw() {
 
   for (const n of Object.values(nodes)) {
     for (const cid of n.children) {
+      if (!nodes[cid]) continue;
       const a = layout[n.id];
       const b = layout[cid];
       if (!a || !b) continue;

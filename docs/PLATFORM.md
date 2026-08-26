@@ -66,7 +66,7 @@ docs/templates/            # SPEC / スキャフォールド
 | `createPlayback` | 再生 / 一時停止 / 速度付き onTick |
 | `runChunked` | ジェネレータを時間分割で駆動（重い解析で UI を固めない。`chunked-run.js`、4×4オセロで新設） |
 | `mulberry32` / `randomIndex` | シード付き乱数 |
-| `layoutTree` / `applySvgSize` | ゲーム木の水平配置。`applySvgSize` は既定で viewBox + 親幅フィット（横スクロール抑制） |
+| `layoutTree` / `applySvgSize` / `existingChildIds` | ゲーム木の水平配置。`children` に無い節点へは座標も枝も作らない。`applySvgSize` は既定で viewBox + 親幅フィット（横スクロール抑制） |
 | `bindMapPaint` 等 | 経路探索の塗り |
 | `drawPathfindingGrid` / `createGridOps` | グリッド下地・幾何 |
 | `mountTopicShellFromDataset` | 共通ヘッダー + フッター + 成熟度バッジ |

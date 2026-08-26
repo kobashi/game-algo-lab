@@ -1554,25 +1554,16 @@ main.container.container-wide.topic-main:has(.mcts-tree-panel) {
   color: #e8a090;
 }
 
-/* 親チップ → 子階層への縦枝 */
-.tree-li.has-kids > .tree-node-box::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 100%;
-  width: var(--tree-line-w);
-  height: var(--tree-gap-y);
-  transform: translateX(-50%);
-  background: var(--tree-line);
-}
-
-/* 子の並び（同じ深さ = 同じ高さの横一列） */
+/*
+ * 枝は「実ノード（.tree-node-chip）がある li」にだけ付ける。
+ * 親チップ直下の縦棒は描かない（2人以上の子のあいだに空中で終わるため）。
+ * 親と水平レールは接する。子への縦枝は各子チップの中心へ。
+ */
 .tree-branch > .tree-li {
   padding-top: var(--tree-gap-y);
 }
 
-/* 水平レール上端 → 各子チップへの縦枝 */
-.tree-branch > .tree-li::before {
+.tree-branch > .tree-li:has(.tree-node-chip)::before {
   content: "";
   position: absolute;
   top: 0;
@@ -1584,11 +1575,7 @@ main.container.container-wide.topic-main:has(.mcts-tree-panel) {
   z-index: 1;
 }
 
-/*
- * 兄弟を繋ぐ水平枝:
- *  中間の子 = 全幅、端の子 = 中心から内側半分のみ
- */
-.tree-branch > .tree-li:not(:only-child)::after {
+.tree-branch > .tree-li:has(.tree-node-chip):not(:only-child)::after {
   content: "";
   position: absolute;
   top: 0;
@@ -1597,23 +1584,22 @@ main.container.container-wide.topic-main:has(.mcts-tree-panel) {
   z-index: 0;
 }
 
-.tree-branch > .tree-li:not(:first-child):not(:last-child)::after {
+.tree-branch > .tree-li:has(.tree-node-chip):not(:first-child):not(:last-child)::after {
   left: 0;
   right: 0;
   width: 100%;
 }
 
-.tree-branch > .tree-li:first-child:not(:only-child)::after {
+.tree-branch > .tree-li:has(.tree-node-chip):first-child:not(:only-child)::after {
   left: 50%;
   width: 50%;
 }
 
-.tree-branch > .tree-li:last-child:not(:only-child)::after {
+.tree-branch > .tree-li:has(.tree-node-chip):last-child:not(:only-child)::after {
   left: 0;
   width: 50%;
 }
 
-/* 子が1人: 水平枝なし */
 .tree-branch > .tree-li:only-child::after {
   display: none;
 }

@@ -775,6 +775,7 @@ function runBrowserUi() {
       const p = layout[id];
       if (!p) continue;
       for (const cid of n.children) {
+        if (!vm.nodes[cid]) continue;
         const cp = layout[cid];
         if (!cp) continue;
         const onPath =
