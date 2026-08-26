@@ -1103,6 +1103,40 @@ main.container.container-wide.topic-main:has(.mcts-tree-panel) {
   color: var(--text);
 }
 
+details.ds-block > .ds-title {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.2rem;
+  user-select: none;
+}
+
+details.ds-block > .ds-title:hover {
+  color: var(--accent-hover);
+}
+
+details.ds-block > .ds-title::-webkit-details-marker {
+  display: none;
+}
+
+details.ds-block > .ds-title::before {
+  content: "▾";
+  color: var(--accent);
+  font-weight: 700;
+  margin-right: 0.4rem;
+  font-size: 0.8em;
+}
+
+details.ds-block:not([open]) > .ds-title {
+  margin-bottom: 0;
+}
+
+details.ds-block:not([open]) > .ds-title::before {
+  content: "▸";
+}
+
 .ds-type {
   display: inline-block;
   margin-left: 0.35rem;

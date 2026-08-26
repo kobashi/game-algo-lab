@@ -5,6 +5,9 @@
 
 /** 親ポインタパネルのタブ状態（再描画後も維持） */
 let parentMapTab = "list"; // "list" | "tree"
+/** 各 DS ブロックの開閉（data-ds-key → open）。再描画後も維持 */
+const dsFoldState = new Map();
+let foldBound = false;
 /**
  * ツリー表示スケール段階（押すたびに進む）
  * 100% → 70% → 50% → 100% …
@@ -60,13 +63,68 @@ function withPreservedWindowScroll(fn) {
 }
 
 /**
+ * @param {ParentNode} root
+ */
+function snapshotFold(root) {
+  root.querySelectorAll("details.ds-block[data-ds-key]").forEach((d) => {
+    const key = d.getAttribute("data-ds-key");
+    if (key) dsFoldState.set(key, d.open);
+  });
+}
+
+/**
+ * @param {ParentNode} root
+ */
+function restoreFold(root) {
+  root.querySelectorAll("details.ds-block[data-ds-key]").forEach((d) => {
+    const key = d.getAttribute("data-ds-key");
+    if (key && dsFoldState.has(key)) d.open = dsFoldState.get(key);
+  });
+}
+
+/**
+ * 1 データ構造ブロック（タイトルをクリックしてたたむ）
+ * @param {string} key
+ * @param {string} titleHtml
+ * @param {string} bodyHtml
+ */
+function wrapDsBlock(key, titleHtml, bodyHtml) {
+  const isOpen = dsFoldState.has(key) ? dsFoldState.get(key) : true;
+  return `
+    <details class="ds-block" data-ds-key="${escapeHtml(key)}"${isOpen ? " open" : ""}>
+      <summary class="ds-title" title="表示をたたむ／開く">${titleHtml}</summary>
+      <div class="ds-block-body">${bodyHtml}</div>
+    </details>
+  `;
+}
+
+function bindDsFoldOnce() {
+  if (foldBound || typeof document === "undefined") return;
+  foldBound = true;
+  document.addEventListener(
+    "toggle",
+    (e) => {
+      const t = e.target;
+      if (!(t instanceof HTMLDetailsElement)) return;
+      if (!t.classList.contains("ds-block")) return;
+      const key = t.getAttribute("data-ds-key");
+      if (!key) return;
+      dsFoldState.set(key, t.open);
+    },
+    true
+  );
+}
+
+/**
  * @param {HTMLElement|null} el
  * @param {string} html
  */
 export function setPanel(el, html) {
   if (!el) return;
   withPreservedWindowScroll(() => {
+    snapshotFold(el);
     el.innerHTML = html;
+    restoreFold(el);
   });
 }
 
@@ -82,13 +140,12 @@ export function renderCallStack({
   emptyText = "（空）",
 }) {
   if (!frames.length) {
-    return `
-      <div class="ds-block">
-        <div class="ds-title">${escapeHtml(label)} <span class="ds-type">Call Stack / 再帰</span></div>
-        <p class="ds-empty">${escapeHtml(emptyText)}</p>
-        <p class="ds-caption">C# イメージ: 再帰呼び出しのたびにフレームが積まれ、return で外れる</p>
-      </div>
-    `;
+    return wrapDsBlock(
+      label,
+      `${escapeHtml(label)} <span class="ds-type">Call Stack / 再帰</span>`,
+      `<p class="ds-empty">${escapeHtml(emptyText)}</p>
+        <p class="ds-caption">C# イメージ: 再帰呼び出しのたびにフレームが積まれ、return で外れる</p>`
+    );
   }
 
   const last = frames.length - 1;
@@ -107,17 +164,16 @@ export function renderCallStack({
     })
     .join("");
 
-  return `
-    <div class="ds-block">
-      <div class="ds-title">${escapeHtml(label)} <span class="ds-type">Call Stack / 再帰</span></div>
-      <div class="call-stack" aria-label="コールスタック（上が現在の呼び出し）">
+  return wrapDsBlock(
+    label,
+    `${escapeHtml(label)} <span class="ds-type">Call Stack / 再帰</span>`,
+    `<div class="call-stack" aria-label="コールスタック（上が現在の呼び出し）">
         <div class="call-stack-end">頂（現在）</div>
         ${rows}
         <div class="call-stack-end">底（最初の呼び出し）</div>
       </div>
-      <p class="ds-caption">上が現在の呼び出し。深さ = 再帰のネスト。行き止まりで return → バックトラック</p>
-    </div>
-  `;
+      <p class="ds-caption">上が現在の呼び出し。深さ = 再帰のネスト。行き止まりで return → バックトラック</p>`
+  );
 }
 
 /**
@@ -135,17 +191,16 @@ export function renderQueue({ label, items, emptyText = "（空）" }) {
           )
           .join("");
 
-  return `
-    <div class="ds-block">
-      <div class="ds-title">${escapeHtml(label)} <span class="ds-type">Queue / リスト先頭から取り出し</span></div>
-      <div class="ds-row ds-queue">
+  return wrapDsBlock(
+    label,
+    `${escapeHtml(label)} <span class="ds-type">Queue / リスト先頭から取り出し</span>`,
+    `<div class="ds-row ds-queue">
         <span class="ds-end-label">前</span>
         <div class="ds-cells">${cells}</div>
         <span class="ds-end-label">後</span>
       </div>
-      <p class="ds-caption">左が先頭（取り出し）。新しい要素は右へ。C# イメージ: <code>Queue&lt;T&gt;</code></p>
-    </div>
-  `;
+      <p class="ds-caption">左が先頭（取り出し）。新しい要素は右へ。C# イメージ: <code>Queue&lt;T&gt;</code></p>`
+  );
 }
 
 /**
@@ -173,15 +228,14 @@ export function renderList({
           )
           .join("");
 
-  return `
-    <div class="ds-block">
-      <div class="ds-title">${escapeHtml(label)} <span class="ds-type">${escapeHtml(typeNote)}</span></div>
-      <div class="ds-row">
+  return wrapDsBlock(
+    label,
+    `${escapeHtml(label)} <span class="ds-type">${escapeHtml(typeNote)}</span>`,
+    `<div class="ds-row">
         <div class="ds-cells">${cells}</div>
       </div>
-      ${moreCaption(hidden, total, newestFirst)}
-    </div>
-  `;
+      ${moreCaption(hidden, total, newestFirst)}`
+  );
 }
 
 /**
@@ -212,16 +266,15 @@ export function renderSet({
         ? `<p class="ds-caption">新しい順（上が直近）</p>`
         : "";
 
-  return `
-    <div class="ds-block">
-      <div class="ds-title">${escapeHtml(label)} <span class="ds-type">${escapeHtml(typeNote)}</span></div>
-      <div class="ds-row">
+  return wrapDsBlock(
+    label,
+    `${escapeHtml(label)} <span class="ds-type">${escapeHtml(typeNote)}</span>`,
+    `<div class="ds-row">
         <div class="ds-cells ds-set">${cells}</div>
       </div>
       ${moreCaption(hidden, total, newestFirst)}
-      ${hidden > 0 ? "" : orderNote}
-    </div>
-  `;
+      ${hidden > 0 ? "" : orderNote}`
+  );
 }
 
 /**
@@ -292,11 +345,11 @@ export function updateParentMapPanels({ edges, root }) {
 export function renderParentMap({ label, edges, root }) {
   // 旧呼び出し向け: 中身だけ返す（タブなし）。基本は使わない
   if (!edges.length) {
-    return `
-      <div class="ds-block">
-        <div class="ds-title">${escapeHtml(label)}</div>
-        <p class="ds-empty">（まだ辺なし）</p>
-      </div>`;
+    return wrapDsBlock(
+      label,
+      escapeHtml(label),
+      `<p class="ds-empty">（まだ辺なし）</p>`
+    );
   }
   const rows = [...edges]
     .slice(-24)
@@ -308,11 +361,11 @@ export function renderParentMap({ label, edges, root }) {
          <span class="ds-node is-parent">${escapeHtml(e.from)}</span></div>`
     )
     .join("");
-  return `
-    <div class="ds-block">
-      <div class="ds-title">${escapeHtml(label)}</div>
-      <div class="ds-tree">${rows}</div>
-    </div>`;
+  return wrapDsBlock(
+    label,
+    escapeHtml(label),
+    `<div class="ds-tree">${rows}</div>`
+  );
 }
 
 /**
@@ -522,12 +575,11 @@ function bindParentMapTabsOnce() {
  */
 export function renderPriorityOpen({ label, items }) {
   if (items.length === 0) {
-    return `
-      <div class="ds-block">
-        <div class="ds-title">${escapeHtml(label)} <span class="ds-type">優先度付きキュー / ソート List</span></div>
-        <p class="ds-empty">（空）</p>
-      </div>
-    `;
+    return wrapDsBlock(
+      label,
+      `${escapeHtml(label)} <span class="ds-type">優先度付きキュー / ソート List</span>`,
+      `<p class="ds-empty">（空）</p>`
+    );
   }
 
   const sorted = [...items].sort((a, b) => a.f - b.f || b.g - a.g);
@@ -549,13 +601,12 @@ export function renderPriorityOpen({ label, items }) {
       ? `<p class="ds-caption">f 昇順の上位 20 件（全 ${sorted.length} 件）</p>`
       : `<p class="ds-caption">f が小さいほど先に展開（教材上のイメージ）</p>`;
 
-  return `
-    <div class="ds-block">
-      <div class="ds-title">${escapeHtml(label)} <span class="ds-type">優先度付きキュー / SortedList 風</span></div>
-      <div class="ds-priority">${rows}</div>
-      ${more}
-    </div>
-  `;
+  return wrapDsBlock(
+    label,
+    `${escapeHtml(label)} <span class="ds-type">優先度付きキュー / SortedList 風</span>`,
+    `<div class="ds-priority">${rows}</div>
+      ${more}`
+  );
 }
 
 function escapeHtml(s) {
@@ -573,9 +624,13 @@ export function cellLabel(x, y) {
 
 // ページ読込時にタブを有効化
 if (typeof document !== "undefined") {
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => bindParentMapTabsOnce());
-  } else {
+  const boot = () => {
+    bindDsFoldOnce();
     bindParentMapTabsOnce();
+  };
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
   }
 }

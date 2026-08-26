@@ -99,8 +99,9 @@
         </p>
         <div id="ds-panels" class="ds-panels"></div>
 
-        <div class="ds-block ds-parent-block" id="ds-parent-block" data-parent-map>
-          <div class="ds-title">親ポインタ（経路復元用） <span class="ds-type">Dictionary</span></div>
+        <details class="ds-block ds-parent-block" id="ds-parent-block" data-parent-map data-ds-key="parent-map" open>
+          <summary class="ds-title" title="表示をたたむ／開く">親ポインタ（経路復元用） <span class="ds-type">Dictionary</span></summary>
+          <div class="ds-block-body">
                     <div class="ds-parent-toolbar">
             <div class="ds-tabs" role="tablist" aria-label="親ポインタの表示切替">
               <button type="button" class="ds-tab is-active" role="tab" data-parent-tab="list" aria-selected="true" id="tab-parent-list">リスト</button>
@@ -115,7 +116,8 @@
           <p class="ds-caption ds-parent-root" id="ds-parent-root"></p>
           <div class="ds-tab-panel" data-parent-panel="list" id="ds-parent-list" role="tabpanel" aria-labelledby="tab-parent-list"></div>
           <div class="ds-tab-panel" data-parent-panel="tree" id="ds-parent-tree" role="tabpanel" aria-labelledby="tab-parent-tree" hidden></div>
-        </div>
+          </div>
+        </details>
       </section>
     </div>
 
