@@ -47,7 +47,7 @@
 | `alpha-beta` | α-β 法 | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/alpha-beta.html` | [SPEC](./alpha-beta/SPEC.md) | 深さ3木でβカットを初めて可視化（旧木は深さ2でβカット不能だった） |
 | `monte-carlo` | モンテカルロ法 | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/monte-carlo.html` | [SPEC](./monte-carlo/SPEC.md) | 深さ3木でプレイアウトが3手の系列に。乱択EVとMin-Maxの食い違いを強化 |
 | `multi-armed-bandit` | 多腕バンディット | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/multi-armed-bandit.html` | [SPEC](./multi-armed-bandit/SPEC.md) | 難易度プリセット（易しい/難しい）追加、既定手数300へ |
-| `tic-tac-toe` | 三目並べ（全解析・対称性除去） | ✅ | **一発** | 0 | 2026-07-19 | `algorithms/tic-tac-toe.html` | [SPEC](./tic-tac-toe/SPEC.md) | 初版。negamax + α-β/メモ化/対称性除去(8変換)を独立トグル。到達5478局面・対称除去765局面を実装で再現。MCの低N誤判定プリセット付き |
+| `tic-tac-toe` | 三目並べ（全解析・対称性除去） | ✅ | **調整** | 1 | 2026-09-03 | `algorithms/tic-tac-toe.html` | [SPEC](./tic-tac-toe/SPEC.md) | 初版。negamax + α-β/メモ化/対称性除去(8変換)を独立トグル。到達5478局面・対称除去765局面を実装で再現。MCの低N誤判定プリセット付き。**改訂1**: URL クエリで初期パラメータ指定に対応（授業課題の個別配布用） |
 | `nim` | ニム（完全読み切り→理論解） | ✅ | **一発** | 0 | 2026-07-19 | `algorithms/nim.html` | [SPEC](./nim/SPEC.md)（implemented） | 正本 §6.2。初版。モード1（1山）: 逆向き着色DPで n mod (k+1)==0 の周期を可視化（k=1..5×N=40の全域で機械確認）。モード2（複数山）: メモ化探索と nim-sum(XOR) 判定を全局面（直積、最大192局面）で一致確認、独立再実装の素朴再帰とも突き合わせ済み |
 | `chopsticks` | 割り箸（循環グラフ・後退解析） | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/chopsticks.html` | [SPEC](./chopsticks/SPEC.md)（implemented） | 正本 §6.4。初版。状態=(手番側ペア,相手側ペア)で正規化（225局面≤450）。後退解析を波単位ジェネレータで実装、15×15マトリクスで波の広がりを可視化。分割・死の条件（5以上/ちょうど5）・mod5 の6構成すべてで独立実装との全局面ラベル一致を確認。分割ありでDRAW14局面が出現（標準は0）。深さ制限Min-Max(5/10/20)はDRAW局面で値0のまま確定しない一方、決着バリアントは深さ10以降で真値に収束することを確認。**改訂1**: 「波を再生」が1波で自動停止するバグを修正（`createPlayback` の `onTick` 戻り値が常に `undefined` になっていたため。`nim` トピック実装時の Fable5 レビューで発覚） |
 | `othello-4x4` | 4×4 オセロ（符号化・転置表・対称正規化） | ✅ | **一発** | 0 | 2026-07-19 | `algorithms/othello-4x4.html` | [SPEC](./othello-4x4/SPEC.md)（implemented） | 正本 §6.3。初版・ゲーム木シリーズ最終段。局面=(16文字盤面, 手番)、パス状態は「両者とも合法手なし」という盤面だけから決まる性質として実装（状態に持たない設計判断、SPEC §11）。負の全探索は初期局面で224,820局面・約0.4秒（Node実測、ガードライン閾値3秒未満のためチャンク実行は必須要件のまま維持しつつ8構成比較の既定プリセットは強制変更せず）。3段計測（生/転置表後/対称除去後）をチャンク実行ジェネレータ（`js/platform/chunked-run.js` を新設）で実装。初期局面の理論結果は自前計算（独立実装と一致確認済み）で黒 -8石差（白の勝ち） |
@@ -76,7 +76,7 @@
 | `time-management` | 時間管理 | ✅ | **一発** | 0 | 2026-07-22 | `algorithms/time-management.html` | [SPEC](./time-management/SPEC.md) | 壁時計 vs ゲーム内時間。time scale・ポーズ。往復キャラは game time 駆動 |
 | `input-basics` | 入力の基礎 | ✅ | **一発** | 0 | 2026-07-22 | `algorithms/input-basics.html` | [SPEC](./input-basics/SPEC.md) | held / down / up。Jump=edge、Fire=held 連射対比、Charge=長押し |
 | `coordinates` | 座標変換 | ✅ | **調整** | 1 | 2026-07-28 | `algorithms/coordinates.html` | [SPEC](./coordinates/SPEC.md) | gfx-coordinates 統合・CG 導線（カメラ/UI/Mesh） |
-| `rng-seed` | 乱数とシード | ✅ | **調整** | 1 | 2026-07-23 | `algorithms/rng-seed.html` | [SPEC](./rng-seed/SPEC.md) | Mulberry32/XorShift/LCG 切替。LCG は a,c,m プリセット（質の悪い例〜実用寄り）と周期計測・ヒストグラム |
+| `rng-seed` | 乱数とシード | ✅ | **調整** | 2 | 2026-09-03 | `algorithms/rng-seed.html` | [SPEC](./rng-seed/SPEC.md) | Mulberry32/XorShift/LCG 切替。LCG は a,c,m プリセット（質の悪い例〜実用寄り）と周期計測・ヒストグラム。**改訂2**: URL クエリで初期パラメータ指定に対応（授業課題の個別配布用） |
 
 **学習ストーリー**: ゲームループ → 時間管理 → 入力 → 座標 → 乱数とシード（**カテゴリ一通り完了**）  
 
@@ -145,7 +145,7 @@
 
 | id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
 |----|----------|-------|--------|------|------|--------|------|----------|
-| `coyote-time` | コヨーテタイム | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/coyote-time.html` | [SPEC](./coyote-time/SPEC.md) | 崖際ジャンプ猶予 ON/OFF 比較 |
+| `coyote-time` | コヨーテタイム | ✅ | **調整** | 1 | 2026-09-03 | `algorithms/coyote-time.html` | [SPEC](./coyote-time/SPEC.md) | 崖際ジャンプ猶予 ON/OFF 比較。**改訂1**: URL クエリで初期パラメータ指定に対応（授業課題の個別配布用） |
 | `input-buffer` | 入力バッファ | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/input-buffer.html` | [SPEC](./input-buffer/SPEC.md) | 着地前ジャンプの先読み窓 |
 
 **学習ストーリー**: 入力の基礎 → コヨーテタイム → 入力バッファ →（予定）入力抽象化  
@@ -264,8 +264,8 @@
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | ≈95 | 詳細は TOPIC_META（ready 110 本） |
-| 調整 (`revised`) | ≈15 | bfs〜rng-seed · coordinates 等 |
+| 一発 (`oneshot`) | ≈93 | 詳細は TOPIC_META（ready 110 本） |
+| 調整 (`revised`) | ≈17 | bfs〜rng-seed · coordinates · tic-tac-toe · coyote-time 等 |
 | 安定 (`stable`) | 0 | — |
 
 Fable5 起点のコード改訂 ↔ 成熟度の対応表: [MATURITY.md](./MATURITY.md) の「Fable5 レビュー → 成熟度の突き合わせ」。

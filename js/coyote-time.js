@@ -7,6 +7,8 @@ import {
   createStatus,
   loadTextSample,
   mountTopicShellFromDataset,
+  applyParamsToControls,
+  mountShareLink,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -233,4 +235,16 @@ loadTextSample(
   csharpSample,
   "// CoyoteTimeExample.cs"
 );
+
+const urlSpec = {
+  coyote: { el: coyoteOnEl, kind: "checkbox" },
+  ms: { el: coyoteMsEl, kind: "range" },
+};
+mountShareLink({
+  spec: urlSpec,
+  button: document.getElementById("btn-copy-url"),
+  statusEl: document.getElementById("status"),
+});
+const urlResult = applyParamsToControls(urlSpec);
 reset();
+if (urlResult.warning) setStatus(urlResult.warning);

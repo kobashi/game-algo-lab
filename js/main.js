@@ -339,7 +339,7 @@ const TOPICS = [
     badge: "ゲーム木",
     category: "ゲーム木",
     ready: true,
-    maturity: "oneshot",
+    maturity: "revised",
   },
   {
     id: "mcts",
@@ -823,7 +823,7 @@ const TOPICS = [
     badge: "入力・操作感",
     category: "入力・操作感",
     ready: true,
-    maturity: "oneshot",
+    maturity: "revised",
   },
   {
     id: "input-buffer",

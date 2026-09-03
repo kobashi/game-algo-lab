@@ -58,7 +58,7 @@ export const TOPIC_META = {
   },
   "input-basics": { maturity: "oneshot", revisions: 0, updated: "2026-07-22" },
   coordinates: { maturity: "revised", revisions: 1, updated: "2026-07-28" },
-  "rng-seed": { maturity: "revised", revisions: 1, updated: "2026-07-23" },
+  "rng-seed": { maturity: "revised", revisions: 2, updated: "2026-09-03" },
   "maze-gen": { maturity: "oneshot", revisions: 0, updated: "2026-07-23" },
   "weighted-random": {
     maturity: "oneshot",
@@ -76,7 +76,7 @@ export const TOPIC_META = {
     updated: "2026-07-27",
   },
   "object-pool": { maturity: "oneshot", revisions: 0, updated: "2026-07-27" },
-  "coyote-time": { maturity: "oneshot", revisions: 0, updated: "2026-07-27" },
+  "coyote-time": { maturity: "revised", revisions: 1, updated: "2026-09-03" },
   "grid-pseudo-physics": {
     maturity: "oneshot",
     revisions: 0,
@@ -475,7 +475,7 @@ export const TOPIC_META = {
   bandit: { maturity: "revised", revisions: 1, updated: "2026-07-19" },
   collision: { maturity: "revised", revisions: 2, updated: "2026-07-17" },
   fsm: { maturity: "oneshot", revisions: 0, updated: "2026-07-17" },
-  "tic-tac-toe": { maturity: "oneshot", revisions: 0, updated: "2026-07-19" },
+  "tic-tac-toe": { maturity: "revised", revisions: 1, updated: "2026-09-03" },
   mcts: { maturity: "oneshot", revisions: 0, updated: "2026-07-21" },
   nim: { maturity: "oneshot", revisions: 0, updated: "2026-07-19" },
   chopsticks: { maturity: "revised", revisions: 1, updated: "2026-07-19" },

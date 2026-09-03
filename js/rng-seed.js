@@ -15,6 +15,8 @@ import {
   loadTextSample,
   mulberry32,
   mountTopicShellFromDataset,
+  applyParamsToControls,
+  mountShareLink,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -702,7 +704,32 @@ syncLabels();
 applyLcgPreset(LCG_PRESETS[0].id, { setSeed: false });
 applyXsPreset("xs-marsaglia", { setSeed: false });
 syncParamPanels();
+
+// preset / xspreset を a,c,m / xa,xb,xc より先に置く（select が個別値を上書きするため）
+const urlSpec = {
+  algo: { el: algoEl, kind: "select" },
+  preset: { el: lcgPresetEl, kind: "select" },
+  xspreset: { el: xsPresetEl, kind: "select" },
+  seed: { el: seedEl, kind: "number" },
+  n: { el: countEl, kind: "range" },
+  a: { el: lcgAEl, kind: "number" },
+  c: { el: lcgCEl, kind: "number" },
+  m: { el: lcgMEl, kind: "number" },
+  xa: { el: xsAEl, kind: "number" },
+  xb: { el: xsBEl, kind: "number" },
+  xc: { el: xsCEl, kind: "number" },
+};
+mountShareLink({
+  spec: urlSpec,
+  button: document.getElementById("btn-copy-url"),
+  statusEl: document.getElementById("status"),
+});
+const urlResult = applyParamsToControls(urlSpec);
 runGenerate("fresh");
-setStatus(
-  "Mulberry32 既定 — XorShift / LCG に切替えてプリセット比較ができます"
-);
+if (urlResult.warning) {
+  setStatus(urlResult.warning);
+} else if (!urlResult.applied.length) {
+  setStatus(
+    "Mulberry32 既定 — XorShift / LCG に切替えてプリセット比較ができます"
+  );
+}

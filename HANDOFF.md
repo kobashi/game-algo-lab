@@ -1,9 +1,11 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-08-26（ready **110** · Release **v0.12.0**）  
+最終更新: 2026-09-03（ready **110** · Release **v0.12.0**）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.12.0
+
+**2026-09-03 URL パラメータ**: `rng-seed` / `tic-tac-toe` / `coyote-time` でクエリから初期コントロールを指定できる。共通 API は `js/platform/url-params.js`。共有は「この設定のURLをコピー」（操作のたびに URL は書き換えない）。授業課題の個別配布用。残り107トピックへの展開は未着手。
 
 **2026-08-26 DS 折りたたみ**: 「データ構造のようす」の各ブロック（キュー・集合・コールスタック・優先度付きオープン・親ポインタ）をタイトルクリックでたためる。再生の再描画でも開閉を保持。
 

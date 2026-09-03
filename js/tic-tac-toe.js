@@ -24,6 +24,8 @@ import {
   mulberry32,
   randomIndex,
   mountTopicShellFromDataset,
+  applyParamsToControls,
+  mountShareLink,
 } from "./platform/index.js";
 
 const IS_BROWSER = typeof document !== "undefined";
@@ -1131,6 +1133,23 @@ function runBrowserUi() {
   }
 
   resetBoard();
+
+  // preset を個別トグル・MC パラメータより先に適用する
+  const urlSpec = {
+    preset: { el: presetEl, kind: "select" },
+    ab: { el: toggleAbEl, kind: "checkbox" },
+    memo: { el: toggleMemoEl, kind: "checkbox" },
+    sym: { el: toggleSymEl, kind: "checkbox" },
+    mcn: { el: nEl, kind: "range" },
+    mcseed: { el: seedEl, kind: "number" },
+  };
+  mountShareLink({
+    spec: urlSpec,
+    button: document.getElementById("btn-copy-url"),
+    statusEl: document.getElementById("status"),
+  });
+  applyParamsToControls(urlSpec);
+
   loadTextSample(
     "../samples/TicTacToeExample.cs",
     csharpSample,
