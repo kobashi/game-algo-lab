@@ -410,6 +410,38 @@ function mockControl(kind, value, extra = {}) {
 }
 
 {
+  const ev = mockControl("select", "Jump", {
+    options: ["Jump", "Land", "Hit", "Pickup", "UI"],
+  });
+  const freq = mockControl("range", "440", { min: "80", max: "1200", step: "10" });
+  const r = applyParamsToControls(
+    {
+      ev: { el: ev, kind: "select" },
+      freq: { el: freq, kind: "range" },
+    },
+    "?ev=Hit&freq=200"
+  );
+  assert.deepEqual(r.applied, ["ev", "freq"]);
+  assert.equal(ev.value, "Hit");
+  assert.equal(freq.value, "200");
+}
+
+{
+  const ar = mockControl("range", "40", { min: "8", max: "160", step: "1" });
+  const ax = mockControl("number", "180", { min: "0", max: "640", step: "1" });
+  const r = applyParamsToControls(
+    {
+      ax: { el: ax, kind: "number" },
+      ar: { el: ar, kind: "range" },
+    },
+    "?ax=200&ar=50"
+  );
+  assert.deepEqual(r.applied, ["ax", "ar"]);
+  assert.equal(ax.value, "200");
+  assert.equal(ar.value, "50");
+}
+
+{
   // 授業課題の例 (a=13,c=5,m=24,seed=0) は Hull–Dobell を満たし周期 24
   function lcgPeriod(seed, a, c, m) {
     let x = ((seed % m) + m) % m;

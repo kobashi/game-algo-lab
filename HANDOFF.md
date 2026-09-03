@@ -5,6 +5,8 @@
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.15.0
 
+**2026-09-03 sfx-events 調整パラメータ**: イベントごとの周波数・長さ・音量を上書きし URL（ev/freq/dur/gain）で共有。
+
 **2026-09-03 circle-collision 調整パラメータ**: 半径・箱サイズのスライダーと、位置込みの共有 URL。
 
 **2026-09-03 input-basics URL**: 長押し閾値 `longms` をクエリで指定できる。

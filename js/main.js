@@ -878,7 +878,7 @@ export const TOPICS = [
     badge: "サウンド",
     category: "サウンド",
     ready: true,
-    maturity: "oneshot",
+    maturity: "revised",
   },
   {
     id: "sfx-voice-limit",

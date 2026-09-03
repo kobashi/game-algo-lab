@@ -34,6 +34,26 @@
       </section>
       <aside class="gl-side">
         <label class="ttt-check"><input type="checkbox" id="mute" /> ミュート（ログのみ）</label>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="sfx-ev">対象イベント</label>
+          <select id="sfx-ev" class="bandit-select"></select>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="sfx-freq">周波数 <span id="sfx-freq-val">440</span> Hz</label>
+          <input type="range" id="sfx-freq" class="ttt-range" min="80" max="1200" value="440" step="10" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="sfx-dur">長さ <span id="sfx-dur-val">0.08</span> s</label>
+          <input type="range" id="sfx-dur" class="ttt-range" min="0.02" max="0.5" value="0.08" step="0.01" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="sfx-gain">音量 <span id="sfx-gain-val">0.08</span></label>
+          <input type="range" id="sfx-gain" class="ttt-range" min="0" max="0.3" value="0.08" step="0.01" />
+        </div>
+        <div class="controls-group-paint gl-params url-share-row">
+          <button type="button" id="btn-copy-url" class="btn btn-ghost">この設定のURLをコピー</button>
+        </div>
+        <p class="footer-muted">選択中のイベントを Emit すると、上の周波数・長さ・音量で鳴ります。config の値は既定です。</p>
         <p class="footer-muted">初回クリックで AudioContext が起動します。無音環境はミュートでログ確認。</p>
       </aside>
     </div>

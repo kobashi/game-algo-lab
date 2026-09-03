@@ -215,7 +215,7 @@
 
 | id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
 |----|----------|-------|--------|------|------|--------|------|----------|
-| `sfx-events` | イベントと効果音 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-events.html` | [SPEC](./sfx-events/SPEC.md) | Emit → Web Audio |
+| `sfx-events` | イベントと効果音 | ✅ | **調整** | 1 | 2026-09-03 | `algorithms/sfx-events.html` | [SPEC](./sfx-events/SPEC.md) | Emit → Web Audio。**改訂1**: 調整課題用のパラメータを追加し URL 指定に対応 |
 | `sfx-voice-limit` | 同時発音・重複制御 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-voice-limit.html` | [SPEC](./sfx-voice-limit/SPEC.md) | steal / drop |
 | `sfx-randomize` | SE のランダム化 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-randomize.html` | [SPEC](./sfx-randomize/SPEC.md) | ピッチ/音量 + シャッフルバッグ |
 | `sfx-spatial` | 距離・パン・空間 SE | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-spatial.html` | [SPEC](./sfx-spatial/SPEC.md) | 距離減衰 + ステレオパン |
@@ -264,8 +264,8 @@
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | ≈88 | 詳細は TOPIC_META（ready 110 本） |
-| 調整 (`revised`) | ≈22 | bfs〜rng-seed · coordinates · tic-tac-toe · coyote-time · game-loop ほか URL 対応 等 |
+| 一発 (`oneshot`) | ≈85 | 詳細は TOPIC_META（ready 110 本） |
+| 調整 (`revised`) | ≈25 | bfs〜rng-seed · URL 対応トピック · input-basics / circle-collision / sfx-events 等 |
 | 安定 (`stable`) | 0 | — |
 
 Fable5 起点のコード改訂 ↔ 成熟度の対応表: [MATURITY.md](./MATURITY.md) の「Fable5 レビュー → 成熟度の突き合わせ」。
