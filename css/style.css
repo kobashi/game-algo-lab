@@ -5310,3 +5310,37 @@ details.ds-block:not([open]) > .ds-title::before {
   margin: 0.45rem 0 0.15rem;
   font-size: 0.75rem;
 }
+
+/* URL 共有（授業課題リンク） */
+.url-share-row {
+  margin-top: 0.15rem;
+  width: 100%;
+}
+
+.url-share-row .btn {
+  width: 100%;
+  max-width: 100%;
+  min-width: 8rem;
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  white-space: normal;
+  text-align: center;
+}
+
+.url-share-fallback {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 0.4rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.75rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.url-share-fallback[hidden] {
+  display: none;
+}

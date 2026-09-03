@@ -41,6 +41,7 @@ def check_platform_files() -> None:
         "js/platform/pathfinding-grid.js",
         "js/platform/topic-shell.js",
         "js/platform/maturity.js",
+        "js/platform/url-params.js",
         "js/platform/text.js",
         "js/map-format.js",
         "js/ds-viz.js",
@@ -72,6 +73,9 @@ def check_exports() -> None:
         "TOPIC_MATURITY",
         "formatMaturityDetail",
         "parsePaintMode",
+        "applyParamsToControls",
+        "buildShareUrl",
+        "mountShareLink",
     ]
     for name in needed:
         if name in text:

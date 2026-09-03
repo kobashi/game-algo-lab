@@ -15,6 +15,7 @@
 | `pathfinding-grid.js` | グリッド幾何・下地描画（`drawPathfindingGrid`） |
 | `topic-shell.js` | 共通ヘッダー／フッター（`mountTopicShellFromDataset`） |
 | `maturity.js` | 成熟度・修正回数・更新日（`TOPIC_META`）・バッジ |
+| `url-params.js` | URL クエリで初期コントロールを指定 / 共有 URL コピー（`applyParamsToControls` / `mountShareLink`） |
 | `index.js` | 上記の一括 export |
 
 経路探索の再生待ち時間はスライダーが大きいほど速いため  
@@ -109,3 +110,25 @@ mountTopicShellFromDataset(); // ヘッダー + フッター
 ```
 
 経路探索・ゲーム木・説明特化 UI の違いは `docs/PLATFORM.md` を参照。
+
+URL クエリで初期値を指定する（授業課題の個別配布。先行は rng-seed / tic-tac-toe / coyote-time）:
+
+```js
+import { applyParamsToControls, mountShareLink } from "./platform/index.js";
+
+const spec = {
+  preset: { el: els.preset, kind: "select" }, // 先に適用（個別パラメータより前）
+  a: { el: els.lcgA, kind: "number" },
+};
+
+// 呼び出した時点の値を既定として覚えるので、apply より先に呼ぶ
+mountShareLink({
+  spec,
+  button: document.getElementById("btn-copy-url"),
+});
+applyParamsToControls(spec);
+```
+
+- `kind` は `"number" | "range" | "checkbox" | "select"`。範囲外・不明値は clamp せず却下し、`#status` に日本語警告を出す。
+- 共有 URL はコピーボタン押下時だけ生成する（`history.replaceState` しない）。既定値と同じキーは付けない。
+- HTML のボタン id は `btn-copy-url`。

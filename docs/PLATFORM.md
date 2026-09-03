@@ -1,6 +1,6 @@
 # 共通基盤仕様（教材プラットフォーム）
 
-最終更新: 2026-08-22
+最終更新: 2026-09-03
 
 全トピックで揃える **見た目・操作・ファイル配置・用語** と、  
 **共有コード（`js/platform`）** の境界。  
@@ -73,8 +73,30 @@ docs/templates/            # SPEC / スキャフォールド
 | `TOPIC_MATURITY` / `createMaturityBadge` | 修正状況（成熟度）表示 |
 | `drawScorePair` | 探索マスの大/小ラベル |
 | `escapeHtml` / `escapeXml` | エスケープ |
+| `applyParamsToControls` / `buildShareUrl` / `mountShareLink` | URL クエリで初期コントロールを指定し、共有 URL をコピーする（`url-params.js`） |
 
 詳細: [js/platform/README.md](../js/platform/README.md)
+
+### URL パラメータ
+
+授業課題で学生ごとに初期値を配るための任意機能。**自動では URL を書き換えない**（コピーボタン押下時だけ生成）。
+
+| 項目 | 方針 |
+|------|------|
+| モジュール | `js/platform/url-params.js` |
+| 適用対象（先行） | `rng-seed` / `tic-tac-toe` / `coyote-time` のみ |
+| `kind` | `"number"` / `"range"` / `"checkbox"` / `"select"` |
+| キーが無い | ページの既定値を保つ |
+| 不正値 | **clamp しない**。却下して `#status` に日本語警告 |
+| 適用順 | spec のキー順。preset 系 select は個別パラメータより前に並べる |
+| 共有 | `#btn-copy-url`（「この設定のURLをコピー」）。既定値と同じキーは付けない |
+| checkbox のオフ | 既定がオンでも `?coyote=0` は残す（既定と異なるため） |
+
+```
+http://localhost:8080/algorithms/rng-seed.html?algo=lcg&a=13&c=5&m=24&seed=0&n=64
+```
+
+クリップボードが使えない環境では、読み取り専用の入力欄に URL を出して選択できるようにする。
 
 ### シェル HTML 規約
 
@@ -254,6 +276,7 @@ python3 scripts/smoke-platform.py
 
 | 日付 | 内容 |
 |------|------|
+| 2026-09-03 | `url-params.js` を新設。rng-seed / tic-tac-toe / coyote-time で URL クエリから初期コントロールを指定（授業課題の個別配布） |
 | 2026-08-22 | 探索再生で Map がスクロールアウトしないよう、DS は新しい要素を上へ・疑似コードはパネル内スクロールのみ |
 | 2026-07-17 | 初版（経路探索実績を一般化。複数ゴールを明記） |
 | 2026-07-17 | `js/platform` 分離、層の責務、スキャフォールド、移行状況を追加 |
