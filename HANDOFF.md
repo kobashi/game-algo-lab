@@ -5,6 +5,8 @@
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.15.0
 
+**2026-09-03 input-basics URL**: 長押し閾値 `longms` をクエリで指定できる。
+
 **2026-09-03 URL step 検査**: `range`/`number` で `step` に合わない値（例 `vx=3`）を却下して警告する。コピーボタンの往復は従来どおり。
 
 **2026-09-03 URL パラメータ拡張 · Release `v0.15.0`**: `game-loop` / `velocity-motion` / `accel-gravity` / `gfx-ui-canvas` / `gfx-camera` にもクエリ初期値と「この設定のURLをコピー」を追加（既存 `url-params.js`）。`game-loop` の再生間隔は含めない。ノート: `RELEASE_NOTES_v0.15.0.md`。

@@ -12,6 +12,8 @@ import {
   createResultPanel,
   loadTextSample,
   mountTopicShellFromDataset,
+  applyParamsToControls,
+  mountShareLink,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -421,6 +423,22 @@ loadTextSample(
 
 syncLabels();
 resetAll();
+
+const urlSpec = {
+  longms: { el: longMsEl, kind: "range" },
+};
+mountShareLink({
+  spec: urlSpec,
+  button: document.getElementById("btn-copy-url"),
+  statusEl: document.getElementById("status"),
+});
+const urlResult = applyParamsToControls(urlSpec);
+syncLabels();
+
 // auto-start polling so demo is interactive after focus
 startLoop();
-setStatus("ポーリング中 — キャンバスをクリックしてからキー操作");
+if (urlResult.warning) {
+  setStatus(urlResult.warning);
+} else {
+  setStatus("ポーリング中 — キャンバスをクリックしてからキー操作");
+}

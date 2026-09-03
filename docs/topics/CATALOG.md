@@ -74,7 +74,7 @@
 |----|----------|-------|--------|------|------|--------|------|----------|
 | `game-loop` | ゲームループ | ✅ | **調整** | 1 | 2026-09-03 | `algorithms/game-loop.html` | [SPEC](./game-loop/SPEC.md) | 可変/固定 timestep。跳ねるボール。人工遅延・MAX_STEPS でスパイラル防止を観察。説明特化 UI。**改訂1**: URL クエリで初期パラメータ指定に対応（授業課題の設定提出用） |
 | `time-management` | 時間管理 | ✅ | **一発** | 0 | 2026-07-22 | `algorithms/time-management.html` | [SPEC](./time-management/SPEC.md) | 壁時計 vs ゲーム内時間。time scale・ポーズ。往復キャラは game time 駆動 |
-| `input-basics` | 入力の基礎 | ✅ | **一発** | 0 | 2026-07-22 | `algorithms/input-basics.html` | [SPEC](./input-basics/SPEC.md) | held / down / up。Jump=edge、Fire=held 連射対比、Charge=長押し |
+| `input-basics` | 入力の基礎 | ✅ | **調整** | 1 | 2026-09-03 | `algorithms/input-basics.html` | [SPEC](./input-basics/SPEC.md) | held / down / up。Jump=edge、Fire=held 連射対比、Charge=長押し。**改訂1**: 調整課題用のパラメータを追加し URL 指定に対応 |
 | `coordinates` | 座標変換 | ✅ | **調整** | 1 | 2026-07-28 | `algorithms/coordinates.html` | [SPEC](./coordinates/SPEC.md) | gfx-coordinates 統合・CG 導線（カメラ/UI/Mesh） |
 | `rng-seed` | 乱数とシード | ✅ | **調整** | 2 | 2026-09-03 | `algorithms/rng-seed.html` | [SPEC](./rng-seed/SPEC.md) | Mulberry32/XorShift/LCG 切替。LCG は a,c,m プリセット（質の悪い例〜実用寄り）と周期計測・ヒストグラム。**改訂2**: URL クエリで初期パラメータ指定に対応（授業課題の個別配布用） |
 

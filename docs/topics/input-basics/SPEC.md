@@ -7,9 +7,9 @@
 | UI 型 | explain |
 | 著者 | Grok4.5 |
 | 状態 | implemented |
-| **成熟度** | `oneshot` |
+| **成熟度** | `revised` |
 | 作成日 | 2026-07-22 |
-| 最終改訂 | 2026-07-22 |
+| 最終改訂 | 2026-09-03 |
 | 依存 | `game-loop`（毎フレーム更新の前提） |
 | 正本 | §4 基礎実行モデル / HCI への入口 |
 
@@ -58,6 +58,8 @@ longPress = down? false : (held && holdTime >= threshold && !longFired)
 | 1フレーム | 現在のキー状態で 1 tick |
 | リセット | カウンタ・状態クリア |
 | キー | Space / Z / 矢印（フォーカス時） |
+| 長押し閾値 | Charge が発火する holdTime（100〜1500ms、step 50） |
+| URL | `longms` → `#long-ms`。コピーボタンで現在値を共有 |
 | 閾値 | 長押し ms |
 
 ---

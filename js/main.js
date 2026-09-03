@@ -163,7 +163,7 @@ export const TOPICS = [
     badge: "基礎実行",
     category: "基礎実行モデル",
     ready: true,
-    maturity: "oneshot",
+    maturity: "revised",
   },
   {
     id: "coordinates",
