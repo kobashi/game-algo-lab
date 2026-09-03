@@ -26,6 +26,7 @@
 
 ```
 algorithms/<id>.html       # デモページ
+courses/intro.html         # 入門コース入口（デモではない導線）
 js/<id>.js                 # トピック固有ロジックのみ
 js/platform/               # ★ 共通基盤（dom / playback / rng / tree-layout …）
 js/ds-viz.js               # データ構造パネル共通
@@ -108,11 +109,13 @@ http://localhost:8080/algorithms/rng-seed.html?algo=lcg&a=13&c=5&m=24&seed=0&n=6
 
 | 属性 | 意味 |
 |------|------|
-| `data-nav` | `pathfinding` \| `game-tree` \| `explain` \| `default` |
+| `data-nav` | `pathfinding` \| `game-tree` \| `explain` \| `course` \| ほかカテゴリ \| `default` |
 | `data-active` | ナビ内の現在 id（フッター関連リンクにも使用） |
 | `data-note` | フッター注記（省略時はナビ系列の既定文） |
 
 各デモ JS の先頭で `mountTopicShellFromDataset()` を呼ぶ。
+
+入門の学び順は `courses/intro.html`（`data-nav="course"`）。カード文言は `js/main.js` の `TOPICS` を参照し、デモ本体は変更しない。
 
 ### 移行状況（段階的）
 
@@ -276,6 +279,7 @@ python3 scripts/smoke-platform.py
 
 | 日付 | 内容 |
 |------|------|
+| 2026-09-03 | 入門コース入口 `courses/intro.html`。`NAV_GROUPS.course` を追加 |
 | 2026-09-03 | `url-params.js` を新設。rng-seed / tic-tac-toe / coyote-time で URL クエリから初期コントロールを指定（授業課題の個別配布） |
 | 2026-08-22 | 探索再生で Map がスクロールアウトしないよう、DS は新しい要素を上へ・疑似コードはパネル内スクロールのみ |
 | 2026-07-17 | 初版（経路探索実績を一般化。複数ゴールを明記） |

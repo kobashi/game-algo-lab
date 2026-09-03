@@ -169,6 +169,12 @@ export const NAV_GROUPS = {
     { id: "home", label: "ホーム", href: "../index.html" },
     { id: "topics", label: "一覧", href: "../index.html#topics" },
   ],
+  /** `courses/` 配下のコース入口。href は courses/ からの相対 */
+  course: [
+    { id: "home", label: "ホーム", href: "../index.html" },
+    { id: "intro", label: "入門コース", href: "intro.html" },
+    { id: "topics", label: "全トピック", href: "../index.html#topics" },
+  ],
 };
 
 /**
@@ -176,6 +182,7 @@ export const NAV_GROUPS = {
  * @type {Record<string, { href: string, label: string }[]>}
  */
 export const FOOTER_RELATED = {
+  intro: [{ href: "../index.html#topics", label: "全トピック（110本）" }],
   bfs: [{ href: "dfs.html", label: "DFS と比較" }],
   dfs: [
     { href: "bfs.html", label: "BFS と比較" },
@@ -623,6 +630,7 @@ export const FOOTER_NOTES = {
   steering: "ゲーム AI · ステアリング",
   fundamentals: "基礎実行モデル · ループ・時間・入力・座標・乱数",
   procgen: "プロシージャル · 生成と確率",
+  course: "入門コース · ゲーム制作でまず必要な13トピック",
   default: "",
 };
 

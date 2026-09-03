@@ -13,7 +13,7 @@
 | `tree-layout.js` | ゲーム木の水平レイアウト。存在する子節点だけを置く（欠けた `children` id には枝を引かない）。`applySvgSize` は既定で親幅にフィット（横スクロール抑制） |
 | `grid-paint.js` | 経路探索マップの塗り（`bindMapPaint` 等） |
 | `pathfinding-grid.js` | グリッド幾何・下地描画（`drawPathfindingGrid`） |
-| `topic-shell.js` | 共通ヘッダー／フッター（`mountTopicShellFromDataset`） |
+| `topic-shell.js` | 共通ヘッダー／フッター（`mountTopicShellFromDataset`）。`NAV_GROUPS.course` は `courses/` 入口用 |
 | `maturity.js` | 成熟度・修正回数・更新日（`TOPIC_META`）・バッジ |
 | `url-params.js` | URL クエリで初期コントロールを指定 / 共有 URL コピー（`applyParamsToControls` / `mountShareLink`） |
 | `index.js` | 上記の一括 export |
