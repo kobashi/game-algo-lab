@@ -129,7 +129,7 @@
 
 | id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
 |----|----------|-------|--------|------|------|--------|------|----------|
-| `fsm` | ステートマシン | ✅ | **一発** | 0 | 2026-07-17 | `algorithms/fsm.html` | [SPEC](./fsm/SPEC.md) | 状態図・イベント・遷移表の初版 |
+| `fsm` | ステートマシン | ✅ | **調整** | 1 | 2026-09-03 | `algorithms/fsm.html` | [SPEC](./fsm/SPEC.md) | 状態図・イベント・遷移表の初版。**改訂1**: 調整課題用のパラメータを追加し URL 指定に対応 |
 | `dirty-flag` | Dirty Flag パターン | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/dirty-flag.html` | [SPEC](./dirty-flag/SPEC.md) | 変換キャッシュ · dirty 連鎖 |
 | `event-system` | イベントシステム | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/event-system.html` | [SPEC](./event-system/SPEC.md) | On/Off/Emit の pub/sub。購読ログ可視化 |
 | `object-pool` | オブジェクトプール | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/object-pool.html` | [SPEC](./object-pool/SPEC.md) | 弾の Acquire/Release。created/reused 比較 |

@@ -79,6 +79,28 @@
             </div>
           </div>
 
+          <div class="controls-group-paint gl-params fsm-params">
+            <label class="controls-label" for="fsm-initial">初期状態</label>
+            <select id="fsm-initial" class="fsm-param-select"></select>
+          </div>
+          <div class="controls-group-paint gl-params fsm-params">
+            <span class="controls-label">遷移の上書き（1本）</span>
+            <label class="controls-label" for="fsm-from">from</label>
+            <select id="fsm-from" class="fsm-param-select"></select>
+            <label class="controls-label" for="fsm-ev">event</label>
+            <select id="fsm-ev" class="fsm-param-select"></select>
+            <label class="controls-label" for="fsm-to">to</label>
+            <select id="fsm-to" class="fsm-param-select"></select>
+          </div>
+          <div class="controls-group-paint gl-params fsm-params">
+            <label class="controls-label" for="fsm-script">デモのイベント列（カンマ区切り）</label>
+            <input type="text" id="fsm-script" class="fsm-param-input" autocomplete="off" spellcheck="false" />
+          </div>
+          <div class="controls-group-paint gl-params url-share-row">
+            <button type="button" id="btn-copy-url" class="btn btn-ghost">この設定のURLをコピー</button>
+          </div>
+          <p class="footer-muted">遷移は1本だけ上書きします。初期状態から届かない状態は図で灰色です。</p>
+
           <div class="fsm-events" role="group" aria-label="イベント">
             <span class="controls-label">イベントを送る</span>
             <div id="event-buttons" class="fsm-event-row"></div>

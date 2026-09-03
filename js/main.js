@@ -1197,7 +1197,7 @@ export const TOPICS = [
     badge: "設計パターン",
     category: "設計パターン",
     ready: true,
-    maturity: "oneshot",
+    maturity: "revised",
   },
   {
     id: "dirty-flag",

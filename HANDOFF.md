@@ -5,6 +5,8 @@
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.16.0
 
+**2026-09-03 fsm 調整パラメータ**: 初期状態・遷移1本の上書き・デモ脚本。到達不能は灰色。URL は `initial` / `from` / `ev` / `to` / `script`。
+
 **2026-09-03 minimax 調整パラメータ**: 葉の評価値（カンマ区切り）と深さ制限（打ち切りは 0）。URL は `leaves` / `depth`。
 
 **2026-09-03 Release `v0.16.0`**: URL の step 検査 + `input-basics` / `circle-collision` / `sfx-events` の調整パラメータ。ノート: `RELEASE_NOTES_v0.16.0.md`。

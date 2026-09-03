@@ -474,7 +474,7 @@ export const TOPIC_META = {
   },
   bandit: { maturity: "revised", revisions: 1, updated: "2026-07-19" },
   collision: { maturity: "revised", revisions: 2, updated: "2026-07-17" },
-  fsm: { maturity: "oneshot", revisions: 0, updated: "2026-07-17" },
+  fsm: { maturity: "revised", revisions: 1, updated: "2026-09-03" },
   "tic-tac-toe": { maturity: "revised", revisions: 1, updated: "2026-09-03" },
   mcts: { maturity: "oneshot", revisions: 0, updated: "2026-07-21" },
   nim: { maturity: "oneshot", revisions: 0, updated: "2026-07-19" },

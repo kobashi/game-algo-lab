@@ -452,6 +452,40 @@ function mockControl(kind, value, extra = {}) {
 }
 
 {
+  const initial = mockControl("select", "Idle", {
+    options: ["Idle", "Walk", "Jump", "Attack", "Hurt", "Dead"],
+  });
+  const from = mockControl("select", "Idle", {
+    options: ["Idle", "Walk", "Jump", "Attack", "Hurt", "Dead"],
+  });
+  const ev = mockControl("select", "Move", {
+    options: ["Move", "Stop", "Jump", "Land", "Attack", "AttackEnd", "Hit", "Recover", "Kill"],
+  });
+  const to = mockControl("select", "Walk", {
+    options: ["Idle", "Walk", "Jump", "Attack", "Hurt", "Dead"],
+  });
+  const script = mockControl(
+    "text",
+    "Move,Jump,Land,Attack,AttackEnd,Move,Hit,Recover,Attack,Kill"
+  );
+  const spec = {
+    initial: { el: initial, kind: "select" },
+    from: { el: from, kind: "select" },
+    ev: { el: ev, kind: "select" },
+    to: { el: to, kind: "select" },
+    script: { el: script, kind: "text" },
+  };
+  const r = applyParamsToControls(
+    spec,
+    "?initial=Walk&from=Idle&ev=Move&to=Dead&script=Move,Hit"
+  );
+  assert.deepEqual(r.applied, ["initial", "from", "ev", "to", "script"]);
+  assert.equal(initial.value, "Walk");
+  assert.equal(to.value, "Dead");
+  assert.equal(script.value, "Move,Hit");
+}
+
+{
   const ar = mockControl("range", "40", { min: "8", max: "160", step: "1" });
   const ax = mockControl("number", "180", { min: "0", max: "640", step: "1" });
   const r = applyParamsToControls(

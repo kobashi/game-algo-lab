@@ -9,6 +9,8 @@ import {
   createPlayback,
   loadTextSample,
   mountTopicShellFromDataset,
+  applyParamsToControls,
+  mountShareLink,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -25,13 +27,40 @@ const btnPlay = document.getElementById("btn-play");
 const btnStep = document.getElementById("btn-step");
 const btnReset = document.getElementById("btn-reset");
 const speedEl = document.getElementById("speed");
+const initialEl = /** @type {HTMLSelectElement | null} */ (
+  document.getElementById("fsm-initial")
+);
+const fromEl = /** @type {HTMLSelectElement | null} */ (
+  document.getElementById("fsm-from")
+);
+const evEl = /** @type {HTMLSelectElement | null} */ (
+  document.getElementById("fsm-ev")
+);
+const toEl = /** @type {HTMLSelectElement | null} */ (
+  document.getElementById("fsm-to")
+);
+const scriptEl = /** @type {HTMLInputElement | null} */ (
+  document.getElementById("fsm-script")
+);
 const csharpSample = document.getElementById("csharp-sample");
 
 const setStatus = createStatus(document.getElementById("status"));
 
 const R = 36;
 
-let current = FSM_CONFIG.initial;
+const firstTransKey = Object.keys(FSM_CONFIG.transitions)[0];
+const [DEFAULT_FROM, DEFAULT_EV] = firstTransKey.split("|");
+const DEFAULT_TO = FSM_CONFIG.transitions[firstTransKey];
+const DEFAULT_SCRIPT = FSM_CONFIG.demoScript.join(",");
+const EVENT_IDS = new Set(FSM_CONFIG.events.map((e) => e.id));
+
+/** @type {Record<string, string>} */
+let transitions = { ...FSM_CONFIG.transitions };
+let initial = FSM_CONFIG.initial;
+/** @type {string[]} */
+let demoScript = [...FSM_CONFIG.demoScript];
+
+let current = initial;
 /** @type {string[]} */
 let history = [current];
 /** 最後に発火したイベント / 遷移結果 */
@@ -46,8 +75,82 @@ function stateIds() {
   return Object.keys(FSM_CONFIG.states);
 }
 
+function fillSelect(el, ids, selected) {
+  if (!el) return;
+  el.innerHTML = ids
+    .map((id) => `<option value="${id}">${id}</option>`)
+    .join("");
+  el.value = selected;
+}
+
+/**
+ * @param {string} raw
+ * @returns {{ ok: true, events: string[] } | { ok: false, reason: "empty"|"parse" }}
+ */
+function parseScript(raw) {
+  const tokens = String(raw).split(",");
+  /** @type {string[]} */
+  const events = [];
+  if (tokens.length === 0) return { ok: false, reason: "empty" };
+  for (const t of tokens) {
+    const id = t.trim();
+    if (id === "") return { ok: false, reason: "empty" };
+    if (!EVENT_IDS.has(id)) return { ok: false, reason: "parse" };
+    events.push(id);
+  }
+  return { ok: true, events };
+}
+
+function overrideKey() {
+  return transitionKey(fromEl?.value ?? "", evEl?.value ?? "");
+}
+
+function applyOverrideAndScript() {
+  initial = initialEl?.value || FSM_CONFIG.initial;
+  if (!FSM_CONFIG.states[initial]) initial = FSM_CONFIG.initial;
+  transitions = { ...FSM_CONFIG.transitions };
+  const from = fromEl?.value ?? "";
+  const ev = evEl?.value ?? "";
+  const to = toEl?.value ?? "";
+  if (from && ev && to && FSM_CONFIG.states[from] && EVENT_IDS.has(ev) && FSM_CONFIG.states[to]) {
+    transitions[transitionKey(from, ev)] = to;
+  }
+  const parsed = parseScript(scriptEl?.value ?? "");
+  if (!parsed.ok) {
+    if (scriptEl) scriptEl.value = DEFAULT_SCRIPT;
+    demoScript = [...FSM_CONFIG.demoScript];
+    if (parsed.reason === "empty") {
+      return "⚠ デモのイベント列が空です。既定の脚本に戻しました。";
+    }
+    return "⚠ デモのイベント列に未知のイベントがあります。既定の脚本に戻しました。";
+  }
+  demoScript = parsed.events;
+  return null;
+}
+
+function reachableFrom(start) {
+  const seen = new Set([start]);
+  const q = [start];
+  while (q.length) {
+    const s = q.shift();
+    for (const ev of FSM_CONFIG.events) {
+      const nxt = transitions[transitionKey(s, ev.id)];
+      if (nxt && FSM_CONFIG.states[nxt] && !seen.has(nxt)) {
+        seen.add(nxt);
+        q.push(nxt);
+      }
+    }
+  }
+  return seen;
+}
+
+function unreachableIds() {
+  const reach = reachableFrom(initial);
+  return stateIds().filter((id) => !reach.has(id));
+}
+
 function nextState(from, event) {
-  return FSM_CONFIG.transitions[transitionKey(from, event)] ?? null;
+  return transitions[transitionKey(from, event)] ?? null;
 }
 
 function validEvents(from) {
@@ -58,7 +161,7 @@ function validEvents(from) {
 
 function reset() {
   stopAuto();
-  current = FSM_CONFIG.initial;
+  current = initial;
   history = [current];
   lastEvent = null;
   lastFrom = null;
@@ -69,7 +172,11 @@ function reset() {
     storyEl.textContent =
       "現在状態に応じて有効なイベントだけが遷移します。無効な入力は無視されます。";
   }
-  setStatus(`準備完了 — 初期状態 ${current}`);
+  const dead = unreachableIds();
+  const extra = dead.length
+    ? `。到達できない状態: ${dead.join(", ")}`
+    : "";
+  setStatus(`準備完了 — 初期状態 ${current}${extra}`);
   renderAll();
 }
 
@@ -133,7 +240,8 @@ function drawDiagram() {
   if (!svg) return;
   const layout = FSM_CONFIG.layout;
   const edges = [];
-  const edgeKeys = Object.entries(FSM_CONFIG.transitions);
+  const edgeKeys = Object.entries(transitions);
+  const reach = reachableFrom(initial);
 
   // 同一 from-to のイベントを束ねる
   /** @type {Map<string, string[]>} */
@@ -169,8 +277,9 @@ function drawDiagram() {
       const p = layout[id];
       const isCur = id === current;
       const isLast = lastAccepted && id === lastTo;
+      const unreachable = !reach.has(id);
       return `
-        <g class="fsm-node${isCur ? " is-current" : ""}${isLast ? " is-flash" : ""}" data-state="${id}">
+        <g class="fsm-node${isCur ? " is-current" : ""}${isLast ? " is-flash" : ""}${unreachable ? " is-unreachable" : ""}" data-state="${id}">
           <circle cx="${p.x}" cy="${p.y}" r="${R}" fill="${s.color}33" stroke="${s.color}" />
           <text class="fsm-node-label" x="${p.x}" y="${p.y + 4}" text-anchor="middle">${s.label}</text>
         </g>`;
@@ -236,6 +345,8 @@ function renderTable() {
   if (!tableEl) return;
   const events = FSM_CONFIG.events;
   const states = stateIds();
+  const ovKey = overrideKey();
+  const reach = reachableFrom(initial);
   let head =
     "<thead><tr><th>状態 \\ イベント</th>" +
     events.map((e) => `<th>${e.label}</th>`).join("") +
@@ -243,12 +354,14 @@ function renderTable() {
   let body = "<tbody>";
   for (const st of states) {
     const isRow = st === current;
-    body += `<tr class="${isRow ? "is-current-row" : ""}"><th scope="row">${st}</th>`;
+    const unreach = !reach.has(st);
+    body += `<tr class="${isRow ? "is-current-row" : ""}${unreach ? " is-unreachable-row" : ""}"><th scope="row">${st}</th>`;
     for (const ev of events) {
       const to = nextState(st, ev.id);
       const active =
         lastAccepted && lastFrom === st && lastEvent === ev.id;
-      body += `<td class="${to ? "has-trans" : "no-trans"}${active ? " is-active-cell" : ""}">${
+      const isOv = transitionKey(st, ev.id) === ovKey;
+      body += `<td class="${to ? "has-trans" : "no-trans"}${active ? " is-active-cell" : ""}${isOv ? " is-override-cell" : ""}">${
         to ?? "—"
       }</td>`;
     }
@@ -268,7 +381,7 @@ function renderAll() {
 
 // ----- 自動デモ -----
 function stepDemo() {
-  const script = FSM_CONFIG.demoScript;
+  const script = demoScript;
   if (demoIndex >= script.length) {
     setStatus("自動デモ終了 — リセットで最初から");
     if (storyEl) {
@@ -308,22 +421,65 @@ btnPlay?.addEventListener("click", () => {
     setStatus("自動デモを停止");
     return;
   }
-  if (demoIndex >= FSM_CONFIG.demoScript.length) {
+  if (demoIndex >= demoScript.length) {
     reset();
   }
   playback.start();
 });
 btnStep?.addEventListener("click", () => {
   stopAuto();
-  if (demoIndex >= FSM_CONFIG.demoScript.length) {
+  if (demoIndex >= demoScript.length) {
     setStatus("デモ脚本は終了済み。下のイベントボタンで手動入力してください");
     return;
   }
   stepDemo();
 });
-btnReset?.addEventListener("click", reset);
+btnReset?.addEventListener("click", () => {
+  reset();
+  setStatus(`実行をリセットしました（初期状態 ${initial}、上書きと脚本は維持）`);
+});
 
+fillSelect(initialEl, stateIds(), FSM_CONFIG.initial);
+fillSelect(fromEl, stateIds(), DEFAULT_FROM);
+fillSelect(evEl, FSM_CONFIG.events.map((e) => e.id), DEFAULT_EV);
+fillSelect(toEl, stateIds(), DEFAULT_TO);
+if (scriptEl) scriptEl.value = DEFAULT_SCRIPT;
+
+const urlSpec = {
+  initial: { el: initialEl, kind: "select" },
+  from: { el: fromEl, kind: "select" },
+  ev: { el: evEl, kind: "select" },
+  to: { el: toEl, kind: "select" },
+  script: { el: scriptEl, kind: "text" },
+};
+mountShareLink({
+  spec: urlSpec,
+  button: document.getElementById("btn-copy-url"),
+  statusEl: document.getElementById("status"),
+});
+const urlResult = applyParamsToControls(urlSpec);
+const scriptWarning = applyOverrideAndScript();
 reset();
+if (urlResult.warning && scriptWarning) {
+  setStatus(`${urlResult.warning} ${scriptWarning}`);
+} else if (urlResult.warning) {
+  setStatus(urlResult.warning);
+} else if (scriptWarning) {
+  setStatus(scriptWarning);
+}
+
+function onParamChange() {
+  const warning = applyOverrideAndScript();
+  reset();
+  if (warning) setStatus(warning);
+}
+
+initialEl?.addEventListener("change", onParamChange);
+fromEl?.addEventListener("change", onParamChange);
+evEl?.addEventListener("change", onParamChange);
+toEl?.addEventListener("change", onParamChange);
+scriptEl?.addEventListener("change", onParamChange);
+
 loadTextSample(
   "../samples/FsmExample.cs",
   csharpSample,

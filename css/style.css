@@ -3197,6 +3197,16 @@ details.ds-block:not([open]) > .ds-title::before {
   filter: drop-shadow(0 0 8px rgba(242, 204, 143, 0.45));
 }
 
+.fsm-node.is-unreachable circle {
+  fill: #2a3340 !important;
+  stroke: #5a6d85 !important;
+  opacity: 0.55;
+}
+
+.fsm-node.is-unreachable .fsm-node-label {
+  fill: #8a9bb0;
+}
+
 .fsm-node-label {
   fill: var(--text);
   font-size: 12px;
@@ -5400,4 +5410,38 @@ details.ds-block:not([open]) > .ds-title::before {
 .mm-leaves-input {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.75rem;
+}
+
+.fsm-params {
+  width: 100%;
+  margin-top: 0.4rem;
+}
+
+.fsm-param-select,
+.fsm-param-input {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 0.3rem 0.45rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.8rem;
+}
+
+.fsm-param-input {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.75rem;
+}
+
+.fsm-table td.is-override-cell {
+  outline: 2px solid #f2cc8f;
+  outline-offset: -2px;
+}
+
+.fsm-table tr.is-unreachable-row th,
+.fsm-table tr.is-unreachable-row td {
+  opacity: 0.45;
 }
