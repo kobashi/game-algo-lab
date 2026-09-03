@@ -33,6 +33,7 @@ GitHub Pages での公開を前提に、ビルド不要の静的サイト（HTML
 - 物理・空間分割・ステアリング・ECS・セーブ/リプレイ
 - サウンド（SFX〜レイヤー BGM）、CG（スプライト〜ポスト/LOD/UI/Mesh）、通信（遅延〜DB/チート検証）
 - トピックをカテゴリ単位で増やし、共通 UI で統一感を保つ
+- [入門コース](https://kobashi.github.io/game-algo-lab/courses/intro.html)（13本を学ぶ順に）から始められる
 
 ## ローカルで見る
 

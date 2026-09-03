@@ -10,7 +10,8 @@ Game Algo Lab の **方針・仕様・分業** はここに集約する。
 | リポジトリ | https://github.com/kobashi/game-algo-lab |
 | 最新 Release（試作） | https://github.com/kobashi/game-algo-lab/releases/tag/v0.13.0 |
 
-利用者向けの起動方法・トピック一覧の概要はリポジトリ直下の [README.md](../README.md)。
+利用者向けの起動方法・トピック一覧の概要はリポジトリ直下の [README.md](../README.md)。  
+初学者向けの学び順は [入門コース](../courses/intro.html)（`courses/intro.html`）。
 
 | 文書 | 内容 |
 |------|------|

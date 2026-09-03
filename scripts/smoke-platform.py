@@ -123,6 +123,73 @@ def check_algorithms() -> None:
             ok(f"{name}.js shell")
 
 
+def check_intro_course() -> None:
+    print("入門コース")
+    html = ROOT / "courses" / "intro.html"
+    js = ROOT / "js" / "courses-intro.js"
+    if html.is_file():
+        t = html.read_text(encoding="utf-8")
+        if 'id="site-header"' not in t or 'id="site-footer"' not in t:
+            fail("courses/intro.html: missing #site-header or #site-footer")
+        elif 'data-nav="course"' not in t:
+            fail("courses/intro.html: missing data-nav=course")
+        else:
+            ok("courses/intro.html shell")
+    else:
+        fail("missing courses/intro.html")
+
+    if not js.is_file():
+        fail("missing js/courses-intro.js")
+        return
+    jt = js.read_text(encoding="utf-8")
+    if "mountTopicShellFromDataset" not in jt:
+        fail("courses-intro.js: no mountTopicShellFromDataset")
+    else:
+        ok("courses-intro.js shell")
+    if "createCard" not in jt or "TOPICS" not in jt:
+        fail("courses-intro.js: does not reuse TOPICS/createCard")
+    else:
+        ok("courses-intro.js uses TOPICS")
+
+    needed = [
+        "game-loop",
+        "input-basics",
+        "velocity-motion",
+        "accel-gravity",
+        "circle-collision",
+        "coyote-time",
+        "gfx-camera",
+        "gfx-ui-canvas",
+        "sfx-events",
+        "fsm",
+        "rng-seed",
+        "minimax",
+        "tic-tac-toe",
+    ]
+    main = (ROOT / "js" / "main.js").read_text(encoding="utf-8")
+    for tid in needed:
+        if f'id: "{tid}"' not in main:
+            fail(f"intro course id missing from TOPICS: {tid}")
+        elif f'ids: ["{tid}"' not in jt and f'"{tid}"' not in jt:
+            fail(f"courses-intro.js missing id {tid}")
+        else:
+            ok(f"intro {tid}")
+
+    shell = (ROOT / "js" / "platform" / "topic-shell.js").read_text(
+        encoding="utf-8"
+    )
+    if "course:" not in shell and "course :" not in shell:
+        fail("NAV_GROUPS missing course")
+    else:
+        ok("NAV_GROUPS.course")
+
+    index = (ROOT / "index.html").read_text(encoding="utf-8")
+    if "courses/intro.html" not in index:
+        fail("index.html missing intro course link")
+    else:
+        ok("index.html → courses/intro.html")
+
+
 def check_main_topics() -> None:
     print("js/main.js TOPICS")
     t = (ROOT / "js/main.js").read_text(encoding="utf-8")
@@ -276,6 +343,8 @@ def main() -> int:
     check_exports()
     print()
     check_algorithms()
+    print()
+    check_intro_course()
     print()
     check_main_topics()
     print()

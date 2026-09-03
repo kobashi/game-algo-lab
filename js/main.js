@@ -48,7 +48,7 @@ const CATEGORY_ORDER = [
 ];
 
 /** @type {Topic[]} */
-const TOPICS = [
+export const TOPICS = [
   {
     id: "bfs",
     title: "幅優先探索 (BFS)",
@@ -1259,7 +1259,7 @@ const TOPICS = [
 /**
  * @param {Topic} topic
  */
-function createCard(topic) {
+export function createCard(topic) {
   const meta =
     resolveTopicMeta(topic.id) ||
     TOPIC_META[topic.id] || {

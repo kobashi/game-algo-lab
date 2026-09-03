@@ -70,7 +70,9 @@ assert.equal(map.goal.x, map.goals[0].x);
 
 // --- shell tables ---
 assert.ok(NAV_GROUPS.pathfinding.length >= 5);
+assert.ok(NAV_GROUPS.course?.some((l) => l.id === "intro"));
 assert.ok(FOOTER_RELATED.bfs?.length >= 1);
+assert.ok(FOOTER_RELATED.intro?.length >= 1);
 
 // --- url-params ---
 function mockControl(kind, value, extra = {}) {
