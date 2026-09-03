@@ -14,6 +14,8 @@ import {
   applySvgSize,
   escapeXml,
   mountTopicShellFromDataset,
+  applyParamsToControls,
+  mountShareLink,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -24,6 +26,12 @@ const btnPlay = document.getElementById("btn-play");
 const btnStep = document.getElementById("btn-step");
 const btnReset = document.getElementById("btn-reset");
 const speedEl = document.getElementById("speed");
+const leavesEl = /** @type {HTMLInputElement | null} */ (
+  document.getElementById("mm-leaves")
+);
+const depthEl = /** @type {HTMLSelectElement | null} */ (
+  document.getElementById("mm-depth")
+);
 const csharpSample = document.getElementById("csharp-sample");
 
 const setStatus = createStatus(document.getElementById("status"));
@@ -44,6 +52,8 @@ let bestChild = {};
 let active = new Set();
 /** @type {Set<string>} */
 let proofEdges = new Set();
+/** @type {Set<string>} */
+let cutOff = new Set();
 
 /**
  * @type {{
@@ -51,7 +61,8 @@ let proofEdges = new Set();
  *   childIndex: number,
  *   phase: 'enter'|'loop'|'done',
  *   best: number,
- *   bestId: string|null
+ *   bestId: string|null,
+ *   depthLeft: number
  * }[]}
  */
 let callStack = [];
@@ -65,6 +76,62 @@ let NODE_H = 48;
 const NEG_INF = -1e9;
 const POS_INF = 1e9;
 
+/**
+ * @param {Record<string, { kind: string, children?: string[] }>} nodeMap
+ * @param {string} rid
+ */
+function collectLeaves(nodeMap, rid) {
+  /** @type {{ kind: string, score?: number, children?: string[] }[]} */
+  const out = [];
+  function walk(id) {
+    const n = nodeMap[id];
+    if (!n) return;
+    if (n.kind === "leaf") out.push(n);
+    else for (const c of n.children || []) walk(c);
+  }
+  walk(rid);
+  return out;
+}
+
+function defaultLeavesString() {
+  return collectLeaves(INITIAL_TREE.nodes, INITIAL_TREE.rootId)
+    .map((n) => String(n.score ?? 0))
+    .join(",");
+}
+
+function expectedLeafCount() {
+  return collectLeaves(INITIAL_TREE.nodes, INITIAL_TREE.rootId).length;
+}
+
+/**
+ * @param {string} raw
+ * @param {number} expected
+ * @returns {{ ok: true, scores: number[] } | { ok: false, reason: "count"|"parse", count: number }}
+ */
+function parseLeaves(raw, expected) {
+  const tokens = String(raw).split(",");
+  if (tokens.length !== expected) {
+    return { ok: false, reason: "count", count: tokens.length };
+  }
+  /** @type {number[]} */
+  const scores = [];
+  for (const t of tokens) {
+    const s = t.trim();
+    if (s === "") return { ok: false, reason: "parse", count: tokens.length };
+    const n = Number(s);
+    if (!Number.isFinite(n)) {
+      return { ok: false, reason: "parse", count: tokens.length };
+    }
+    scores.push(n);
+  }
+  return { ok: true, scores };
+}
+
+function maxDepthLimit() {
+  const n = Number(depthEl?.value ?? 3);
+  return n === 1 || n === 2 || n === 3 ? n : 3;
+}
+
 function cloneTree(src) {
   rootId = src.rootId;
   nodes = {};
@@ -77,6 +144,29 @@ function cloneTree(src) {
       children: n.children ? [...n.children] : [],
     };
   }
+}
+
+/**
+ * 入力欄の葉スコアをクローンした木へ載せる。失敗時は既定の木に戻す。
+ * @returns {string | null} 警告文（問題なければ null）
+ */
+function applyCurrentLeaves() {
+  const expected = expectedLeafCount();
+  const parsed = parseLeaves(leavesEl?.value ?? "", expected);
+  if (!parsed.ok) {
+    cloneTree(INITIAL_TREE);
+    if (leavesEl) leavesEl.value = defaultLeavesString();
+    if (parsed.reason === "count") {
+      return `⚠ 葉の評価値が${expected}個ではありません（入力は${parsed.count}個）。既定の木に戻しました。`;
+    }
+    return "⚠ 葉の評価値を数値として解釈できません。既定の木に戻しました。";
+  }
+  cloneTree(INITIAL_TREE);
+  const leaves = collectLeaves(nodes, rootId);
+  for (let i = 0; i < leaves.length; i++) {
+    leaves[i].score = parsed.scores[i];
+  }
+  return null;
 }
 
 function kindLabel(kind) {
@@ -93,6 +183,7 @@ function resetState() {
   bestChild = {};
   active = new Set();
   proofEdges = new Set();
+  cutOff = new Set();
   for (const id of Object.keys(nodes)) {
     value[id] = null;
     bestChild[id] = null;
@@ -104,18 +195,19 @@ function resetState() {
       phase: "enter",
       best: nodes[rootId].kind === "min" ? POS_INF : NEG_INF,
       bestId: null,
+      depthLeft: maxDepthLimit(),
     },
   ];
   resultPanel.hide();
-  setStatus("準備完了 — 再生または 1ステップで Minimax(根) を開始");
+  const limit = maxDepthLimit();
+  const depthNote =
+    limit < 3
+      ? `深さ制限 ${limit}（打ち切りは評価 0）`
+      : "深さ制限なし（葉まで）";
+  setStatus(`準備完了 — ${depthNote}。再生または 1ステップで Minimax(根) を開始`);
   relayout();
   draw();
   updateDs();
-}
-
-function loadInitial() {
-  cloneTree(INITIAL_TREE);
-  resetState();
 }
 
 function relayout() {
@@ -137,6 +229,7 @@ function nodeClass(id) {
   const parts = ["andor-node", "mm-node", `kind-${n.kind}`];
   if (active.has(id)) parts.push("is-active");
   if (value[id] !== null) parts.push("is-valued");
+  if (cutOff.has(id)) parts.push("is-cutoff");
   return parts.join(" ");
 }
 
@@ -169,6 +262,8 @@ function draw() {
     let scoreText = "";
     if (n.kind === "leaf") {
       scoreText = String(n.score);
+    } else if (cutOff.has(n.id) && value[n.id] !== null) {
+      scoreText = "打切 0";
     } else if (value[n.id] !== null) {
       scoreText = `v=${value[n.id]}`;
     } else {
@@ -200,7 +295,7 @@ function updateDs() {
           : String(f.best);
     return {
       title: `Minimax(${n.label})`,
-      detail: `${kindLabel(n.kind)} · ${f.phase} · best=${bestStr} · 子#${f.childIndex}${
+      detail: `${kindLabel(n.kind)} · ${f.phase} · d=${f.depthLeft} · best=${bestStr} · 子#${f.childIndex}${
         value[f.id] !== null ? ` → v=${value[f.id]}` : ""
       }`,
     };
@@ -228,12 +323,18 @@ function updateDs() {
 function markProof(id) {
   if (value[id] === null) return;
   const n = nodes[id];
-  if (n.kind === "leaf") return;
+  if (n.kind === "leaf" || cutOff.has(id)) return;
   const bc = bestChild[id];
   if (bc) {
     proofEdges.add(`${id}->${bc}`);
     markProof(bc);
   }
+}
+
+function isDefaultAssignment() {
+  return (
+    (leavesEl?.value ?? "") === defaultLeavesString() && maxDepthLimit() === 3
+  );
 }
 
 function finishRoot() {
@@ -245,17 +346,23 @@ function finishRoot() {
   const move = bestChild[rootId]
     ? nodes[bestChild[rootId]].label
     : "—";
+  const limit = maxDepthLimit();
+  const hand =
+    isDefaultAssignment()
+      ? `手計算: 手L=min(5,9)=5、手M=min(4,3)=3、手R=min(8,7)=7 → 根 max(5,3,7)=7（手 R）。
+      相手は自分に不利な手を選ぶ前提です。`
+      : limit < 3
+        ? `深さ制限 ${limit} のため、残りの深さが 0 になった非葉は評価 0 で打ち切りました。`
+        : "葉の値を max / min で吸い上げた結果です。選ばれない枝の葉を変えても根が変わらないことがあります。";
   resultPanel.show(`
     <h3>結果（Min-Max）</h3>
     <ul>
       <li><strong>根の評価値 v</strong>: ${v}</li>
       <li><strong>最善手</strong>: ${move}</li>
+      <li><strong>深さ制限</strong>: ${limit === 3 ? "なし（3）" : String(limit)}</li>
       <li><strong>ステップ数</strong>: ${stepCount}</li>
     </ul>
-    <p class="result-verdict">
-      手計算: 手L=min(5,9)=5、手M=min(4,3)=3、手R=min(8,7)=7 → 根 max(5,3,7)=7（手 R）。
-      相手は自分に不利な手を選ぶ前提です。
-    </p>
+    <p class="result-verdict">${hand}</p>
     <p class="result-note">
       素の Min-Max は全子を読みます。次の α-β 法では不要な枝を切れます。
       木は <code>js/maps/minimax-tree.js</code>。
@@ -290,12 +397,24 @@ function stepOnce() {
       updateDs();
       return true;
     }
+    if (frame.depthLeft <= 0) {
+      value[frame.id] = 0;
+      frame.best = 0;
+      frame.phase = "done";
+      cutOff.add(frame.id);
+      setStatus(
+        `深さ制限により「${n.label}」を打ち切り → 評価 0`
+      );
+      draw();
+      updateDs();
+      return true;
+    }
     frame.phase = "loop";
     frame.childIndex = 0;
     frame.best = initBest(n.kind);
     frame.bestId = null;
     setStatus(
-      `${kindLabel(n.kind)}「${n.label}」に入場 — 子を左から評価（枝刈りなし）`
+      `${kindLabel(n.kind)}「${n.label}」に入場 — 子を左から評価（残り深さ ${frame.depthLeft}）`
     );
     draw();
     updateDs();
@@ -332,6 +451,7 @@ function stepOnce() {
         phase: "enter",
         best: initBest(ck === "leaf" ? "max" : ck),
         bestId: null,
+        depthLeft: frame.depthLeft - 1,
       });
       setStatus(
         `${kindLabel(n.kind)}「${n.label}」→ Minimax(${nodes[cid].label}) を呼び出し`
@@ -385,22 +505,58 @@ function stopAuto() {
   playback.stop();
 }
 
+function restartSearch() {
+  const warning = applyCurrentLeaves();
+  resetState();
+  return warning;
+}
+
 btnPlay?.addEventListener("click", () => {
   playback.toggle(() => {
-    if (finished) loadInitial();
+    if (finished) resetState();
   });
 });
 btnStep?.addEventListener("click", () => {
   playback.stop();
-  if (finished) loadInitial();
+  if (finished) resetState();
   stepOnce();
 });
 btnReset?.addEventListener("click", () => {
-  loadInitial();
-  setStatus("木をリセットしました — js/maps/minimax-tree.js");
+  resetState();
+  setStatus("探索をリセットしました（葉の値と深さ制限は維持）");
 });
 
-loadInitial();
+if (leavesEl) leavesEl.value = defaultLeavesString();
+if (depthEl) depthEl.value = "3";
+
+const urlSpec = {
+  leaves: { el: leavesEl, kind: "text" },
+  depth: { el: depthEl, kind: "select" },
+};
+mountShareLink({
+  spec: urlSpec,
+  button: document.getElementById("btn-copy-url"),
+  statusEl: document.getElementById("status"),
+});
+const urlResult = applyParamsToControls(urlSpec);
+const leafWarning = applyCurrentLeaves();
+resetState();
+if (urlResult.warning && leafWarning) {
+  setStatus(`${urlResult.warning} ${leafWarning}`);
+} else if (urlResult.warning) {
+  setStatus(urlResult.warning);
+} else if (leafWarning) {
+  setStatus(leafWarning);
+}
+
+leavesEl?.addEventListener("change", () => {
+  const warning = restartSearch();
+  if (warning) setStatus(warning);
+});
+depthEl?.addEventListener("change", () => {
+  resetState();
+});
+
 loadTextSample(
   "../samples/MinimaxExample.cs",
   csharpSample,

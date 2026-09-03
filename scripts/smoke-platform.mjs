@@ -427,6 +427,31 @@ function mockControl(kind, value, extra = {}) {
 }
 
 {
+  const leaves = mockControl(
+    "text",
+    "5,3,7,9,4,2,1,3,6,8,7,4"
+  );
+  const depth = mockControl("select", "3", { options: ["1", "2", "3"] });
+  const spec = {
+    leaves: { el: leaves, kind: "text" },
+    depth: { el: depth, kind: "select" },
+  };
+  const r = applyParamsToControls(
+    spec,
+    "?leaves=9,0,7,2,1,3,4,2,1,3,6,8&depth=2"
+  );
+  assert.deepEqual(r.applied, ["leaves", "depth"]);
+  assert.equal(leaves.value, "9,0,7,2,1,3,4,2,1,3,6,8");
+  assert.equal(depth.value, "2");
+  const url = buildShareUrl(spec, "http://localhost/algorithms/minimax.html", {
+    leaves: "5,3,7,9,4,2,1,3,6,8,7,4",
+    depth: "3",
+  });
+  assert.match(url, /leaves=/);
+  assert.match(url, /depth=2/);
+}
+
+{
   const ar = mockControl("range", "40", { min: "8", max: "160", step: "1" });
   const ax = mockControl("number", "180", { min: "0", max: "640", step: "1" });
   const r = applyParamsToControls(

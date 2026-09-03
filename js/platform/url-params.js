@@ -16,7 +16,7 @@ const CHECKBOX_TRUE = new Set(["1", "true", "on"]);
 const CHECKBOX_FALSE = new Set(["0", "false", "off"]);
 
 /**
- * @typedef {"number" | "range" | "checkbox" | "select"} ParamKind
+ * @typedef {"number" | "range" | "checkbox" | "select" | "text"} ParamKind
  * @typedef {{ el: HTMLElement | null, kind: ParamKind }} ParamEntry
  * @typedef {Record<string, ParamEntry>} ParamSpec
  * @typedef {{ key: string, value: string, reason: string, min?: number | null, max?: number | null, step?: number | null }} RejectedParam
@@ -238,6 +238,13 @@ export function applyParamsToControls(spec, search = currentSearch()) {
         continue;
       }
       /** @type {HTMLSelectElement} */ (el).value = raw;
+      dispatchInputAndChange(el);
+      applied.push(key);
+      continue;
+    }
+
+    if (kind === "text") {
+      /** @type {HTMLInputElement} */ (el).value = raw;
       dispatchInputAndChange(el);
       applied.push(key);
       continue;

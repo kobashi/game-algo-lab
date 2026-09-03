@@ -5,6 +5,8 @@
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.16.0
 
+**2026-09-03 minimax 調整パラメータ**: 葉の評価値（カンマ区切り）と深さ制限（打ち切りは 0）。URL は `leaves` / `depth`。
+
 **2026-09-03 Release `v0.16.0`**: URL の step 検査 + `input-basics` / `circle-collision` / `sfx-events` の調整パラメータ。ノート: `RELEASE_NOTES_v0.16.0.md`。
 
 **2026-09-03 sfx-events 調整パラメータ**: イベントごとの周波数・長さ・音量を上書きし URL（ev/freq/dur/gain）で共有。

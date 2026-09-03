@@ -79,6 +79,23 @@
             </div>
           </div>
 
+          <div class="controls-group-paint gl-params mm-params">
+            <label class="controls-label" for="mm-leaves">葉の評価値（左からカンマ区切り）</label>
+            <input type="text" id="mm-leaves" class="mm-leaves-input" value="5,3,7,9,4,2,1,3,6,8,7,4" autocomplete="off" spellcheck="false" />
+          </div>
+          <div class="controls-group-paint gl-params mm-params">
+            <label class="controls-label" for="mm-depth">深さ制限</label>
+            <select id="mm-depth" class="mm-depth-select">
+              <option value="1">1（1手先で打ち切り）</option>
+              <option value="2">2（2手先で打ち切り）</option>
+              <option value="3" selected>3（制限なし・葉まで）</option>
+            </select>
+          </div>
+          <div class="controls-group-paint gl-params url-share-row">
+            <button type="button" id="btn-copy-url" class="btn btn-ghost">この設定のURLをコピー</button>
+          </div>
+          <p class="footer-muted">葉は12個。数が合わない入力は却下します。打ち切り節点は評価 0 です。</p>
+
           <div id="status" class="status-log" role="status">準備完了</div>
           <div id="result-compare" class="result-compare" hidden></div>
         </aside>

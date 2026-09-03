@@ -2063,6 +2063,11 @@ details.ds-block:not([open]) > .ds-title::before {
 }
 
 /* α-β 枝刈り */
+.andor-node.is-cutoff rect {
+  stroke-dasharray: 4 3;
+  opacity: 0.88;
+}
+
 .andor-node.is-pruned rect {
   fill: rgba(61, 79, 102, 0.55) !important;
   stroke: #5a6d85 !important;
@@ -5371,4 +5376,28 @@ details.ds-block:not([open]) > .ds-title::before {
 
 .url-share-fallback[hidden] {
   display: none;
+}
+
+.mm-params {
+  width: 100%;
+  margin-top: 0.35rem;
+}
+
+.mm-leaves-input,
+.mm-depth-select {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 0.3rem 0.45rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.8rem;
+}
+
+.mm-leaves-input {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.75rem;
 }

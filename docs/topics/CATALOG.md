@@ -43,7 +43,7 @@
 | id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
 |----|----------|-------|--------|------|------|--------|------|----------|
 | `and-or` | AND-OR 探索 | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/and-or.html` | [SPEC](./and-or/SPEC.md) | 「鍵を入手」を葉→OR節点（買う/盗む）に差し替えて深さ3化 |
-| `minimax` | Min-Max 探索 | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/minimax.html` | [SPEC](./minimax/SPEC.md) | 深さ2→深さ3・葉12の標準木に差し替え。MIN下にMAXが現れる交互再帰を可視化 |
+| `minimax` | Min-Max 探索 | ✅ | **調整** | 2 | 2026-09-03 | `algorithms/minimax.html` | [SPEC](./minimax/SPEC.md) | 深さ2→深さ3・葉12の標準木に差し替え。MIN下にMAXが現れる交互再帰を可視化。**改訂2**: 調整課題用のパラメータを追加し URL 指定に対応 |
 | `alpha-beta` | α-β 法 | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/alpha-beta.html` | [SPEC](./alpha-beta/SPEC.md) | 深さ3木でβカットを初めて可視化（旧木は深さ2でβカット不能だった） |
 | `monte-carlo` | モンテカルロ法 | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/monte-carlo.html` | [SPEC](./monte-carlo/SPEC.md) | 深さ3木でプレイアウトが3手の系列に。乱択EVとMin-Maxの食い違いを強化 |
 | `multi-armed-bandit` | 多腕バンディット | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/multi-armed-bandit.html` | [SPEC](./multi-armed-bandit/SPEC.md) | 難易度プリセット（易しい/難しい）追加、既定手数300へ |
