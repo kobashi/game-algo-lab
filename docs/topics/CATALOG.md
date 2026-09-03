@@ -72,7 +72,7 @@
 
 | id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
 |----|----------|-------|--------|------|------|--------|------|----------|
-| `game-loop` | ゲームループ | ✅ | **一発** | 0 | 2026-07-22 | `algorithms/game-loop.html` | [SPEC](./game-loop/SPEC.md) | 可変/固定 timestep。跳ねるボール。人工遅延・MAX_STEPS でスパイラル防止を観察。説明特化 UI |
+| `game-loop` | ゲームループ | ✅ | **調整** | 1 | 2026-09-03 | `algorithms/game-loop.html` | [SPEC](./game-loop/SPEC.md) | 可変/固定 timestep。跳ねるボール。人工遅延・MAX_STEPS でスパイラル防止を観察。説明特化 UI。**改訂1**: URL クエリで初期パラメータ指定に対応（授業課題の設定提出用） |
 | `time-management` | 時間管理 | ✅ | **一発** | 0 | 2026-07-22 | `algorithms/time-management.html` | [SPEC](./time-management/SPEC.md) | 壁時計 vs ゲーム内時間。time scale・ポーズ。往復キャラは game time 駆動 |
 | `input-basics` | 入力の基礎 | ✅ | **一発** | 0 | 2026-07-22 | `algorithms/input-basics.html` | [SPEC](./input-basics/SPEC.md) | held / down / up。Jump=edge、Fire=held 連射対比、Charge=長押し |
 | `coordinates` | 座標変換 | ✅ | **調整** | 1 | 2026-07-28 | `algorithms/coordinates.html` | [SPEC](./coordinates/SPEC.md) | gfx-coordinates 統合・CG 導線（カメラ/UI/Mesh） |
@@ -105,9 +105,9 @@
 | id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
 |----|----------|-------|--------|------|------|--------|------|----------|
 | `grid-pseudo-physics` | グリッド擬似物理 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/grid-pseudo-physics.html` | [SPEC](./grid-pseudo-physics/SPEC.md) | マス落下。連続速度なし |
-| `velocity-motion` | 速度による移動 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/velocity-motion.html` | [SPEC](./velocity-motion/SPEC.md) | p←p+v·dt。軌跡・速度矢印・壁バウンス |
+| `velocity-motion` | 速度による移動 | ✅ | **調整** | 1 | 2026-09-03 | `algorithms/velocity-motion.html` | [SPEC](./velocity-motion/SPEC.md) | p←p+v·dt。軌跡・速度矢印・壁バウンス。**改訂1**: URL クエリで初期パラメータ指定に対応（授業課題の設定提出用） |
 | `accel-decel` | 加減速 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/accel-decel.html` | [SPEC](./accel-decel/SPEC.md) | 加速・最高速度・ブレーキ |
-| `accel-gravity` | 加速度と重力 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/accel-gravity.html` | [SPEC](./accel-gravity/SPEC.md) | v+=g·dt; p+=v·dt。放物線・反発 |
+| `accel-gravity` | 加速度と重力 | ✅ | **調整** | 1 | 2026-09-03 | `algorithms/accel-gravity.html` | [SPEC](./accel-gravity/SPEC.md) | v+=g·dt; p+=v·dt。放物線・反発。**改訂1**: URL クエリで初期パラメータ指定に対応（授業課題の設定提出用） |
 | `friction-bounce` | 摩擦・反発 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/friction-bounce.html` | [SPEC](./friction-bounce/SPEC.md) | 床バウンス e · 接地摩擦 |
 | `verlet-integration` | Verlet 積分 · 距離拘束 | ✅ | **一発** | 0 | 2026-07-29 | `algorithms/verlet-integration.html` | [SPEC](./verlet-integration/SPEC.md) | 位置履歴積分 · ロープ拘束 |
 | `collision` | AABB 衝突判定 | ✅ | **調整** | 2 | 2026-07-17 | `algorithms/collision.html` | [SPEC](./collision/SPEC.md) | 非マップ説明UI。重なり/分離の二重実装と比較 |
@@ -234,12 +234,12 @@
 |----|----------|-------|--------|------|------|--------|------|----------|
 | `gfx-gpu-concepts` | GPU パイプライン概説 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-gpu-concepts.html` | [SPEC](./gfx-gpu-concepts/SPEC.md) | 概念デモ · 実 GPU API なし |
 | `gfx-sprite-2d` | 2D スプライト | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-sprite-2d.html` | [SPEC](./gfx-sprite-2d/SPEC.md) | シートフレーム · Y ソート |
-| `gfx-camera` | カメラと投影（2D フォロー） | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-camera.html` | [SPEC](./gfx-camera/SPEC.md) | デッドゾーン · world→screen |
+| `gfx-camera` | カメラと投影（2D フォロー） | ✅ | **調整** | 1 | 2026-09-03 | `algorithms/gfx-camera.html` | [SPEC](./gfx-camera/SPEC.md) | デッドゾーン · world→screen。**改訂1**: URL クエリで初期パラメータ指定に対応（授業課題の設定提出用） |
 | `gfx-animation-vfx` | アニメーション・パーティクル | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-animation-vfx.html` | [SPEC](./gfx-animation-vfx/SPEC.md) | lifetime · 上限プール |
 | `gfx-lighting-alpha` | ライティング・透明度 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-lighting-alpha.html` | [SPEC](./gfx-lighting-alpha/SPEC.md) | 点光源 · α/加算 |
 | `gfx-postprocess` | ポストプロセス | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-postprocess.html` | [SPEC](./gfx-postprocess/SPEC.md) | 彩度·ビネット·ブルーム |
 | `gfx-lod-culling` | LOD・カリング | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-lod-culling.html` | [SPEC](./gfx-lod-culling/SPEC.md) | フラスタム · LOD0/1/2 |
-| `gfx-ui-canvas` | UI 描画（Anchor・Pivot） | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-ui-canvas.html` | [SPEC](./gfx-ui-canvas/SPEC.md) | Anchor·Pivot·解像度 |
+| `gfx-ui-canvas` | UI 描画（Anchor・Pivot） | ✅ | **調整** | 1 | 2026-09-03 | `algorithms/gfx-ui-canvas.html` | [SPEC](./gfx-ui-canvas/SPEC.md) | Anchor·Pivot·解像度。**改訂1**: URL クエリで初期パラメータ指定に対応（授業課題の設定提出用） |
 | `gfx-mesh-uv` | メッシュ・UV・マテリアル | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-mesh-uv.html` | [SPEC](./gfx-mesh-uv/SPEC.md) | 2tris · UV · tint |
 | `sprite-anim-fsm` | スプライトアニメ × FSM | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sprite-anim-fsm.html` | [SPEC](./sprite-anim-fsm/SPEC.md) | idle/run/jump クリップ |
 
@@ -264,8 +264,8 @@
 
 | 成熟度 | 件数 | id |
 |--------|------|-----|
-| 一発 (`oneshot`) | ≈93 | 詳細は TOPIC_META（ready 110 本） |
-| 調整 (`revised`) | ≈17 | bfs〜rng-seed · coordinates · tic-tac-toe · coyote-time 等 |
+| 一発 (`oneshot`) | ≈88 | 詳細は TOPIC_META（ready 110 本） |
+| 調整 (`revised`) | ≈22 | bfs〜rng-seed · coordinates · tic-tac-toe · coyote-time · game-loop ほか URL 対応 等 |
 | 安定 (`stable`) | 0 | — |
 
 Fable5 起点のコード改訂 ↔ 成熟度の対応表: [MATURITY.md](./MATURITY.md) の「Fable5 レビュー → 成熟度の突き合わせ」。

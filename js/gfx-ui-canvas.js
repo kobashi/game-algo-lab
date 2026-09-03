@@ -6,6 +6,8 @@ import {
   createStatus,
   loadTextSample,
   mountTopicShellFromDataset,
+  applyParamsToControls,
+  mountShareLink,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -215,3 +217,19 @@ if (pivotYEl) pivotYEl.value = String(C.defaultPivotY);
 if (anchorEl) anchorEl.value = "bottom-right";
 syncLabels();
 applyCanvasSize();
+
+const urlSpec = {
+  res: { el: resEl, kind: "select" },
+  anchor: { el: anchorEl, kind: "select" },
+  px: { el: pivotXEl, kind: "range" },
+  py: { el: pivotYEl, kind: "range" },
+};
+mountShareLink({
+  spec: urlSpec,
+  button: document.getElementById("btn-copy-url"),
+  statusEl: document.getElementById("status"),
+});
+const urlResult = applyParamsToControls(urlSpec);
+syncLabels();
+applyCanvasSize();
+if (urlResult.warning) setStatus(urlResult.warning);

@@ -6,6 +6,8 @@ import {
   createStatus,
   loadTextSample,
   mountTopicShellFromDataset,
+  applyParamsToControls,
+  mountShareLink,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -180,4 +182,23 @@ if (vyEl) vyEl.value = String(C.defaultVy);
 if (dtEl) dtEl.value = String(C.defaultDtMs);
 sync();
 draw();
-setStatus("準備完了 — 再生または 1ステップ");
+
+const urlSpec = {
+  vx: { el: vxEl, kind: "range" },
+  vy: { el: vyEl, kind: "range" },
+  dt: { el: dtEl, kind: "range" },
+  bounce: { el: bounceEl, kind: "checkbox" },
+};
+mountShareLink({
+  spec: urlSpec,
+  button: document.getElementById("btn-copy-url"),
+  statusEl: document.getElementById("status"),
+});
+const urlResult = applyParamsToControls(urlSpec);
+sync();
+draw();
+if (urlResult.warning) {
+  setStatus(urlResult.warning);
+} else if (!urlResult.applied.length) {
+  setStatus("準備完了 — 再生または 1ステップ");
+}

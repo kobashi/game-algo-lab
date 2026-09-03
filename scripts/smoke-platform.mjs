@@ -253,6 +253,119 @@ function mockControl(kind, value, extra = {}) {
 }
 
 {
+  const vx = mockControl("range", "120", { min: "-240", max: "240" });
+  const vy = mockControl("range", "-40", { min: "-240", max: "240" });
+  const dt = mockControl("range", "16.7", { min: "5", max: "50" });
+  const bounce = mockControl("checkbox", "", { checked: true });
+  const spec = {
+    vx: { el: vx, kind: "range" },
+    vy: { el: vy, kind: "range" },
+    dt: { el: dt, kind: "range" },
+    bounce: { el: bounce, kind: "checkbox" },
+  };
+  const r = applyParamsToControls(spec, "?vx=3&vy=-2&dt=10&bounce=1");
+  assert.deepEqual(r.applied, ["vx", "vy", "dt", "bounce"]);
+  assert.equal(vx.value, "3");
+  assert.equal(vy.value, "-2");
+  assert.equal(dt.value, "10");
+  assert.equal(bounce.checked, true);
+
+  const bad = applyParamsToControls(
+    { dt: { el: dt, kind: "range" } },
+    "?dt=0.1"
+  );
+  assert.equal(dt.value, "10", "dt=0.1 must not clamp into 5–50ms");
+  assert.equal(bad.rejected[0].reason, "range");
+}
+
+{
+  const g = mockControl("range", "600", { min: "0", max: "1200" });
+  const vx = mockControl("range", "120", { min: "-240", max: "240" });
+  const rest = mockControl("range", "0.75", { min: "0", max: "1" });
+  const r = applyParamsToControls(
+    {
+      g: { el: g, kind: "range" },
+      vx: { el: vx, kind: "range" },
+      rest: { el: rest, kind: "range" },
+    },
+    "?g=20&vx=5&rest=0.2"
+  );
+  assert.deepEqual(r.applied, ["g", "vx", "rest"]);
+  assert.equal(g.value, "20");
+  assert.equal(vx.value, "5");
+  assert.equal(rest.value, "0.2");
+}
+
+{
+  const res = mockControl("select", "640x360", {
+    options: ["640x360", "800x450", "480x320", "960x540"],
+  });
+  const anchor = mockControl("select", "bottom-right", {
+    options: ["top-left", "top-right", "center", "bottom-right", "bottom-stretch"],
+  });
+  const px = mockControl("range", "0.5", { min: "0", max: "1" });
+  const py = mockControl("range", "0.5", { min: "0", max: "1" });
+  const r = applyParamsToControls(
+    {
+      res: { el: res, kind: "select" },
+      anchor: { el: anchor, kind: "select" },
+      px: { el: px, kind: "range" },
+      py: { el: py, kind: "range" },
+    },
+    "?anchor=top-right&px=0.5&py=0.5"
+  );
+  assert.deepEqual(r.applied, ["anchor", "px", "py"]);
+  assert.equal(anchor.value, "top-right");
+  const nosuch = applyParamsToControls(
+    { anchor: { el: anchor, kind: "select" } },
+    "?anchor=nosuch"
+  );
+  assert.equal(anchor.value, "top-right");
+  assert.equal(nosuch.rejected[0].reason, "option");
+}
+
+{
+  const follow = mockControl("range", "0.08", { min: "0.02", max: "0.5" });
+  const dead = mockControl("range", "40", { min: "0", max: "160" });
+  const r = applyParamsToControls(
+    {
+      follow: { el: follow, kind: "range" },
+      dead: { el: dead, kind: "range" },
+    },
+    "?follow=0.2&dead=40"
+  );
+  assert.deepEqual(r.applied, ["follow", "dead"]);
+  assert.equal(follow.value, "0.2");
+  assert.equal(dead.value, "40");
+}
+
+{
+  const mode = mockControl("select", "fixed", {
+    options: ["variable", "fixed"],
+  });
+  const dt = mockControl("range", "16.7", { min: "8", max: "33" });
+  const lag = mockControl("range", "0", { min: "0", max: "80" });
+  const maxsteps = mockControl("range", "8", { min: "1", max: "16" });
+  const r = applyParamsToControls(
+    {
+      mode: { el: mode, kind: "select" },
+      dt: { el: dt, kind: "range" },
+      lag: { el: lag, kind: "range" },
+      maxsteps: { el: maxsteps, kind: "range" },
+    },
+    "?mode=fixed&dt=16.7&lag=1"
+  );
+  assert.deepEqual(r.applied, ["mode", "dt", "lag"]);
+  assert.equal(lag.value, "1");
+  const badDt = applyParamsToControls(
+    { dt: { el: dt, kind: "range" } },
+    "?dt=0.033"
+  );
+  assert.equal(dt.value, "16.7", "dt=0.033s must not clamp into 8–33ms");
+  assert.equal(badDt.rejected[0].reason, "range");
+}
+
+{
   // 授業課題の例 (a=13,c=5,m=24,seed=0) は Hull–Dobell を満たし周期 24
   function lcgPeriod(seed, a, c, m) {
     let x = ((seed % m) + m) % m;

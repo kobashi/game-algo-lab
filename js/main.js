@@ -141,7 +141,7 @@ export const TOPICS = [
     badge: "基礎実行",
     category: "基礎実行モデル",
     ready: true,
-    maturity: "oneshot",
+    maturity: "revised",
   },
   {
     id: "time-management",
@@ -405,7 +405,7 @@ export const TOPICS = [
     badge: "物理・判定",
     category: "物理・判定",
     ready: true,
-    maturity: "oneshot",
+    maturity: "revised",
   },
   {
     id: "accel-decel",
@@ -427,7 +427,7 @@ export const TOPICS = [
     badge: "物理・判定",
     category: "物理・判定",
     ready: true,
-    maturity: "oneshot",
+    maturity: "revised",
   },
   {
     id: "friction-bounce",
@@ -1021,7 +1021,7 @@ export const TOPICS = [
     badge: "ゲーム CG",
     category: "ゲーム CG",
     ready: true,
-    maturity: "oneshot",
+    maturity: "revised",
   },
   {
     id: "gfx-animation-vfx",
@@ -1076,7 +1076,7 @@ export const TOPICS = [
     badge: "ゲーム CG",
     category: "ゲーム CG",
     ready: true,
-    maturity: "oneshot",
+    maturity: "revised",
   },
   {
     id: "gfx-mesh-uv",

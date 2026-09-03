@@ -5,6 +5,8 @@
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.14.0
 
+**2026-09-03 URL パラメータ拡張**: `game-loop` / `velocity-motion` / `accel-gravity` / `gfx-ui-canvas` / `gfx-camera` にもクエリ初期値と「この設定のURLをコピー」を追加（既存 `url-params.js`）。`game-loop` の再生間隔は含めない。
+
 **2026-09-03 入門コース · Release `v0.14.0`**: `courses/intro.html` に13トピックを学ぶ順（6段）で並べる入口を追加。カード文言は `TOPICS` 参照。ナビは `NAV_GROUPS.course`。既存デモは未変更。ノート: `RELEASE_NOTES_v0.14.0.md`。
 
 **2026-09-03 URL パラメータ · Release `v0.13.0`**: `rng-seed` / `tic-tac-toe` / `coyote-time` でクエリから初期コントロールを指定できる。共通 API は `js/platform/url-params.js`。共有は「この設定のURLをコピー」（操作のたびに URL は書き換えない）。授業課題の個別配布用。残り107トピックへの展開は未着手。ノート: `RELEASE_NOTES_v0.13.0.md`。

@@ -9,6 +9,8 @@ import {
   createResultPanel,
   loadTextSample,
   mountTopicShellFromDataset,
+  applyParamsToControls,
+  mountShareLink,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -365,4 +367,23 @@ syncLabels();
 resetWorld();
 draw();
 renderLog();
-setStatus("準備完了 — 固定 timestep が既定。人工遅延を上げて重いフレームを試す");
+
+// 再生間隔 (speed) は課題の調整対象ではないので URL に含めない
+const urlSpec = {
+  mode: { el: modeEl, kind: "select" },
+  dt: { el: fixedDtEl, kind: "range" },
+  lag: { el: lagEl, kind: "range" },
+  maxsteps: { el: maxStepsEl, kind: "range" },
+};
+mountShareLink({
+  spec: urlSpec,
+  button: document.getElementById("btn-copy-url"),
+  statusEl: document.getElementById("status"),
+});
+const urlResult = applyParamsToControls(urlSpec);
+syncLabels();
+if (urlResult.warning) {
+  setStatus(urlResult.warning);
+} else if (!urlResult.applied.length) {
+  setStatus("準備完了 — 固定 timestep が既定。人工遅延を上げて重いフレームを試す");
+}

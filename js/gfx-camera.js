@@ -6,6 +6,8 @@ import {
   createStatus,
   loadTextSample,
   mountTopicShellFromDataset,
+  applyParamsToControls,
+  mountShareLink,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -212,3 +214,17 @@ loadTextSample(
 if (followEl) followEl.value = String(C.defaultFollow);
 if (deadEl) deadEl.value = String(C.defaultDead);
 reset();
+
+const urlSpec = {
+  follow: { el: followEl, kind: "range" },
+  dead: { el: deadEl, kind: "range" },
+};
+mountShareLink({
+  spec: urlSpec,
+  button: document.getElementById("btn-copy-url"),
+  statusEl: document.getElementById("status"),
+});
+const urlResult = applyParamsToControls(urlSpec);
+sync();
+draw();
+if (urlResult.warning) setStatus(urlResult.warning);

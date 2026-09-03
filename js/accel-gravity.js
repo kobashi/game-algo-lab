@@ -7,6 +7,8 @@ import {
   createStatus,
   loadTextSample,
   mountTopicShellFromDataset,
+  applyParamsToControls,
+  mountShareLink,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -181,3 +183,18 @@ loadTextSample(
   "// AccelGravityExample.cs"
 );
 reset();
+
+const urlSpec = {
+  g: { el: gEl, kind: "range" },
+  vx: { el: vxEl, kind: "range" },
+  rest: { el: restEl, kind: "range" },
+};
+mountShareLink({
+  spec: urlSpec,
+  button: document.getElementById("btn-copy-url"),
+  statusEl: document.getElementById("status"),
+});
+const urlResult = applyParamsToControls(urlSpec);
+sync();
+draw();
+if (urlResult.warning) setStatus(urlResult.warning);

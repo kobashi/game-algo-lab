@@ -85,7 +85,7 @@ docs/templates/            # SPEC / スキャフォールド
 | 項目 | 方針 |
 |------|------|
 | モジュール | `js/platform/url-params.js` |
-| 適用対象（先行） | `rng-seed` / `tic-tac-toe` / `coyote-time` のみ |
+| 適用対象 | `rng-seed` / `tic-tac-toe` / `coyote-time` / `game-loop` / `velocity-motion` / `accel-gravity` / `gfx-ui-canvas` / `gfx-camera` |
 | `kind` | `"number"` / `"range"` / `"checkbox"` / `"select"` |
 | キーが無い | ページの既定値を保つ |
 | 不正値 | **clamp しない**。却下して `#status` に日本語警告 |
