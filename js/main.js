@@ -471,7 +471,7 @@ export const TOPICS = [
     badge: "物理・判定",
     category: "物理・判定",
     ready: true,
-    maturity: "oneshot",
+    maturity: "revised",
   },
   {
     id: "momentum-1d",

@@ -111,7 +111,7 @@
 | `friction-bounce` | 摩擦・反発 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/friction-bounce.html` | [SPEC](./friction-bounce/SPEC.md) | 床バウンス e · 接地摩擦 |
 | `verlet-integration` | Verlet 積分 · 距離拘束 | ✅ | **一発** | 0 | 2026-07-29 | `algorithms/verlet-integration.html` | [SPEC](./verlet-integration/SPEC.md) | 位置履歴積分 · ロープ拘束 |
 | `collision` | AABB 衝突判定 | ✅ | **調整** | 2 | 2026-07-17 | `algorithms/collision.html` | [SPEC](./collision/SPEC.md) | 非マップ説明UI。重なり/分離の二重実装と比較 |
-| `circle-collision` | 円同士・円と AABB | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/circle-collision.html` | [SPEC](./circle-collision/SPEC.md) | 中心距離・Clamp 最近点 |
+| `circle-collision` | 円同士・円と AABB | ✅ | **調整** | 1 | 2026-09-03 | `algorithms/circle-collision.html` | [SPEC](./circle-collision/SPEC.md) | 中心距離・Clamp 最近点。**改訂1**: 調整課題用のパラメータを追加し URL 指定に対応 |
 | `momentum-1d` | 質量と運動量（1D） | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/momentum-1d.html` | [SPEC](./momentum-1d/SPEC.md) | 弾性/非弾性 · Σp/KE |
 | `raycast-shapes` | 線分・レイキャスト | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/raycast-shapes.html` | [SPEC](./raycast-shapes/SPEC.md) | 円・AABB への最近 t |
 | `collision-response` | 衝突応答 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/collision-response.html` | [SPEC](./collision-response/SPEC.md) | 分離 + 法線インパルス |

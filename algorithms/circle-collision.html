@@ -38,6 +38,31 @@
         <div class="controls-group-paint gl-params">
           <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
         </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="ar">円A 半径 <span id="ar-val">40</span></label>
+          <input type="range" id="ar" class="ttt-range" min="8" max="160" value="40" step="1" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="br">円B 半径 <span id="br-val">32</span></label>
+          <input type="range" id="br" class="ttt-range" min="8" max="160" value="32" step="1" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="boxw">箱の幅 <span id="boxw-val">120</span></label>
+          <input type="range" id="boxw" class="ttt-range" min="16" max="280" value="120" step="1" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="boxh">箱の高さ <span id="boxh-val">90</span></label>
+          <input type="range" id="boxh" class="ttt-range" min="16" max="280" value="90" step="1" />
+        </div>
+        <div class="controls-group-paint gl-params url-share-row">
+          <button type="button" id="btn-copy-url" class="btn btn-ghost">この設定のURLをコピー</button>
+        </div>
+        <input type="number" id="ax" hidden min="0" max="640" step="1" value="180" />
+        <input type="number" id="ay" hidden min="0" max="360" step="1" value="160" />
+        <input type="number" id="bx" hidden min="0" max="640" step="1" value="320" />
+        <input type="number" id="by" hidden min="0" max="360" step="1" value="200" />
+        <input type="number" id="boxx" hidden min="0" max="640" step="1" value="420" />
+        <input type="number" id="boxy" hidden min="0" max="360" step="1" value="120" />
         <p class="footer-muted">円 A / 円 B / 矩形をドラッグして HIT を観察</p>
         <p class="footer-muted">次の段階: 衝突応答（めり込み解消・跳ね返り）</p>
       </aside>

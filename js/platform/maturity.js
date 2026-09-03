@@ -128,9 +128,9 @@ export const TOPIC_META = {
     updated: "2026-07-27",
   },
   "circle-collision": {
-    maturity: "oneshot",
-    revisions: 0,
-    updated: "2026-07-27",
+    maturity: "revised",
+    revisions: 1,
+    updated: "2026-09-03",
   },
   "momentum-1d": {
     maturity: "oneshot",

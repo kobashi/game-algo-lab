@@ -7,6 +7,8 @@ import {
   createStatus,
   loadTextSample,
   mountTopicShellFromDataset,
+  applyParamsToControls,
+  mountShareLink,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -20,6 +22,20 @@ const formulaEl = document.getElementById("cc-formula");
 const btnReset = document.getElementById("btn-reset");
 const csharpSample = document.getElementById("csharp-sample");
 const setStatus = createStatus(document.getElementById("status"));
+const arEl = /** @type {HTMLInputElement} */ (document.getElementById("ar"));
+const brEl = /** @type {HTMLInputElement} */ (document.getElementById("br"));
+const boxwEl = /** @type {HTMLInputElement} */ (document.getElementById("boxw"));
+const boxhEl = /** @type {HTMLInputElement} */ (document.getElementById("boxh"));
+const arVal = document.getElementById("ar-val");
+const brVal = document.getElementById("br-val");
+const boxwVal = document.getElementById("boxw-val");
+const boxhVal = document.getElementById("boxh-val");
+const axEl = /** @type {HTMLInputElement} */ (document.getElementById("ax"));
+const ayEl = /** @type {HTMLInputElement} */ (document.getElementById("ay"));
+const bxEl = /** @type {HTMLInputElement} */ (document.getElementById("bx"));
+const byEl = /** @type {HTMLInputElement} */ (document.getElementById("by"));
+const boxxEl = /** @type {HTMLInputElement} */ (document.getElementById("boxx"));
+const boxyEl = /** @type {HTMLInputElement} */ (document.getElementById("boxy"));
 
 let circleA = { ...C.circleA };
 let circleB = { ...C.circleB };
@@ -226,25 +242,97 @@ canvas?.addEventListener("pointermove", (e) => {
 
 canvas?.addEventListener("pointerup", () => {
   drag = null;
+  syncControlsFromState();
 });
 canvas?.addEventListener("pointercancel", () => {
   drag = null;
+  syncControlsFromState();
 });
+
+function roundPos(n) {
+  return Math.round(Number(n) || 0);
+}
+
+function syncControlsFromState() {
+  if (arEl) arEl.value = String(circleA.r);
+  if (brEl) brEl.value = String(circleB.r);
+  if (boxwEl) boxwEl.value = String(box.w);
+  if (boxhEl) boxhEl.value = String(box.h);
+  if (arVal) arVal.textContent = String(circleA.r);
+  if (brVal) brVal.textContent = String(circleB.r);
+  if (boxwVal) boxwVal.textContent = String(box.w);
+  if (boxhVal) boxhVal.textContent = String(box.h);
+  if (axEl) axEl.value = String(roundPos(circleA.x));
+  if (ayEl) ayEl.value = String(roundPos(circleA.y));
+  if (bxEl) bxEl.value = String(roundPos(circleB.x));
+  if (byEl) byEl.value = String(roundPos(circleB.y));
+  if (boxxEl) boxxEl.value = String(roundPos(box.x));
+  if (boxyEl) boxyEl.value = String(roundPos(box.y));
+}
+
+function applyControlsToState() {
+  if (arEl) circleA.r = Number(arEl.value);
+  if (brEl) circleB.r = Number(brEl.value);
+  if (boxwEl) box.w = Number(boxwEl.value);
+  if (boxhEl) box.h = Number(boxhEl.value);
+  if (axEl) circleA.x = Number(axEl.value);
+  if (ayEl) circleA.y = Number(ayEl.value);
+  if (bxEl) circleB.x = Number(bxEl.value);
+  if (byEl) circleB.y = Number(byEl.value);
+  if (boxxEl) box.x = Number(boxxEl.value);
+  if (boxyEl) box.y = Number(boxyEl.value);
+}
 
 function reset() {
   circleA = { ...C.circleA };
   circleB = { ...C.circleB };
   box = { ...C.box };
   drag = null;
+  syncControlsFromState();
   draw();
   setStatus("リセット — 円や箱をドラッグ");
 }
 
 btnReset?.addEventListener("click", reset);
+for (const el of [arEl, brEl, boxwEl, boxhEl]) {
+  el?.addEventListener("input", () => {
+    applyControlsToState();
+    syncControlsFromState();
+    draw();
+  });
+}
+for (const el of [axEl, ayEl, bxEl, byEl, boxxEl, boxyEl]) {
+  el?.addEventListener("change", () => {
+    applyControlsToState();
+    draw();
+  });
+}
 
 loadTextSample(
   "../samples/CircleCollisionExample.cs",
   csharpSample,
   "// CircleCollisionExample.cs"
 );
+
+const urlSpec = {
+  ax: { el: axEl, kind: "number" },
+  ay: { el: ayEl, kind: "number" },
+  ar: { el: arEl, kind: "range" },
+  bx: { el: bxEl, kind: "number" },
+  by: { el: byEl, kind: "number" },
+  br: { el: brEl, kind: "range" },
+  boxx: { el: boxxEl, kind: "number" },
+  boxy: { el: boxyEl, kind: "number" },
+  boxw: { el: boxwEl, kind: "range" },
+  boxh: { el: boxhEl, kind: "range" },
+};
+syncControlsFromState();
+mountShareLink({
+  spec: urlSpec,
+  button: document.getElementById("btn-copy-url"),
+  statusEl: document.getElementById("status"),
+});
+const urlResult = applyParamsToControls(urlSpec);
+applyControlsToState();
 draw();
+if (urlResult.warning) setStatus(urlResult.warning);
