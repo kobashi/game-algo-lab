@@ -19,7 +19,7 @@ const CHECKBOX_FALSE = new Set(["0", "false", "off"]);
  * @typedef {"number" | "range" | "checkbox" | "select"} ParamKind
  * @typedef {{ el: HTMLElement | null, kind: ParamKind }} ParamEntry
  * @typedef {Record<string, ParamEntry>} ParamSpec
- * @typedef {{ key: string, value: string, reason: string, min?: number | null, max?: number | null }} RejectedParam
+ * @typedef {{ key: string, value: string, reason: string, min?: number | null, max?: number | null, step?: number | null }} RejectedParam
  */
 
 function currentSearch() {
@@ -50,6 +50,41 @@ function boundOf(entry, attr) {
   if (raw == null || raw === "") return null;
   const n = Number(raw);
   return Number.isFinite(n) ? n : null;
+}
+
+/**
+ * step 属性が数値で 0 より大きいときだけ返す。
+ * "any"・未指定は検査しない（DOM の既定 step=1 には従わない）。
+ * @param {ParamEntry} entry
+ * @returns {number | null}
+ */
+function stepOf(entry) {
+  const el = entry.el;
+  if (!el) return null;
+  let raw = "";
+  if (typeof el.getAttribute === "function") {
+    const attr = el.getAttribute("step");
+    raw = attr == null ? "" : attr;
+  } else {
+    raw = el.step == null ? "" : String(el.step);
+  }
+  if (raw === "" || raw.toLowerCase() === "any") return null;
+  const n = Number(raw);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+/**
+ * (n - base) が step の整数倍か。step=0.01 / 0.5 の誤差を吸収する。
+ * @param {number} n
+ * @param {number} base
+ * @param {number} step
+ */
+function fitsStep(n, base, step) {
+  const q = (n - base) / step;
+  const nearest = Math.round(q);
+  const recon = base + nearest * step;
+  const tol = Math.max(Math.abs(step) * 1e-6, 1e-10);
+  return Math.abs(n - recon) <= tol;
 }
 
 /**
@@ -122,6 +157,11 @@ function describeRejection(r) {
             ? `${r.max}以下`
             : "指定範囲";
     return `URLパラメータ ${r.key}=${r.value} は範囲外（${span}）のため無視しました。`;
+  }
+  if (r.reason === "step") {
+    const step = r.step;
+    const base = r.min != null ? r.min : 0;
+    return `URLパラメータ ${r.key}=${r.value} は刻み幅${step}に合わないため無視しました（${base}から${step}刻み）。`;
   }
   if (r.reason === "option") {
     return `URLパラメータ ${r.key}=${r.value} は選択肢にないため無視しました。`;
@@ -214,6 +254,12 @@ export function applyParamsToControls(spec, search = currentSearch()) {
       }
       if ((min != null && n < min) || (max != null && n > max)) {
         rejected.push({ key, value: raw, reason: "range", min, max });
+        continue;
+      }
+      const step = stepOf(entry);
+      const base = min != null ? min : 0;
+      if (step != null && !fitsStep(n, base, step)) {
+        rejected.push({ key, value: raw, reason: "step", min, max, step });
         continue;
       }
       /** @type {HTMLInputElement} */ (el).value = String(n);

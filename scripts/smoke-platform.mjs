@@ -81,8 +81,15 @@ function mockControl(kind, value, extra = {}) {
     checked: !!extra.checked,
     min: extra.min ?? "",
     max: extra.max ?? "",
+    step: extra.step ?? "",
     options: extra.options ?? null,
     events: [],
+    getAttribute(name) {
+      if (name === "min") return this.min;
+      if (name === "max") return this.max;
+      if (name === "step") return extra.step == null ? "" : String(extra.step);
+      return null;
+    },
     querySelectorAll(sel) {
       if (sel === "option" && this.options) return this.options;
       return [];
@@ -253,9 +260,9 @@ function mockControl(kind, value, extra = {}) {
 }
 
 {
-  const vx = mockControl("range", "120", { min: "-240", max: "240" });
-  const vy = mockControl("range", "-40", { min: "-240", max: "240" });
-  const dt = mockControl("range", "16.7", { min: "5", max: "50" });
+  const vx = mockControl("range", "120", { min: "-240", max: "240", step: "5" });
+  const vy = mockControl("range", "-40", { min: "-240", max: "240", step: "5" });
+  const dt = mockControl("range", "16.7", { min: "5", max: "50", step: "0.5" });
   const bounce = mockControl("checkbox", "", { checked: true });
   const spec = {
     vx: { el: vx, kind: "range" },
@@ -263,12 +270,20 @@ function mockControl(kind, value, extra = {}) {
     dt: { el: dt, kind: "range" },
     bounce: { el: bounce, kind: "checkbox" },
   };
-  const r = applyParamsToControls(spec, "?vx=3&vy=-2&dt=10&bounce=1");
+  const r = applyParamsToControls(spec, "?vx=100&vy=-40&dt=10&bounce=1");
   assert.deepEqual(r.applied, ["vx", "vy", "dt", "bounce"]);
-  assert.equal(vx.value, "3");
-  assert.equal(vy.value, "-2");
+  assert.equal(vx.value, "100");
+  assert.equal(vy.value, "-40");
   assert.equal(dt.value, "10");
   assert.equal(bounce.checked, true);
+
+  const offStep = applyParamsToControls(
+    { vx: { el: vx, kind: "range" } },
+    "?vx=3"
+  );
+  assert.equal(vx.value, "100", "vx=3 must not snap to 5");
+  assert.equal(offStep.rejected[0].reason, "step");
+  assert.match(offStep.warning, /刻み幅5/);
 
   const bad = applyParamsToControls(
     { dt: { el: dt, kind: "range" } },
@@ -276,6 +291,13 @@ function mockControl(kind, value, extra = {}) {
   );
   assert.equal(dt.value, "10", "dt=0.1 must not clamp into 5–50ms");
   assert.equal(bad.rejected[0].reason, "range");
+
+  const dtHalf = applyParamsToControls(
+    { dt: { el: dt, kind: "range" } },
+    "?dt=16.5"
+  );
+  assert.deepEqual(dtHalf.applied, ["dt"]);
+  assert.equal(dt.value, "16.5");
 }
 
 {
@@ -325,18 +347,33 @@ function mockControl(kind, value, extra = {}) {
 }
 
 {
-  const follow = mockControl("range", "0.08", { min: "0.02", max: "0.5" });
-  const dead = mockControl("range", "40", { min: "0", max: "160" });
+  const follow = mockControl("range", "0.08", {
+    min: "0.02",
+    max: "0.5",
+    step: "0.01",
+  });
+  const dead = mockControl("range", "40", { min: "0", max: "160", step: "5" });
   const r = applyParamsToControls(
     {
       follow: { el: follow, kind: "range" },
       dead: { el: dead, kind: "range" },
     },
-    "?follow=0.2&dead=40"
+    "?follow=0.35&dead=60"
   );
   assert.deepEqual(r.applied, ["follow", "dead"]);
-  assert.equal(follow.value, "0.2");
-  assert.equal(dead.value, "40");
+  assert.equal(follow.value, "0.35");
+  assert.equal(dead.value, "60");
+
+  const atMin = applyParamsToControls(
+    { follow: { el: follow, kind: "range" } },
+    "?follow=0.02"
+  );
+  assert.deepEqual(atMin.applied, ["follow"]);
+  const atMax = applyParamsToControls(
+    { follow: { el: follow, kind: "range" } },
+    "?follow=0.5"
+  );
+  assert.deepEqual(atMax.applied, ["follow"]);
 }
 
 {
@@ -344,7 +381,7 @@ function mockControl(kind, value, extra = {}) {
     options: ["variable", "fixed"],
   });
   const dt = mockControl("range", "16.7", { min: "8", max: "33" });
-  const lag = mockControl("range", "0", { min: "0", max: "80" });
+  const lag = mockControl("range", "0", { min: "0", max: "80", step: "5" });
   const maxsteps = mockControl("range", "8", { min: "1", max: "16" });
   const r = applyParamsToControls(
     {
@@ -353,16 +390,23 @@ function mockControl(kind, value, extra = {}) {
       lag: { el: lag, kind: "range" },
       maxsteps: { el: maxsteps, kind: "range" },
     },
-    "?mode=fixed&dt=16.7&lag=1"
+    "?mode=fixed&dt=16.7&lag=10"
   );
   assert.deepEqual(r.applied, ["mode", "dt", "lag"]);
-  assert.equal(lag.value, "1");
+  assert.equal(lag.value, "10");
   const badDt = applyParamsToControls(
     { dt: { el: dt, kind: "range" } },
     "?dt=0.033"
   );
   assert.equal(dt.value, "16.7", "dt=0.033s must not clamp into 8–33ms");
   assert.equal(badDt.rejected[0].reason, "range");
+
+  const badLag = applyParamsToControls(
+    { lag: { el: lag, kind: "range" } },
+    "?lag=1"
+  );
+  assert.equal(badLag.rejected[0].reason, "step");
+  assert.equal(lag.value, "10", "lag=1 must not snap");
 }
 
 {

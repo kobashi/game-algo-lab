@@ -88,7 +88,7 @@ docs/templates/            # SPEC / スキャフォールド
 | 適用対象 | `rng-seed` / `tic-tac-toe` / `coyote-time` / `game-loop` / `velocity-motion` / `accel-gravity` / `gfx-ui-canvas` / `gfx-camera` |
 | `kind` | `"number"` / `"range"` / `"checkbox"` / `"select"` |
 | キーが無い | ページの既定値を保つ |
-| 不正値 | **clamp しない**。却下して `#status` に日本語警告 |
+| 不正値 | **clamp しない**。却下して `#status` に日本語警告。`number`/`range` は min〜max 外に加え、`step` に合わない値も却下（属性が数値のときのみ。`"any"`・未指定は検査しない） |
 | 適用順 | spec のキー順。preset 系 select は個別パラメータより前に並べる |
 | 共有 | `#btn-copy-url`（「この設定のURLをコピー」）。既定値と同じキーは付けない |
 | checkbox のオフ | 既定がオンでも `?coyote=0` は残す（既定と異なるため） |
@@ -279,6 +279,7 @@ python3 scripts/smoke-platform.py
 
 | 日付 | 内容 |
 |------|------|
+| 2026-09-03 | URL パラメータ: `step` に合わない値を却下（黙ってスナップしない） |
 | 2026-09-03 | 入門コース入口 `courses/intro.html`。`NAV_GROUPS.course` を追加 |
 | 2026-09-03 | `url-params.js` を新設。rng-seed / tic-tac-toe / coyote-time で URL クエリから初期コントロールを指定（授業課題の個別配布） |
 | 2026-08-22 | 探索再生で Map がスクロールアウトしないよう、DS は新しい要素を上へ・疑似コードはパネル内スクロールのみ |
