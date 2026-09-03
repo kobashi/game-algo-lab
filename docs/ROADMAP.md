@@ -7,7 +7,7 @@
 | **正本改訂** | **2026-07-19** — Fable5 レビュー全件承認を反映（§2 実在ルール優先原則、§4 procgen 行、§6.1 三目並べ、§6.4 割り箸 新設、§15 第2期追記）。レビュー記録: [reviews/2026-07-19-docx-minigames-review.md](./reviews/2026-07-19-docx-minigames-review.md)、変更履歴版: [interactive_game_programming_material_plan_fable5_review.docx](./interactive_game_programming_material_plan_fable5_review.docx) |
 | **リポジトリ登録** | 2026-07-17（`docs/` に配置し Git 管理開始） |
 | **本 Markdown** | 正本の要約・**実装状況の対応表**・Game Algo Lab 運用メモ（エージェント／GitHub 向け） |
-| **最終更新（md）** | 2026-09-03（URL パラメータ8本 · Release v0.15.0 · ready 110） |
+| **最終更新（md）** | 2026-09-03（URL パラメータ11本 · Release v0.16.0 · ready 110） |
 
 正本の変更や方針の大きな見直しは **Docx を更新したうえで本ファイルを同期**する。  
 細部の図表・講義向け長文は正本を開き、日々の実装判断は本ファイルと [topics/CATALOG.md](./topics/CATALOG.md) を優先する。

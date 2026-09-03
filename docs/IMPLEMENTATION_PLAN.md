@@ -178,6 +178,7 @@
 **Release `v0.13.0`（2026-09-03）**: URL クエリで初期パラメータ指定（`rng-seed` / `tic-tac-toe` / `coyote-time`）。ready 110 のまま。  
 **Release `v0.14.0`（2026-09-03）**: 入門コース入口（`courses/intro.html`、13本を学ぶ順）。ready 110 のまま。  
 **Release `v0.15.0`（2026-09-03）**: URL パラメータを5トピックへ拡張（game-loop / velocity-motion / accel-gravity / gfx-ui-canvas / gfx-camera）。ready 110 のまま。  
+**Release `v0.16.0`（2026-09-03）**: URL の step 検査 + input-basics / circle-collision / sfx-events の調整パラメータ。ready 110 のまま。  
 次: 優先度 B 続き · oneshot 改訂 · 計測パネル統一 ·「戻る」。  
 **候補**: [topics/CANDIDATE_TOPICS.md](./topics/CANDIDATE_TOPICS.md)。**範囲外**: ROADMAP §4.2。
 

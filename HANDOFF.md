@@ -1,9 +1,11 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-09-03（ready **110** · Release **v0.15.0**）  
+最終更新: 2026-09-03（ready **110** · Release **v0.16.0**）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
-Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.15.0
+Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.16.0
+
+**2026-09-03 Release `v0.16.0`**: URL の step 検査 + `input-basics` / `circle-collision` / `sfx-events` の調整パラメータ。ノート: `RELEASE_NOTES_v0.16.0.md`。
 
 **2026-09-03 sfx-events 調整パラメータ**: イベントごとの周波数・長さ・音量を上書きし URL（ev/freq/dur/gain）で共有。
 
@@ -590,9 +592,9 @@ ready **95**。**Audio / Networking / Graphics（主要）一通り完了。**
 - 既定ブランチ: `main`（ローカルは `origin/main` と同期済み想定）  
 - **GitHub Pages（試作運用中）**: https://kobashi.github.io/game-algo-lab/  
   - Source: `main` / `/ (root)`  
-- **Release 試作版**: https://github.com/kobashi/game-algo-lab/releases/tag/v0.15.0  
-  - 前版: `v0.14.0` / `v0.13.0` / `v0.12.0` / `v0.11.1` / `v0.11.0` / `v0.10.0` / `v0.9.8`  
-- 再公開: `./scripts/publish-github.sh game-algo-lab v0.15.0`（または新タグ）  
+- **Release 試作版**: https://github.com/kobashi/game-algo-lab/releases/tag/v0.16.0  
+  - 前版: `v0.15.0` / `v0.14.0` / `v0.13.0` / `v0.12.0` / `v0.11.1` / `v0.11.0` / `v0.10.0` / `v0.9.8`  
+- 再公開: `./scripts/publish-github.sh game-algo-lab v0.16.0`（または新タグ）  
 - 旧ローカルタグ `v1.0.0` は初期準備用。正式版は別途 `v1.0.0` を切り直す想定  
 
 ### リモートブランチ（不要マーク・削除しない）
