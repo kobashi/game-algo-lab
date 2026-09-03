@@ -11,10 +11,10 @@ GitHub Pages での公開を前提に、ビルド不要の静的サイト（HTML
 |--|-----|
 | **教材トップ** | https://kobashi.github.io/game-algo-lab/ |
 | リポジトリ | https://github.com/kobashi/game-algo-lab |
-| 最新試作 Release | https://github.com/kobashi/game-algo-lab/releases/tag/v0.14.0 |
+| 最新試作 Release | https://github.com/kobashi/game-algo-lab/releases/tag/v0.15.0 |
 
 **ready 110 トピック**。経路探索・ゲーム木・物理・空間・AI・設計・品質・HCI・プロシージャル・**サウンド**・**ゲーム CG**・**通信**まで一通り揃い、Sprint S5（影響マップ・Poisson・決定木）まで追加済みです。  
-`rng-seed` / `tic-tac-toe` / `coyote-time` は URL クエリで初期パラメータを指定できます（授業課題の個別配布用）。
+`rng-seed` / `tic-tac-toe` / `coyote-time` / `game-loop` / `velocity-motion` / `accel-gravity` / `gfx-ui-canvas` / `gfx-camera` は URL クエリで初期パラメータを指定できます（授業課題の設定提出用）。
 
 主なデモ例:
 

@@ -1,11 +1,11 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-09-03（ready **110** · Release **v0.14.0**）  
+最終更新: 2026-09-03（ready **110** · Release **v0.15.0**）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
-Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.14.0
+Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.15.0
 
-**2026-09-03 URL パラメータ拡張**: `game-loop` / `velocity-motion` / `accel-gravity` / `gfx-ui-canvas` / `gfx-camera` にもクエリ初期値と「この設定のURLをコピー」を追加（既存 `url-params.js`）。`game-loop` の再生間隔は含めない。
+**2026-09-03 URL パラメータ拡張 · Release `v0.15.0`**: `game-loop` / `velocity-motion` / `accel-gravity` / `gfx-ui-canvas` / `gfx-camera` にもクエリ初期値と「この設定のURLをコピー」を追加（既存 `url-params.js`）。`game-loop` の再生間隔は含めない。ノート: `RELEASE_NOTES_v0.15.0.md`。
 
 **2026-09-03 入門コース · Release `v0.14.0`**: `courses/intro.html` に13トピックを学ぶ順（6段）で並べる入口を追加。カード文言は `TOPICS` 参照。ナビは `NAV_GROUPS.course`。既存デモは未変更。ノート: `RELEASE_NOTES_v0.14.0.md`。
 
@@ -582,9 +582,9 @@ ready **95**。**Audio / Networking / Graphics（主要）一通り完了。**
 - 既定ブランチ: `main`（ローカルは `origin/main` と同期済み想定）  
 - **GitHub Pages（試作運用中）**: https://kobashi.github.io/game-algo-lab/  
   - Source: `main` / `/ (root)`  
-- **Release 試作版**: https://github.com/kobashi/game-algo-lab/releases/tag/v0.14.0  
-  - 前版: `v0.13.0` / `v0.12.0` / `v0.11.1` / `v0.11.0` / `v0.10.0` / `v0.9.8`  
-- 再公開: `./scripts/publish-github.sh game-algo-lab v0.14.0`（または新タグ）  
+- **Release 試作版**: https://github.com/kobashi/game-algo-lab/releases/tag/v0.15.0  
+  - 前版: `v0.14.0` / `v0.13.0` / `v0.12.0` / `v0.11.1` / `v0.11.0` / `v0.10.0` / `v0.9.8`  
+- 再公開: `./scripts/publish-github.sh game-algo-lab v0.15.0`（または新タグ）  
 - 旧ローカルタグ `v1.0.0` は初期準備用。正式版は別途 `v1.0.0` を切り直す想定  
 
 ### リモートブランチ（不要マーク・削除しない）
