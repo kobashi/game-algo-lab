@@ -14,6 +14,7 @@ import {
   mountTopicShellFromDataset,
   applyParamsToControls,
   mountShareLink,
+  readSpeedScale,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -32,6 +33,14 @@ const longMsEl = /** @type {HTMLInputElement} */ (
   document.getElementById("long-ms")
 );
 const longMsVal = document.getElementById("long-ms-val");
+const speedEl = /** @type {HTMLInputElement} */ (
+  document.getElementById("speed")
+);
+const speedVal = document.getElementById("speed-val");
+const tlCanvas = /** @type {HTMLCanvasElement} */ (
+  document.getElementById("ib-timeline")
+);
+const tlCtx = tlCanvas?.getContext("2d");
 const csharpSample = document.getElementById("csharp-sample");
 
 const setStatus = createStatus(document.getElementById("status"));
@@ -76,6 +85,9 @@ let running = false;
 let rafId = null;
 let lastTs = 0;
 let focused = false;
+let simMs = 0;
+/** @type {{ id: string, t0: number, t1: number | null, long: boolean }[]} */
+let bands = [];
 
 function readLongMs() {
   return Math.min(
@@ -86,6 +98,7 @@ function readLongMs() {
 
 function syncLabels() {
   if (longMsVal) longMsVal.textContent = String(readLongMs());
+  if (speedVal) speedVal.textContent = readSpeedScale(speedEl).toFixed(1);
 }
 
 function keyMatches(action, code, key) {
@@ -128,8 +141,19 @@ function pollActions(dtSec) {
       st.longPressFired = false;
     }
 
-    if (st.down) edges.push(`${def.label} DOWN`);
-    if (st.up) edges.push(`${def.label} UP`);
+    if (st.down) {
+      edges.push(`${def.label} DOWN`);
+      bands.push({ id: def.id, t0: simMs, t1: null, long: false });
+    }
+    if (st.up) {
+      edges.push(`${def.label} UP`);
+      for (let i = bands.length - 1; i >= 0; i--) {
+        if (bands[i].id === def.id && bands[i].t1 == null) {
+          bands[i].t1 = simMs;
+          break;
+        }
+      }
+    }
 
     // 長押し消費
     if (
@@ -141,6 +165,12 @@ function pollActions(dtSec) {
       st.longPressFired = true;
       chargeCount += 1;
       edges.push(`${def.label} LONG (≥${readLongMs()}ms)`);
+      for (let i = bands.length - 1; i >= 0; i--) {
+        if (bands[i].id === def.id && bands[i].t1 == null) {
+          bands[i].long = true;
+          break;
+        }
+      }
     }
   }
 
@@ -156,7 +186,7 @@ function pollActions(dtSec) {
     let dir = 0;
     if (rawDown.has("ArrowRight")) dir += 1;
     if (rawDown.has("ArrowLeft")) dir -= 1;
-    playerX += dir * C.moveSpeed * dtSec;
+    playerX += dir * C.moveSpeed * dtSec * readSpeedScale(speedEl);
     playerX = Math.max(0.08, Math.min(0.92, playerX));
   }
 
@@ -170,9 +200,11 @@ function pollActions(dtSec) {
 
 function tick(realDtMs) {
   const dt = Math.min(realDtMs, 50) / 1000;
+  simMs += dt * 1000;
   frameIndex += 1;
   pollActions(dt);
   draw();
+  drawTimeline();
   renderPanels();
   renderEventLog();
 
@@ -268,6 +300,61 @@ function draw() {
   }
 }
 
+function drawTimeline() {
+  if (!tlCtx || !tlCanvas) return;
+  const W = tlCanvas.width;
+  const H = tlCanvas.height;
+  tlCtx.fillStyle = "#0a0e14";
+  tlCtx.fillRect(0, 0, W, H);
+  const windowMs = 4000;
+  const tEnd = Math.max(windowMs, simMs);
+  const t0 = tEnd - windowMs;
+  const rows = INPUT_ACTIONS;
+  const rowH = (H - 18) / rows.length;
+  const xAt = (t) => 56 + ((t - t0) / windowMs) * (W - 64);
+  tlCtx.fillStyle = "#9aabbf";
+  tlCtx.font = "11px sans-serif";
+  rows.forEach((def, i) => {
+    const y = 14 + i * rowH;
+    tlCtx.fillStyle = "#9aabbf";
+    tlCtx.fillText(def.label, 4, y + rowH * 0.55);
+    tlCtx.fillStyle = "rgba(61,79,102,0.5)";
+    tlCtx.fillRect(56, y + 6, W - 64, rowH - 12);
+  });
+  const thr = readLongMs();
+  for (const b of bands) {
+    const i = rows.findIndex((d) => d.id === b.id);
+    if (i < 0) continue;
+    const y = 14 + i * rowH;
+    const x1 = xAt(b.t0);
+    const x2 = xAt(b.t1 == null ? simMs : b.t1);
+    if (x2 < 56 || x1 > W) continue;
+    tlCtx.fillStyle = b.long ? "rgba(242,204,143,0.85)" : "rgba(91,159,212,0.75)";
+    tlCtx.fillRect(Math.max(56, x1), y + 8, Math.max(2, x2 - x1), rowH - 16);
+    tlCtx.fillStyle = "#6bcb8f";
+    tlCtx.fillRect(Math.max(56, x1) - 1, y + 4, 3, rowH - 8);
+    if (b.t1 != null) {
+      tlCtx.fillStyle = "#e07a5f";
+      tlCtx.fillRect(Math.min(W - 4, x2) - 1, y + 4, 3, rowH - 8);
+    }
+    if (b.id === "charge") {
+      const lx = xAt(b.t0 + thr);
+      if (lx >= 56 && lx <= W) {
+        tlCtx.strokeStyle = "rgba(242,204,143,0.9)";
+        tlCtx.setLineDash([3, 3]);
+        tlCtx.beginPath();
+        tlCtx.moveTo(lx, y + 2);
+        tlCtx.lineTo(lx, y + rowH - 2);
+        tlCtx.stroke();
+        tlCtx.setLineDash([]);
+      }
+    }
+  }
+  tlCtx.fillStyle = "#8a9bb0";
+  tlCtx.font = "10px sans-serif";
+  tlCtx.fillText("帯=held  緑=down  赤=up  点線=長押し閾値", 56, H - 4);
+}
+
 function renderPanels() {
   if (!actionPanels) return;
   actionPanels.innerHTML = INPUT_ACTIONS.map((def) => {
@@ -354,8 +441,11 @@ function resetAll() {
   chargeCount = 0;
   frameIndex = 0;
   eventLog = [];
+  simMs = 0;
+  bands = [];
   resultPanel.hide();
   draw();
+  drawTimeline();
   renderPanels();
   renderEventLog();
   setStatus("リセット完了 — キャンバスをフォーカスしてキー入力");
@@ -426,6 +516,7 @@ resetAll();
 
 const urlSpec = {
   longms: { el: longMsEl, kind: "range" },
+  speed: { el: speedEl, kind: "range" },
 };
 mountShareLink({
   spec: urlSpec,

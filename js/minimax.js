@@ -32,6 +32,9 @@ const leavesEl = /** @type {HTMLInputElement | null} */ (
 const depthEl = /** @type {HTMLSelectElement | null} */ (
   document.getElementById("mm-depth")
 );
+const loopEl = /** @type {HTMLInputElement | null} */ (
+  document.getElementById("loop")
+);
 const csharpSample = document.getElementById("csharp-sample");
 
 const setStatus = createStatus(document.getElementById("status"));
@@ -69,6 +72,8 @@ let callStack = [];
 
 let finished = false;
 let stepCount = 0;
+/** @type {number | null} */
+let prevRootV = null;
 /** @type {Record<string, {x:number,y:number}>} */
 let layout = {};
 let NODE_W = 100;
@@ -281,6 +286,27 @@ function draw() {
   }
 
   svg.innerHTML = `<g class="andor-edges">${edges.join("")}</g><g class="andor-nodes">${nodeEls.join("")}</g>`;
+  svg.querySelectorAll(".kind-leaf").forEach((g) => {
+    g.addEventListener("click", () => {
+      const id = g.getAttribute("data-id");
+      if (!id || !nodes[id] || nodes[id].kind !== "leaf") return;
+      nodes[id].score = (nodes[id].score ?? 0) + 1;
+      const leaves = collectLeaves(nodes, rootId);
+      if (leavesEl) leavesEl.value = leaves.map((n) => String(n.score ?? 0)).join(",");
+      resetState();
+      setStatus(`葉「${nodes[id].label}」を ${nodes[id].score} に（クリックで +1）`);
+    });
+    g.addEventListener("contextmenu", (ev) => {
+      ev.preventDefault();
+      const id = g.getAttribute("data-id");
+      if (!id || !nodes[id] || nodes[id].kind !== "leaf") return;
+      nodes[id].score = (nodes[id].score ?? 0) - 1;
+      const leaves = collectLeaves(nodes, rootId);
+      if (leavesEl) leavesEl.value = leaves.map((n) => String(n.score ?? 0)).join(",");
+      resetState();
+      setStatus(`葉「${nodes[id].label}」を ${nodes[id].score} に（右クリックで −1）`);
+    });
+  });
 }
 
 function updateDs() {
@@ -343,6 +369,14 @@ function finishRoot() {
   markProof(rootId);
   draw();
   const v = value[rootId];
+  const prev = prevRootV;
+  prevRootV = v;
+  const delta =
+    prev == null
+      ? "（前回なし）"
+      : prev === v
+        ? `${prev} → ${v}（変わらず）`
+        : `${prev} → ${v}`;
   const move = bestChild[rootId]
     ? nodes[bestChild[rootId]].label
     : "—";
@@ -357,7 +391,7 @@ function finishRoot() {
   resultPanel.show(`
     <h3>結果（Min-Max）</h3>
     <ul>
-      <li><strong>根の評価値 v</strong>: ${v}</li>
+      <li><strong>根の評価値 v</strong>: ${v}　前回比較: ${delta}</li>
       <li><strong>最善手</strong>: ${move}</li>
       <li><strong>深さ制限</strong>: ${limit === 3 ? "なし（3）" : String(limit)}</li>
       <li><strong>ステップ数</strong>: ${stepCount}</li>
@@ -497,7 +531,14 @@ function stepOnce() {
 const playback = createPlayback({
   btnPlay: /** @type {HTMLButtonElement | null} */ (btnPlay),
   speedEl: /** @type {HTMLInputElement | null} */ (speedEl),
-  onTick: () => stepOnce(),
+  onTick: () => {
+    const cont = stepOnce();
+    if (!cont && loopEl?.checked) {
+      resetState();
+      return true;
+    }
+    return cont;
+  },
   defaultDelayMs: 200,
 });
 
@@ -532,6 +573,7 @@ if (depthEl) depthEl.value = "3";
 const urlSpec = {
   leaves: { el: leavesEl, kind: "text" },
   depth: { el: depthEl, kind: "select" },
+  loop: { el: loopEl, kind: "checkbox" },
 };
 mountShareLink({
   spec: urlSpec,

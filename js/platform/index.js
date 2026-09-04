@@ -26,6 +26,14 @@ export {
   formatRejectedMessage,
 } from "./url-params.js";
 export { mulberry32, randomIndex } from "./rng.js";
+export {
+  readSpeedScale,
+  drawTrailDots,
+  circleAabbOverlaps,
+  circleAabbTunneled,
+  resolveCircleAabbReflect,
+  centerObstacleBox,
+} from "./observe.js";
 export { layoutTree, applySvgSize, existingChildIds } from "./tree-layout.js";
 export {
   canvasCellFromEvent,

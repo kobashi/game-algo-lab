@@ -46,6 +46,8 @@ let box = { ...C.box };
  * @type {Drag | null}
  */
 let drag = null;
+/** @type {'A'|'B'|'box'|null} */
+let selected = "A";
 
 /**
  * @param {number} x1
@@ -131,20 +133,30 @@ function draw() {
   ctx.fill();
 
   // circles
-  const drawC = (c, label, hit) => {
+  const graze = Math.abs(ev.distAB - (circleA.r + circleB.r)) <= 1.5;
+  const drawC = (c, label, hit, isSel) => {
     ctx.beginPath();
     ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
-    ctx.fillStyle = hit ? "rgba(107, 203, 143, 0.35)" : "rgba(91, 159, 212, 0.35)";
+    ctx.fillStyle = graze && label !== "AABB"
+      ? "rgba(242,204,143,0.4)"
+      : hit
+        ? "rgba(107, 203, 143, 0.35)"
+        : "rgba(91, 159, 212, 0.35)";
     ctx.fill();
-    ctx.strokeStyle = hit ? "#6bcb8f" : "#5b9fd4";
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = isSel ? "#f2cc8f" : hit ? "#6bcb8f" : graze ? "#f2cc8f" : "#5b9fd4";
+    ctx.lineWidth = isSel ? 3 : 2;
     ctx.stroke();
     ctx.fillStyle = "#e8eef7";
     ctx.font = "bold 13px sans-serif";
     ctx.fillText(label, c.x - 6, c.y + 4);
   };
-  drawC(circleA, "A", ev.cc || ev.ca.hit);
-  drawC(circleB, "B", ev.cc || ev.cb.hit);
+  drawC(circleA, "A", ev.cc || ev.ca.hit, selected === "A");
+  drawC(circleB, "B", ev.cc || ev.cb.hit, selected === "B");
+  if (selected === "box") {
+    ctx.strokeStyle = "#f2cc8f";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(box.x - 1, box.y - 1, box.w + 2, box.h + 2);
+  }
 
   // line A-B
   ctx.strokeStyle = ev.cc ? "#6bcb8f" : "rgba(154,171,191,0.5)";
@@ -177,8 +189,11 @@ function renderPanel(ev) {
       <p><code>circles: dx²+dy² ≤ (r1+r2)²</code></p>
       <p><code>circle–AABB: dist(center, clamp(center, box)) ≤ r</code></p>`;
   }
+  const graze = Math.abs(ev.distAB - (circleA.r + circleB.r)) <= 1.5;
   setStatus(
-    `円同士 ${ev.cc ? "HIT" : "miss"} · A–箱 ${ev.ca.hit ? "HIT" : "miss"} · B–箱 ${ev.cb.hit ? "HIT" : "miss"}`
+    graze
+      ? `ぎりぎり接触（|d − (rA+rB)| ≤ 1.5）  d=${ev.distAB.toFixed(1)} rA+rB=${(circleA.r + circleB.r).toFixed(1)}`
+      : `円同士 ${ev.cc ? "HIT" : "miss"} · A–箱 ${ev.ca.hit ? "HIT" : "miss"} · B–箱 ${ev.cb.hit ? "HIT" : "miss"}`
   );
 }
 
@@ -212,6 +227,7 @@ canvas?.addEventListener("pointerdown", (e) => {
   const p = pointerPos(e);
   const kind = hitTest(p.x, p.y);
   if (!kind) return;
+  selected = kind;
   canvas.setPointerCapture(e.pointerId);
   if (kind === "A") {
     drag = { kind: "A", ox: circleA.x, oy: circleA.y, mx: p.x, my: p.y };
@@ -247,6 +263,31 @@ canvas?.addEventListener("pointerup", () => {
 canvas?.addEventListener("pointercancel", () => {
   drag = null;
   syncControlsFromState();
+});
+
+window.addEventListener("keydown", (e) => {
+  if (!selected) return;
+  const step = 1;
+  let dx = 0;
+  let dy = 0;
+  if (e.key === "ArrowLeft") dx = -step;
+  else if (e.key === "ArrowRight") dx = step;
+  else if (e.key === "ArrowUp") dy = -step;
+  else if (e.key === "ArrowDown") dy = step;
+  else return;
+  e.preventDefault();
+  if (selected === "A") {
+    circleA.x += dx;
+    circleA.y += dy;
+  } else if (selected === "B") {
+    circleB.x += dx;
+    circleB.y += dy;
+  } else {
+    box.x += dx;
+    box.y += dy;
+  }
+  syncControlsFromState();
+  draw();
 });
 
 function roundPos(n) {

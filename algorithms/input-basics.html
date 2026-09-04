@@ -48,6 +48,7 @@
           <span><i class="swatch" style="background:#f2cc8f"></i>チャージ</span>
         </div>
         <div id="action-panels" class="ib-action-grid"></div>
+        <canvas id="ib-timeline" class="ib-timeline" width="640" height="140" aria-label="入力の時間軸"></canvas>
         <div id="status" class="status-log" role="status">準備完了</div>
       </section>
 
@@ -67,6 +68,10 @@
           <div class="controls-group-paint gl-params">
             <label class="controls-label" for="long-ms">長押し閾値 <span id="long-ms-val">400</span> ms</label>
             <input type="range" id="long-ms" class="ttt-range" min="100" max="1500" value="400" step="50" />
+          </div>
+          <div class="controls-group-paint gl-params">
+            <label class="controls-label" for="speed">再生速度 <span id="speed-val">1.0</span>×</label>
+            <input type="range" id="speed" class="ttt-range" min="0.1" max="1" value="1" step="0.1" />
           </div>
           <div class="controls-group-paint gl-params url-share-row">
             <button type="button" id="btn-copy-url" class="btn btn-ghost">この設定のURLをコピー</button>

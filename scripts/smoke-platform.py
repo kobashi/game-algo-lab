@@ -42,6 +42,7 @@ def check_platform_files() -> None:
         "js/platform/topic-shell.js",
         "js/platform/maturity.js",
         "js/platform/url-params.js",
+        "js/platform/observe.js",
         "js/platform/text.js",
         "js/map-format.js",
         "js/ds-viz.js",
@@ -76,6 +77,8 @@ def check_exports() -> None:
         "applyParamsToControls",
         "buildShareUrl",
         "mountShareLink",
+        "drawTrailDots",
+        "resolveCircleAabbReflect",
     ]
     for name in needed:
         if name in text:

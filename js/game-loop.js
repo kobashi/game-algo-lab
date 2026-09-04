@@ -11,6 +11,7 @@ import {
   mountTopicShellFromDataset,
   applyParamsToControls,
   mountShareLink,
+  drawTrailDots,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -33,6 +34,11 @@ const maxStepsEl = /** @type {HTMLInputElement} */ (
   document.getElementById("max-steps")
 );
 const speedEl = /** @type {HTMLInputElement} */ (document.getElementById("speed"));
+const ballsEl = /** @type {HTMLInputElement} */ (document.getElementById("balls"));
+const loopEl = /** @type {HTMLInputElement} */ (document.getElementById("loop"));
+const trailEl = /** @type {HTMLInputElement} */ (document.getElementById("trail"));
+const ballsVal = document.getElementById("balls-val");
+const fpsEl = document.getElementById("gl-fps");
 const fixedDtVal = document.getElementById("fixed-dt-val");
 const lagVal = document.getElementById("lag-val");
 const maxStepsVal = document.getElementById("max-steps-val");
@@ -57,6 +63,12 @@ let timerId = null;
 let lastTs = 0;
 let spiralWarns = 0;
 let totalSteps = 0;
+/** @type {{ y: number, v: number }[]} */
+let extras = [];
+/** @type {{x:number,y:number}[]} */
+let trail = [];
+let fpsEma = 60;
+let lowFpsMs = 0;
 
 function readFixedDtMs() {
   return Math.min(
@@ -76,11 +88,16 @@ function readMaxSteps() {
 function readMode() {
   return modeEl.value === "variable" ? "variable" : "fixed";
 }
+function readBalls() {
+  const n = Math.floor(Number(ballsEl?.value) || 1);
+  return Math.min(200, Math.max(1, n));
+}
 
 function syncLabels() {
   if (fixedDtVal) fixedDtVal.textContent = readFixedDtMs().toFixed(1);
   if (lagVal) lagVal.textContent = String(readLagMs());
   if (maxStepsVal) maxStepsVal.textContent = String(readMaxSteps());
+  if (ballsVal) ballsVal.textContent = String(readBalls());
 }
 
 function setPhase(phase) {
@@ -102,21 +119,35 @@ function resetWorld() {
   log = [];
   spiralWarns = 0;
   totalSteps = 0;
+  extras = [];
+  trail = [];
+  fpsEma = 60;
+  lowFpsMs = 0;
   resultPanel.hide();
 }
 
-function updatePhysics(dtSec) {
-  world.v += C.gravity * dtSec;
-  world.y += world.v * dtSec;
+function updateBody(body, dtSec) {
+  body.v += C.gravity * dtSec;
+  body.y += body.v * dtSec;
   const floor = C.floorY - C.ballRadius;
-  if (world.y > floor) {
-    world.y = floor;
-    world.v = -Math.abs(world.v) * C.restitution;
+  if (body.y > floor) {
+    body.y = floor;
+    body.v = -Math.abs(body.v) * C.restitution;
   }
-  if (world.y < C.ballRadius) {
-    world.y = C.ballRadius;
-    world.v = Math.abs(world.v) * C.restitution;
+  if (body.y < C.ballRadius) {
+    body.y = C.ballRadius;
+    body.v = Math.abs(body.v) * C.restitution;
   }
+}
+
+function updatePhysics(dtSec) {
+  updateBody(world, dtSec);
+  const n = readBalls();
+  while (extras.length < n - 1) {
+    extras.push({ y: 0.12 + Math.random() * 0.4, v: (Math.random() - 0.5) * 80 });
+  }
+  if (extras.length > n - 1) extras.length = n - 1;
+  for (const b of extras) updateBody(b, dtSec);
 }
 
 /**
@@ -156,6 +187,19 @@ function runFrame(realDtMs) {
     }
   }
 
+  const fps = realMs > 0.5 ? 1000 / realMs : 60;
+  fpsEma = fpsEma * 0.85 + fps * 0.15;
+  if (fpsEl) fpsEl.textContent = `FPS: ${fpsEma.toFixed(0)}（実測 ${fps.toFixed(0)}）  ボール ${readBalls()}`;
+  if (fpsEma < 15) lowFpsMs += realMs;
+  else lowFpsMs = 0;
+  if (lowFpsMs > 2000 && readBalls() > 1) {
+    const next = Math.max(1, Math.floor(readBalls() / 2));
+    if (ballsEl) ballsEl.value = String(next);
+    syncLabels();
+    lowFpsMs = 0;
+    setStatus(`⚠ FPS が低いためボール数を ${next} に戻しました`);
+  }
+
   setPhase("render");
   frameIndex += 1;
   log.unshift({
@@ -190,6 +234,11 @@ function runFrame(realDtMs) {
     );
   }
   setPhase(running ? "run" : "idle");
+  const floor = C.floorY - C.ballRadius;
+  if (loopEl?.checked && Math.abs(world.v) < 8 && world.y >= floor - 0.002) {
+    world = { y: 0.12, v: 0 };
+    acc = 0;
+  }
 }
 
 function draw() {
@@ -223,6 +272,20 @@ function draw() {
   const cx = W * 0.5;
   const cy = (world.y / C.worldHeight) * H;
   const r = (C.ballRadius / C.worldHeight) * H;
+  if (trailEl?.checked) {
+    trail.push({ x: cx, y: cy });
+    if (trail.length > 90) trail.shift();
+    drawTrailDots(ctx, trail, { rgb: "91,159,212", radius: 2 });
+  }
+  for (let i = 0; i < extras.length; i++) {
+    const b = extras[i];
+    const bx = W * (0.15 + (i % 10) * 0.07);
+    const by = (b.y / C.worldHeight) * H;
+    ctx.fillStyle = "rgba(91,159,212,0.28)";
+    ctx.beginPath();
+    ctx.arc(bx, by, r * 0.7, 0, Math.PI * 2);
+    ctx.fill();
+  }
   ctx.fillStyle = "#5b9fd4";
   ctx.beginPath();
   ctx.arc(cx, cy, r, 0, Math.PI * 2);
@@ -345,7 +408,7 @@ btnReset?.addEventListener("click", () => {
   setPhase("idle");
 });
 
-for (const el of [fixedDtEl, lagEl, maxStepsEl, modeEl]) {
+for (const el of [fixedDtEl, lagEl, maxStepsEl, modeEl, ballsEl]) {
   el?.addEventListener("input", () => {
     syncLabels();
   });
@@ -368,12 +431,14 @@ resetWorld();
 draw();
 renderLog();
 
-// 再生間隔 (speed) は課題の調整対象ではないので URL に含めない
 const urlSpec = {
   mode: { el: modeEl, kind: "select" },
   dt: { el: fixedDtEl, kind: "range" },
   lag: { el: lagEl, kind: "range" },
   maxsteps: { el: maxStepsEl, kind: "range" },
+  balls: { el: ballsEl, kind: "range" },
+  loop: { el: loopEl, kind: "checkbox" },
+  trail: { el: trailEl, kind: "checkbox" },
 };
 mountShareLink({
   spec: urlSpec,

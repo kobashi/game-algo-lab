@@ -149,6 +149,15 @@ function unreachableIds() {
   return stateIds().filter((id) => !reach.has(id));
 }
 
+function outgoingCount(id) {
+  return FSM_CONFIG.events.filter((e) => nextState(id, e.id) !== null).length;
+}
+
+function deadlockIds() {
+  const reach = reachableFrom(initial);
+  return stateIds().filter((id) => reach.has(id) && outgoingCount(id) === 0);
+}
+
 function nextState(from, event) {
   return transitions[transitionKey(from, event)] ?? null;
 }
@@ -173,9 +182,11 @@ function reset() {
       "現在状態に応じて有効なイベントだけが遷移します。無効な入力は無視されます。";
   }
   const dead = unreachableIds();
-  const extra = dead.length
-    ? `。到達できない状態: ${dead.join(", ")}`
-    : "";
+  const locks = deadlockIds();
+  const bits = [];
+  if (dead.length) bits.push(`到達不能: ${dead.join(", ")}`);
+  if (locks.length) bits.push(`出口なし: ${locks.join(", ")}`);
+  const extra = bits.length ? `。${bits.join(" / ")}` : "";
   setStatus(`準備完了 — 初期状態 ${current}${extra}`);
   renderAll();
 }
@@ -278,8 +289,9 @@ function drawDiagram() {
       const isCur = id === current;
       const isLast = lastAccepted && id === lastTo;
       const unreachable = !reach.has(id);
+      const deadlock = !unreachable && outgoingCount(id) === 0;
       return `
-        <g class="fsm-node${isCur ? " is-current" : ""}${isLast ? " is-flash" : ""}${unreachable ? " is-unreachable" : ""}" data-state="${id}">
+        <g class="fsm-node${isCur ? " is-current" : ""}${isLast ? " is-flash" : ""}${unreachable ? " is-unreachable" : ""}${deadlock ? " is-deadlock" : ""}" data-state="${id}">
           <circle cx="${p.x}" cy="${p.y}" r="${R}" fill="${s.color}33" stroke="${s.color}" />
           <text class="fsm-node-label" x="${p.x}" y="${p.y + 4}" text-anchor="middle">${s.label}</text>
         </g>`;

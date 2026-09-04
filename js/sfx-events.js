@@ -34,6 +34,12 @@ const gainVal = document.getElementById("sfx-gain-val");
 const btnBox = document.getElementById("sfx-btns");
 const csharpSample = document.getElementById("csharp-sample");
 const setStatus = createStatus(document.getElementById("status"));
+const waveCanvas = /** @type {HTMLCanvasElement} */ (
+  document.getElementById("sfx-wave")
+);
+const waveCtx = waveCanvas?.getContext("2d");
+/** @type {{ freq: number, dur: number, gain: number } | null} */
+let lastTone = null;
 
 /** @type {Record<string, { freq: number, dur: number, gain: number }>} */
 const overrides = {};
@@ -122,6 +128,8 @@ function pushLog(msg) {
  * @param {number} [gain]
  */
 export function playTone(freq, dur, gain = 0.08) {
+  lastTone = { freq, dur, gain };
+  drawWave(freq, dur, gain);
   if (muteEl?.checked) {
     pushLog(`SE (muted) ${freq}Hz ${dur}s`);
     return;
@@ -148,6 +156,45 @@ export function playTone(freq, dur, gain = 0.08) {
   o.start(t0);
   o.stop(t0 + dur + 0.02);
   pushLog(`SE play ${freq}Hz ${dur}s g=${gain.toFixed(2)}`);
+}
+
+function drawWave(freq, dur, gain) {
+  if (!waveCtx || !waveCanvas) return;
+  const W = waveCanvas.width;
+  const H = waveCanvas.height;
+  waveCtx.fillStyle = "#0a0e14";
+  waveCtx.fillRect(0, 0, W, H);
+  const mid = H / 2;
+  waveCtx.strokeStyle = "rgba(90,106,128,0.5)";
+  waveCtx.beginPath();
+  waveCtx.moveTo(0, mid);
+  waveCtx.lineTo(W, mid);
+  waveCtx.stroke();
+  waveCtx.beginPath();
+  waveCtx.strokeStyle = "#5b9fd4";
+  const n = W;
+  for (let i = 0; i < n; i++) {
+    const t = (i / (n - 1)) * dur;
+    const env = gain * Math.exp((-3 * t) / Math.max(dur, 0.001));
+    const osc = Math.sign(Math.sin(2 * Math.PI * freq * t)) || 0;
+    const y = mid - osc * env * (H * 0.42) / 0.3;
+    if (i === 0) waveCtx.moveTo(i, y);
+    else waveCtx.lineTo(i, y);
+  }
+  waveCtx.stroke();
+  waveCtx.beginPath();
+  waveCtx.strokeStyle = "#f2cc8f";
+  for (let i = 0; i < n; i++) {
+    const t = (i / (n - 1)) * dur;
+    const env = gain * Math.exp((-3 * t) / Math.max(dur, 0.001));
+    const y = mid - env * (H * 0.42) / 0.3;
+    if (i === 0) waveCtx.moveTo(i, y);
+    else waveCtx.lineTo(i, y);
+  }
+  waveCtx.stroke();
+  waveCtx.fillStyle = "#9aabbf";
+  waveCtx.font = "11px sans-serif";
+  waveCtx.fillText(`青=波形  黄=包絡  ${freq}Hz ${dur.toFixed(2)}s`, 8, 14);
 }
 
 // wire SFX listeners once（再生時に現在の上書き値を使う。config は既定のまま）
@@ -199,6 +246,15 @@ loadTextSample(
   "// SfxEventsExample.cs"
 );
 
+document.getElementById("btn-replay")?.addEventListener("click", () => {
+  if (!lastTone) {
+    setStatus("まだ鳴らした音がありません");
+    return;
+  }
+  playTone(lastTone.freq, lastTone.dur, lastTone.gain);
+  setStatus("直前の音を再生");
+});
+drawWave(440, 0.08, 0.08);
 slidersFromSelected();
 const urlSpec = {
   ev: { el: evEl, kind: "select" },

@@ -15,6 +15,10 @@ import {
   applyParamsToControls,
   buildShareUrl,
   captureParamDefaults,
+  circleAabbOverlaps,
+  circleAabbTunneled,
+  resolveCircleAabbReflect,
+  readSpeedScale,
 } from "../js/platform/index.js";
 import { parseMap } from "../js/map-format.js";
 
@@ -513,6 +517,22 @@ function mockControl(kind, value, extra = {}) {
     return null;
   }
   assert.equal(lcgPeriod(0, 13, 5, 24), 24);
+}
+
+{
+  const box = { x: 100, y: 0, w: 10, h: 100 };
+  assert.equal(circleAabbOverlaps(105, 50, 8, box), true);
+  assert.equal(circleAabbOverlaps(40, 50, 8, box), false);
+  assert.equal(circleAabbTunneled(40, 50, 180, 50, 8, box), true, "jump over thin wall");
+  assert.equal(circleAabbTunneled(40, 50, 50, 50, 8, box), false);
+  const hit = resolveCircleAabbReflect(105, 50, 80, 0, 8, box, 1);
+  assert.equal(hit.hit, true);
+  assert.ok(hit.vx < 0, "reflect vx");
+  const miss = resolveCircleAabbReflect(40, 50, 80, 0, 8, box, 1);
+  assert.equal(miss.hit, false);
+  assert.equal(miss.vx, 80);
+  assert.equal(readSpeedScale({ value: "0.1" }), 0.1);
+  assert.equal(readSpeedScale({ value: "" }, 1), 1);
 }
 
 console.log("smoke-platform.mjs: all assertions passed");

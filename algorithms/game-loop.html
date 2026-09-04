@@ -40,6 +40,7 @@
       <section class="gl-main" aria-labelledby="sim-heading">
         <h2 id="sim-heading" class="gl-block-title">シミュレーション</h2>
         <canvas id="gl-canvas" class="gl-canvas" width="640" height="360" aria-label="跳ねるボール"></canvas>
+        <p id="gl-fps" class="gl-fps">FPS: —</p>
         <div class="legend gl-legend">
           <span><i class="swatch" style="background:#5b9fd4"></i>ボール</span>
           <span><i class="swatch" style="background:#3d4f66"></i>床</span>
@@ -83,6 +84,14 @@
           <div class="controls-group-paint gl-params">
             <label class="controls-label" for="speed">再生間隔</label>
             <input type="range" id="speed" min="0" max="50" value="0" step="5" title="0=できるだけ速く（rAF相当）" />
+          </div>
+          <div class="controls-group-paint gl-params">
+            <label class="controls-label" for="balls">描画ボール数 <span id="balls-val">1</span></label>
+            <input type="range" id="balls" class="ttt-range" min="1" max="200" value="1" step="1" />
+          </div>
+          <div class="controls-group-paint gl-params">
+            <label class="ttt-check"><input type="checkbox" id="loop" /> 繰り返し</label>
+            <label class="ttt-check"><input type="checkbox" id="trail" checked /> 軌跡</label>
           </div>
           <div class="controls-group-paint gl-params url-share-row">
             <button type="button" id="btn-copy-url" class="btn btn-ghost">この設定のURLをコピー</button>

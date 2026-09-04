@@ -16,6 +16,7 @@
 | `topic-shell.js` | 共通ヘッダー／フッター（`mountTopicShellFromDataset`）。`NAV_GROUPS.course` は `courses/` 入口用 |
 | `maturity.js` | 成熟度・修正回数・更新日（`TOPIC_META`）・バッジ |
 | `url-params.js` | URL クエリで初期コントロールを指定 / 共有 URL コピー（`applyParamsToControls` / `mountShareLink`） |
+| `observe.js` | 軌跡点・再生速度スケール・円と矩形の重なり／すり抜け／反射 |
 | `index.js` | 上記の一括 export |
 
 経路探索の再生待ち時間はスライダーが大きいほど速いため  

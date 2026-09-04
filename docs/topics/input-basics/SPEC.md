@@ -59,7 +59,9 @@ longPress = down? false : (held && holdTime >= threshold && !longFired)
 | リセット | カウンタ・状態クリア |
 | キー | Space / Z / 矢印（フォーカス時） |
 | 長押し閾値 | Charge が発火する holdTime（100〜1500ms、step 50） |
-| URL | `longms` → `#long-ms`。コピーボタンで現在値を共有 |
+| 時間軸 | 横軸=時間の帯グラフ。down/up マーカー、長押し閾値の点線 |
+| 再生速度 | 0.1〜1.0。移動の見た目だけ遅くする（長押し ms は実時間） |
+| URL | `longms` → `#long-ms`、`speed`。コピーボタンで現在値を共有 |
 | 閾値 | 長押し ms |
 
 ---

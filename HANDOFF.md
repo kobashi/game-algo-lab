@@ -5,6 +5,8 @@
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.17.0
 
+**2026-09-04 観測性改善**: 速度・軌跡・障害物（すり抜け検出）・実負荷FPS・入力帯グラフなど。調整課題10本。
+
 **2026-09-03 Release `v0.17.0`**: `minimax` / `fsm` の調整パラメータ。ノート: `RELEASE_NOTES_v0.17.0.md`。
 
 **2026-09-03 fsm 調整パラメータ**: 初期状態・遷移1本の上書き・デモ脚本。到達不能は灰色。URL は `initial` / `from` / `ev` / `to` / `script`。

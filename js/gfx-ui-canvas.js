@@ -30,6 +30,10 @@ const resEl = /** @type {HTMLSelectElement} */ (
 );
 const pivotXVal = document.getElementById("pivot-x-val");
 const pivotYVal = document.getElementById("pivot-y-val");
+const viewwEl = /** @type {HTMLInputElement} */ (
+  document.getElementById("vieww")
+);
+const viewwVal = document.getElementById("vieww-val");
 const statsEl = document.getElementById("ui-stats");
 const csharpSample = document.getElementById("csharp-sample");
 const setStatus = createStatus(document.getElementById("status"));
@@ -69,9 +73,11 @@ function syncLabels() {
 }
 
 function applyCanvasSize() {
-  const { w, h } = readRes();
+  const w = Number(viewwEl?.value) || readRes().w;
+  const h = Math.round((w * 360) / 640);
   canvas.width = w;
   canvas.height = h;
+  if (viewwVal) viewwVal.textContent = String(Math.round(w));
   draw();
 }
 
@@ -129,6 +135,15 @@ function draw() {
   ctx.fillStyle = "#e8eef7";
   ctx.font = "13px sans-serif";
   ctx.fillText("Button", L.x + 28, L.y + 28);
+
+  const L2 = layoutWidget(W, H, 0, 0, px, py, offX, offY, ww, wh);
+  ctx.fillStyle = "rgba(242,204,143,0.45)";
+  ctx.fillRect(L2.x, L2.y, ww, wh);
+  ctx.strokeStyle = "#f2cc8f";
+  ctx.strokeRect(L2.x, L2.y, ww, wh);
+  ctx.fillStyle = "#f2cc8f";
+  ctx.font = "11px sans-serif";
+  ctx.fillText("比較:左上", L2.x + 8, L2.y + 22);
 
   // pivot
   const pivX = L.x + px * ww;
@@ -205,7 +220,12 @@ for (const el of [anchorEl, pivotXEl, pivotYEl]) {
     draw();
   });
 }
-resEl?.addEventListener("change", applyCanvasSize);
+resEl?.addEventListener("change", () => {
+  const { w } = readRes();
+  if (viewwEl) viewwEl.value = String(w);
+  applyCanvasSize();
+});
+viewwEl?.addEventListener("input", applyCanvasSize);
 
 loadTextSample(
   "../samples/GfxUiCanvasExample.cs",
@@ -220,6 +240,7 @@ applyCanvasSize();
 
 const urlSpec = {
   res: { el: resEl, kind: "select" },
+  vieww: { el: viewwEl, kind: "range" },
   anchor: { el: anchorEl, kind: "select" },
   px: { el: pivotXEl, kind: "range" },
   py: { el: pivotYEl, kind: "range" },

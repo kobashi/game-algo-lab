@@ -50,13 +50,13 @@ export const TOPIC_META = {
     revisions: 0,
     updated: "2026-07-22",
   },
-  "game-loop": { maturity: "revised", revisions: 1, updated: "2026-09-03" },
+  "game-loop": { maturity: "revised", revisions: 2, updated: "2026-09-04" },
   "time-management": {
     maturity: "oneshot",
     revisions: 0,
     updated: "2026-07-22",
   },
-  "input-basics": { maturity: "revised", revisions: 1, updated: "2026-09-03" },
+  "input-basics": { maturity: "revised", revisions: 2, updated: "2026-09-04" },
   coordinates: { maturity: "revised", revisions: 1, updated: "2026-07-28" },
   "rng-seed": { maturity: "revised", revisions: 2, updated: "2026-09-03" },
   "maze-gen": { maturity: "oneshot", revisions: 0, updated: "2026-07-23" },
@@ -67,8 +67,8 @@ export const TOPIC_META = {
   },
   "velocity-motion": {
     maturity: "revised",
-    revisions: 1,
-    updated: "2026-09-03",
+    revisions: 2,
+    updated: "2026-09-04",
   },
   "event-system": {
     maturity: "oneshot",
@@ -89,8 +89,8 @@ export const TOPIC_META = {
   },
   "accel-gravity": {
     maturity: "revised",
-    revisions: 1,
-    updated: "2026-09-03",
+    revisions: 2,
+    updated: "2026-09-04",
   },
   "input-buffer": {
     maturity: "oneshot",
@@ -129,8 +129,8 @@ export const TOPIC_META = {
   },
   "circle-collision": {
     maturity: "revised",
-    revisions: 1,
-    updated: "2026-09-03",
+    revisions: 2,
+    updated: "2026-09-04",
   },
   "momentum-1d": {
     maturity: "oneshot",
@@ -244,8 +244,8 @@ export const TOPIC_META = {
   },
   "sfx-events": {
     maturity: "revised",
-    revisions: 1,
-    updated: "2026-09-03",
+    revisions: 2,
+    updated: "2026-09-04",
   },
   "accessibility-basics": {
     maturity: "oneshot",
@@ -319,8 +319,8 @@ export const TOPIC_META = {
   },
   "gfx-camera": {
     maturity: "revised",
-    revisions: 1,
-    updated: "2026-09-03",
+    revisions: 2,
+    updated: "2026-09-04",
   },
   "net-prediction": {
     maturity: "oneshot",
@@ -369,8 +369,8 @@ export const TOPIC_META = {
   },
   "gfx-ui-canvas": {
     maturity: "revised",
-    revisions: 1,
-    updated: "2026-09-03",
+    revisions: 2,
+    updated: "2026-09-04",
   },
   "gfx-mesh-uv": {
     maturity: "oneshot",
@@ -464,7 +464,7 @@ export const TOPIC_META = {
   },
   "and-or": { maturity: "revised", revisions: 1, updated: "2026-07-19" },
 
-  minimax: { maturity: "revised", revisions: 2, updated: "2026-09-03" },
+  minimax: { maturity: "revised", revisions: 3, updated: "2026-09-04" },
   "alpha-beta": { maturity: "revised", revisions: 1, updated: "2026-07-19" },
   "monte-carlo": { maturity: "revised", revisions: 1, updated: "2026-07-19" },
   "multi-armed-bandit": {
@@ -474,7 +474,7 @@ export const TOPIC_META = {
   },
   bandit: { maturity: "revised", revisions: 1, updated: "2026-07-19" },
   collision: { maturity: "revised", revisions: 2, updated: "2026-07-17" },
-  fsm: { maturity: "revised", revisions: 1, updated: "2026-09-03" },
+  fsm: { maturity: "revised", revisions: 2, updated: "2026-09-04" },
   "tic-tac-toe": { maturity: "revised", revisions: 1, updated: "2026-09-03" },
   mcts: { maturity: "oneshot", revisions: 0, updated: "2026-07-21" },
   nim: { maturity: "oneshot", revisions: 0, updated: "2026-07-19" },

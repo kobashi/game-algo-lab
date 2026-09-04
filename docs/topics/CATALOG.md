@@ -43,7 +43,7 @@
 | id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
 |----|----------|-------|--------|------|------|--------|------|----------|
 | `and-or` | AND-OR 探索 | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/and-or.html` | [SPEC](./and-or/SPEC.md) | 「鍵を入手」を葉→OR節点（買う/盗む）に差し替えて深さ3化 |
-| `minimax` | Min-Max 探索 | ✅ | **調整** | 2 | 2026-09-03 | `algorithms/minimax.html` | [SPEC](./minimax/SPEC.md) | 深さ2→深さ3・葉12の標準木に差し替え。MIN下にMAXが現れる交互再帰を可視化。**改訂2**: 調整課題用のパラメータを追加し URL 指定に対応 |
+| `minimax` | Min-Max 探索 | ✅ | **調整** | 3 | 2026-09-04 | `algorithms/minimax.html` | [SPEC](./minimax/SPEC.md) | 深さ2→深さ3・葉12の標準木に差し替え。MIN下にMAXが現れる交互再帰を可視化。**改訂3**: 調整課題のための観測性改善（速度・軌跡・障害物など） |
 | `alpha-beta` | α-β 法 | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/alpha-beta.html` | [SPEC](./alpha-beta/SPEC.md) | 深さ3木でβカットを初めて可視化（旧木は深さ2でβカット不能だった） |
 | `monte-carlo` | モンテカルロ法 | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/monte-carlo.html` | [SPEC](./monte-carlo/SPEC.md) | 深さ3木でプレイアウトが3手の系列に。乱択EVとMin-Maxの食い違いを強化 |
 | `multi-armed-bandit` | 多腕バンディット | ✅ | **調整** | 1 | 2026-07-19 | `algorithms/multi-armed-bandit.html` | [SPEC](./multi-armed-bandit/SPEC.md) | 難易度プリセット（易しい/難しい）追加、既定手数300へ |
@@ -72,9 +72,9 @@
 
 | id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
 |----|----------|-------|--------|------|------|--------|------|----------|
-| `game-loop` | ゲームループ | ✅ | **調整** | 1 | 2026-09-03 | `algorithms/game-loop.html` | [SPEC](./game-loop/SPEC.md) | 可変/固定 timestep。跳ねるボール。人工遅延・MAX_STEPS でスパイラル防止を観察。説明特化 UI。**改訂1**: URL クエリで初期パラメータ指定に対応（授業課題の設定提出用） |
+| `game-loop` | ゲームループ | ✅ | **調整** | 2 | 2026-09-04 | `algorithms/game-loop.html` | [SPEC](./game-loop/SPEC.md) | 可変/固定 timestep。跳ねるボール。人工遅延・MAX_STEPS でスパイラル防止を観察。説明特化 UI。**改訂2**: 調整課題のための観測性改善（速度・軌跡・障害物など） |
 | `time-management` | 時間管理 | ✅ | **一発** | 0 | 2026-07-22 | `algorithms/time-management.html` | [SPEC](./time-management/SPEC.md) | 壁時計 vs ゲーム内時間。time scale・ポーズ。往復キャラは game time 駆動 |
-| `input-basics` | 入力の基礎 | ✅ | **調整** | 1 | 2026-09-03 | `algorithms/input-basics.html` | [SPEC](./input-basics/SPEC.md) | held / down / up。Jump=edge、Fire=held 連射対比、Charge=長押し。**改訂1**: 調整課題用のパラメータを追加し URL 指定に対応 |
+| `input-basics` | 入力の基礎 | ✅ | **調整** | 2 | 2026-09-04 | `algorithms/input-basics.html` | [SPEC](./input-basics/SPEC.md) | held / down / up。Jump=edge、Fire=held 連射対比、Charge=長押し。**改訂2**: 調整課題のための観測性改善（速度・軌跡・障害物など） |
 | `coordinates` | 座標変換 | ✅ | **調整** | 1 | 2026-07-28 | `algorithms/coordinates.html` | [SPEC](./coordinates/SPEC.md) | gfx-coordinates 統合・CG 導線（カメラ/UI/Mesh） |
 | `rng-seed` | 乱数とシード | ✅ | **調整** | 2 | 2026-09-03 | `algorithms/rng-seed.html` | [SPEC](./rng-seed/SPEC.md) | Mulberry32/XorShift/LCG 切替。LCG は a,c,m プリセット（質の悪い例〜実用寄り）と周期計測・ヒストグラム。**改訂2**: URL クエリで初期パラメータ指定に対応（授業課題の個別配布用） |
 
@@ -105,13 +105,13 @@
 | id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
 |----|----------|-------|--------|------|------|--------|------|----------|
 | `grid-pseudo-physics` | グリッド擬似物理 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/grid-pseudo-physics.html` | [SPEC](./grid-pseudo-physics/SPEC.md) | マス落下。連続速度なし |
-| `velocity-motion` | 速度による移動 | ✅ | **調整** | 1 | 2026-09-03 | `algorithms/velocity-motion.html` | [SPEC](./velocity-motion/SPEC.md) | p←p+v·dt。軌跡・速度矢印・壁バウンス。**改訂1**: URL クエリで初期パラメータ指定に対応（授業課題の設定提出用） |
+| `velocity-motion` | 速度による移動 | ✅ | **調整** | 2 | 2026-09-04 | `algorithms/velocity-motion.html` | [SPEC](./velocity-motion/SPEC.md) | p←p+v·dt。軌跡・速度矢印・壁バウンス。**改訂2**: 調整課題のための観測性改善（速度・軌跡・障害物など） |
 | `accel-decel` | 加減速 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/accel-decel.html` | [SPEC](./accel-decel/SPEC.md) | 加速・最高速度・ブレーキ |
-| `accel-gravity` | 加速度と重力 | ✅ | **調整** | 1 | 2026-09-03 | `algorithms/accel-gravity.html` | [SPEC](./accel-gravity/SPEC.md) | v+=g·dt; p+=v·dt。放物線・反発。**改訂1**: URL クエリで初期パラメータ指定に対応（授業課題の設定提出用） |
+| `accel-gravity` | 加速度と重力 | ✅ | **調整** | 2 | 2026-09-04 | `algorithms/accel-gravity.html` | [SPEC](./accel-gravity/SPEC.md) | v+=g·dt; p+=v·dt。放物線・反発。**改訂2**: 調整課題のための観測性改善（速度・軌跡・障害物など） |
 | `friction-bounce` | 摩擦・反発 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/friction-bounce.html` | [SPEC](./friction-bounce/SPEC.md) | 床バウンス e · 接地摩擦 |
 | `verlet-integration` | Verlet 積分 · 距離拘束 | ✅ | **一発** | 0 | 2026-07-29 | `algorithms/verlet-integration.html` | [SPEC](./verlet-integration/SPEC.md) | 位置履歴積分 · ロープ拘束 |
 | `collision` | AABB 衝突判定 | ✅ | **調整** | 2 | 2026-07-17 | `algorithms/collision.html` | [SPEC](./collision/SPEC.md) | 非マップ説明UI。重なり/分離の二重実装と比較 |
-| `circle-collision` | 円同士・円と AABB | ✅ | **調整** | 1 | 2026-09-03 | `algorithms/circle-collision.html` | [SPEC](./circle-collision/SPEC.md) | 中心距離・Clamp 最近点。**改訂1**: 調整課題用のパラメータを追加し URL 指定に対応 |
+| `circle-collision` | 円同士・円と AABB | ✅ | **調整** | 2 | 2026-09-04 | `algorithms/circle-collision.html` | [SPEC](./circle-collision/SPEC.md) | 中心距離・Clamp 最近点。**改訂2**: 調整課題のための観測性改善（速度・軌跡・障害物など） |
 | `momentum-1d` | 質量と運動量（1D） | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/momentum-1d.html` | [SPEC](./momentum-1d/SPEC.md) | 弾性/非弾性 · Σp/KE |
 | `raycast-shapes` | 線分・レイキャスト | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/raycast-shapes.html` | [SPEC](./raycast-shapes/SPEC.md) | 円・AABB への最近 t |
 | `collision-response` | 衝突応答 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/collision-response.html` | [SPEC](./collision-response/SPEC.md) | 分離 + 法線インパルス |
@@ -129,7 +129,7 @@
 
 | id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
 |----|----------|-------|--------|------|------|--------|------|----------|
-| `fsm` | ステートマシン | ✅ | **調整** | 1 | 2026-09-03 | `algorithms/fsm.html` | [SPEC](./fsm/SPEC.md) | 状態図・イベント・遷移表の初版。**改訂1**: 調整課題用のパラメータを追加し URL 指定に対応 |
+| `fsm` | ステートマシン | ✅ | **調整** | 2 | 2026-09-04 | `algorithms/fsm.html` | [SPEC](./fsm/SPEC.md) | 状態図・イベント・遷移表の初版。**改訂2**: 調整課題のための観測性改善（速度・軌跡・障害物など） |
 | `dirty-flag` | Dirty Flag パターン | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/dirty-flag.html` | [SPEC](./dirty-flag/SPEC.md) | 変換キャッシュ · dirty 連鎖 |
 | `event-system` | イベントシステム | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/event-system.html` | [SPEC](./event-system/SPEC.md) | On/Off/Emit の pub/sub。購読ログ可視化 |
 | `object-pool` | オブジェクトプール | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/object-pool.html` | [SPEC](./object-pool/SPEC.md) | 弾の Acquire/Release。created/reused 比較 |
@@ -215,7 +215,7 @@
 
 | id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
 |----|----------|-------|--------|------|------|--------|------|----------|
-| `sfx-events` | イベントと効果音 | ✅ | **調整** | 1 | 2026-09-03 | `algorithms/sfx-events.html` | [SPEC](./sfx-events/SPEC.md) | Emit → Web Audio。**改訂1**: 調整課題用のパラメータを追加し URL 指定に対応 |
+| `sfx-events` | イベントと効果音 | ✅ | **調整** | 2 | 2026-09-04 | `algorithms/sfx-events.html` | [SPEC](./sfx-events/SPEC.md) | Emit → Web Audio。**改訂2**: 調整課題のための観測性改善（速度・軌跡・障害物など） |
 | `sfx-voice-limit` | 同時発音・重複制御 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-voice-limit.html` | [SPEC](./sfx-voice-limit/SPEC.md) | steal / drop |
 | `sfx-randomize` | SE のランダム化 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-randomize.html` | [SPEC](./sfx-randomize/SPEC.md) | ピッチ/音量 + シャッフルバッグ |
 | `sfx-spatial` | 距離・パン・空間 SE | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-spatial.html` | [SPEC](./sfx-spatial/SPEC.md) | 距離減衰 + ステレオパン |
@@ -234,12 +234,12 @@
 |----|----------|-------|--------|------|------|--------|------|----------|
 | `gfx-gpu-concepts` | GPU パイプライン概説 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-gpu-concepts.html` | [SPEC](./gfx-gpu-concepts/SPEC.md) | 概念デモ · 実 GPU API なし |
 | `gfx-sprite-2d` | 2D スプライト | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-sprite-2d.html` | [SPEC](./gfx-sprite-2d/SPEC.md) | シートフレーム · Y ソート |
-| `gfx-camera` | カメラと投影（2D フォロー） | ✅ | **調整** | 1 | 2026-09-03 | `algorithms/gfx-camera.html` | [SPEC](./gfx-camera/SPEC.md) | デッドゾーン · world→screen。**改訂1**: URL クエリで初期パラメータ指定に対応（授業課題の設定提出用） |
+| `gfx-camera` | カメラと投影（2D フォロー） | ✅ | **調整** | 2 | 2026-09-04 | `algorithms/gfx-camera.html` | [SPEC](./gfx-camera/SPEC.md) | デッドゾーン · world→screen。**改訂2**: 調整課題のための観測性改善（速度・軌跡・障害物など） |
 | `gfx-animation-vfx` | アニメーション・パーティクル | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-animation-vfx.html` | [SPEC](./gfx-animation-vfx/SPEC.md) | lifetime · 上限プール |
 | `gfx-lighting-alpha` | ライティング・透明度 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-lighting-alpha.html` | [SPEC](./gfx-lighting-alpha/SPEC.md) | 点光源 · α/加算 |
 | `gfx-postprocess` | ポストプロセス | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-postprocess.html` | [SPEC](./gfx-postprocess/SPEC.md) | 彩度·ビネット·ブルーム |
 | `gfx-lod-culling` | LOD・カリング | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-lod-culling.html` | [SPEC](./gfx-lod-culling/SPEC.md) | フラスタム · LOD0/1/2 |
-| `gfx-ui-canvas` | UI 描画（Anchor・Pivot） | ✅ | **調整** | 1 | 2026-09-03 | `algorithms/gfx-ui-canvas.html` | [SPEC](./gfx-ui-canvas/SPEC.md) | Anchor·Pivot·解像度。**改訂1**: URL クエリで初期パラメータ指定に対応（授業課題の設定提出用） |
+| `gfx-ui-canvas` | UI 描画（Anchor・Pivot） | ✅ | **調整** | 2 | 2026-09-04 | `algorithms/gfx-ui-canvas.html` | [SPEC](./gfx-ui-canvas/SPEC.md) | Anchor·Pivot·解像度。**改訂2**: 調整課題のための観測性改善（速度・軌跡・障害物など） |
 | `gfx-mesh-uv` | メッシュ・UV・マテリアル | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/gfx-mesh-uv.html` | [SPEC](./gfx-mesh-uv/SPEC.md) | 2tris · UV · tint |
 | `sprite-anim-fsm` | スプライトアニメ × FSM | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sprite-anim-fsm.html` | [SPEC](./sprite-anim-fsm/SPEC.md) | idle/run/jump クリップ |
 

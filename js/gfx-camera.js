@@ -8,6 +8,8 @@ import {
   mountTopicShellFromDataset,
   applyParamsToControls,
   mountShareLink,
+  readSpeedScale,
+  drawTrailDots,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -24,6 +26,14 @@ const deadEl = /** @type {HTMLInputElement} */ (
 );
 const followVal = document.getElementById("follow-val");
 const deadVal = document.getElementById("dead-val");
+const speedEl = /** @type {HTMLInputElement} */ (
+  document.getElementById("speed")
+);
+const speedVal = document.getElementById("speed-val");
+const loopEl = /** @type {HTMLInputElement} */ (document.getElementById("loop"));
+const trailEl = /** @type {HTMLInputElement} */ (
+  document.getElementById("trail")
+);
 const statsEl = document.getElementById("cam-stats");
 const btnPlay = document.getElementById("btn-play");
 const btnReset = document.getElementById("btn-reset");
@@ -39,6 +49,8 @@ let rafId = null;
 let lastTs = 0;
 /** @type {Set<string>} */
 const keys = new Set();
+/** @type {{x:number,y:number}[]} */
+let trail = [];
 
 /**
  * World → screen: screen = world - cam
@@ -73,6 +85,7 @@ export function updateCamera(cam, targetX, viewW, dead, follow) {
 function sync() {
   if (followVal) followVal.textContent = Number(followEl?.value || 0).toFixed(2);
   if (deadVal) deadVal.textContent = String(Math.floor(Number(deadEl?.value) || 0));
+  if (speedVal) speedVal.textContent = readSpeedScale(speedEl).toFixed(1);
 }
 
 function draw() {
@@ -108,11 +121,30 @@ function draw() {
   ctx.strokeRect(mid - dead, 0, dead * 2, H);
 
   const p = worldToScreen(playerX, playerY, camX);
+  if (trailEl?.checked && trail.length) {
+    drawTrailDots(ctx, trail, { rgb: "91,159,212", radius: 2 });
+  }
+  // カメラ現在の画面中心 vs プレイヤー（遅れ）
   ctx.fillStyle = "#5b9fd4";
   ctx.fillRect(p.sx - 14, p.sy - 28, 28, 36);
   ctx.fillStyle = "#e8eef7";
   ctx.font = "12px sans-serif";
   ctx.fillText("P", p.sx - 4, p.sy - 34);
+  ctx.strokeStyle = "#f2cc8f";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(W / 2 - 8, H * 0.2);
+  ctx.lineTo(W / 2 + 8, H * 0.2);
+  ctx.moveTo(W / 2, H * 0.2 - 8);
+  ctx.lineTo(W / 2, H * 0.2 + 8);
+  ctx.stroke();
+  ctx.fillStyle = "#f2cc8f";
+  ctx.fillText("cam", W / 2 + 10, H * 0.2 + 4);
+  ctx.fillStyle = "#6bcb8f";
+  ctx.beginPath();
+  ctx.arc(p.sx, 28, 5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillText("target", p.sx + 8, 32);
 
   // minimap
   const mmW = 160;
@@ -136,6 +168,7 @@ function draw() {
         <tr><td>Player screen</td><td>${p.sx.toFixed(0)}, ${p.sy.toFixed(0)}</td></tr>
         <tr><td>Camera X</td><td>${camX.toFixed(0)}</td></tr>
         <tr><td>Dead zone</td><td>±${dead.toFixed(0)} px</td></tr>
+        <tr><td>遅れ (P−cam中心)</td><td>${(p.sx - W / 2).toFixed(0)} px</td></tr>
       </table>`;
   }
 }
@@ -149,8 +182,18 @@ function step(dt) {
   const follow = Number(followEl?.value) || C.defaultFollow;
   const dead = Number(deadEl?.value) || C.defaultDead;
   camX = updateCamera(camX, playerX, canvas.width, dead, follow);
+  const p = worldToScreen(playerX, playerY, camX);
+  if (trailEl?.checked) {
+    trail.push({ x: p.sx, y: p.sy });
+    if (trail.length > 80) trail.shift();
+  }
+  if (loopEl?.checked && playerX >= C.worldW - 24) {
+    playerX = 200;
+    camX = 0;
+    trail = [];
+  }
   draw();
-  setStatus(`cam=${camX.toFixed(0)} p.screen=${(playerX - camX).toFixed(0)}`);
+  setStatus(`cam=${camX.toFixed(0)} p.screen=${(playerX - camX).toFixed(0)} 遅れ=${(p.sx - canvas.width / 2).toFixed(0)}px`);
 }
 
 function loop(ts) {
@@ -159,7 +202,7 @@ function loop(ts) {
   let dt = (ts - lastTs) / 1000;
   lastTs = ts;
   if (dt > 0.05) dt = 0.05;
-  step(dt);
+  step(dt * readSpeedScale(speedEl));
   rafId = requestAnimationFrame(loop);
 }
 
@@ -174,6 +217,7 @@ function reset() {
   stop();
   playerX = 200;
   camX = 0;
+  trail = [];
   sync();
   draw();
   setStatus("リセット — ←→ で移動");
@@ -199,7 +243,7 @@ btnPlay?.addEventListener("click", () => {
   rafId = requestAnimationFrame(loop);
 });
 btnReset?.addEventListener("click", reset);
-for (const el of [followEl, deadEl]) {
+for (const el of [followEl, deadEl, speedEl]) {
   el?.addEventListener("input", () => {
     sync();
     draw();
@@ -218,6 +262,9 @@ reset();
 const urlSpec = {
   follow: { el: followEl, kind: "range" },
   dead: { el: deadEl, kind: "range" },
+  speed: { el: speedEl, kind: "range" },
+  loop: { el: loopEl, kind: "checkbox" },
+  trail: { el: trailEl, kind: "checkbox" },
 };
 mountShareLink({
   spec: urlSpec,

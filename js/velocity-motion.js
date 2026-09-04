@@ -8,6 +8,11 @@ import {
   mountTopicShellFromDataset,
   applyParamsToControls,
   mountShareLink,
+  readSpeedScale,
+  drawTrailDots,
+  resolveCircleAabbReflect,
+  circleAabbTunneled,
+  centerObstacleBox,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -22,22 +27,43 @@ const dtEl = /** @type {HTMLInputElement} */ (document.getElementById("dt"));
 const bounceEl = /** @type {HTMLInputElement} */ (
   document.getElementById("bounce")
 );
+const speedEl = /** @type {HTMLInputElement} */ (
+  document.getElementById("speed")
+);
+const loopEl = /** @type {HTMLInputElement} */ (document.getElementById("loop"));
+const trailEl = /** @type {HTMLInputElement} */ (
+  document.getElementById("trail")
+);
+const ghostEl = /** @type {HTMLInputElement} */ (
+  document.getElementById("ghost")
+);
+const obsEl = /** @type {HTMLInputElement} */ (document.getElementById("obs"));
+const thickEl = /** @type {HTMLInputElement} */ (
+  document.getElementById("thick")
+);
 const vxVal = document.getElementById("vx-val");
 const vyVal = document.getElementById("vy-val");
 const dtVal = document.getElementById("dt-val");
+const speedVal = document.getElementById("speed-val");
+const thickVal = document.getElementById("thick-val");
+const readoutEl = document.getElementById("vm-readout");
 const btnPlay = document.getElementById("btn-play");
 const btnStep = document.getElementById("btn-step");
 const btnReset = document.getElementById("btn-reset");
 const csharpSample = document.getElementById("csharp-sample");
 const setStatus = createStatus(document.getElementById("status"));
 
+const R = 12;
 let x = 80;
 let y = 140;
 let trail = /** @type {{x:number,y:number}[]} */ ([]);
+let ghostTrail = /** @type {{x:number,y:number}[]} */ ([]);
 let running = false;
 /** @type {number | null} */
 let rafId = null;
 let lastTs = 0;
+let wallHits = 0;
+let tunnelFlash = 0;
 
 function readVx() {
   return Number(vxEl?.value) || 0;
@@ -48,42 +74,126 @@ function readVy() {
 function readDtSec() {
   return (Number(dtEl?.value) || C.defaultDtMs) / 1000;
 }
+function readThick() {
+  const n = Number(thickEl?.value);
+  return Number.isFinite(n) ? n : 24;
+}
+function obstacleOn() {
+  return !!obsEl?.checked;
+}
+function trailOn() {
+  return trailEl ? !!trailEl.checked : true;
+}
+
+function currentBox() {
+  return centerObstacleBox(canvas.width, canvas.height, readThick());
+}
+
 function sync() {
   if (vxVal) vxVal.textContent = String(readVx());
   if (vyVal) vyVal.textContent = String(readVy());
   if (dtVal) dtVal.textContent = (readDtSec() * 1000).toFixed(1);
+  if (speedVal) speedVal.textContent = readSpeedScale(speedEl).toFixed(1);
+  if (thickVal) thickVal.textContent = String(Math.round(readThick()));
+  const step = Math.hypot(readVx() * readDtSec(), readVy() * readDtSec());
+  if (readoutEl) {
+    readoutEl.textContent = `1フレームの移動 |v|·dt = ${step.toFixed(1)} px  /  障害物の厚み = ${readThick()} px`;
+  }
+}
+
+function maybeLoopReset() {
+  if (!loopEl?.checked) return false;
+  const out =
+    x < -R || x > canvas.width + R || y < -R || y > canvas.height + R;
+  if (out || wallHits >= 12) {
+    resetBody(false);
+    return true;
+  }
+  return false;
+}
+
+function resetBody(clearGhost) {
+  if (ghostEl?.checked && trail.length) ghostTrail = trail.slice();
+  else if (clearGhost) ghostTrail = [];
+  x = 80;
+  y = 140;
+  trail = [];
+  wallHits = 0;
+  tunnelFlash = 0;
 }
 
 function step(dt) {
+  const prevX = x;
+  const prevY = y;
   x += readVx() * dt;
   y += readVy() * dt;
   const bounce = !!bounceEl?.checked;
-  const r = 12;
   if (bounce) {
-    if (x < r) {
-      x = r;
+    if (x < R) {
+      x = R;
       if (vxEl) vxEl.value = String(Math.abs(readVx()));
+      wallHits += 1;
     }
-    if (x > canvas.width - r) {
-      x = canvas.width - r;
+    if (x > canvas.width - R) {
+      x = canvas.width - R;
       if (vxEl) vxEl.value = String(-Math.abs(readVx()));
+      wallHits += 1;
     }
-    if (y < r) {
-      y = r;
+    if (y < R) {
+      y = R;
       if (vyEl) vyEl.value = String(Math.abs(readVy()));
+      wallHits += 1;
     }
-    if (y > canvas.height - r) {
-      y = canvas.height - r;
+    if (y > canvas.height - R) {
+      y = canvas.height - R;
       if (vyEl) vyEl.value = String(-Math.abs(readVy()));
+      wallHits += 1;
     }
-    sync();
   }
-  trail.push({ x, y });
-  if (trail.length > C.trailMax) trail.shift();
+
+  let tunneled = false;
+  let hitObs = false;
+  if (obstacleOn()) {
+    const box = currentBox();
+    tunneled = circleAabbTunneled(prevX, prevY, x, y, R, box);
+    const resolved = resolveCircleAabbReflect(
+      x,
+      y,
+      readVx(),
+      readVy(),
+      R,
+      box,
+      1
+    );
+    if (resolved.hit) {
+      hitObs = true;
+      x = resolved.x;
+      y = resolved.y;
+      if (vxEl) vxEl.value = String(Math.round(resolved.vx));
+      if (vyEl) vyEl.value = String(Math.round(resolved.vy));
+    }
+    if (tunneled) tunnelFlash = 18;
+  }
+
+  sync();
+  if (trailOn()) {
+    trail.push({ x, y });
+    if (trail.length > C.trailMax) trail.shift();
+  }
   draw();
-  setStatus(
-    `p=(${x.toFixed(1)}, ${y.toFixed(1)})  v=(${readVx()}, ${readVy()})  dt=${(dt * 1000).toFixed(1)}ms`
-  );
+
+  if (tunneled) {
+    setStatus(
+      `すり抜けた — |v|·dt=${(Math.hypot(readVx(), readVy()) * dt).toFixed(1)}px が厚み ${readThick()}px を超えた`
+    );
+  } else if (hitObs) {
+    setStatus(`障害物に当たって反射  p=(${x.toFixed(1)}, ${y.toFixed(1)})`);
+  } else {
+    setStatus(
+      `p=(${x.toFixed(1)}, ${y.toFixed(1)})  v=(${readVx()}, ${readVy()})  dt=${(dt * 1000).toFixed(1)}ms`
+    );
+  }
+  maybeLoopReset();
 }
 
 function draw() {
@@ -105,14 +215,20 @@ function draw() {
     ctx.lineTo(W, g);
     ctx.stroke();
   }
-  if (trail.length > 1) {
-    ctx.strokeStyle = "rgba(91,159,212,0.5)";
-    ctx.beginPath();
-    ctx.moveTo(trail[0].x, trail[0].y);
-    for (const p of trail) ctx.lineTo(p.x, p.y);
-    ctx.stroke();
+  if (obstacleOn()) {
+    const box = currentBox();
+    ctx.fillStyle = tunnelFlash > 0 ? "#e07a5f" : "rgba(224,122,95,0.85)";
+    ctx.fillRect(box.x, box.y, box.w, box.h);
+    ctx.fillStyle = "#f2cc8f";
+    ctx.font = "11px sans-serif";
+    ctx.fillText("障害物", box.x, Math.max(14, box.y - 6));
   }
-  // velocity arrow
+  if (ghostEl?.checked && ghostTrail.length) {
+    drawTrailDots(ctx, ghostTrail, { rgb: "242,204,143", radius: 2 });
+  }
+  if (trailOn() && trail.length) {
+    drawTrailDots(ctx, trail, { rgb: "91,159,212", radius: 2.2 });
+  }
   ctx.strokeStyle = "#f2cc8f";
   ctx.lineWidth = 2;
   ctx.beginPath();
@@ -121,21 +237,26 @@ function draw() {
   ctx.stroke();
   ctx.fillStyle = "#5b9fd4";
   ctx.beginPath();
-  ctx.arc(x, y, 12, 0, Math.PI * 2);
+  ctx.arc(x, y, R, 0, Math.PI * 2);
   ctx.fill();
   ctx.fillStyle = "#9aabbf";
   ctx.font = "12px sans-serif";
   ctx.fillText("p ← p + v·dt", 12, 18);
+  if (tunnelFlash > 0) tunnelFlash -= 1;
 }
 
 function loop(ts) {
   if (!running) return;
+  const scale = readSpeedScale(speedEl);
   if (!lastTs) lastTs = ts;
-  let dt = (ts - lastTs) / 1000;
+  const elapsed = (ts - lastTs) / 1000;
+  const interval = 1 / 60 / scale;
+  if (elapsed < interval) {
+    rafId = requestAnimationFrame(loop);
+    return;
+  }
   lastTs = ts;
-  if (dt > 0.05) dt = 0.05;
-  // optional fixed display dt override when slider used as step size preference
-  step(dt);
+  step(readDtSec());
   rafId = requestAnimationFrame(loop);
 }
 
@@ -162,15 +283,23 @@ btnStep?.addEventListener("click", () => {
 });
 btnReset?.addEventListener("click", () => {
   stop();
-  x = 80;
-  y = 140;
-  trail = [];
+  resetBody(true);
   draw();
+  sync();
   setStatus("リセット");
 });
-for (const el of [vxEl, vyEl, dtEl]) {
-  el?.addEventListener("input", sync);
+for (const el of [vxEl, vyEl, dtEl, speedEl, thickEl]) {
+  el?.addEventListener("input", () => {
+    sync();
+    draw();
+  });
 }
+obsEl?.addEventListener("change", () => {
+  draw();
+  sync();
+});
+trailEl?.addEventListener("change", draw);
+ghostEl?.addEventListener("change", draw);
 
 loadTextSample(
   "../samples/VelocityMotionExample.cs",
@@ -188,6 +317,12 @@ const urlSpec = {
   vy: { el: vyEl, kind: "range" },
   dt: { el: dtEl, kind: "range" },
   bounce: { el: bounceEl, kind: "checkbox" },
+  speed: { el: speedEl, kind: "range" },
+  loop: { el: loopEl, kind: "checkbox" },
+  trail: { el: trailEl, kind: "checkbox" },
+  ghost: { el: ghostEl, kind: "checkbox" },
+  obs: { el: obsEl, kind: "checkbox" },
+  thick: { el: thickEl, kind: "range" },
 };
 mountShareLink({
   spec: urlSpec,

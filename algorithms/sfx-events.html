@@ -30,6 +30,7 @@
         <div id="sfx-btns" class="control-row" style="flex-wrap:wrap;gap:0.35rem"></div>
         <h2 class="gl-block-title">ログ</h2>
         <div id="sfx-log" class="es-log-panel" role="log"></div>
+        <canvas id="sfx-wave" class="sfx-wave" width="640" height="88" aria-label="波形と包絡線"></canvas>
         <div id="status" class="status-log" role="status">準備完了</div>
       </section>
       <aside class="gl-side">
@@ -49,6 +50,9 @@
         <div class="controls-group-paint gl-params">
           <label class="controls-label" for="sfx-gain">音量 <span id="sfx-gain-val">0.08</span></label>
           <input type="range" id="sfx-gain" class="ttt-range" min="0" max="0.3" value="0.08" step="0.01" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <button type="button" id="btn-replay" class="btn btn-ghost">直前の音をもう一度</button>
         </div>
         <div class="controls-group-paint gl-params url-share-row">
           <button type="button" id="btn-copy-url" class="btn btn-ghost">この設定のURLをコピー</button>

@@ -75,6 +75,7 @@ docs/templates/            # SPEC / スキャフォールド
 | `drawScorePair` | 探索マスの大/小ラベル |
 | `escapeHtml` / `escapeXml` | エスケープ |
 | `applyParamsToControls` / `buildShareUrl` / `mountShareLink` | URL クエリで初期コントロールを指定し、共有 URL をコピーする（`url-params.js`） |
+| `drawTrailDots` / `readSpeedScale` / `resolveCircleAabbReflect` | 観測用軌跡・再生速度・円と矩形（重なり時だけ反射、非重なりはすり抜け） |
 
 詳細: [js/platform/README.md](../js/platform/README.md)
 
@@ -279,6 +280,7 @@ python3 scripts/smoke-platform.py
 
 | 日付 | 内容 |
 |------|------|
+| 2026-09-04 | `observe.js`（軌跡点・速度スケール・円と矩形のすり抜け検出） |
 | 2026-09-03 | URL パラメータ: `kind: "text"`（カンマ区切りなど）。`minimax` の葉評価・深さ制限、`fsm` のデモ脚本 |
 | 2026-09-03 | URL パラメータ: `step` に合わない値を却下（黙ってスナップしない） |
 | 2026-09-03 | 入門コース入口 `courses/intro.html`。`NAV_GROUPS.course` を追加 |
