@@ -50,7 +50,7 @@ export const TOPIC_META = {
     revisions: 0,
     updated: "2026-07-22",
   },
-  "game-loop": { maturity: "revised", revisions: 2, updated: "2026-09-04" },
+  "game-loop": { maturity: "revised", revisions: 3, updated: "2026-09-04" },
   "time-management": {
     maturity: "oneshot",
     revisions: 0,

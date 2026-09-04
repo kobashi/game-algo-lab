@@ -287,6 +287,20 @@ def check_maturity_sync() -> None:
         ok(f"{tid} = {code} + revisions/updated")
 
 
+def check_game_loop_deterministic() -> None:
+    print("game-loop 決定性")
+    text = (ROOT / "js/game-loop.js").read_text(encoding="utf-8")
+    if "Math.random" in text:
+        fail("game-loop.js must not use Math.random")
+    else:
+        ok("game-loop.js has no Math.random")
+    html = (ROOT / "algorithms/game-loop.html").read_text(encoding="utf-8")
+    if 'id="compare"' in html and 'id="draw-load"' in html:
+        ok("game-loop.html has compare + draw-load")
+    else:
+        fail("game-loop.html missing compare/draw-load controls")
+
+
 def check_draw_score_pair_usage() -> None:
     print("drawScorePair 利用（経路探索）")
     for name in ("bfs", "dfs", "dijkstra", "best-first", "astar"):
@@ -352,6 +366,8 @@ def main() -> int:
     check_main_topics()
     print()
     check_maturity_sync()
+    print()
+    check_game_loop_deterministic()
     print()
     check_draw_score_pair_usage()
     print()

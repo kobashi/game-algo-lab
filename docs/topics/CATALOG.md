@@ -72,7 +72,7 @@
 
 | id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
 |----|----------|-------|--------|------|------|--------|------|----------|
-| `game-loop` | ゲームループ | ✅ | **調整** | 2 | 2026-09-04 | `algorithms/game-loop.html` | [SPEC](./game-loop/SPEC.md) | 可変/固定 timestep。跳ねるボール。人工遅延・MAX_STEPS でスパイラル防止を観察。説明特化 UI。**改訂2**: 調整課題のための観測性改善（速度・軌跡・障害物など） |
+| `game-loop` | ゲームループ | ✅ | **調整** | 3 | 2026-09-04 | `algorithms/game-loop.html` | [SPEC](./game-loop/SPEC.md) | 可変/固定 timestep。跳ねるボール。人工遅延・MAX_STEPS でスパイラル防止を観察。説明特化 UI。**改訂3**: 負荷用ボールの乱数を排除し決定的に。結果の数値表示を追加 |
 | `time-management` | 時間管理 | ✅ | **一発** | 0 | 2026-07-22 | `algorithms/time-management.html` | [SPEC](./time-management/SPEC.md) | 壁時計 vs ゲーム内時間。time scale・ポーズ。往復キャラは game time 駆動 |
 | `input-basics` | 入力の基礎 | ✅ | **調整** | 2 | 2026-09-04 | `algorithms/input-basics.html` | [SPEC](./input-basics/SPEC.md) | held / down / up。Jump=edge、Fire=held 連射対比、Charge=長押し。**改訂2**: 調整課題のための観測性改善（速度・軌跡・障害物など） |
 | `coordinates` | 座標変換 | ✅ | **調整** | 1 | 2026-07-28 | `algorithms/coordinates.html` | [SPEC](./coordinates/SPEC.md) | gfx-coordinates 統合・CG 導線（カメラ/UI/Mesh） |

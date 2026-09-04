@@ -5,6 +5,8 @@
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.18.0
 
+**2026-09-04 game-loop 観測修正**: 負荷ボールを決定的に（乱数なし）。変更時は初期化。停止時に結果数値と前回比較。負荷は床下の帯。並走比較あり。
+
 **2026-09-04 Release `v0.18.0`**: 調整課題のための観測性改善。ノート: `RELEASE_NOTES_v0.18.0.md`。
 
 **2026-09-04 観測性改善**: 速度・軌跡・障害物（すり抜け検出）・実負荷FPS・入力帯グラフなど。調整課題10本。
