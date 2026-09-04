@@ -181,6 +181,7 @@
 **Release `v0.16.0`（2026-09-03）**: URL の step 検査 + input-basics / circle-collision / sfx-events の調整パラメータ。ready 110 のまま。  
 **Release `v0.17.0`（2026-09-03）**: minimax / fsm の調整パラメータ。URL 対応 13 本。ready 110 のまま。  
 **Release `v0.18.0`（2026-09-04）**: 調整課題のための観測性改善（速度・軌跡・障害物・実負荷 FPS など）。ready 110 のまま。  
+**Release `v0.19.0`（2026-09-04）**: game-loop の観測を決定的にし、結果を数値で残す。ready 110 のまま。  
 次: 優先度 B 続き · oneshot 改訂 · 計測パネル統一 ·「戻る」。  
 **候補**: [topics/CANDIDATE_TOPICS.md](./topics/CANDIDATE_TOPICS.md)。**範囲外**: ROADMAP §4.2。
 

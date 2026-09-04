@@ -1,9 +1,11 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-09-04（ready **110** · Release **v0.18.0**）  
+最終更新: 2026-09-04（ready **110** · Release **v0.19.0**）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
-Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.18.0
+Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.19.0
+
+**2026-09-04 Release `v0.19.0`**: game-loop の観測を決定的にし、結果を数値で残す。ノート: `RELEASE_NOTES_v0.19.0.md`。
 
 **2026-09-04 game-loop 観測修正**: 負荷ボールを決定的に（乱数なし）。変更時は初期化。停止時に結果数値と前回比較。負荷は床下の帯。並走比較あり。
 
@@ -604,9 +606,9 @@ ready **95**。**Audio / Networking / Graphics（主要）一通り完了。**
 - 既定ブランチ: `main`（ローカルは `origin/main` と同期済み想定）  
 - **GitHub Pages（試作運用中）**: https://kobashi.github.io/game-algo-lab/  
   - Source: `main` / `/ (root)`  
-- **Release 試作版**: https://github.com/kobashi/game-algo-lab/releases/tag/v0.18.0  
-  - 前版: `v0.17.0` / `v0.16.0` / `v0.15.0` / `v0.14.0` / `v0.13.0` / `v0.12.0` / `v0.11.1` / `v0.11.0` / `v0.10.0` / `v0.9.8`  
-- 再公開: `./scripts/publish-github.sh game-algo-lab v0.18.0`（または新タグ）  
+- **Release 試作版**: https://github.com/kobashi/game-algo-lab/releases/tag/v0.19.0  
+  - 前版: `v0.18.0` / `v0.17.0` / `v0.16.0` / `v0.15.0` / `v0.14.0` / `v0.13.0` / `v0.12.0` / `v0.11.1` / `v0.11.0` / `v0.10.0` / `v0.9.8`  
+- 再公開: `./scripts/publish-github.sh game-algo-lab v0.19.0`（または新タグ）  
 - 旧ローカルタグ `v1.0.0` は初期準備用。正式版は別途 `v1.0.0` を切り直す想定  
 
 ### リモートブランチ（不要マーク・削除しない）
