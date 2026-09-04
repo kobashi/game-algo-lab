@@ -84,13 +84,14 @@ loop:
 | FIXED_DT | 1/30〜1/120 相当（ms） |
 | 人工遅延 | 0〜80ms（重いフレーム模擬） |
 | MAX_STEPS | 1〜16（スパイラル防止） |
+| 再生速度 | 0.1〜1.0×（1.0＝等速）。見た目の更新間隔を遅くする |
 | 負荷ボール数 | 1〜200 step 1（1=主役のみ）。実負荷。変更時はシミュレーションを初期化。FPS 15 未満が約2秒続くと半分に戻す |
 | 負荷を描画 | 既定 on。オフでも計算負荷は残る |
 | 可変と固定を並べる | 既定 off。左右で同時実行 |
 | 軌跡 | 既定 on。主役のみ |
 | 繰り返し | ほぼ静止したら初期位置へ |
 
-URL: `mode,dt,lag,maxsteps,balls,loop,trail,drawload,compare`（再生間隔 speed は URL に含めない）
+URL: `mode,dt,lag,maxsteps,speed,balls,loop,trail,drawload,compare`
 
 ---
 

@@ -12,6 +12,8 @@ import {
   applyParamsToControls,
   mountShareLink,
   drawTrailDots,
+  readSpeedScale,
+  bindSpeedScaleControl,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -43,6 +45,7 @@ const drawLoadEl = /** @type {HTMLInputElement} */ (
 const compareEl = /** @type {HTMLInputElement} */ (
   document.getElementById("compare")
 );
+const speedVal = document.getElementById("speed-val");
 const ballsVal = document.getElementById("balls-val");
 const fpsEl = document.getElementById("gl-fps");
 const fixedDtVal = document.getElementById("fixed-dt-val");
@@ -620,8 +623,8 @@ function stopLoop() {
 
 function scheduleNext() {
   if (!running) return;
-  const pad = Number(speedEl?.value) || 0;
-  if (pad <= 0) {
+  const scale = readSpeedScale(speedEl);
+  if (scale >= 0.995) {
     rafId = requestAnimationFrame((ts) => {
       if (!running) return;
       if (!lastTs) lastTs = ts;
@@ -633,11 +636,12 @@ function scheduleNext() {
       scheduleNext();
     });
   } else {
+    const wait = 16.7 / scale;
     timerId = setTimeout(() => {
       if (!running) return;
-      runFrame(16.7 + pad);
+      runFrame(16.7);
       scheduleNext();
-    }, 16 + pad);
+    }, wait);
   }
 }
 
@@ -716,6 +720,7 @@ drawLoadEl?.addEventListener("change", () => {
   draw();
 });
 
+bindSpeedScaleControl(speedEl, speedVal);
 loadTextSample(
   "../samples/GameLoopExample.cs",
   csharpSample,
@@ -732,6 +737,7 @@ const urlSpec = {
   dt: { el: fixedDtEl, kind: "range" },
   lag: { el: lagEl, kind: "range" },
   maxsteps: { el: maxStepsEl, kind: "range" },
+  speed: { el: speedEl, kind: "range" },
   balls: { el: ballsEl, kind: "range" },
   loop: { el: loopEl, kind: "checkbox" },
   trail: { el: trailEl, kind: "checkbox" },

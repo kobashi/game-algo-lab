@@ -28,6 +28,8 @@ export {
 export { mulberry32, randomIndex } from "./rng.js";
 export {
   readSpeedScale,
+  bindSpeedScaleControl,
+  delayFromSpeedScale,
   drawTrailDots,
   circleAabbOverlaps,
   circleAabbTunneled,

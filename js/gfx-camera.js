@@ -9,6 +9,7 @@ import {
   applyParamsToControls,
   mountShareLink,
   readSpeedScale,
+  bindSpeedScaleControl,
   drawTrailDots,
 } from "./platform/index.js";
 
@@ -243,6 +244,7 @@ btnPlay?.addEventListener("click", () => {
   rafId = requestAnimationFrame(loop);
 });
 btnReset?.addEventListener("click", reset);
+bindSpeedScaleControl(speedEl, speedVal);
 for (const el of [followEl, deadEl, speedEl]) {
   el?.addEventListener("input", () => {
     sync();

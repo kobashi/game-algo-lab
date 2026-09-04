@@ -15,6 +15,7 @@ import {
   applyParamsToControls,
   mountShareLink,
   readSpeedScale,
+  bindSpeedScaleControl,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -86,6 +87,9 @@ let rafId = null;
 let lastTs = 0;
 let focused = false;
 let simMs = 0;
+let simOrigin = 0;
+/** @type {Record<string, number | null>} */
+const holdStartMs = {};
 /** @type {{ id: string, t0: number, t1: number | null, long: boolean }[]} */
 let bands = [];
 
@@ -135,10 +139,13 @@ function pollActions(dtSec) {
     st.down = now && !prev;
     st.up = !now && prev;
 
-    if (st.held) st.holdTime += dtSec;
-    else {
+    if (st.down) holdStartMs[def.id] = performance.now();
+    if (st.held && holdStartMs[def.id] != null) {
+      st.holdTime = (performance.now() - holdStartMs[def.id]) / 1000;
+    } else {
       st.holdTime = 0;
       st.longPressFired = false;
+      holdStartMs[def.id] = null;
     }
 
     if (st.down) {
@@ -186,7 +193,7 @@ function pollActions(dtSec) {
     let dir = 0;
     if (rawDown.has("ArrowRight")) dir += 1;
     if (rawDown.has("ArrowLeft")) dir -= 1;
-    playerX += dir * C.moveSpeed * dtSec * readSpeedScale(speedEl);
+    playerX += dir * C.moveSpeed * dtSec;
     playerX = Math.max(0.08, Math.min(0.92, playerX));
   }
 
@@ -200,7 +207,8 @@ function pollActions(dtSec) {
 
 function tick(realDtMs) {
   const dt = Math.min(realDtMs, 50) / 1000;
-  simMs += dt * 1000;
+  if (!simOrigin) simOrigin = performance.now();
+  simMs = performance.now() - simOrigin;
   frameIndex += 1;
   pollActions(dt);
   draw();
@@ -402,14 +410,18 @@ function stopLoop() {
 
 function scheduleNext() {
   if (!running) return;
+  const scale = readSpeedScale(speedEl);
   rafId = requestAnimationFrame((ts) => {
     if (!running) return;
     if (!lastTs) lastTs = ts;
-    let dt = ts - lastTs;
+    const elapsed = ts - lastTs;
+    const interval = 16.7 / scale;
+    if (elapsed < interval) {
+      scheduleNext();
+      return;
+    }
     lastTs = ts;
-    if (dt < 1) dt = 1;
-    if (dt > 50) dt = 50;
-    tick(dt);
+    tick(16.7);
     scheduleNext();
   });
 }
@@ -442,6 +454,8 @@ function resetAll() {
   frameIndex = 0;
   eventLog = [];
   simMs = 0;
+  simOrigin = performance.now();
+  for (const id of Object.keys(holdStartMs)) holdStartMs[id] = null;
   bands = [];
   resultPanel.hide();
   draw();
@@ -504,6 +518,7 @@ btnReset?.addEventListener("click", resetAll);
 longMsEl?.addEventListener("input", () => {
   syncLabels();
 });
+bindSpeedScaleControl(speedEl, speedVal);
 
 loadTextSample(
   "../samples/InputBasicsExample.cs",

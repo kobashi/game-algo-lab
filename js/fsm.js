@@ -11,6 +11,8 @@ import {
   mountTopicShellFromDataset,
   applyParamsToControls,
   mountShareLink,
+  bindSpeedScaleControl,
+  delayFromSpeedScale,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -419,9 +421,14 @@ const playback = createPlayback({
   speedEl: /** @type {HTMLInputElement | null} */ (speedEl),
   onTick: () => stepDemo(),
   defaultDelayMs: 550,
+  delayFromSpeed: delayFromSpeedScale(550),
   labelPlay: "自動デモ",
   labelPause: "停止",
 });
+bindSpeedScaleControl(
+  /** @type {HTMLInputElement | null} */ (speedEl),
+  document.getElementById("speed-val")
+);
 
 function stopAuto() {
   playback.stop();
@@ -463,6 +470,7 @@ const urlSpec = {
   ev: { el: evEl, kind: "select" },
   to: { el: toEl, kind: "select" },
   script: { el: scriptEl, kind: "text" },
+  speed: { el: speedEl, kind: "range" },
 };
 mountShareLink({
   spec: urlSpec,

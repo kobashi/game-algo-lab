@@ -9,6 +9,7 @@ import {
   applyParamsToControls,
   mountShareLink,
   readSpeedScale,
+  bindSpeedScaleControl,
   drawTrailDots,
   resolveCircleAabbReflect,
   circleAabbTunneled,
@@ -288,6 +289,7 @@ btnReset?.addEventListener("click", () => {
   sync();
   setStatus("リセット");
 });
+bindSpeedScaleControl(speedEl, speedVal);
 for (const el of [vxEl, vyEl, dtEl, speedEl, thickEl]) {
   el?.addEventListener("input", () => {
     sync();

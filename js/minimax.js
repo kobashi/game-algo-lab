@@ -16,6 +16,8 @@ import {
   mountTopicShellFromDataset,
   applyParamsToControls,
   mountShareLink,
+  bindSpeedScaleControl,
+  delayFromSpeedScale,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -540,7 +542,12 @@ const playback = createPlayback({
     return cont;
   },
   defaultDelayMs: 200,
+  delayFromSpeed: delayFromSpeedScale(200),
 });
+bindSpeedScaleControl(
+  /** @type {HTMLInputElement | null} */ (speedEl),
+  document.getElementById("speed-val")
+);
 
 function stopAuto() {
   playback.stop();
@@ -574,6 +581,7 @@ const urlSpec = {
   leaves: { el: leavesEl, kind: "text" },
   depth: { el: depthEl, kind: "select" },
   loop: { el: loopEl, kind: "checkbox" },
+  speed: { el: speedEl, kind: "range" },
 };
 mountShareLink({
   spec: urlSpec,

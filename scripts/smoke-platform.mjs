@@ -19,6 +19,7 @@ import {
   circleAabbTunneled,
   resolveCircleAabbReflect,
   readSpeedScale,
+  delayFromSpeedScale,
 } from "../js/platform/index.js";
 import { parseMap } from "../js/map-format.js";
 
@@ -533,6 +534,9 @@ function mockControl(kind, value, extra = {}) {
   assert.equal(miss.vx, 80);
   assert.equal(readSpeedScale({ value: "0.1" }), 0.1);
   assert.equal(readSpeedScale({ value: "" }, 1), 1);
+  const d = delayFromSpeedScale(200);
+  assert.equal(d(1), 200);
+  assert.equal(d(0.1), 2000);
 }
 
 console.log("smoke-platform.mjs: all assertions passed");

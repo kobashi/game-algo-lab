@@ -15,6 +15,32 @@ export function readSpeedScale(el, fallback = 1) {
 }
 
 /**
+ * 再生速度スライダーの表示（N.N×）を input で更新する。
+ * @param {HTMLInputElement | null | undefined} speedEl
+ * @param {HTMLElement | null | undefined} speedVal
+ */
+export function bindSpeedScaleControl(speedEl, speedVal) {
+  const sync = () => {
+    if (speedVal) speedVal.textContent = readSpeedScale(speedEl).toFixed(1);
+  };
+  speedEl?.addEventListener("input", sync);
+  speedEl?.addEventListener("change", sync);
+  sync();
+}
+
+/**
+ * createPlayback 用。1.0＝既定間隔、0.1＝10倍遅く。
+ * @param {number} defaultDelayMs
+ */
+export function delayFromSpeedScale(defaultDelayMs) {
+  return (v) => {
+    const s = Number(v);
+    const scale = Number.isFinite(s) && s > 0 ? s : 1;
+    return Math.max(16, defaultDelayMs / scale);
+  };
+}
+
+/**
  * 古い点ほど薄く、1フレームごとの位置を点で残す。
  * @param {CanvasRenderingContext2D} ctx
  * @param {{x:number,y:number}[]} points

@@ -10,6 +10,7 @@ import {
   applyParamsToControls,
   mountShareLink,
   readSpeedScale,
+  bindSpeedScaleControl,
   drawTrailDots,
   resolveCircleAabbReflect,
   circleAabbTunneled,
@@ -289,6 +290,7 @@ btnStep?.addEventListener("click", () => {
   step(C.defaultDtMs / 1000);
 });
 btnReset?.addEventListener("click", reset);
+bindSpeedScaleControl(speedEl, speedVal);
 for (const el of [gEl, vxEl, restEl, speedEl, thickEl]) {
   el?.addEventListener("input", () => {
     sync();
