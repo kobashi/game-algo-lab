@@ -465,7 +465,7 @@ export const TOPIC_META = {
   "and-or": { maturity: "revised", revisions: 1, updated: "2026-07-19" },
 
   minimax: { maturity: "revised", revisions: 5, updated: "2026-09-26" },
-  "alpha-beta": { maturity: "revised", revisions: 2, updated: "2026-09-26" },
+  "alpha-beta": { maturity: "revised", revisions: 3, updated: "2026-09-26" },
   "monte-carlo": { maturity: "revised", revisions: 1, updated: "2026-07-19" },
   "multi-armed-bandit": {
     maturity: "revised",

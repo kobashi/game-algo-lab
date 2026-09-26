@@ -56,12 +56,12 @@ export const INITIAL_TREE = {
     L1b: { id: "L1b", label: "葉 L1b", kind: "leaf", score: 3 },
     L2: {
       id: "L2",
-      label: "応手 L2(刈)",
+      label: "応手 L2",
       kind: "max",
       children: ["L2a", "L2b"],
     },
     L2a: { id: "L2a", label: "葉 L2a", kind: "leaf", score: 7 },
-    L2b: { id: "L2b", label: "葉 L2b(刈)", kind: "leaf", score: 9 },
+    L2b: { id: "L2b", label: "葉 L2b", kind: "leaf", score: 9 },
     M: {
       id: "M",
       label: "手 M",
@@ -78,12 +78,12 @@ export const INITIAL_TREE = {
     M1b: { id: "M1b", label: "葉 M1b", kind: "leaf", score: 2 },
     M2: {
       id: "M2",
-      label: "応手 M2(刈)",
+      label: "応手 M2",
       kind: "max",
       children: ["M2a", "M2b"],
     },
-    M2a: { id: "M2a", label: "葉 M2a(刈)", kind: "leaf", score: 1 },
-    M2b: { id: "M2b", label: "葉 M2b(刈)", kind: "leaf", score: 3 },
+    M2a: { id: "M2a", label: "葉 M2a", kind: "leaf", score: 1 },
+    M2b: { id: "M2b", label: "葉 M2b", kind: "leaf", score: 3 },
     R: {
       id: "R",
       label: "手 R",
