@@ -1,9 +1,11 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-09-26（ready **110** · Release **v0.19.0** · PR #5 を目視。帯グラフの不具合でリリース見送り）  
+最終更新: 2026-09-26（ready **110** · Release **v0.20.0**）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
-Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.19.0
+Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.20.0
+
+**2026-09-26 PR #6 目視と Release `v0.20.0`（Grok, `89787ce`）**: 帯グラフは 0.1× で X を 1003 ms 押すと約 931 ms、2006 ms で約 2035 ms（入力を読む間隔の範囲）。確認問題は 6 段・15 問（2, 3, 3, 2, 2, 3）。誤答は「ちがいます。正解は D。」で選択が固定され、「もう一度選ぶ」で戻り、正答は「正解。」と 1 行の解説。1280 幅でも 390 幅でも横にはみ出さない。文面は §10 の方針どおり。smoke ALL PASSED。ノート: `RELEASE_NOTES_v0.20.0.md`。
 
 **2026-09-26 P1-5 確認問題（Claude）**: 計画書 §10 の方針どおり、`courses/intro.html` の各段のカードの直後に4択の確認問題を追加（6段・15問。落とし穴が2つある段2・3・6だけ3問）。選ぶとすぐ正誤と1行の解説が出る。答えは隠さず、点数は付けない。「もう一度選ぶ」でやり直せる。正本は `js/courses/intro-quiz.js`、段と結ぶため `STAGES` に id を追加。文面は計画書の付録C（データから書き出し）。数値は課題カードとブラウザ実測値から。正解の位置は 1〜4 番目に散らした。ローカルのブラウザで 1280 / 390 幅の操作・はみ出し・コンソールを確認。**Grok には文面と、選択・解説の見た目の確認を依頼**。
 
