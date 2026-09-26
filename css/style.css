@@ -3654,6 +3654,18 @@ details.ds-block:not([open]) > .ds-title::before {
 }
 
 /* ===== 三目並べ ===== */
+/* 盤ゲーム（tic-tac-toe / othello-4x4 / chopsticks / mcts）のプリセット行: 選択肢の名前が長く、
+   ボタンも並ぶので、狭い画面では折り返して選択欄を縮める
+   （.controls-group .control-row は全ページ共通で nowrap のため、この行だけ上書き） */
+.controls-group .control-row.preset-row {
+  flex-wrap: wrap;
+}
+.control-row.preset-row select {
+  flex: 1 1 10rem;
+  min-width: 0;
+  max-width: 100%;
+}
+
 .ttt-panel {
   display: flex;
   flex-direction: column;
@@ -5326,13 +5338,14 @@ details.ds-block:not([open]) > .ds-title::before {
 /* —— ecs-intro —— */
 .ecs-layout {
   display: grid;
-  grid-template-columns: 1fr 1.4fr;
+  /* minmax(0, …): 表やログの中身の幅で列が広がり、スマホ幅ではみ出すのを防ぐ */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
   gap: 1.25rem;
   margin: 1rem 0;
 }
 @media (max-width: 900px) {
   .ecs-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 .ecs-arch-grid {
