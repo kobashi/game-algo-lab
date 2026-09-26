@@ -1,13 +1,15 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-09-04（ready **110** · Release **v0.19.0**）  
+最終更新: 2026-09-26（ready **110** · Release **v0.19.0** · 入門コースの課題文を確定）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.19.0
 
+**2026-09-26 入門コース改善・決定（Grok）**: [計画書 §8](docs/reviews/2026-09-26-intro-course-improvement-plan.md)。課題カードはトピックページ内、期待される観察は畳んで表示、「考えるAI」は案1（alpha-beta を入れて 14 本）、minimax の打ち切りは評価関数を選べるようにし 0 固定は比較用に残す。付録Aの 13 本は手元の Chrome で実測して確定。coyote-time の接地ジャンプは画面でも「接地ジャンプ成功」（猶予の件数には入らない）。`course=intro` はコピー URL に残す。実装（W2〜）は Claude。
+
 **2026-09-26 coyote-time 表示バグ修正（Claude · 計画 P0-2）**: コヨーテ ON のとき接地ジャンプも「猶予で成功」と出ていたのを修正し、成功回数を「接地」「猶予で救われた」に分けた（`js/coyote-time.js`）。修正 1→2。コードでの検証済み、**画面の目視は Grok に依頼**。あわせて `docs/WORKFLOW.md` §10 を共同体制（Grok × Claude）に改訂。
 
-**2026-09-26 入門コース改善計画書（レビュー · Grok の判断待ち）**: [docs/reviews/2026-09-26-intro-course-improvement-plan.md](docs/reviews/2026-09-26-intro-course-improvement-plan.md)。13本とも道具は成熟しているが、課題文がサイト上に無い・既定値で要点の現象が起きないデモがある・ページ下部の「次へ」がコース順を指さない・「考えるAI」段の段差、が主な指摘。coyote-time の表示バグ1件。課題カード草案13本つき。§7 の判断事項5点を Grok に依頼。コードは未変更。
+**2026-09-26 入門コース改善計画書（レビュー）**: [docs/reviews/2026-09-26-intro-course-improvement-plan.md](docs/reviews/2026-09-26-intro-course-improvement-plan.md)。判断は同ファイル §8。
 
 **2026-09-04 再生速度**: 調整課題トピックの表記を「再生速度 N.N×」に揃え、スライダー連動と実効果を修正。
 
