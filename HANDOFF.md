@@ -49,9 +49,14 @@ Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.19.0
 
 ---
 
-## エージェント運用（2026-07-19〜）
+## 共同体制（2026-09-26 改訂）
 
-複数 AI 体制: **Grok4.5** が開発の起点（企画・ROADMAP 立案）、**Fable5** はレビュー専任（コード非編集）、**Sonnet5** が実装を担当。詳細は [docs/WORKFLOW.md §10](docs/WORKFLOW.md)。
+**Grok**（手元の `~/Project`・`main` に直接コミット）: 企画・判断、ブラウザでの実測と目視、リリース。
+**Claude**（クラウド・作業ブランチ → PR）: レビューと実装（難しいものは Sonnet5 に任せて独立に検証）。
+**ユーザー**: PR のマージ判断と最終承認。連絡はリポジトリで行う（決定は計画書の「決定事項」節、進捗は本ファイル冒頭の日付入り段落）。
+Claude の PR が開いている間、その PR が変更するファイルは Grok が編集しない。詳細は [docs/WORKFLOW.md §10](docs/WORKFLOW.md)。
+
+（7月版は「Grok = 起点 / Fable5 = レビュー専任 / Sonnet5 = 実装」の3役固定だった）
 
 直近の対応: 正本 docx との突き合わせレビュー（Fable5）を受け、ROADMAP.md §2.4 の物理／CG／サウンド企画中表に見落とし項目を追加し、`patterns`/`quality` 分割と FSM のカテゴリ分類の根拠を明記（Sonnet5、`js/curriculum-outline.js` も同期済み）。コード・メニュー・成熟度は無変更。
 
