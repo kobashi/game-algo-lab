@@ -48,10 +48,11 @@ let lastTs = 0;
 let jumpEdge = false;
 
 function readCoyoteSec() {
-  const ms = Math.min(
-    C.maxCoyoteMs,
-    Math.max(C.minCoyoteMs, Number(coyoteMsEl?.value) || C.defaultCoyoteMs)
-  );
+  // 0 は 0 のまま扱う（`Number(v) || 既定` だと猶予 0ms が既定の
+  // C.defaultCoyoteMs（120ms）に化けてしまうため、数値かどうかで判定する）。
+  const raw = Number(coyoteMsEl?.value);
+  const n = Number.isFinite(raw) ? raw : C.defaultCoyoteMs;
+  const ms = Math.min(C.maxCoyoteMs, Math.max(C.minCoyoteMs, n));
   if (coyoteMsVal) coyoteMsVal.textContent = String(ms);
   return ms / 1000;
 }

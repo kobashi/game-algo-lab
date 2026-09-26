@@ -13,10 +13,12 @@
 | `tree-layout.js` | ゲーム木の水平レイアウト。存在する子節点だけを置く（欠けた `children` id には枝を引かない）。`applySvgSize` は既定で親幅にフィット（横スクロール抑制） |
 | `grid-paint.js` | 経路探索マップの塗り（`bindMapPaint` 等） |
 | `pathfinding-grid.js` | グリッド幾何・下地描画（`drawPathfindingGrid`） |
-| `topic-shell.js` | 共通ヘッダー／フッター（`mountTopicShellFromDataset`）。`NAV_GROUPS.course` は `courses/` 入口用 |
+| `topic-shell.js` | 共通ヘッダー／フッター（`mountTopicShellFromDataset`）。`NAV_GROUPS.course` は `courses/` 入口用。同じ呼び出しで演習節（`exercises.js`）とコース内ナビ（`course-nav.js`）も自動描画する |
 | `maturity.js` | 成熟度・修正回数・更新日（`TOPIC_META`）・バッジ |
-| `url-params.js` | URL クエリで初期コントロールを指定 / 共有 URL コピー（`applyParamsToControls` / `mountShareLink`） |
+| `url-params.js` | URL クエリで初期コントロールを指定 / 共有 URL コピー（`applyParamsToControls` / `mountShareLink`）。`course` パラメータは共有 URL にそのまま残す |
 | `observe.js` | 軌跡点・再生速度スケール（0.1〜1.0×）・円と矩形の重なり／すり抜け／反射 |
+| `course-nav.js` | 入門コースの「n/14・前後のトピック」ナビ（`?course=intro` のときだけ）。段の順序は `js/courses/intro-stages.js` |
+| `exercises.js` | 演習節（課題カード）の描画（`mountExercises`）。文言は `js/courses/intro-exercises.js` が正 |
 | `index.js` | 上記の一括 export |
 
 経路探索の再生待ち時間はスライダーが大きいほど速いため  
@@ -134,3 +136,9 @@ applyParamsToControls(spec);
 - `number` / `range` は `step` 属性が正の数値のとき、min（無ければ 0）からの刻みに合わない値も却下する（ブラウザのスナップで黙って化けないように）。
 - 共有 URL はコピーボタン押下時だけ生成する（`history.replaceState` しない）。既定値と同じキーは付けない。
 - HTML のボタン id は `btn-copy-url`。
+- `course`（例: `?course=intro`）は spec に含めない。`buildShareUrl` は現在の URL に `course` があればそのまま共有 URL にも残す（コース外なら付けない）。
+
+入門コースの演習節・コース内ナビ（`?course=intro` のときだけ表示。§ 上表の `course-nav.js` / `exercises.js`）は、
+`mountTopicShellFromDataset()` から自動で描画される。トピック側の追加コードは不要。
+新しいトピックを入門コースへ追加する場合は、`js/courses/intro-stages.js` の `STAGES` に id を足し、
+`js/courses/intro-exercises.js` に同じ id のカードを追加する（無ければ演習節は出ない）。

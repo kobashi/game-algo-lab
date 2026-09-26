@@ -86,8 +86,8 @@ let running = false;
 let rafId = null;
 let lastTs = 0;
 let focused = false;
+/** 帯グラフの時刻。再生中に進んだ分だけを足す（実時間そのものではない）。 */
 let simMs = 0;
-let simOrigin = 0;
 /** @type {Record<string, number | null>} */
 const holdStartMs = {};
 /** @type {{ id: string, t0: number, t1: number | null, long: boolean }[]} */
@@ -205,10 +205,17 @@ function pollActions(dtSec) {
   }
 }
 
-function tick(realDtMs) {
+/**
+ * @param {number} realDtMs シミュレーションの1歩（移動などに使う）
+ * @param {number} [bandMs] 帯グラフの時刻を進める量。再生中は実経過時間、
+ *   1ステップでは1歩分。長押しの判定は実時間なので、帯グラフもそれに揃える
+ *   （再生速度を落としても、1秒の長押しが帯グラフ上で1秒に見えるように）。
+ */
+function tick(realDtMs, bandMs = realDtMs) {
   const dt = Math.min(realDtMs, 50) / 1000;
-  if (!simOrigin) simOrigin = performance.now();
-  simMs = performance.now() - simOrigin;
+  // 帯グラフの時刻は「再生中に進んだ分」だけを足す。1ステップのクリック間隔や
+  // 一時停止中の時間は入れない（壁時計の差分をそのまま使わない）。
+  simMs += Math.min(bandMs, 100);
   frameIndex += 1;
   pollActions(dt);
   draw();
@@ -421,7 +428,7 @@ function scheduleNext() {
       return;
     }
     lastTs = ts;
-    tick(16.7);
+    tick(16.7, elapsed);
     scheduleNext();
   });
 }
@@ -454,7 +461,6 @@ function resetAll() {
   frameIndex = 0;
   eventLog = [];
   simMs = 0;
-  simOrigin = performance.now();
   for (const id of Object.keys(holdStartMs)) holdStartMs[id] = null;
   bands = [];
   resultPanel.hide();

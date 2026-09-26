@@ -1,51 +1,19 @@
 /**
  * 入門コース入口 — TOPICS のカードを学ぶ順に6段で並べる
- * 文言は js/main.js の TOPICS が正（ここでは id と段だけ持つ）
+ * 文言は js/main.js の TOPICS が正。段の構成（id・順序）は
+ * js/courses/intro-stages.js が正（トピックページのコース内ナビと共有）。
  */
 import { mountTopicShellFromDataset } from "./platform/index.js";
 import { TOPICS, createCard } from "./main.js";
+import { STAGES } from "./courses/intro-stages.js";
 
 mountTopicShellFromDataset();
-
-/** @type {{ title: string, lead: string, ids: string[] }[]} */
-const STAGES = [
-  {
-    title: "まず動かす",
-    lead: "ゲームが1秒間に何をしているかを知る",
-    ids: ["game-loop", "input-basics"],
-  },
-  {
-    title: "物を動かす",
-    lead: "位置・速度・重力・当たり判定",
-    ids: ["velocity-motion", "accel-gravity", "circle-collision"],
-  },
-  {
-    title: "手ざわりを作る",
-    lead: "同じ処理でも操作感は数値で変わる",
-    ids: ["coyote-time", "gfx-camera"],
-  },
-  {
-    title: "見せる・鳴らす",
-    lead: "画面表示と効果音のつなぎ方",
-    ids: ["gfx-ui-canvas", "sfx-events"],
-  },
-  {
-    title: "状態と乱数",
-    lead: "状態遷移と、再現できる乱数",
-    ids: ["fsm", "rng-seed"],
-  },
-  {
-    title: "考えるAI",
-    lead: "先読みで手を選ぶ",
-    ids: ["minimax", "tic-tac-toe"],
-  },
-];
 
 /** TOPICS.href はサイトルート基準。courses/ からは一段上がる */
 function hrefFromCourse(href) {
   if (!href) return href;
   if (/^(https?:|\/|\.\.\/)/i.test(href)) return href;
-  return `../${href}`;
+  return `../${href}?course=intro`;
 }
 
 function renderStages() {

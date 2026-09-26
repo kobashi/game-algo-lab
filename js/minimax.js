@@ -34,6 +34,9 @@ const leavesEl = /** @type {HTMLInputElement | null} */ (
 const depthEl = /** @type {HTMLSelectElement | null} */ (
   document.getElementById("mm-depth")
 );
+const evalEl = /** @type {HTMLSelectElement | null} */ (
+  document.getElementById("mm-eval")
+);
 const loopEl = /** @type {HTMLInputElement | null} */ (
   document.getElementById("loop")
 );
@@ -139,6 +142,34 @@ function maxDepthLimit() {
   return n === 1 || n === 2 || n === 3 ? n : 3;
 }
 
+/**
+ * 打ち切りの評価方式。既定は "avg"（配下の葉の平均で見積もる）。
+ * "zero" は比較用（0 固定）。
+ * @returns {"avg"|"zero"}
+ */
+function readEvalMode() {
+  return evalEl?.value === "zero" ? "zero" : "avg";
+}
+
+/**
+ * 打ち切り節点の配下にある葉の評価値の平均（評価関数の例）。
+ * @param {string} id
+ */
+function averageLeavesUnder(id) {
+  const leaves = collectLeaves(nodes, id);
+  if (!leaves.length) return 0;
+  const sum = leaves.reduce((s, l) => s + (l.score ?? 0), 0);
+  return sum / leaves.length;
+}
+
+/**
+ * 打ち切り節点の見積もり値（選択中の評価方式による）。
+ * @param {string} id
+ */
+function estimateOnCutoff(id) {
+  return readEvalMode() === "zero" ? 0 : averageLeavesUnder(id);
+}
+
 function cloneTree(src) {
   rootId = src.rootId;
   nodes = {};
@@ -207,9 +238,12 @@ function resetState() {
   ];
   resultPanel.hide();
   const limit = maxDepthLimit();
+  const evalMode = readEvalMode();
   const depthNote =
     limit < 3
-      ? `深さ制限 ${limit}（打ち切りは評価 0）`
+      ? evalMode === "zero"
+        ? `深さ制限 ${limit}（打ち切りは評価 0 固定）`
+        : `深さ制限 ${limit}（打ち切りは評価関数で見積もり：配下の葉の平均）`
       : "深さ制限なし（葉まで）";
   setStatus(`準備完了 — ${depthNote}。再生または 1ステップで Minimax(根) を開始`);
   relayout();
@@ -270,7 +304,7 @@ function draw() {
     if (n.kind === "leaf") {
       scoreText = String(n.score);
     } else if (cutOff.has(n.id) && value[n.id] !== null) {
-      scoreText = "打切 0";
+      scoreText = `打切 ${value[n.id]}`;
     } else if (value[n.id] !== null) {
       scoreText = `v=${value[n.id]}`;
     } else {
@@ -379,8 +413,17 @@ function finishRoot() {
       : prev === v
         ? `${prev} → ${v}（変わらず）`
         : `${prev} → ${v}`;
+  // 根の値と同じ値の子が複数あれば同点。表示上は左の手を採用するが、
+  // 「差が付かず選べない」ことが分かるように同点の手を並べて示す。
+  const tied = (nodes[rootId]?.children ?? []).filter(
+    (c) => value[c] !== null && value[c] === v
+  );
   const move = bestChild[rootId]
-    ? nodes[bestChild[rootId]].label
+    ? tied.length > 1
+      ? `${nodes[bestChild[rootId]].label}（同点: ${tied
+          .map((c) => nodes[c].label)
+          .join(" / ")}。差が付かないので左の手を採用）`
+      : nodes[bestChild[rootId]].label
     : "—";
   const limit = maxDepthLimit();
   const hand =
@@ -388,7 +431,9 @@ function finishRoot() {
       ? `手計算: 手L=min(5,9)=5、手M=min(4,3)=3、手R=min(8,7)=7 → 根 max(5,3,7)=7（手 R）。
       相手は自分に不利な手を選ぶ前提です。`
       : limit < 3
-        ? `深さ制限 ${limit} のため、残りの深さが 0 になった非葉は評価 0 で打ち切りました。`
+        ? readEvalMode() === "zero"
+          ? `深さ制限 ${limit} のため、残りの深さが 0 になった非葉は評価 0 で打ち切りました。`
+          : `深さ制限 ${limit} のため、残りの深さが 0 になった非葉は、配下の葉の平均を見積もり値として打ち切りました。`
         : "葉の値を max / min で吸い上げた結果です。選ばれない枝の葉を変えても根が変わらないことがあります。";
   resultPanel.show(`
     <h3>結果（Min-Max）</h3>
@@ -396,6 +441,11 @@ function finishRoot() {
       <li><strong>根の評価値 v</strong>: ${v}　前回比較: ${delta}</li>
       <li><strong>最善手</strong>: ${move}</li>
       <li><strong>深さ制限</strong>: ${limit === 3 ? "なし（3）" : String(limit)}</li>
+      ${
+        limit < 3
+          ? `<li><strong>打ち切りの評価</strong>: ${readEvalMode() === "zero" ? "0 固定（比較用）" : "評価関数（配下の葉の平均）"}</li>`
+          : ""
+      }
       <li><strong>ステップ数</strong>: ${stepCount}</li>
     </ul>
     <p class="result-verdict">${hand}</p>
@@ -434,12 +484,16 @@ function stepOnce() {
       return true;
     }
     if (frame.depthLeft <= 0) {
-      value[frame.id] = 0;
-      frame.best = 0;
+      const mode = readEvalMode();
+      const est = estimateOnCutoff(frame.id);
+      value[frame.id] = est;
+      frame.best = est;
       frame.phase = "done";
       cutOff.add(frame.id);
       setStatus(
-        `深さ制限により「${n.label}」を打ち切り → 評価 0`
+        mode === "zero"
+          ? `深さ制限により「${n.label}」を打ち切り → 評価 0（固定）`
+          : `深さ制限により「${n.label}」を打ち切り → 評価 ${est}（配下の葉の平均で見積もり）`
       );
       draw();
       updateDs();
@@ -576,10 +630,12 @@ btnReset?.addEventListener("click", () => {
 
 if (leavesEl) leavesEl.value = defaultLeavesString();
 if (depthEl) depthEl.value = "3";
+if (evalEl) evalEl.value = "avg";
 
 const urlSpec = {
   leaves: { el: leavesEl, kind: "text" },
   depth: { el: depthEl, kind: "select" },
+  eval: { el: evalEl, kind: "select" },
   loop: { el: loopEl, kind: "checkbox" },
   speed: { el: speedEl, kind: "range" },
 };
@@ -604,6 +660,9 @@ leavesEl?.addEventListener("change", () => {
   if (warning) setStatus(warning);
 });
 depthEl?.addEventListener("change", () => {
+  resetState();
+});
+evalEl?.addEventListener("change", () => {
   resetState();
 });
 

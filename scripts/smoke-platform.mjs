@@ -3,6 +3,8 @@
  *   node scripts/smoke-platform.mjs
  */
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import { fileURLToPath } from "node:url";
 import {
   mulberry32,
   randomIndex,
@@ -22,6 +24,9 @@ import {
   delayFromSpeedScale,
 } from "../js/platform/index.js";
 import { parseMap } from "../js/map-format.js";
+import { TOPICS } from "../js/main.js";
+import { STAGES, getCourseOrder } from "../js/courses/intro-stages.js";
+import { EXERCISES } from "../js/courses/intro-exercises.js";
 
 // --- rng ---
 const r1 = mulberry32(42);
@@ -537,6 +542,134 @@ function mockControl(kind, value, extra = {}) {
   const d = delayFromSpeedScale(200);
   assert.equal(d(1), 200);
   assert.equal(d(0.1), 2000);
+}
+
+// --- 入門コース: STAGES の全 id が TOPICS に存在し ready (入門コース改善計画 W2+W3) ---
+{
+  const order = getCourseOrder();
+  assert.equal(order.length, 14, "course order has 14 topics");
+  const byId = new Map(TOPICS.map((t) => [t.id, t]));
+  for (const id of order) {
+    const topic = byId.get(id);
+    assert.ok(topic, `TOPICS has ${id}`);
+    assert.equal(topic.ready, true, `${id} is ready`);
+  }
+  // alpha-beta は minimax と tic-tac-toe の間（§8 決定3・案1）
+  const mi = order.indexOf("minimax");
+  const ab = order.indexOf("alpha-beta");
+  const ttt = order.indexOf("tic-tac-toe");
+  assert.equal(ab, mi + 1, "alpha-beta directly follows minimax");
+  assert.equal(ttt, ab + 1, "tic-tac-toe directly follows alpha-beta");
+  // 1本目は前なし、14本目は次なし（前後関係）
+  assert.equal(order[0], "game-loop");
+  assert.equal(order[order.length - 1], "tic-tac-toe");
+}
+
+// --- 入門コース: intro-exercises.js が STAGES の全 id を網羅し、各カードに
+//     目標・予想・手順・期待される観察がある ---
+{
+  const order = getCourseOrder();
+  for (const id of order) {
+    const card = EXERCISES[id];
+    assert.ok(card, `EXERCISES has a card for ${id}`);
+    assert.ok(card.goal && card.goal.length > 0, `${id}: goal`);
+    assert.ok(card.guess && card.guess.length > 0, `${id}: guess`);
+    assert.ok(Array.isArray(card.steps) && card.steps.length > 0, `${id}: steps`);
+    assert.ok(
+      Array.isArray(card.observations) && card.observations.length > 0,
+      `${id}: observations`
+    );
+  }
+  // STAGES と EXERCISES で id の重複・欠落が無いこと
+  assert.deepEqual(
+    [...order].sort(),
+    Object.keys(EXERCISES).sort(),
+    "EXERCISES has exactly the course's 14 ids (no extra, no missing)"
+  );
+}
+
+// --- 入門コース: 課題カード内の URL のクエリキーが、そのトピックの
+//     URL spec（js/<id>.js の `key: { el: ... }`）に存在する（course を除く） ---
+{
+  const specKeyCache = new Map();
+  function specKeysFor(id) {
+    if (specKeyCache.has(id)) return specKeyCache.get(id);
+    const path = fileURLToPath(new URL(`../js/${id}.js`, import.meta.url));
+    const text = fs.readFileSync(path, "utf8");
+    const keys = new Set();
+    const re = /(?:^|[\s{,])([A-Za-z][\w-]*)\s*:\s*\{\s*el:/g;
+    let m;
+    while ((m = re.exec(text))) keys.add(m[1]);
+    specKeyCache.set(id, keys);
+    return keys;
+  }
+
+  function cardText(card) {
+    return [
+      card.goal,
+      card.guess,
+      card.stepsIntro,
+      ...(card.steps || []),
+      ...(card.observations || []),
+      card.extension,
+      card.scope,
+    ]
+      .filter(Boolean)
+      .join("\n");
+  }
+
+  // `` `xxx.html?a=1&b=2` `` の形だけを URL として拾う（他の `` `code` `` は対象外）
+  function extractUrls(text) {
+    const urls = [];
+    const re = /`([^`]*\.html(?:\?[^`]*)?)`/g;
+    let m;
+    while ((m = re.exec(text))) urls.push(m[1]);
+    return urls;
+  }
+
+  for (const id of getCourseOrder()) {
+    const card = EXERCISES[id];
+    const specKeys = specKeysFor(id);
+    const urls = extractUrls(cardText(card));
+    for (const url of urls) {
+      const qIndex = url.indexOf("?");
+      if (qIndex === -1) continue; // クエリ無し（例: `alpha-beta.html`）
+      const query = url.slice(qIndex + 1);
+      const params = new URLSearchParams(query);
+      for (const key of params.keys()) {
+        if (key === "course") continue; // コースパラメータは spec 対象外
+        assert.ok(
+          specKeys.has(key),
+          `${id}: URL param "${key}" (in \`${url}\`) must exist in js/${id}.js URL spec`
+        );
+      }
+    }
+  }
+}
+
+// --- コピー URL: course=intro を維持する／コース外では付けない ---
+{
+  const withCourse = mockControl("range", "50", { min: "0", max: "100" });
+  const spec = { x: { el: withCourse, kind: "range" } };
+  const inCourse = buildShareUrl(
+    spec,
+    "https://example.test/algorithms/game-loop.html?course=intro&x=10",
+    { x: "10" }
+  );
+  assert.ok(
+    new URL(inCourse).searchParams.get("course") === "intro",
+    "buildShareUrl keeps course=intro when opened from the course"
+  );
+  const outsideCourse = buildShareUrl(
+    spec,
+    "https://example.test/algorithms/game-loop.html?x=10",
+    { x: "10" }
+  );
+  assert.equal(
+    new URL(outsideCourse).searchParams.has("course"),
+    false,
+    "buildShareUrl does not add course when opened outside the course"
+  );
 }
 
 console.log("smoke-platform.mjs: all assertions passed");

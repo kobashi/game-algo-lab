@@ -1507,6 +1507,10 @@ function renderCurriculumOutline() {
   root.replaceChildren(summary, fragment);
 }
 
-renderMaturityLegend();
-renderTopics();
-renderCurriculumOutline();
+// document が無い環境（Node の smoke テストなど）から import されても
+// 安全なように、ブラウザ実行時だけ描画する（TOPICS 自体はどこからでも import してよい）。
+if (typeof document !== "undefined") {
+  renderMaturityLegend();
+  renderTopics();
+  renderCurriculumOutline();
+}

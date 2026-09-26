@@ -14,9 +14,22 @@
       <h1>イベントと効果音</h1>
       <p class="page-header-lead">
         ゲームイベントを Emit → SFX が購読してトーン再生。
-        前段: <a href="event-system.html">イベントシステム</a>。
+        補足: <a href="event-system.html">イベントシステム</a>（入門コースには含まれません）。
       </p>
     </div>
+
+    <details class="lesson-details">
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>ゲームの処理は「イベントを<strong>発行（Emit）</strong>する」だけで、音を鳴らすかどうかは知らない</li>
+          <li>どんな効果音を鳴らすかは<strong>購読側（SFX）</strong>が決める。発行側のコードは変えなくてよい</li>
+          <li>同じイベントに、複数の購読者（音・演出など）を後から付け足せる</li>
+          <li>ミュートにしても、イベント自体は変わらず流れる（ログで確認できる）</li>
+        </ul>
+      </div>
+    </details>
+
     <div class="gl-layout">
       <section class="gl-main">
         <h2 class="gl-block-title">ゲーム風イベント</h2>

@@ -44,6 +44,10 @@ def check_platform_files() -> None:
         "js/platform/url-params.js",
         "js/platform/observe.js",
         "js/platform/text.js",
+        "js/platform/course-nav.js",
+        "js/platform/exercises.js",
+        "js/courses/intro-stages.js",
+        "js/courses/intro-exercises.js",
         "js/map-format.js",
         "js/ds-viz.js",
         "docs/templates/TOPIC_SCAFFOLD.md",
@@ -79,6 +83,9 @@ def check_exports() -> None:
         "mountShareLink",
         "drawTrailDots",
         "resolveCircleAabbReflect",
+        "mountCourseNav",
+        "computeCourseNav",
+        "mountExercises",
     ]
     for name in needed:
         if name in text:
@@ -154,6 +161,22 @@ def check_intro_course() -> None:
     else:
         ok("courses-intro.js uses TOPICS")
 
+    stages_path = ROOT / "js" / "courses" / "intro-stages.js"
+    exercises_path = ROOT / "js" / "courses" / "intro-exercises.js"
+    if not stages_path.is_file():
+        fail("missing js/courses/intro-stages.js")
+        return
+    if not exercises_path.is_file():
+        fail("missing js/courses/intro-exercises.js")
+        return
+    stages_t = stages_path.read_text(encoding="utf-8")
+    exercises_t = exercises_path.read_text(encoding="utf-8")
+    if "STAGES" not in jt:
+        fail("courses-intro.js: does not import STAGES from js/courses/intro-stages.js")
+    else:
+        ok("courses-intro.js uses STAGES")
+
+    # 入門コース14本（alpha-beta を minimax と tic-tac-toe の間に追加。§8 決定3）
     needed = [
         "game-loop",
         "input-basics",
@@ -167,16 +190,22 @@ def check_intro_course() -> None:
         "fsm",
         "rng-seed",
         "minimax",
+        "alpha-beta",
         "tic-tac-toe",
     ]
     main = (ROOT / "js" / "main.js").read_text(encoding="utf-8")
     for tid in needed:
+        has_card = f'"{tid}"' in exercises_t or f"\n  {tid}:" in exercises_t
         if f'id: "{tid}"' not in main:
             fail(f"intro course id missing from TOPICS: {tid}")
-        elif f'ids: ["{tid}"' not in jt and f'"{tid}"' not in jt:
-            fail(f"courses-intro.js missing id {tid}")
+        elif f'"{tid}"' not in stages_t:
+            fail(f"intro-stages.js missing id {tid}")
+        elif not has_card:
+            fail(f"intro-exercises.js missing card for {tid}")
         else:
             ok(f"intro {tid}")
+
+    # 詳細な文面・URL の検証は scripts/smoke-platform.mjs（Node で直接 import して確認）
 
     shell = (ROOT / "js" / "platform" / "topic-shell.js").read_text(
         encoding="utf-8"
@@ -329,6 +358,62 @@ def check_aabb_dual() -> None:
             fail(f"missing {name}")
 
 
+def check_w4_fixes() -> None:
+    """入門コース改善計画 W4（P1-2/P1-3/P1-4, R3, R4）の静的チェック。"""
+    print("W4 修正（minimax eval / accel-gravity 固定刻み / sfx-events 学ぶこと / 0 既定値バグ）")
+
+    mm_js = (ROOT / "js/minimax.js").read_text(encoding="utf-8")
+    mm_html = (ROOT / "algorithms/minimax.html").read_text(encoding="utf-8")
+    if 'eval: { el: evalEl, kind: "select" }' in mm_js:
+        ok("minimax.js urlSpec has eval")
+    else:
+        fail("minimax.js urlSpec missing eval key")
+    if 'id="mm-eval"' in mm_html and 'value="avg"' in mm_html and 'value="zero"' in mm_html:
+        ok("minimax.html has mm-eval select (avg/zero)")
+    else:
+        fail("minimax.html missing mm-eval avg/zero options")
+
+    ag_js = (ROOT / "js/accel-gravity.js").read_text(encoding="utf-8")
+    if "let dt = elapsed;" in ag_js:
+        fail("accel-gravity.js loop still uses elapsed as dt (should be fixed step)")
+    else:
+        ok("accel-gravity.js loop does not use elapsed as dt")
+    if "step(C.defaultDtMs / 1000);" in ag_js:
+        ok("accel-gravity.js loop steps with C.defaultDtMs (fixed step)")
+    else:
+        fail("accel-gravity.js loop missing fixed-step call")
+
+    sfx_html = (ROOT / "algorithms/sfx-events.html").read_text(encoding="utf-8")
+    if "lesson-details" in sfx_html and "このデモで学ぶこと" in sfx_html:
+        ok("sfx-events.html has lesson-details section")
+    else:
+        fail("sfx-events.html missing lesson-details section")
+
+    ui_js = (ROOT / "js/gfx-ui-canvas.js").read_text(encoding="utf-8")
+    if "Number(pivotXEl?.value) || 0.5" in ui_js or "Number(pivotYEl?.value) || 0.5" in ui_js:
+        fail("gfx-ui-canvas.js still has `Number(pivot) || 0.5` (0 gets replaced)")
+    else:
+        ok("gfx-ui-canvas.js pivot read treats 0 as 0")
+
+    ct_js = (ROOT / "js/coyote-time.js").read_text(encoding="utf-8")
+    if "Number(coyoteMsEl?.value) || C.defaultCoyoteMs" in ct_js:
+        fail("coyote-time.js readCoyoteSec still has `|| C.defaultCoyoteMs` (0ms gets replaced)")
+    else:
+        ok("coyote-time.js readCoyoteSec treats 0ms as 0")
+
+    cam_js = (ROOT / "js/gfx-camera.js").read_text(encoding="utf-8")
+    if "Number(deadEl?.value) || C.defaultDead" in cam_js:
+        fail("gfx-camera.js still has `Number(dead) || C.defaultDead` (0 gets replaced)")
+    else:
+        ok("gfx-camera.js dead-zone read treats 0 as 0")
+
+    ib_js = (ROOT / "js/input-basics.js").read_text(encoding="utf-8")
+    if "performance.now() - simOrigin" in ib_js:
+        fail("input-basics.js timeline still derives simMs from wall-clock (simOrigin)")
+    else:
+        ok("input-basics.js timeline advances simMs by played dt only")
+
+
 def run_node_smoke() -> None:
     print("Node ES module smoke")
     node = shutil.which("node")
@@ -372,6 +457,7 @@ def main() -> int:
     check_draw_score_pair_usage()
     print()
     check_aabb_dual()
+    check_w4_fixes()
     print()
     run_node_smoke()
     print()

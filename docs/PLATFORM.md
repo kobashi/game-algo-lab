@@ -32,6 +32,7 @@ js/platform/               # ★ 共通基盤（dom / playback / rng / tree-layo
 js/ds-viz.js               # データ構造パネル共通
 js/map-format.js           # 経路探索グリッド地図パーサ
 js/maps/                   # 初期データ（地図・木・設定）
+js/courses/                # コース固有データ（段構成・課題カード。描画の副作用なし）
 js/main.js                 # トップの TOPICS（category 付き）
 samples/<PascalCase>Example.cs
 css/style.css              # 共通スタイル
@@ -70,8 +71,10 @@ docs/templates/            # SPEC / スキャフォールド
 | `layoutTree` / `applySvgSize` / `existingChildIds` | ゲーム木の水平配置。`children` に無い節点へは座標も枝も作らない。`applySvgSize` は既定で viewBox + 親幅フィット（横スクロール抑制） |
 | `bindMapPaint` 等 | 経路探索の塗り |
 | `drawPathfindingGrid` / `createGridOps` | グリッド下地・幾何 |
-| `mountTopicShellFromDataset` | 共通ヘッダー + フッター + 成熟度バッジ |
+| `mountTopicShellFromDataset` | 共通ヘッダー + フッター + 成熟度バッジ + 演習節 + コース内ナビ（該当トピックのみ） |
 | `TOPIC_MATURITY` / `createMaturityBadge` | 修正状況（成熟度）表示 |
+| `mountExercises` | 演習節（課題カード）の描画。`js/courses/intro-exercises.js` のカードを HTML に変換して挿入 |
+| `mountCourseNav` / `computeCourseNav` | `?course=intro` のときだけ出すコース内ナビ（n/14・前後）。段の順序は `js/courses/intro-stages.js` |
 | `drawScorePair` | 探索マスの大/小ラベル |
 | `escapeHtml` / `escapeXml` | エスケープ |
 | `applyParamsToControls` / `buildShareUrl` / `mountShareLink` | URL クエリで初期コントロールを指定し、共有 URL をコピーする（`url-params.js`） |
@@ -93,6 +96,7 @@ docs/templates/            # SPEC / スキャフォールド
 | 適用順 | spec のキー順。preset 系 select は個別パラメータより前に並べる |
 | 共有 | `#btn-copy-url`（「この設定のURLをコピー」）。既定値と同じキーは付けない |
 | checkbox のオフ | 既定がオンでも `?coyote=0` は残す（既定と異なるため） |
+| `course` | トピック固有の spec には含めない。コースから開かれた URL（`?course=intro`）は `buildShareUrl` がそのまま残す。コース外から開いた URL には付けない |
 
 ```
 http://localhost:8080/algorithms/rng-seed.html?algo=lcg&a=13&c=5&m=24&seed=0&n=64
@@ -117,6 +121,10 @@ http://localhost:8080/algorithms/rng-seed.html?algo=lcg&a=13&c=5&m=24&seed=0&n=6
 各デモ JS の先頭で `mountTopicShellFromDataset()` を呼ぶ。
 
 入門の学び順は `courses/intro.html`（`data-nav="course"`）。カード文言は `js/main.js` の `TOPICS` を参照し、デモ本体は変更しない。
+段の構成（id・順序）は `js/courses/intro-stages.js` が正。トピックページは `?course=intro` で開かれたときだけ、
+`mountTopicShellFromDataset()` がコース内ナビ（n/14・前後）を自動で出す（`js/platform/course-nav.js`）。
+課題カードの文言は `js/courses/intro-exercises.js` が正で、同じく `mountTopicShellFromDataset()` から
+`js/platform/exercises.js` の `mountExercises` が全14トピックに自動描画する（HTML への直書きはしない）。
 
 ### 移行状況（段階的）
 
@@ -280,6 +288,7 @@ python3 scripts/smoke-platform.py
 
 | 日付 | 内容 |
 |------|------|
+| 2026-09-26 | `course-nav.js`（`?course=intro` のときのコース内ナビ）・`exercises.js`（課題カードの描画）を新設。`js/courses/intro-stages.js`・`js/courses/intro-exercises.js` を追加し、入門コースを14本に（alpha-beta を追加）。`buildShareUrl` が `course` パラメータを維持するように変更（入門コース改善計画 P0-1・P0-3） |
 | 2026-09-04 | `observe.js`（軌跡点・速度スケール・円と矩形のすり抜け検出） |
 | 2026-09-03 | URL パラメータ: `kind: "text"`（カンマ区切りなど）。`minimax` の葉評価・深さ制限、`fsm` のデモ脚本 |
 | 2026-09-03 | URL パラメータ: `step` に合わない値を却下（黙ってスナップしない） |
