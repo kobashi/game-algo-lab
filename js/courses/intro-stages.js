@@ -12,37 +12,44 @@
  */
 
 /**
- * @typedef {{ title: string, lead: string, ids: string[] }} CourseStage
+ * @typedef {{ id: string, title: string, lead: string, ids: string[] }} CourseStage
+ * id は確認問題（js/courses/intro-quiz.js）のキー
  */
 
 /** @type {CourseStage[]} */
 export const STAGES = [
   {
+    id: "run",
     title: "まず動かす",
     lead: "ゲームが1秒間に何をしているかを知る",
     ids: ["game-loop", "input-basics"],
   },
   {
+    id: "move",
     title: "物を動かす",
     lead: "位置・速度・重力・当たり判定",
     ids: ["velocity-motion", "accel-gravity", "circle-collision"],
   },
   {
+    id: "feel",
     title: "手ざわりを作る",
     lead: "同じ処理でも操作感は数値で変わる",
     ids: ["coyote-time", "gfx-camera"],
   },
   {
+    id: "show",
     title: "見せる・鳴らす",
     lead: "画面表示と効果音のつなぎ方",
     ids: ["gfx-ui-canvas", "sfx-events"],
   },
   {
+    id: "state",
     title: "状態と乱数",
     lead: "状態遷移と、再現できる乱数",
     ids: ["fsm", "rng-seed"],
   },
   {
+    id: "ai",
     title: "考えるAI",
     lead: "先読みで手を選び、少ない読みで同じ答えに着く",
     // alpha-beta は minimax と tic-tac-toe の間（§8 決定3・案1）

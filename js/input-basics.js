@@ -215,7 +215,7 @@ function tick(realDtMs, bandMs = realDtMs) {
   const dt = Math.min(realDtMs, 50) / 1000;
   // 帯グラフの時刻は「再生中に進んだ分」だけを足す。1ステップのクリック間隔や
   // 一時停止中の時間は入れない（壁時計の差分をそのまま使わない）。
-  simMs += Math.min(bandMs, 100);
+  simMs += bandMs;
   frameIndex += 1;
   pollActions(dt);
   draw();
@@ -428,7 +428,10 @@ function scheduleNext() {
       return;
     }
     lastTs = ts;
-    tick(16.7, elapsed);
+    // 帯グラフは実経過時間で進める。上限は1歩の間隔の2倍（再生速度 0.1× なら約 334 ms）。
+    // 固定の上限だと、遅い再生速度で毎歩切り捨てられて長押しが短く描かれる。
+    // 上限そのものは、タブを裏に回して戻ったときに時刻が一気に飛ばないために残す。
+    tick(16.7, Math.min(elapsed, interval * 2));
     scheduleNext();
   });
 }

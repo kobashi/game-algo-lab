@@ -27,6 +27,7 @@ import { parseMap } from "../js/map-format.js";
 import { TOPICS } from "../js/main.js";
 import { STAGES, getCourseOrder } from "../js/courses/intro-stages.js";
 import { EXERCISES } from "../js/courses/intro-exercises.js";
+import { INTRO_QUIZ } from "../js/courses/intro-quiz.js";
 
 // --- rng ---
 const r1 = mulberry32(42);
@@ -670,6 +671,24 @@ function mockControl(kind, value, extra = {}) {
     false,
     "buildShareUrl does not add course when opened outside the course"
   );
+}
+
+// --- 入門コース: 確認問題（計画書 §10・P1-5）。段ごとに 2〜3 問、4択、正解は1つ、解説あり ---
+{
+  const stageIds = STAGES.map((st) => st.id);
+  assert.ok(stageIds.every((id) => typeof id === "string" && id.length > 0), "every STAGE has an id");
+  assert.equal(new Set(stageIds).size, stageIds.length, "STAGE ids are unique");
+  assert.deepEqual(Object.keys(INTRO_QUIZ).sort(), [...stageIds].sort(), "INTRO_QUIZ covers exactly the course stages");
+  for (const id of stageIds) {
+    const qs = INTRO_QUIZ[id];
+    assert.ok(qs.length >= 2 && qs.length <= 3, `quiz ${id}: 2〜3 問（実際 ${qs.length}）`);
+    qs.forEach((q, i) => {
+      assert.ok(q.text && q.explain, `quiz ${id}#${i + 1}: 問題文と解説がある`);
+      assert.equal(q.choices.length, 4, `quiz ${id}#${i + 1}: 4択`);
+      assert.equal(new Set(q.choices).size, 4, `quiz ${id}#${i + 1}: 選択肢が重複しない`);
+      assert.ok(Number.isInteger(q.answer) && q.answer >= 0 && q.answer < 4, `quiz ${id}#${i + 1}: 正解の添字が 0〜3`);
+    });
+  }
 }
 
 console.log("smoke-platform.mjs: all assertions passed");
