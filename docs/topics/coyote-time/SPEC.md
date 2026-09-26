@@ -6,8 +6,9 @@
 | カテゴリ | hci |
 | UI 型 | explain（簡易プラットフォーマ） |
 | 状態 | implemented |
-| 成熟度 | oneshot |
+| 成熟度 | revised（修正2・更新 2026-09-26） |
 | 作成日 | 2026-07-27 |
+| 最終改訂 | 2026-09-26: コヨーテ ON のとき接地ジャンプも「猶予で成功」と表示されるバグを修正。成功回数を「接地」と「猶予で救われた」に分けて表示（[入門コース改善計画](../../reviews/2026-09-26-intro-course-improvement-plan.md) P0-2） |
 | 依存 | input-basics, velocity-motion |
 
 ## 学習目標
