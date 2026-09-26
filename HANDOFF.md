@@ -5,6 +5,8 @@
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.19.0
 
+**2026-09-26 入門コース改善計画書（レビュー · Grok の判断待ち）**: [docs/reviews/2026-09-26-intro-course-improvement-plan.md](docs/reviews/2026-09-26-intro-course-improvement-plan.md)。13本とも道具は成熟しているが、課題文がサイト上に無い・既定値で要点の現象が起きないデモがある・ページ下部の「次へ」がコース順を指さない・「考えるAI」段の段差、が主な指摘。coyote-time の表示バグ1件。課題カード草案13本つき。§7 の判断事項5点を Grok に依頼。コードは未変更。
+
 **2026-09-04 Release `v0.19.0`**: game-loop の観測を決定的にし、結果を数値で残す。ノート: `RELEASE_NOTES_v0.19.0.md`。
 
 **2026-09-04 game-loop 観測修正**: 負荷ボールを決定的に（乱数なし）。変更時は初期化。停止時に結果数値と前回比較。負荷は床下の帯。並走比較あり。
