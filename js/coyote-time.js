@@ -38,7 +38,8 @@ let vx = 0;
 let vy = 0;
 let grounded = true;
 let coyoteLeft = 0;
-let jumpOkCount = 0;
+let jumpGroundCount = 0;
+let jumpCoyoteCount = 0;
 let jumpFailCount = 0;
 let running = false;
 /** @type {number | null} */
@@ -90,11 +91,18 @@ function tryJump() {
     setStatus("ジャンプ失敗（接地でもコヨーテでもない）");
     return;
   }
+  // 状態を書き換える前に判定する（接地していなければ猶予で救われたジャンプ）
+  const viaCoyote = !grounded;
   vy = C.jumpVy;
   grounded = false;
   coyoteLeft = 0;
-  jumpOkCount += 1;
-  setStatus(use && !grounded ? "コヨーテ猶予でジャンプ成功" : "接地ジャンプ成功");
+  if (viaCoyote) {
+    jumpCoyoteCount += 1;
+    setStatus("コヨーテ猶予でジャンプ成功");
+  } else {
+    jumpGroundCount += 1;
+    setStatus("接地ジャンプ成功");
+  }
 }
 
 function step(dt) {
@@ -164,7 +172,8 @@ function renderStats() {
     <table class="coord-table">
       <tr><td>接地</td><td>${grounded ? "yes" : "no"}</td></tr>
       <tr><td>コヨーテ残</td><td>${(coyoteLeft * 1000).toFixed(0)} ms</td></tr>
-      <tr><td>ジャンプ成功</td><td>${jumpOkCount}</td></tr>
+      <tr><td>ジャンプ成功（接地）</td><td>${jumpGroundCount}</td></tr>
+      <tr><td>ジャンプ成功（猶予で救われた）</td><td>${jumpCoyoteCount}</td></tr>
       <tr><td>ジャンプ失敗</td><td>${jumpFailCount}</td></tr>
     </table>`;
 }
@@ -194,7 +203,8 @@ function reset() {
   vy = 0;
   grounded = true;
   coyoteLeft = readCoyoteSec();
-  jumpOkCount = 0;
+  jumpGroundCount = 0;
+  jumpCoyoteCount = 0;
   jumpFailCount = 0;
   jumpEdge = false;
   draw();
