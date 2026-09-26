@@ -67,9 +67,18 @@ function readRes() {
   return { w: w || 640, h: h || 360 };
 }
 
+/**
+ * Pivot X/Y の読み取り。0 は 0 のまま扱う（`Number(v) || 既定` だと
+ * 0 が既定値 0.5 に化けてしまうため、数値かどうかだけで判定する）。
+ */
+function readPivot(el) {
+  const n = Number(el?.value);
+  return Number.isFinite(n) ? n : 0.5;
+}
+
 function syncLabels() {
-  if (pivotXVal) pivotXVal.textContent = Number(pivotXEl?.value || 0).toFixed(2);
-  if (pivotYVal) pivotYVal.textContent = Number(pivotYEl?.value || 0).toFixed(2);
+  if (pivotXVal) pivotXVal.textContent = readPivot(pivotXEl).toFixed(2);
+  if (pivotYVal) pivotYVal.textContent = readPivot(pivotYEl).toFixed(2);
 }
 
 function applyCanvasSize() {
@@ -86,8 +95,8 @@ function draw() {
   const W = canvas.width;
   const H = canvas.height;
   const { ax, ay } = readAnchor();
-  const px = Number(pivotXEl?.value) || 0.5;
-  const py = Number(pivotYEl?.value) || 0.5;
+  const px = readPivot(pivotXEl);
+  const py = readPivot(pivotYEl);
   const ww = C.widgetW;
   const wh = C.widgetH;
   const L = layoutWidget(W, H, ax, ay, px, py, offX, offY, ww, wh);
@@ -177,8 +186,8 @@ function pointerPos(e) {
 
 canvas.addEventListener("pointerdown", (e) => {
   const { ax, ay } = readAnchor();
-  const px = Number(pivotXEl?.value) || 0.5;
-  const py = Number(pivotYEl?.value) || 0.5;
+  const px = readPivot(pivotXEl);
+  const py = readPivot(pivotYEl);
   const L = layoutWidget(
     canvas.width,
     canvas.height,

@@ -83,9 +83,27 @@ export function updateCamera(cam, targetX, viewW, dead, follow) {
   return Math.max(0, Math.min(maxCam, next));
 }
 
+/**
+ * 追従係数の読み取り。0 は 0 のまま扱う（`Number(v) || 既定` だと
+ * 0 が既定値に化けてしまうため、数値かどうかで判定する）。
+ */
+function readFollow() {
+  const n = Number(followEl?.value);
+  return Number.isFinite(n) ? n : C.defaultFollow;
+}
+
+/**
+ * デッドゾーンの読み取り。0 は 0 のまま扱う（同上）。
+ * デッドゾーン 0 は updateCamera の除算に関わらないため、0 でも破綻しない。
+ */
+function readDead() {
+  const n = Number(deadEl?.value);
+  return Number.isFinite(n) ? n : C.defaultDead;
+}
+
 function sync() {
-  if (followVal) followVal.textContent = Number(followEl?.value || 0).toFixed(2);
-  if (deadVal) deadVal.textContent = String(Math.floor(Number(deadEl?.value) || 0));
+  if (followVal) followVal.textContent = readFollow().toFixed(2);
+  if (deadVal) deadVal.textContent = String(Math.floor(readDead()));
   if (speedVal) speedVal.textContent = readSpeedScale(speedEl).toFixed(1);
 }
 
@@ -114,7 +132,7 @@ function draw() {
   ctx.stroke();
 
   // dead zone
-  const dead = Number(deadEl?.value) || C.defaultDead;
+  const dead = readDead();
   const mid = W / 2;
   ctx.fillStyle = "rgba(242,204,143,0.08)";
   ctx.fillRect(mid - dead, 0, dead * 2, H);
@@ -180,8 +198,8 @@ function step(dt) {
   if (keys.has("ArrowRight") || keys.has("KeyD")) dx += 1;
   playerX += dx * C.playerSpeed * dt;
   playerX = Math.max(20, Math.min(C.worldW - 20, playerX));
-  const follow = Number(followEl?.value) || C.defaultFollow;
-  const dead = Number(deadEl?.value) || C.defaultDead;
+  const follow = readFollow();
+  const dead = readDead();
   camX = updateCamera(camX, playerX, canvas.width, dead, follow);
   const p = worldToScreen(playerX, playerY, camX);
   if (trailEl?.checked) {

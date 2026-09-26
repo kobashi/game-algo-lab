@@ -56,7 +56,7 @@ export const TOPIC_META = {
     revisions: 0,
     updated: "2026-07-22",
   },
-  "input-basics": { maturity: "revised", revisions: 3, updated: "2026-09-26" },
+  "input-basics": { maturity: "revised", revisions: 4, updated: "2026-09-26" },
   coordinates: { maturity: "revised", revisions: 1, updated: "2026-07-28" },
   "rng-seed": { maturity: "revised", revisions: 3, updated: "2026-09-26" },
   "maze-gen": { maturity: "oneshot", revisions: 0, updated: "2026-07-23" },
@@ -76,7 +76,7 @@ export const TOPIC_META = {
     updated: "2026-07-27",
   },
   "object-pool": { maturity: "oneshot", revisions: 0, updated: "2026-07-27" },
-  "coyote-time": { maturity: "revised", revisions: 3, updated: "2026-09-26" },
+  "coyote-time": { maturity: "revised", revisions: 4, updated: "2026-09-26" },
   "grid-pseudo-physics": {
     maturity: "oneshot",
     revisions: 0,
@@ -89,7 +89,7 @@ export const TOPIC_META = {
   },
   "accel-gravity": {
     maturity: "revised",
-    revisions: 3,
+    revisions: 4,
     updated: "2026-09-26",
   },
   "input-buffer": {
@@ -244,7 +244,7 @@ export const TOPIC_META = {
   },
   "sfx-events": {
     maturity: "revised",
-    revisions: 3,
+    revisions: 4,
     updated: "2026-09-26",
   },
   "accessibility-basics": {
@@ -319,7 +319,7 @@ export const TOPIC_META = {
   },
   "gfx-camera": {
     maturity: "revised",
-    revisions: 3,
+    revisions: 4,
     updated: "2026-09-26",
   },
   "net-prediction": {
@@ -369,7 +369,7 @@ export const TOPIC_META = {
   },
   "gfx-ui-canvas": {
     maturity: "revised",
-    revisions: 3,
+    revisions: 4,
     updated: "2026-09-26",
   },
   "gfx-mesh-uv": {
@@ -464,7 +464,7 @@ export const TOPIC_META = {
   },
   "and-or": { maturity: "revised", revisions: 1, updated: "2026-07-19" },
 
-  minimax: { maturity: "revised", revisions: 4, updated: "2026-09-26" },
+  minimax: { maturity: "revised", revisions: 5, updated: "2026-09-26" },
   "alpha-beta": { maturity: "revised", revisions: 2, updated: "2026-09-26" },
   "monte-carlo": { maturity: "revised", revisions: 1, updated: "2026-07-19" },
   "multi-armed-bandit": {

@@ -358,6 +358,62 @@ def check_aabb_dual() -> None:
             fail(f"missing {name}")
 
 
+def check_w4_fixes() -> None:
+    """入門コース改善計画 W4（P1-2/P1-3/P1-4, R3, R4）の静的チェック。"""
+    print("W4 修正（minimax eval / accel-gravity 固定刻み / sfx-events 学ぶこと / 0 既定値バグ）")
+
+    mm_js = (ROOT / "js/minimax.js").read_text(encoding="utf-8")
+    mm_html = (ROOT / "algorithms/minimax.html").read_text(encoding="utf-8")
+    if 'eval: { el: evalEl, kind: "select" }' in mm_js:
+        ok("minimax.js urlSpec has eval")
+    else:
+        fail("minimax.js urlSpec missing eval key")
+    if 'id="mm-eval"' in mm_html and 'value="avg"' in mm_html and 'value="zero"' in mm_html:
+        ok("minimax.html has mm-eval select (avg/zero)")
+    else:
+        fail("minimax.html missing mm-eval avg/zero options")
+
+    ag_js = (ROOT / "js/accel-gravity.js").read_text(encoding="utf-8")
+    if "let dt = elapsed;" in ag_js:
+        fail("accel-gravity.js loop still uses elapsed as dt (should be fixed step)")
+    else:
+        ok("accel-gravity.js loop does not use elapsed as dt")
+    if "step(C.defaultDtMs / 1000);" in ag_js:
+        ok("accel-gravity.js loop steps with C.defaultDtMs (fixed step)")
+    else:
+        fail("accel-gravity.js loop missing fixed-step call")
+
+    sfx_html = (ROOT / "algorithms/sfx-events.html").read_text(encoding="utf-8")
+    if "lesson-details" in sfx_html and "このデモで学ぶこと" in sfx_html:
+        ok("sfx-events.html has lesson-details section")
+    else:
+        fail("sfx-events.html missing lesson-details section")
+
+    ui_js = (ROOT / "js/gfx-ui-canvas.js").read_text(encoding="utf-8")
+    if "Number(pivotXEl?.value) || 0.5" in ui_js or "Number(pivotYEl?.value) || 0.5" in ui_js:
+        fail("gfx-ui-canvas.js still has `Number(pivot) || 0.5` (0 gets replaced)")
+    else:
+        ok("gfx-ui-canvas.js pivot read treats 0 as 0")
+
+    ct_js = (ROOT / "js/coyote-time.js").read_text(encoding="utf-8")
+    if "Number(coyoteMsEl?.value) || C.defaultCoyoteMs" in ct_js:
+        fail("coyote-time.js readCoyoteSec still has `|| C.defaultCoyoteMs` (0ms gets replaced)")
+    else:
+        ok("coyote-time.js readCoyoteSec treats 0ms as 0")
+
+    cam_js = (ROOT / "js/gfx-camera.js").read_text(encoding="utf-8")
+    if "Number(deadEl?.value) || C.defaultDead" in cam_js:
+        fail("gfx-camera.js still has `Number(dead) || C.defaultDead` (0 gets replaced)")
+    else:
+        ok("gfx-camera.js dead-zone read treats 0 as 0")
+
+    ib_js = (ROOT / "js/input-basics.js").read_text(encoding="utf-8")
+    if "performance.now() - simOrigin" in ib_js:
+        fail("input-basics.js timeline still derives simMs from wall-clock (simOrigin)")
+    else:
+        ok("input-basics.js timeline advances simMs by played dt only")
+
+
 def run_node_smoke() -> None:
     print("Node ES module smoke")
     node = shutil.which("node")
@@ -401,6 +457,7 @@ def main() -> int:
     check_draw_score_pair_usage()
     print()
     check_aabb_dual()
+    check_w4_fixes()
     print()
     run_node_smoke()
     print()

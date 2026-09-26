@@ -254,9 +254,11 @@ function loop(ts) {
     return;
   }
   lastTs = ts;
-  let dt = elapsed;
-  if (dt > 0.2) dt = 0.2;
-  step(dt);
+  // 再生速度は画面が進む速さ（上の interval）だけを変える。
+  // 1 ステップの刻みは「1ステップ」ボタンと同じ固定値にする
+  // （実経過時間を dt にすると、再生速度を落とすと1歩が長くなり
+  // 軌道・最高点がスロー再生でずれてしまう）。
+  step(C.defaultDtMs / 1000);
   rafId = requestAnimationFrame(loop);
 }
 
