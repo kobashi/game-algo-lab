@@ -312,6 +312,9 @@ export function buildShareUrl(
   defaults = {}
 ) {
   const url = new URL(base, currentHref());
+  // コースから開かれた URL（?course=intro 等）なら、共有 URL にも残す。
+  // コースの外から開いた URL には付けない（入門コース改善計画 §8）。
+  const course = url.searchParams.get("course");
   url.search = "";
   url.hash = "";
   for (const [key, entry] of Object.entries(spec)) {
@@ -322,6 +325,7 @@ export function buildShareUrl(
     if (def != null && sameParamValue(entry.kind, current, def)) continue;
     url.searchParams.set(key, current);
   }
+  if (course) url.searchParams.set("course", course);
   return url.toString();
 }
 

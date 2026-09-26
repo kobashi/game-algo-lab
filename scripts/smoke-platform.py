@@ -44,6 +44,10 @@ def check_platform_files() -> None:
         "js/platform/url-params.js",
         "js/platform/observe.js",
         "js/platform/text.js",
+        "js/platform/course-nav.js",
+        "js/platform/exercises.js",
+        "js/courses/intro-stages.js",
+        "js/courses/intro-exercises.js",
         "js/map-format.js",
         "js/ds-viz.js",
         "docs/templates/TOPIC_SCAFFOLD.md",
@@ -79,6 +83,9 @@ def check_exports() -> None:
         "mountShareLink",
         "drawTrailDots",
         "resolveCircleAabbReflect",
+        "mountCourseNav",
+        "computeCourseNav",
+        "mountExercises",
     ]
     for name in needed:
         if name in text:
@@ -154,6 +161,22 @@ def check_intro_course() -> None:
     else:
         ok("courses-intro.js uses TOPICS")
 
+    stages_path = ROOT / "js" / "courses" / "intro-stages.js"
+    exercises_path = ROOT / "js" / "courses" / "intro-exercises.js"
+    if not stages_path.is_file():
+        fail("missing js/courses/intro-stages.js")
+        return
+    if not exercises_path.is_file():
+        fail("missing js/courses/intro-exercises.js")
+        return
+    stages_t = stages_path.read_text(encoding="utf-8")
+    exercises_t = exercises_path.read_text(encoding="utf-8")
+    if "STAGES" not in jt:
+        fail("courses-intro.js: does not import STAGES from js/courses/intro-stages.js")
+    else:
+        ok("courses-intro.js uses STAGES")
+
+    # 入門コース14本（alpha-beta を minimax と tic-tac-toe の間に追加。§8 決定3）
     needed = [
         "game-loop",
         "input-basics",
@@ -167,16 +190,22 @@ def check_intro_course() -> None:
         "fsm",
         "rng-seed",
         "minimax",
+        "alpha-beta",
         "tic-tac-toe",
     ]
     main = (ROOT / "js" / "main.js").read_text(encoding="utf-8")
     for tid in needed:
+        has_card = f'"{tid}"' in exercises_t or f"\n  {tid}:" in exercises_t
         if f'id: "{tid}"' not in main:
             fail(f"intro course id missing from TOPICS: {tid}")
-        elif f'ids: ["{tid}"' not in jt and f'"{tid}"' not in jt:
-            fail(f"courses-intro.js missing id {tid}")
+        elif f'"{tid}"' not in stages_t:
+            fail(f"intro-stages.js missing id {tid}")
+        elif not has_card:
+            fail(f"intro-exercises.js missing card for {tid}")
         else:
             ok(f"intro {tid}")
+
+    # 詳細な文面・URL の検証は scripts/smoke-platform.mjs（Node で直接 import して確認）
 
     shell = (ROOT / "js" / "platform" / "topic-shell.js").read_text(
         encoding="utf-8"

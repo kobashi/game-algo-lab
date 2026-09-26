@@ -64,6 +64,13 @@ export {
   mountTopicShellFromDataset,
 } from "./topic-shell.js";
 export {
+  COURSE_ID,
+  readCourseParam,
+  computeCourseNav,
+  mountCourseNav,
+} from "./course-nav.js";
+export { exerciseSectionHtml, mountExercises } from "./exercises.js";
+export {
   MATURITY_ORDER,
   MATURITY_LABEL,
   MATURITY_HINT,

@@ -10,6 +10,10 @@
  */
 
 import { mountPageMaturity } from "./maturity.js";
+import { mountCourseNav } from "./course-nav.js";
+import { mountExercises } from "./exercises.js";
+import { TOPICS } from "../main.js";
+import { EXERCISES } from "../courses/intro-exercises.js";
 
 /**
  * @typedef {{ id: string, label: string, href: string }} NavLink
@@ -630,7 +634,7 @@ export const FOOTER_NOTES = {
   steering: "ゲーム AI · ステアリング",
   fundamentals: "基礎実行モデル · ループ・時間・入力・座標・乱数",
   procgen: "プロシージャル · 生成と確率",
-  course: "入門コース · ゲーム制作でまず必要な13トピック",
+  course: "入門コース · ゲーム制作でまず必要な14トピック",
   default: "",
 };
 
@@ -746,4 +750,10 @@ export function mountTopicShellFromDataset() {
 
   // デモ本文の .page-header に成熟度バッジを表示
   mountPageMaturity(active);
+
+  // 入門コースの課題カード（該当トピックのみ・14ページ共通で自動描画）
+  mountExercises(EXERCISES[active], active);
+
+  // `?course=intro` で開かれたときだけ、コース内ナビ（n/14・前後）を表示
+  mountCourseNav(TOPICS, active);
 }
