@@ -74,7 +74,7 @@
 |----|----------|-------|--------|------|------|--------|------|----------|
 | `game-loop` | ゲームループ | ✅ | **調整** | 4 | 2026-09-26 | `algorithms/game-loop.html` | [SPEC](./game-loop/SPEC.md) | 可変/固定 timestep。跳ねるボール。人工遅延・MAX_STEPS でスパイラル防止を観察。説明特化 UI。**改訂3**: 負荷用ボールの乱数を排除し決定的に。結果の数値表示を追加。**改訂4**: 演習カード（予想→操作→確認）を追加（入門コース改善計画 P0-1） |
 | `time-management` | 時間管理 | ✅ | **一発** | 0 | 2026-07-22 | `algorithms/time-management.html` | [SPEC](./time-management/SPEC.md) | 壁時計 vs ゲーム内時間。time scale・ポーズ。往復キャラは game time 駆動 |
-| `input-basics` | 入力の基礎 | ✅ | **調整** | 4 | 2026-09-26 | `algorithms/input-basics.html` | [SPEC](./input-basics/SPEC.md) | held / down / up。Jump=edge、Fire=held 連射対比、Charge=長押し。**改訂2**: 調整課題のための観測性改善（速度・軌跡・障害物など）。**改訂3**: 演習カード（予想→操作→確認）を追加（入門コース改善計画 P0-1）。**改訂4**: 帯グラフの時刻を「再生中に進んだ分」だけ積算する方式に修正（一時停止中や1ステップの間隔が時刻に混ざらないように。入門コース改善計画 R4） |
+| `input-basics` | 入力の基礎 | ✅ | **調整** | 5 | 2026-09-26 | `algorithms/input-basics.html` | [SPEC](./input-basics/SPEC.md) | held / down / up。Jump=edge、Fire=held 連射対比、Charge=長押し。**改訂2**: 調整課題のための観測性改善（速度・軌跡・障害物など）。**改訂3**: 演習カード（予想→操作→確認）を追加（入門コース改善計画 P0-1）。**改訂4**: 帯グラフの時刻を「再生中に進んだ分」だけ積算する方式に修正（一時停止中や1ステップの間隔が時刻に混ざらないように。入門コース改善計画 R4）。**改訂5**: 改訂4 の帯グラフが、再生速度 0.1× で1歩ごとに 100 ms に切り捨てられ長押しが短く描かれていたのを修正（上限を1歩の間隔の2倍に。Grok の目視で発見） |
 | `coordinates` | 座標変換 | ✅ | **調整** | 1 | 2026-07-28 | `algorithms/coordinates.html` | [SPEC](./coordinates/SPEC.md) | gfx-coordinates 統合・CG 導線（カメラ/UI/Mesh） |
 | `rng-seed` | 乱数とシード | ✅ | **調整** | 3 | 2026-09-26 | `algorithms/rng-seed.html` | [SPEC](./rng-seed/SPEC.md) | Mulberry32/XorShift/LCG 切替。LCG は a,c,m プリセット（質の悪い例〜実用寄り）と周期計測・ヒストグラム。**改訂2**: URL クエリで初期パラメータ指定に対応（授業課題の個別配布用）。**改訂3**: 演習カード（予想→操作→確認）を追加（入門コース改善計画 P0-1） |
 
