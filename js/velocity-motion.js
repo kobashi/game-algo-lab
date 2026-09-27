@@ -14,9 +14,11 @@ import {
   resolveCircleAabbReflect,
   circleAabbTunneled,
   centerObstacleBox,
+  mountGlossary,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
+mountGlossary();
 
 const canvas = /** @type {HTMLCanvasElement} */ (
   document.getElementById("vm-canvas")

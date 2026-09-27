@@ -17,8 +17,8 @@
       </p>
       <h1>入力の基礎</h1>
       <p class="page-header-lead">
-        キーの<strong>押下中（held）</strong>と<strong>エッジ（down / up）</strong>を分ける。
-        ジャンプは down だけ、移動は held、チャージは長押し — 用途で読む信号が違う。
+        キーの<strong>押下中（<span class="term" data-term="held">held</span>）</strong>と<strong><span class="term" data-term="edge">エッジ</span>（<span class="term" data-term="key-down">down</span> / <span class="term" data-term="key-up">up</span>）</strong>を分ける。
+        ジャンプは down だけ、移動は held、チャージは<span class="term" data-term="long-press">長押し</span> — 用途で読む信号が違う。
         前段: <a href="game-loop.html">ゲームループ</a> · <a href="time-management.html">時間管理</a>。
       </p>
     </div>
@@ -27,11 +27,12 @@
       <summary>このデモで学ぶこと</summary>
       <div class="lesson-box lesson-box-nested">
         <ul>
-          <li><strong>held</strong>: 今フレームでキーが下がっている</li>
-          <li><strong>down</strong>: 今フレームで押し始めた（立ち上がり）。押し続けても 1 回だけ true</li>
-          <li><strong>up</strong>: 今フレームで離した（立ち下がり）</li>
-          <li><strong>長押し</strong>: held の累積時間が閾値を超えたら 1 回トリガー</li>
+          <li><strong><span class="term" data-term="held">held</span></strong>: 今<span class="term" data-term="frame">フレーム</span>でキーが下がっている</li>
+          <li><strong><span class="term" data-term="key-down">down</span></strong>: 今フレームで押し始めた（立ち上がり）。押し続けても 1 回だけ true</li>
+          <li><strong><span class="term" data-term="key-up">up</span></strong>: 今フレームで離した（立ち下がり）</li>
+          <li><strong><span class="term" data-term="long-press">長押し</span></strong>: held の累積時間が<span class="term" data-term="threshold">閾値</span>を超えたら 1 回トリガー</li>
           <li>対比: Jump は down、Fire は held 連射（わざと「悪い」例）</li>
+          <li>「<span class="term" data-term="polling">ポーリング</span>開始」で、毎フレームのキーの読み取りが始まる</li>
         </ul>
       </div>
     </details>
@@ -66,7 +67,7 @@
             </div>
           </div>
           <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="long-ms">長押し閾値 <span id="long-ms-val">400</span> ms</label>
+            <label class="controls-label" for="long-ms"><span class="term" data-term="long-press">長押し</span><span class="term" data-term="threshold">閾値</span> <span id="long-ms-val">400</span> ms</label>
             <input type="range" id="long-ms" class="ttt-range" min="100" max="1500" value="400" step="50" />
           </div>
           <div class="controls-group-paint gl-params">

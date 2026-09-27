@@ -11,9 +11,11 @@ import {
   mountShareLink,
   readSpeedScale,
   bindSpeedScaleControl,
+  mountGlossary,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
+mountGlossary();
 
 const canvas = /** @type {HTMLCanvasElement} */ (
   document.getElementById("ct-canvas")

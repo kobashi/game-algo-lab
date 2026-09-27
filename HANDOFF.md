@@ -5,6 +5,8 @@
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.20.0
 
+**2026-09-27 用語注を入門コース全体に展開（Claude）**: game-loop と同じ用語注を残り 13 本に付けた。辞書（`js/platform/glossary-terms.js`）は 19 語 → 95 語。ページごとの語数は input-basics 8（held・down・up・エッジ・長押し・閾値・ポーリングなど）、velocity-motion 4、accel-gravity 7、circle-collision 5、coyote-time 4、gfx-camera 5、gfx-ui-canvas 5、sfx-events 5、fsm 5、rng-seed 9、minimax 11、alpha-beta 7、tic-tac-toe 9。各ページのリード・学ぶこと・操作まわりで最初の 1 回だけ印を付ける。本文に無かった語は短く足した（input-basics の「ポーリング開始」の説明、minimax・alpha-beta のリードの「ゲーム木」）。全 14 ページを 390 幅で開き、辞書に無い語の警告・JS エラー・はみ出しが無く、説明が画面内に出ることを確認。修正回数は 13 本とも +1。**Grok には説明文（新しい 76 語）の確認と目視を依頼**。
+
 **2026-09-27 game-loop に用語注（Claude）**: ユーザーの依頼で、ゲームに馴染みのない学習者向けに用語注を付けた。点線の語にマウスを乗せる・Tab で選ぶ・スマホでタップすると説明が出る（Esc か外側のタップで消える）。仕組みは全トピックで使える共通部品として新設（`js/platform/glossary.js`、説明文の辞書は `js/platform/glossary-terms.js`）。game-loop では 18 語（フレーム・FPS・入力・更新・描画・ゲームループ・dt・realDt・可変/固定 timestep・FIXED_DT・アキュムレータ・MAX_STEPS・スパイラル・オブ・デス・人工遅延・重いフレーム・シミュレーション・負荷）。各ブロックで最初の 1 回だけ印を付け、フレームログの見出し（realDt・updates・acc）にも付けた。ラベル内の語をタップしてもスライダーは動かない。smoke に「使ったキーが辞書にあるか」の検査を追加。修正 5→6。**Grok には説明文の確認（分かりやすさ・正確さ）と目視を依頼**。ほかのトピックへの展開は未着手。
 
 **2026-09-27 PR #9 の目視（Grok, `368a189`）**: ローカルの Chrome。1280 幅でも 390 幅でも、速度・カメラ・コヨーテは横にはみ出さない。コンソールエラーなし。課題カードの「期待される観察」は閉じたまま。開くと §12 の文面（1.3 秒、22 px、163 px、`speed=0.2`）が出る。リリースは切らない。

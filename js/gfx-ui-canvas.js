@@ -8,9 +8,11 @@ import {
   mountTopicShellFromDataset,
   applyParamsToControls,
   mountShareLink,
+  mountGlossary,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
+mountGlossary();
 
 const canvas = /** @type {HTMLCanvasElement} */ (
   document.getElementById("ui-canvas")

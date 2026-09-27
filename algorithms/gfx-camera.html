@@ -14,7 +14,7 @@
       <p class="breadcrumb"><a href="../index.html">ホーム</a> / ゲーム CG / カメラ</p>
       <h1>カメラと投影（2D フォロー）</h1>
       <p class="page-header-lead">
-        ワールド座標 → スクリーン = world − camera。デッドゾーン付き追従。
+        <span class="term" data-term="world-coords">ワールド座標</span> → <span class="term" data-term="screen-coords">スクリーン</span> = world − camera。<span class="term" data-term="dead-zone">デッドゾーン</span>付き追従。
         前段: <a href="coordinates.html">座標</a> ·
         <a href="gfx-sprite-2d.html">2D スプライト</a>。
       </p>
@@ -23,9 +23,9 @@
       <summary>このデモで学ぶこと</summary>
       <div class="lesson-box lesson-box-nested">
         <ul>
-          <li>プレイヤーの world 座標はカメラと独立</li>
-          <li>デッドゾーン内ではカメラが動かない</li>
-          <li>follow 係数で滑らかさ（レール/一眼レフ感）を調整</li>
+          <li>プレイヤーの <span class="term" data-term="world-coords">world 座標</span>は<span class="term" data-term="camera">カメラ</span>と独立</li>
+          <li><span class="term" data-term="dead-zone">デッドゾーン</span>内ではカメラが動かない</li>
+          <li><span class="term" data-term="follow-factor">follow 係数</span>で滑らかさ（レール/一眼レフ感）を調整</li>
           <li>follow 係数は「1 歩（1/60 秒）で差の何割を詰めるか」。1 歩の長さは固定なので、再生速度を下げても遅れ（px）は同じ</li>
         </ul>
       </div>
@@ -42,9 +42,9 @@
           <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
         </div>
         <p class="footer-muted">← → / A D で移動</p>
-        <label class="controls-label" for="follow">追従係数 <span id="follow-val">0.08</span></label>
+        <label class="controls-label" for="follow"><span class="term" data-term="follow-factor">追従係数</span> <span id="follow-val">0.08</span></label>
         <input type="range" id="follow" class="ttt-range" min="0.02" max="0.5" value="0.08" step="0.01" />
-        <label class="controls-label" for="dead">デッドゾーン px <span id="dead-val">40</span></label>
+        <label class="controls-label" for="dead"><span class="term" data-term="dead-zone">デッドゾーン</span> px <span id="dead-val">40</span></label>
         <input type="range" id="dead" class="ttt-range" min="0" max="160" value="40" step="5" />
         <label class="controls-label" for="speed">再生速度 <span id="speed-val">1.0</span>×</label>
         <input type="range" id="speed" class="ttt-range" min="0.1" max="1" value="1" step="0.1" />

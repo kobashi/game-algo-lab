@@ -17,8 +17,8 @@
       </p>
       <h1>α-β 法</h1>
       <p class="page-header-lead">
-        Min-Max に <strong>α（下限）・β（上限）</strong> の窓を付け、答えに効かない枝を刈る。
-        返す値は Min-Max と同じ。木は <code>js/maps/alpha-beta-tree.js</code>。
+        Min-Max に <strong><span class="term" data-term="alpha">α</span>（下限）・<span class="term" data-term="beta">β</span>（上限）</strong> の窓を付け、答えに効かない<span class="term" data-term="pruning">枝を刈る</span>。
+        返す値は Min-Max と同じ。<span class="term" data-term="game-tree">ゲーム木</span>は <code>js/maps/alpha-beta-tree.js</code>。
       </p>
     </div>
 
@@ -26,10 +26,10 @@
       <summary>このデモで学ぶこと</summary>
       <div class="lesson-box lesson-box-nested">
         <ul>
-          <li><strong>α</strong>: MAX がこれまで確保した評価の下限（これ以上は少なくとも取れる）</li>
-          <li><strong>β</strong>: MIN が確保した上限（これ以上は相手が許さない）</li>
-          <li><strong>β カット</strong>: MAX で v ≥ β → 親の MIN がこの枝を選ばないので残り不要</li>
-          <li><strong>α カット</strong>: MIN で v ≤ α → 親の MAX がこの枝を選ばないので残り不要</li>
+          <li><strong><span class="term" data-term="alpha">α</span></strong>: MAX がこれまで確保した評価の下限（これ以上は少なくとも取れる）</li>
+          <li><strong><span class="term" data-term="beta">β</span></strong>: MIN が確保した上限（これ以上は相手が許さない）</li>
+          <li><strong><span class="term" data-term="beta-cut">β カット</span></strong>: MAX で v ≥ β → 親の MIN がこの枝を選ばないので残り不要</li>
+          <li><strong><span class="term" data-term="alpha-cut">α カット</span></strong>: MIN で v ≤ α → 親の MAX がこの枝を選ばないので残り不要</li>
           <li>初期木では手 L の葉「L2b=9」が β カットで、手 M の応手 M2（葉2枚）が α カットで読まれない</li>
         </ul>
       </div>
@@ -74,7 +74,7 @@
             </div>
 
             <div class="controls-group controls-group-paint andor-formula">
-              <span class="controls-label">窓</span>
+              <span class="controls-label"><span class="term" data-term="alpha-beta-window">窓</span></span>
               <code class="formula-code">α ≤ 真の値 ≤ β の外は刈る</code>
             </div>
           </div>

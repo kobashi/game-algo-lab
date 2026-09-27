@@ -13,7 +13,7 @@
       <p class="breadcrumb"><a href="../index.html">ホーム</a> / 入力・操作感 / コヨーテタイム</p>
       <h1>コヨーテタイム</h1>
       <p class="page-header-lead">
-        接地を離れた直後の<strong>短い猶予</strong>でもジャンプを許可する。
+        <span class="term" data-term="grounded">接地</span>を離れた直後の<strong>短い<span class="term" data-term="grace-period">猶予</span></strong>でもジャンプを許可する。
         ON/OFF で崖際の操作感を比較。前段: <a href="input-basics.html">入力の基礎</a>。
       </p>
     </div>
@@ -21,11 +21,11 @@
       <summary>このデモで学ぶこと</summary>
       <div class="lesson-box lesson-box-nested">
         <ul>
-          <li>接地中はコヨーテタイマーを満タンにリセット</li>
+          <li><span class="term" data-term="grounded">接地</span>中は<span class="term" data-term="coyote-time">コヨーテタイマー</span>を満タンにリセット</li>
           <li>空中ではタイマー減少。残っている間はジャンプ可（ON 時）</li>
           <li>OFF だと厳密接地のみ — 崖を少し踏み外すと失敗しやすい</li>
-          <li><strong>見方</strong>: 足場の外の黄色い帯 = 猶予のあいだに歩いて進める範囲（移動速度 × 猶予）。ジャンプを押した位置に印が付く（緑 = 接地、黄 = 猶予で成功、× = 失敗）。点線は足場を離れた位置</li>
-          <li>猶予は 120 ms（約 7 フレーム）と短い。<strong>再生速度</strong>を下げると、帯とタイマーの減り方を目で追える（猶予の ms は変わらない）</li>
+          <li><strong>見方</strong>: 足場の外の黄色い帯 = <span class="term" data-term="grace-period">猶予</span>のあいだに歩いて進める範囲（移動速度 × 猶予）。ジャンプを押した位置に印が付く（緑 = 接地、黄 = 猶予で成功、× = 失敗）。点線は足場を離れた位置</li>
+          <li>猶予は 120 ms（約 7 <span class="term" data-term="frame">フレーム</span>）と短い。<strong>再生速度</strong>を下げると、帯とタイマーの減り方を目で追える（猶予の ms は変わらない）</li>
         </ul>
       </div>
     </details>
@@ -43,10 +43,10 @@
           </div>
         </div>
         <div class="controls-group-paint gl-params">
-          <label class="ttt-check"><input type="checkbox" id="coyote-on" checked /> コヨーテ ON</label>
+          <label class="ttt-check"><input type="checkbox" id="coyote-on" checked /> <span class="term" data-term="coyote-time">コヨーテ</span> ON</label>
         </div>
         <div class="controls-group-paint gl-params">
-          <label class="controls-label" for="coyote-ms">猶予 <span id="coyote-ms-val">120</span> ms</label>
+          <label class="controls-label" for="coyote-ms"><span class="term" data-term="grace-period">猶予</span> <span id="coyote-ms-val">120</span> ms</label>
           <input type="range" id="coyote-ms" class="ttt-range" min="0" max="400" value="120" step="10" />
         </div>
         <div class="controls-group-paint gl-params">

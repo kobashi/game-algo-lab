@@ -17,9 +17,9 @@
       </p>
       <h1>乱数とシード</h1>
       <p class="page-header-lead">
-        シード付き PRNG を<strong>アルゴリズムごと</strong>に切替できる。
-        <strong>Mulberry32</strong>（サイト標準）・<strong>XorShift32</strong>・<strong>線形合同法 (LCG)</strong>。
-        LCG は a,c,m をプリセット／手動で変え、<strong>周期の長さ</strong>とパラメータの関係を体感する。
+        <span class="term" data-term="seed">シード</span>付き <span class="term" data-term="prng">PRNG</span> を<strong>アルゴリズムごと</strong>に切替できる。
+        <strong>Mulberry32</strong>（サイト標準）・<strong><span class="term" data-term="xorshift">XorShift32</span></strong>・<strong>線形合同法 (<span class="term" data-term="lcg">LCG</span>)</strong>。
+        LCG は a,c,m をプリセット／手動で変え、<strong><span class="term" data-term="period">周期</span>の長さ</strong>とパラメータの関係を体感する。
       </p>
     </div>
 
@@ -27,18 +27,18 @@
       <summary>このデモで学ぶこと</summary>
       <div class="lesson-box lesson-box-nested">
         <ul>
-          <li><strong>同じシード → 同じ系列</strong>（再現性）。アルゴリズムが違えば系列も違う</li>
-          <li><strong>LCG</strong>: <code>X' = (a·X + c) mod m</code>。状態は高々 m 通り → 周期 ≤ m</li>
-          <li>質の悪い例（極小 m・悪い a）ではすぐループし、ヒストグラムも偏る</li>
+          <li><strong>同じ<span class="term" data-term="seed">シード</span> → 同じ系列</strong>（<span class="term" data-term="reproducibility">再現性</span>）。アルゴリズムが違えば系列も違う</li>
+          <li><strong><span class="term" data-term="lcg">LCG</span></strong>: <code>X' = (a·X + c) <span class="term" data-term="modulus">mod m</span></code>。状態は高々 m 通り → <span class="term" data-term="period">周期</span> ≤ m</li>
+          <li>質の悪い例（極小 m・悪い a）ではすぐループし、<span class="term" data-term="histogram">ヒストグラム</span>も偏る</li>
           <li>許容・実用寄りの例では m が大きく、短いサンプルでは一様に見えやすい</li>
-          <li><strong>XorShift32</strong>: ビット演算のみ。シフト (a,b,c) の良し悪しで偏りが変わる。シード 0 は退化</li>
+          <li><strong><span class="term" data-term="xorshift">XorShift32</span></strong>: ビット演算のみ。シフト (a,b,c) の良し悪しで偏りが変わる。シード 0 は<span class="term" data-term="degenerate-seed">退化</span></li>
         </ul>
       </div>
     </details>
 
     <div class="gl-layout">
       <section class="gl-main" aria-labelledby="viz-heading">
-        <h2 id="viz-heading" class="gl-block-title">サンプル列とヒストグラム</h2>
+        <h2 id="viz-heading" class="gl-block-title">サンプル列と<span class="term" data-term="histogram">ヒストグラム</span></h2>
         <canvas id="rng-canvas" class="gl-canvas" width="640" height="280" aria-label="乱数ヒストグラム"></canvas>
         <div id="period-panel" class="rng-period-panel" hidden></div>
         <div id="rng-list" class="rng-list" aria-label="乱数値一覧"></div>
@@ -56,7 +56,7 @@
           <p id="algo-blurb" class="coord-side-note"></p>
 
           <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="seed">シード</label>
+            <label class="controls-label" for="seed"><span class="term" data-term="seed">シード</span></label>
             <input type="number" id="seed" class="mc-num" min="0" max="4294967295" value="42" step="1" />
           </div>
           <div class="controls-group-paint gl-params">
@@ -83,7 +83,7 @@
               <input type="number" id="xs-c" class="mc-num rng-param" min="0" max="31" step="1" value="5" />
             </div>
             <p class="coord-side-note">
-              式: <code>x ^= x&lt;&lt;a; x ^= x&gt;&gt;&gt;b; x ^= x&lt;&lt;c</code>（32bit）。周期は短いループを検出（最大 2^20 ステップ）。
+              式: <code>x ^= x&lt;&lt;a; x ^= x&gt;&gt;&gt;b; x ^= x&lt;&lt;c</code>（32bit）。<span class="term" data-term="period">周期</span>は短いループを検出（最大 2^20 ステップ）。
             </p>
           </div>
 
@@ -102,7 +102,7 @@
               <input type="number" id="lcg-c" class="mc-num rng-param" min="0" step="1" />
             </div>
             <div class="controls-group-paint gl-params">
-              <label class="controls-label" for="lcg-m">m（法）</label>
+              <label class="controls-label" for="lcg-m"><span class="term" data-term="modulus">m（法）</span></label>
               <input type="number" id="lcg-m" class="mc-num rng-param" min="2" step="1" />
             </div>
             <p class="coord-side-note">

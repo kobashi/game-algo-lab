@@ -11,9 +11,11 @@ import {
   readSpeedScale,
   bindSpeedScaleControl,
   drawTrailDots,
+  mountGlossary,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
+mountGlossary();
 
 const canvas = /** @type {HTMLCanvasElement} */ (
   document.getElementById("cam-canvas")

@@ -13,9 +13,11 @@ import {
   mountShareLink,
   bindSpeedScaleControl,
   delayFromSpeedScale,
+  mountGlossary,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
+mountGlossary();
 
 const svg = document.getElementById("fsm-svg");
 const eventButtons = document.getElementById("event-buttons");
