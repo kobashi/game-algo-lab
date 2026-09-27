@@ -5743,3 +5743,82 @@ details.ds-block:not([open]) > .ds-title::before {
   margin-bottom: 0.15rem;
   color: var(--accent-hover);
 }
+
+/* ===== 提出票（js/platform/submission.js） ===== */
+.submission-form {
+  margin-top: 0.9rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.submission-url {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.submission-url-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.submission-input,
+.submission-text {
+  flex: 1 1 14rem;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.submission-text {
+  /* 縦並びの枠の中なので、横並び用の flex-basis（14rem）が高さに効かないようにする */
+  flex: none;
+  width: 100%;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.submission-output {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.submission-warn,
+.submission-count {
+  margin: 0;
+  min-height: 1em;
+  color: #f2cc8f;
+  font-size: 0.8rem;
+}
+
+.submission-count {
+  color: var(--text-muted);
+}
+
+.submission-personal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.6rem;
+  align-items: center;
+  margin: 0.4rem 0;
+}
+
+.submission-personal .exercise-line {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+/* 提出票のラベルは説明が長いので折り返す（.controls-label は全ページ共通で折り返さない） */
+.submission-section .controls-label {
+  white-space: normal;
+}
