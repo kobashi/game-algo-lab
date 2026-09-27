@@ -274,60 +274,56 @@
         固定も正解の 0.432 とは少しずれています。1 回の更新が 16.7 ms と粗いからです。
         でも、重いフレームがあってもなくても同じ結果になる、というところが大事です。
       </p>
-      <p><strong>速さが変わるときだけ、大きくずれます。</strong></p>
+      <p><strong>フレームが始まるときの速さは、同じにして比べます。</strong></p>
       <p>
-        速さがずっと同じなら、大きい 1 歩でも細かい 4 歩でも、着く場所は同じです。
-        道のりは「速さ × 時間」なので、4 に分けても 1 つにまとめても、速さ ×（4 歩分の時間）は変わりません。
+        ここでは、フレーム開始時の速さをどちらも 10 にします。
+        速さがこの 10 のままなら、大きい 1 歩でも細かい 4 歩でも着く場所は同じです。
+        道のりは「速さ × 時間」なので、10 × 4 を 1 回で計算しても、10 を 4 回足しても 40 です。
       </p>
       <p>
-        ずれるのは、加速や減速で<strong>速さが変わっていく</strong>ときです。
-        可変 timestep の大きい 1 歩は、そのあいだ中を「歩の終わりの速さ」で進んだとして計算します。
-        細かい歩は、まだ遅いうちは少しだけ、速くなってから長く進みます。
-        だから、落ちているボールのようにだんだん速くなる動きでは、大きい 1 歩のほうが遠くまで行きます。
-      </p>
-      <p>
-        数字で見ます。1 歩ごとに速さが 10 ずつ増えるボールです。最初の速さは 0。
-        各歩では、先に速さを 10 増やしてから、その速さの分だけ進みます（デモと同じ順序です）。
+        ずれるのは、そのあと<strong>速さが変わっていく</strong>ときです。
+        このデモの更新は、歩の初めに速さを足してから、その速さで進みます。
+        細かい歩は、まだあまり速くないうちは少しだけ、速くなってから長く進みます。
+        大きい 1 歩は、4 歩分の加速を先にまとめて足すので、歩の終わりの速さで長い時間を一気に進みます。
+        開始時の速さは同じ 10 なのに、着く場所が違います。
       </p>
       <div class="guide-table-wrap">
         <table class="guide-table">
-          <thead><tr><th></th><th>歩の終わりの速さ</th><th>この歩で進む距離</th><th>位置</th></tr></thead>
+          <thead><tr><th></th><th>歩の始まりの速さ</th><th>歩の終わりの速さ</th><th>この歩で進む距離</th><th>位置</th></tr></thead>
           <tbody>
-            <tr><td>細かい 1 歩目</td><td>10</td><td>10</td><td>10</td></tr>
-            <tr><td>2 歩目</td><td>20</td><td>20</td><td>30</td></tr>
-            <tr><td>3 歩目</td><td>30</td><td>30</td><td>60</td></tr>
-            <tr><td>4 歩目</td><td>40</td><td>40</td><td>100</td></tr>
-            <tr><td>同じ時間の大きい 1 歩</td><td>40</td><td>40 × 4 ＝ 160</td><td>160</td></tr>
+            <tr><td>細かい 1 歩目</td><td>10</td><td>20</td><td>20</td><td>20</td></tr>
+            <tr><td>2 歩目</td><td>20</td><td>30</td><td>30</td><td>50</td></tr>
+            <tr><td>3 歩目</td><td>30</td><td>40</td><td>40</td><td>90</td></tr>
+            <tr><td>4 歩目</td><td>40</td><td>50</td><td>50</td><td>140</td></tr>
+            <tr><td>同じ時間の大きい 1 歩</td><td>10</td><td>50</td><td>50 × 4 ＝ 200</td><td>200</td></tr>
           </tbody>
         </table>
       </div>
       <p>
-        細かく 4 歩だと位置は 100、大きい 1 歩だと 160 です。同じ時間なのに 60 ずれます。
-        速さはずっと 40 のままなら、4 歩でも 1 歩でも 160 で、ずれません。
-        減速でも同じ種類のずれが起きます。大きい 1 歩は、もう遅くなった終わりの速さで全部進んだことになるので、今度は進みが足りなくなります。
+        細かく 4 歩だと位置は 140、大きい 1 歩だと 200 です。開始時の速さは同じ 10 なのに、60 ずれます。
+        減速でも同じです。大きい 1 歩は、もう遅くなった終わりの速さで長い時間を進むので、今度は進みが足りなくなります。
       </p>
       <figure class="guide-figure">
-        <svg viewBox="0 0 640 280" role="img" aria-label="上段は速さ一定。細かい4歩と大きい1歩が同じ位置160に着く。下段は加速。細かい4歩は位置100、大きい1歩は位置160で、60ずれる">
-          <text x="16" y="28" font-size="15" fill="#e8eef6">速さはずっと 40（加速なし）</text>
-          <line x1="70" y1="78" x2="582" y2="78" stroke="#3d4f66" stroke-width="3" />
+        <svg viewBox="0 0 640 280" role="img" aria-label="上段は開始時の速さ10のまま。細かい4歩と大きい1歩が同じ位置40。下段は開始時の速さは同じ10で、そのあと加速。細かい4歩は140、大きい1歩は200で、60ずれる">
+          <text x="16" y="28" font-size="15" fill="#e8eef6">開始時の速さ 10 のまま</text>
+          <line x1="48" y1="78" x2="168" y2="78" stroke="#3d4f66" stroke-width="3" />
           <g fill="#6bcb8f">
-            <circle cx="198" cy="78" r="5" /><circle cx="326" cy="78" r="5" /><circle cx="454" cy="78" r="5" /><circle cx="582" cy="78" r="5" />
+            <circle cx="78" cy="78" r="4" /><circle cx="108" cy="78" r="4" /><circle cx="138" cy="78" r="4" /><circle cx="168" cy="78" r="4" />
           </g>
-          <circle cx="582" cy="78" r="11" fill="none" stroke="#5b9fd4" stroke-width="2.5" />
-          <text x="620" y="56" font-size="14" fill="#9aabbf" text-anchor="end">4歩でも 1歩でも 160</text>
-          <text x="70" y="100" font-size="13" fill="#9aabbf">出発 0</text>
+          <circle cx="168" cy="78" r="11" fill="none" stroke="#5b9fd4" stroke-width="2.5" />
+          <text x="184" y="82" font-size="14" fill="#9aabbf">どちらも 40</text>
 
-          <text x="16" y="142" font-size="15" fill="#e8eef6">速さが 0 から 40 まで増える（加速）</text>
-          <line x1="70" y1="196" x2="582" y2="196" stroke="#3d4f66" stroke-width="3" />
+          <text x="16" y="142" font-size="15" fill="#e8eef6">開始時の速さは同じ 10。そのあと 1 歩ごとに +10</text>
+          <line x1="48" y1="196" x2="568" y2="196" stroke="#3d4f66" stroke-width="3" />
           <g fill="#6bcb8f">
-            <circle cx="102" cy="196" r="5" /><circle cx="166" cy="196" r="5" /><circle cx="262" cy="196" r="5" /><circle cx="390" cy="196" r="5" />
+            <circle cx="100" cy="196" r="5" /><circle cx="178" cy="196" r="5" /><circle cx="282" cy="196" r="5" /><circle cx="412" cy="196" r="5" />
           </g>
-          <circle cx="582" cy="196" r="11" fill="none" stroke="#5b9fd4" stroke-width="2.5" />
-          <text x="390" y="184" font-size="13" fill="#6bcb8f" text-anchor="middle">細かい4歩 100</text>
-          <text x="620" y="176" font-size="13" fill="#5b9fd4" text-anchor="end">大きい1歩 160</text>
-          <line x1="390" y1="214" x2="582" y2="214" stroke="#f2cc8f" stroke-width="2" />
-          <text x="486" y="234" font-size="14" fill="#f2cc8f" text-anchor="middle">ずれ 60</text>
-          <text x="70" y="218" font-size="13" fill="#9aabbf">出発 0</text>
+          <circle cx="568" cy="196" r="11" fill="none" stroke="#5b9fd4" stroke-width="2.5" />
+          <text x="412" y="180" font-size="13" fill="#6bcb8f" text-anchor="middle">細かい4歩 140</text>
+          <text x="620" y="176" font-size="13" fill="#5b9fd4" text-anchor="end">大きい1歩 200</text>
+          <line x1="412" y1="214" x2="568" y2="214" stroke="#f2cc8f" stroke-width="2" />
+          <text x="490" y="234" font-size="14" fill="#f2cc8f" text-anchor="middle">ずれ 60</text>
+          <text x="48" y="218" font-size="13" fill="#9aabbf">開始 10</text>
           <g font-size="14" fill="#9aabbf">
             <line x1="16" y1="262" x2="46" y2="262" stroke="#6bcb8f" stroke-width="2.5" />
             <text x="52" y="266">細かい歩</text>
@@ -335,7 +331,7 @@
             <text x="184" y="266">大きい 1 歩の到着</text>
           </g>
         </svg>
-        <figcaption>図 5　同じ時間を、細かい 4 歩（緑）と大きい 1 歩（青の輪）で進めた位置。速さが一定なら到着は同じです。加速していると、大きい 1 歩は終わりの速さ 40 で 4 歩分進んだことにするので、100 ではなく 160 まで行きます。</figcaption>
+        <figcaption>図 5　フレーム開始時の速さは、どちらも 10。速さが 10 のままなら、細かい 4 歩も大きい 1 歩も位置 40 です。加速すると、細かい 4 歩は 140、大きい 1 歩は終わりの速さ 50 で 4 歩分進んで 200 です。</figcaption>
       </figure>
     </section>
 
@@ -476,7 +472,7 @@
         </details>
         <details>
           <summary>問 3. 速さが一定のとき、大きい 1 歩と細かい 4 歩で着く場所は変わる？ 加速しているときは？</summary>
-          <p>一定なら同じです。加速していると、大きい 1 歩のほうが遠くへ行きます。このページの例では、細かい 4 歩が 100、大きい 1 歩が 160 です。</p>
+          <p>開始時の速さが同じなら、一定のときは同じ場所です。このページの例では、速さ 10 のままならどちらも 40 です。加速していると、大きい 1 歩のほうが遠くへ行きます。細かい 4 歩が 140、大きい 1 歩が 200 です。</p>
         </details>
         <details>
           <summary>問 4. 貯金箱に 20 ms 入っているとき、FIXED_DT が 16.7 ms なら、更新は何回で、残りは何 ms？</summary>
