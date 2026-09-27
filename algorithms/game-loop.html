@@ -36,7 +36,7 @@
           <li><strong><span class="term" data-term="artificial-lag">人工遅延</span></strong>を上げると「重いフレーム」を再現。描画の間隔が伸びてカクカクになるが、進む速さは同じ。固定側は 1 フレーム内の更新回数が増える</li>
           <li><strong>見方</strong>: 小さい点 = 更新 1 回、輪 = 描画した位置、点線 = 正解（同じ物理を 1 ms 刻みで計算）。固定は重いフレームでも輪と輪の間に点が並び、点線に沿う。可変は輪 1 つにつき点 1 つで、点線から外れる</li>
           <li>動きが速くて追えないときは<strong>再生速度</strong>を下げるか、<strong>1フレーム</strong>で送る</li>
-          <li><strong><span class="term" data-term="max-steps">MAX_STEPS</span></strong> で 1 フレーム内の更新上限を切ると、<span class="term" data-term="spiral-of-death">スパイラル・オブ・デス</span>を防げる（代わりにシミュレーションが遅れうる）</li>
+          <li>1 フレームの<span class="term" data-term="update">更新</span>を <span class="term" data-term="max-steps">MAX_STEPS</span> 回で打ち切ると、<span class="term" data-term="spiral-of-death">スパイラル・オブ・デス</span>は防げる。追いつかなかった時間はそのフレームでは進まず、<span class="term" data-term="simulation">シミュレーション</span>が遅れることがある</li>
         </ul>
       </div>
     </details>
