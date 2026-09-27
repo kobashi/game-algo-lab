@@ -1,9 +1,11 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-09-27（ready **110** · Release **v0.20.0**）  
+最終更新: 2026-09-28（ready **110** · Release **v0.20.0**）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.20.0
+
+**2026-09-28 PR #12 の確認（Grok, `6346cc8`）**: 提出課題の文は計画書 §9 で確定した。直したのは、画面の名前（平均 更新/フレーム、経過時間、|v|·dt）、課題 3 の厚みを T = 8 + d px、課題 5 の「距離 d」を「円と箱の距離」、課題 8 の幅を `vieww`、課題 13 を「できるだけ少ない／多い並び」。alpha-beta は `leaves=6,8,7,4,4,2,1,3,5,3,7,9` で v=7・葉 8/12・カット 2。葉 3 個は警告して既定の 12 個に戻る。gfx-ui-canvas は `ox=-16&oy=16` で入力欄と Widget TL が一致し、X に -40 を入れると表示も -40。velocity は 6 ステップ目に、厚み 8 px ＋ 直径 24 px = 32 px のすり抜け文。390 幅ではみ出しなし。リリースは切らない。提出票と想定の数値は Claude。
 
 **2026-09-27 提出課題の前準備（Claude）**: 計画書 §3 で見つけた 3 点を直した。alpha-beta に葉の評価値の入力欄と URL パラメータ `leaves`・`speed`、「この設定のURLをコピー」を追加（既定は葉 9/12・根 7、手 R の葉を先に並べると 8/12・根 7 を確認。葉の数が違う URL は警告して既定に戻す）。gfx-ui-canvas に Offset X / Y の数値入力欄と `ox`・`oy` を追加（ドラッグ・入力欄・URL が一致）。velocity-motion のすり抜け表示を「1 歩の前後どちらの位置でも障害物に重ならなかった（厚み ＋ ボールの直径）」に直し、課題カード 3 の引用も合わせた。修正: alpha-beta 4→5、gfx-ui-canvas 5→6、velocity-motion 5→6。提出票（I1）と想定の答えの確認（I4）はまだ。
 
