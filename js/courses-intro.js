@@ -7,6 +7,7 @@ import { mountTopicShellFromDataset } from "./platform/index.js";
 import { TOPICS, createCard } from "./main.js";
 import { STAGES } from "./courses/intro-stages.js";
 import { INTRO_QUIZ } from "./courses/intro-quiz.js";
+import { GUIDES } from "./courses/intro-guides.js";
 
 mountTopicShellFromDataset();
 
@@ -153,6 +154,22 @@ function renderStages() {
     }
 
     section.append(heading, lead, grid);
+    // この段に詳説ページ（中学生向け）があれば、カードの下にリンクを並べる
+    const guides = stage.ids.filter((id) => GUIDES[id]).map((id) => GUIDES[id]);
+    if (guides.length) {
+      const p = document.createElement("p");
+      p.className = "course-guides";
+      p.append("くわしい解説（中学生向け・図つき）: ");
+      guides.forEach((g, k) => {
+        if (k) p.append(" ・ ");
+        const a = document.createElement("a");
+        // GUIDES.href はサイトルート基準。courses/ からはファイル名だけでよい
+        a.href = g.href.replace(/^courses\//, "");
+        a.textContent = `${g.number}. ${g.title}`;
+        p.appendChild(a);
+      });
+      section.appendChild(p);
+    }
     const quiz = renderQuiz(stage.id, i + 1);
     if (quiz) section.appendChild(quiz);
     fragment.appendChild(section);

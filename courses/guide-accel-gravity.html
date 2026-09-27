@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="加速度と重力のくわしい解説（中学生向け）。加速度、放物線、反発係数、跳ね上がる高さが 2 乗で減る理由を図で説明する。" />
+  <title>加速度と重力のくわしい解説 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="course" data-active="intro"></header>
+
+  <main class="container topic-main guide-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="intro.html">入門コース</a> / くわしい解説 4</p>
+      <h1>加速度と重力 — くわしい解説</h1>
+      <p class="page-header-lead">
+        ボールを落とすと、だんだん速くなりながら落ちていきます。床で跳ね返ると、少しずつ低くしか跳ねなくなります。
+        このページでは、この動きをゲームでどう計算するかを、図を使って説明します。
+        <a href="guide-velocity-motion.html">速度による移動の解説</a>を先に読むと分かりやすくなります。
+        <a href="../algorithms/accel-gravity.html?course=intro">加速度と重力のデモ</a>と合わせて読んでください。
+      </p>
+      <nav class="guide-toc" aria-label="目次">
+        <strong>目次</strong>
+        <ol>
+          <li><a href="#s1">速さが変わる動き（加速度）</a></li>
+          <li><a href="#s2">表で追ってみる</a></li>
+          <li><a href="#s3">グラフにすると y = ax² の形</a></li>
+          <li><a href="#s4">横にも動くと放物線</a></li>
+          <li><a href="#s5">床で跳ね返る（反発係数）</a></li>
+          <li><a href="#s6">跳ね上がる高さは 2 乗で減る</a></li>
+          <li><a href="#s7">まとめと、やってみよう</a></li>
+        </ol>
+      </nav>
+    </div>
+
+    <!-- 1 -->
+    <section class="guide-section" id="s1" aria-labelledby="s1-h">
+      <h2 id="s1-h">1. 速さが変わる動き（加速度）</h2>
+      <p>
+        <a href="guide-velocity-motion.html">速度による移動</a>では、速さはずっと同じでした。
+        でも、自転車で坂を下るときや、ボールを落としたときは、だんだん速くなります。
+        速さが 1 秒あたりにどれだけ増えるかを<span class="term" data-term="acceleration">加速度</span>といいます。
+      </p>
+      <p>
+        物を下へ引っ張る地球の力による加速度が<span class="term" data-term="gravity">重力 g</span>です。
+        デモでは g = 600 にしてあり、「下向きの速さが 1 秒ごとに 600 ずつ増える」という意味です。
+        ゲームでは、毎フレーム次の 2 つの計算を、この順番でします。
+      </p>
+      <ol>
+        <li><strong>速さ ← 速さ ＋ g × dt</strong>（まず速さを増やす）</li>
+        <li><strong>位置 ← 位置 ＋ 速さ × dt</strong>（増えた速さで位置を進める）</li>
+      </ol>
+      <p>2 つ目の式は、<a href="guide-velocity-motion.html#s2">速度による移動</a>と同じです。1 つ目の式が増えただけです。</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="guide-section" id="s2" aria-labelledby="s2-h">
+      <h2 id="s2-h">2. 表で追ってみる</h2>
+      <p>分かりやすいように、1 歩（dt）を 0.1 秒、g = 600 として、止まっていたボールを落としてみます。</p>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead><tr><th>時刻</th><th>0 秒</th><th>0.1 秒</th><th>0.2 秒</th><th>0.3 秒</th><th>0.4 秒</th><th>0.5 秒</th></tr></thead>
+          <tbody>
+            <tr><td>速さ</td><td>0</td><td>60</td><td>120</td><td>180</td><td>240</td><td>300</td></tr>
+            <tr><td>その 1 歩で落ちる距離</td><td>—</td><td>6</td><td>12</td><td>18</td><td>24</td><td>30</td></tr>
+            <tr><td>落ちた距離の合計</td><td>0</td><td>6</td><td>18</td><td>36</td><td>60</td><td>90</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        1 歩ごとに、速さは 600 × 0.1 = 60 ずつ増えます。1 歩で落ちる距離は「速さ × 0.1」なので、6、12、18…と増えていきます。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 280" role="img" aria-label="落ちるボールを 0.1 秒ごとに描いた図。ボールどうしの間隔がだんだん広がる。右側の棒は速さで、60 ずつ長くなる">
+          <line x1="120" y1="20" x2="120" y2="260" stroke="#2d3a4d" stroke-dasharray="3 4" />
+          <g fill="#5b9fd4">
+            <circle cx="120" cy="30" r="6" fill-opacity="0.35" /><circle cx="120" cy="43.8" r="6" fill-opacity="0.45" /><circle cx="120" cy="71.4" r="6" fill-opacity="0.55" />
+            <circle cx="120" cy="112.8" r="6" fill-opacity="0.7" /><circle cx="120" cy="168" r="6" fill-opacity="0.85" /><circle cx="120" cy="237" r="6" />
+          </g>
+          <g font-size="14" fill="#9aabbf">
+            <text x="104" y="35" text-anchor="end">0 秒</text><text x="136" y="49">0.1 秒</text><text x="104" y="76" text-anchor="end">0.2 秒</text>
+            <text x="136" y="118">0.3 秒</text><text x="104" y="173" text-anchor="end">0.4 秒</text><text x="136" y="242">0.5 秒</text>
+          </g>
+          <text x="330" y="22" font-size="15" fill="#9aabbf">速さ（棒の長さ）</text>
+          <g fill="#f2cc8f">
+            <rect x="330" y="40" width="1" height="14" /><rect x="330" y="72" width="48" height="14" /><rect x="330" y="104" width="96" height="14" />
+            <rect x="330" y="136" width="144" height="14" /><rect x="330" y="168" width="192" height="14" /><rect x="330" y="200" width="240" height="14" />
+          </g>
+          <g font-size="14" fill="#9aabbf">
+            <text x="322" y="51" text-anchor="end">0 秒: 0</text><text x="322" y="83" text-anchor="end">0.1: 60</text><text x="322" y="115" text-anchor="end">0.2: 120</text>
+            <text x="322" y="147" text-anchor="end">0.3: 180</text><text x="322" y="179" text-anchor="end">0.4: 240</text><text x="322" y="211" text-anchor="end">0.5: 300</text>
+          </g>
+        </svg>
+        <figcaption>図 1　0.1 秒ごとのボールの位置（左）と速さ（右）。速さは同じだけずつ増えていくので、ボールどうしの間隔はだんだん広がります。</figcaption>
+      </figure>
+    </section>
+
+    <!-- 3 -->
+    <section class="guide-section" id="s3" aria-labelledby="s3-h">
+      <h2 id="s3-h">3. グラフにすると y = ax² の形</h2>
+      <p>
+        落ちた距離を、時間を横軸にしてグラフにすると、中学 3 年で習う y = ax² のような曲線になります。
+        本当の物理（とても細かく計算した場合）では、落ちた距離は ½ × g × 時間² ＝ 300 × 時間² になります。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 260" role="img" aria-label="落ちた距離のグラフ。点線は正解の曲線 300 かける時間の 2 乗。緑の点は 0.1 秒刻みで計算した値で、正解より少し大きい">
+          <line x1="80" y1="220" x2="600" y2="220" stroke="#5a6a80" />
+          <line x1="80" y1="30" x2="80" y2="220" stroke="#5a6a80" />
+          <text x="600" y="256" font-size="14" fill="#9aabbf" text-anchor="end">時間（秒） →</text>
+          <text x="86" y="26" font-size="14" fill="#9aabbf">落ちた距離（px）</text>
+          <g font-size="14" fill="#9aabbf" text-anchor="middle">
+            <text x="80" y="236">0</text><text x="180" y="236">0.1</text><text x="280" y="236">0.2</text><text x="380" y="236">0.3</text><text x="480" y="236">0.4</text><text x="580" y="236">0.5</text>
+          </g>
+          <g font-size="14" fill="#9aabbf" text-anchor="end"><text x="74" y="224">0</text><text x="74" y="130">50</text><text x="74" y="58">90</text></g>
+          <line x1="80" y1="130" x2="600" y2="130" stroke="#2d3a4d" /><line x1="80" y1="58" x2="600" y2="58" stroke="#2d3a4d" />
+          <polyline points="80,220 130,218.65 180,214.6 230,207.85 280,198.4 330,186.25 380,171.4 430,153.85 480,133.6 530,110.65 580,85" fill="none" stroke="#dce2eb" stroke-opacity="0.6" stroke-width="2" stroke-dasharray="6 5" />
+          <polyline points="80,220 180,209.2 280,187.6 380,155.2 480,112 580,58" fill="none" stroke="#6bcb8f" stroke-width="1.5" stroke-opacity="0.6" />
+          <g fill="#6bcb8f"><circle cx="80" cy="220" r="4" /><circle cx="180" cy="209.2" r="4" /><circle cx="280" cy="187.6" r="4" /><circle cx="380" cy="155.2" r="4" /><circle cx="480" cy="112" r="4" /><circle cx="580" cy="58" r="4" /></g>
+          <g font-size="14">
+            <line x1="110" y1="46" x2="140" y2="46" stroke="#dce2eb" stroke-opacity="0.6" stroke-width="2" stroke-dasharray="6 5" /><text x="146" y="50" fill="#9aabbf">正解 300 × 時間²（0.5 秒で 75）</text>
+            <circle cx="125" cy="70" r="4" fill="#6bcb8f" /><text x="146" y="74" fill="#9aabbf">0.1 秒刻みの計算（0.5 秒で 90）</text>
+          </g>
+        </svg>
+        <figcaption>図 2　落ちた距離のグラフ。0.1 秒刻みで計算した値（緑の点）は、正解の曲線（点線）と同じような形ですが、少し大きくなります。刻みが粗いためです。</figcaption>
+      </figure>
+      <p>
+        計算の刻みを細かくすると、正解に近づきます。0.5 秒後に落ちた距離は、0.1 秒刻みでは 90、1/60 秒刻み（60 FPS）では約 77.5 になり、正解の 75 に近づきます。
+        <a href="guide-game-loop.html#s4">ゲームループの解説</a>で出てきた「刻みが粗いと結果がずれる」と同じことです。
+      </p>
+    </section>
+
+    <!-- 4 -->
+    <section class="guide-section" id="s4" aria-labelledby="s4-h">
+      <h2 id="s4-h">4. 横にも動くと放物線</h2>
+      <p>
+        ボールを横に投げたときは、横の速さ（vx）は変わらず、縦の速さだけが重力で増えていきます。
+        すると、横は同じ間隔で進み、縦は間隔がだんだん広がるので、通り道は山なりの曲線になります。これを<span class="term" data-term="parabola">放物線</span>といいます。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 270" role="img" aria-label="横に投げたボールの通り道。横は同じ間隔、縦は間隔がだんだん広がり、放物線になる">
+          <path d="M80 40 Q290 40 500 241.6" fill="none" stroke="#dce2eb" stroke-opacity="0.35" stroke-width="2" stroke-dasharray="6 5" />
+          <g fill="#6bcb8f">
+            <circle cx="80" cy="40" r="7" /><circle cx="140" cy="47.2" r="7" /><circle cx="200" cy="61.6" r="7" /><circle cx="260" cy="83.2" r="7" />
+            <circle cx="320" cy="112" r="7" /><circle cx="380" cy="148" r="7" /><circle cx="440" cy="191.2" r="7" /><circle cx="500" cy="241.6" r="7" />
+          </g>
+          <g stroke="#2d3a4d" stroke-dasharray="3 3">
+            <line x1="140" y1="20" x2="140" y2="260" /><line x1="200" y1="20" x2="200" y2="260" /><line x1="260" y1="20" x2="260" y2="260" />
+            <line x1="320" y1="20" x2="320" y2="260" /><line x1="380" y1="20" x2="380" y2="260" /><line x1="440" y1="20" x2="440" y2="260" />
+          </g>
+          <text x="560" y="60" font-size="15" fill="#9aabbf" text-anchor="middle">横は</text>
+          <text x="560" y="78" font-size="15" fill="#9aabbf" text-anchor="middle">同じ間隔</text>
+          <text x="560" y="150" font-size="15" fill="#9aabbf" text-anchor="middle">縦は</text>
+          <text x="560" y="168" font-size="15" fill="#9aabbf" text-anchor="middle">だんだん広がる</text>
+        </svg>
+        <figcaption>図 3　横に投げたボールの 0.1 秒ごとの位置（模式図）。点線の縦線は横の同じ間隔を表します。横は同じだけ、縦はだんだん大きく進むので、放物線になります。</figcaption>
+      </figure>
+    </section>
+
+    <!-- 5 -->
+    <section class="guide-section" id="s5" aria-labelledby="s5-h">
+      <h2 id="s5-h">5. 床で跳ね返る（反発係数）</h2>
+      <p>
+        ボールが床にぶつかったら、縦の速さの向きを反対（下向き → 上向き）にします。
+        ただし、本物のボールは跳ね返るたびに少し勢いを失います。そこで、跳ね返った後の速さを、ぶつかる前の速さの何倍にするかを決めておきます。
+        これを<span class="term" data-term="restitution">反発係数</span>といいます（0〜1 の数。1 なら同じ速さで、0.5 なら半分の速さで跳ね返る）。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 220" role="img" aria-label="床でボールが跳ね返る。ぶつかる前の下向きの矢印より、跳ね返った後の上向きの矢印のほうが短い。反発係数 0.75 なら長さは 0.75 倍">
+          <defs>
+            <marker id="ag-ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5b9fd4" /></marker>
+            <marker id="ag-ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6bcb8f" /></marker>
+          </defs>
+          <rect x="60" y="190" width="520" height="14" fill="#3d4f66" />
+          <circle cx="220" cy="176" r="14" fill="#9aabbf" />
+          <line x1="220" y1="40" x2="220" y2="156" stroke="#5b9fd4" stroke-width="4" marker-end="url(#ag-ab)" />
+          <text x="236" y="100" font-size="14" fill="#5b9fd4">ぶつかる前の速さ</text>
+          <text x="236" y="120" font-size="14" fill="#5b9fd4">（例: 400）</text>
+          <circle cx="420" cy="176" r="14" fill="#9aabbf" />
+          <line x1="420" y1="160" x2="420" y2="73" stroke="#6bcb8f" stroke-width="4" marker-end="url(#ag-ag)" />
+          <text x="446" y="110" font-size="14" fill="#6bcb8f">跳ね返った後の速さ</text>
+          <text x="446" y="130" font-size="14" fill="#6bcb8f">400 × 0.75 ＝ 300</text>
+        </svg>
+        <figcaption>図 4　反発係数 0.75 のとき。跳ね返った後の速さは、ぶつかる前の 0.75 倍になり、向きは反対になります。</figcaption>
+      </figure>
+    </section>
+
+    <!-- 6 -->
+    <section class="guide-section" id="s6" aria-labelledby="s6-h">
+      <h2 id="s6-h">6. 跳ね上がる高さは 2 乗で減る</h2>
+      <p>
+        反発係数が 0.5 なら、跳ね返った速さは半分です。では、跳ね上がる高さも半分になるでしょうか？
+        答えは「いいえ」で、高さは 0.5 × 0.5 ＝ 0.25 倍（4 分の 1）になります。理由を、図 2 の正解の曲線（300 × 時間²）で考えます。
+      </p>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead><tr><th>落ち始めてからの時間</th><th>0.1 秒</th><th>0.2 秒</th><th>0.3 秒</th></tr></thead>
+          <tbody>
+            <tr><td>速さ（600 × 時間）</td><td>60</td><td>120（2 倍）</td><td>180（3 倍）</td></tr>
+            <tr><td>落ちた距離（300 × 時間²）</td><td>3</td><td>12（4 倍）</td><td>27（9 倍）</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        速さが 2 倍になると、落ちた距離は 4 倍（2 × 2）、速さが 3 倍なら 9 倍（3 × 3）です。つまり、<strong>高さは速さの 2 乗に比例</strong>します。
+        上へ跳ね上がるときは、この逆の動きなので、跳ね上がる速さが 0.5 倍なら、高さは 0.5² ＝ 0.25 倍になります。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 260" role="img" aria-label="デモで測った最高点の棒グラフ。反発係数 0.5 では 73、16、4、1 と約 4 分の 1 ずつ、0.75 では 166、88、49、26、14 と約 0.56 倍ずつ低くなる">
+          <line x1="40" y1="220" x2="620" y2="220" stroke="#5a6a80" />
+          <g fill="#5b9fd4">
+            <rect x="60" y="139.7" width="40" height="80.3" /><rect x="114" y="202.4" width="40" height="17.6" /><rect x="168" y="215.6" width="40" height="4.4" /><rect x="222" y="218.9" width="40" height="1.1" />
+          </g>
+          <g font-size="14" fill="#e8eef6" text-anchor="middle">
+            <text x="80" y="133">73</text><text x="134" y="196">16</text><text x="188" y="209">4</text><text x="242" y="212">1</text>
+          </g>
+          <text x="161" y="244" font-size="15" fill="#5b9fd4" text-anchor="middle">反発係数 0.5（毎回 約 0.25 倍）</text>
+          <g fill="#6bcb8f">
+            <rect x="330" y="37.4" width="40" height="182.6" /><rect x="384" y="123.2" width="40" height="96.8" /><rect x="438" y="166.1" width="40" height="53.9" /><rect x="492" y="191.4" width="40" height="28.6" /><rect x="546" y="204.6" width="40" height="15.4" />
+          </g>
+          <g font-size="14" fill="#e8eef6" text-anchor="middle">
+            <text x="350" y="31">166</text><text x="404" y="117">88</text><text x="458" y="160">49</text><text x="512" y="185">26</text><text x="566" y="198">14</text>
+          </g>
+          <text x="458" y="244" font-size="15" fill="#6bcb8f" text-anchor="middle">反発係数 0.75（毎回 約 0.56 倍）</text>
+        </svg>
+        <figcaption>図 5　デモで測った、跳ね上がった高さ（床からの px）。反発係数 0.5 では約 0.25 倍ずつ、0.75 では約 0.56 倍（0.75² ≈ 0.56）ずつ低くなります。</figcaption>
+      </figure>
+      <p>
+        デモの値で比を計算すると、反発係数 0.5 では 16 ÷ 73 ≈ 0.22、4 ÷ 16 = 0.25 です。
+        0.25 から少しずれるのは、高さを 1 px 単位で表示していることと、計算の刻みが粗いことによります。
+      </p>
+    </section>
+
+    <!-- 7 -->
+    <section class="guide-section" id="s7" aria-labelledby="s7-h">
+      <h2 id="s7-h">7. まとめ</h2>
+      <ul>
+        <li>加速度は、速さが 1 秒あたりにどれだけ増えるか。重力は下向きの加速度</li>
+        <li>毎フレーム「速さ ← 速さ ＋ g × dt」、次に「位置 ← 位置 ＋ 速さ × dt」</li>
+        <li>落ちた距離は時間の 2 乗に比例する（y = ax² の形）。刻みが粗いと少しずれる</li>
+        <li>横の速さが一定で縦が重力で変わると、通り道は放物線になる</li>
+        <li>床で跳ね返るときは、縦の速さの向きを反対にし、反発係数倍にする</li>
+        <li>高さは速さの 2 乗に比例するので、跳ね上がる高さは反発係数の 2 乗倍になる</li>
+      </ul>
+    </section>
+
+    <section class="guide-try" aria-labelledby="try-h">
+      <h2 id="try-h">やってみよう</h2>
+      <ol>
+        <li><a href="../algorithms/accel-gravity.html?course=intro&amp;rest=0.75&amp;trail=1">反発係数 0.75 で再生</a>して、最高点の表示（A → B → C）を記録し、となりどうしの比を計算する。</li>
+        <li><a href="../algorithms/accel-gravity.html?course=intro&amp;rest=0.5&amp;trail=1">反発係数 0.5</a>で同じことをする。比が 0.25 に近いことを確かめる。</li>
+        <li>重力 g を変えてみて、比が変わるかどうかを見る。</li>
+      </ol>
+      <div class="guide-check">
+        <p><strong>確かめよう</strong></p>
+        <details>
+          <summary>問 1. g = 600 で、止まっていたボールが落ち始めた。1 秒後の速さは？</summary>
+          <p>600。1 秒ごとに 600 ずつ増えるからです。</p>
+        </details>
+        <details>
+          <summary>問 2. 速さが 4 倍になると、落ちた距離は何倍？</summary>
+          <p>4 × 4 ＝ 16 倍。</p>
+        </details>
+        <details>
+          <summary>問 3. 反発係数 0.6 のボール。跳ね上がる高さは、前の何倍になる？</summary>
+          <p>0.6 × 0.6 ＝ 0.36 倍。</p>
+        </details>
+      </div>
+    </section>
+
+    <nav class="guide-pager" aria-label="ページ送り">
+      <a class="btn btn-ghost" href="guide-velocity-motion.html">← 前: 速度による移動の解説</a>
+      <a class="btn btn-primary" href="../algorithms/accel-gravity.html?course=intro">デモを開く</a>
+      <a class="btn btn-ghost" href="intro.html">入門コースへ →</a>
+    </nav>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="入門コース · くわしい解説 4 加速度と重力"></footer>
+  <script type="module" src="../js/courses/guide.js"></script>
+</body>
+</html>

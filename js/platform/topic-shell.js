@@ -15,6 +15,7 @@ import { mountExercises } from "./exercises.js";
 import { TOPICS } from "../main.js";
 import { EXERCISES } from "../courses/intro-exercises.js";
 import { ASSIGNMENTS } from "../courses/intro-assignments.js";
+import { GUIDES } from "../courses/intro-guides.js";
 import { mountSubmission } from "./submission.js";
 
 /**
@@ -775,9 +776,30 @@ export function mountTopicShellFromDataset() {
   // 入門コースの課題カード（該当トピックのみ・14ページ共通で自動描画）
   mountExercises(EXERCISES[active], active);
 
+  // 入門コースの詳説ページ（中学生向け）があるトピックは、リードの下にリンクを出す
+  mountGuideLink(GUIDES[active]);
+
   // `?course=intro` のときだけ、演習の下に提出課題と提出票（入門コース 提出課題の計画書 §2.1）
   mountSubmission(ASSIGNMENTS[active], active);
 
   // `?course=intro` で開かれたときだけ、コース内ナビ（n/14・前後）を表示
   mountCourseNav(TOPICS, active);
+}
+
+/**
+ * 詳説ページ（courses/guide-*.html）へのリンクを、ページ見出しのリードの下に出す
+ * @param {{ number: number, title: string, href: string } | undefined} guide
+ */
+function mountGuideLink(guide) {
+  if (!guide || typeof document === "undefined") return;
+  if (document.querySelector(".guide-link")) return;
+  const lead = document.querySelector(".page-header-lead");
+  if (!lead) return;
+  const p = document.createElement("p");
+  p.className = "guide-link";
+  const a = document.createElement("a");
+  a.href = `../${guide.href}`;
+  a.textContent = `くわしい解説（中学生向け・図つき）: ${guide.title} →`;
+  p.appendChild(a);
+  lead.insertAdjacentElement("afterend", p);
 }

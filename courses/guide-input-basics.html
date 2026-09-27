@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="入力の基礎のくわしい解説（中学生向け）。ポーリング、held・down・up、長押しを図で説明する。" />
+  <title>入力の基礎のくわしい解説 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="course" data-active="intro"></header>
+
+  <main class="container topic-main guide-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="intro.html">入門コース</a> / くわしい解説 2</p>
+      <h1>入力の基礎 — くわしい解説</h1>
+      <p class="page-header-lead">
+        ジャンプボタンを押しっぱなしにしても、キャラは 1 回しか跳びません。でも移動キーは、押しているあいだずっと進みます。
+        この違いは、キーの状態の「見方」の違いから生まれます。このページでは、ゲームがキーをどう読んでいるかを、図を使って説明します。
+        <a href="../algorithms/input-basics.html?course=intro">入力の基礎のデモ</a>と合わせて読んでください。
+      </p>
+      <nav class="guide-toc" aria-label="目次">
+        <strong>目次</strong>
+        <ol>
+          <li><a href="#s1">ゲームはキーを見に行く</a></li>
+          <li><a href="#s2">3 つの見方: held・down・up</a></li>
+          <li><a href="#s3">どの見方を使うか</a></li>
+          <li><a href="#s4">長押しを見分ける</a></li>
+          <li><a href="#s5">まとめと、やってみよう</a></li>
+        </ol>
+      </nav>
+    </div>
+
+    <!-- 1 -->
+    <section class="guide-section" id="s1" aria-labelledby="s1-h">
+      <h2 id="s1-h">1. ゲームはキーを見に行く</h2>
+      <p>
+        <a href="guide-game-loop.html">ゲームループ</a>では、フレームの最初に<span class="term" data-term="input">入力</span>を読みました。
+        このとき、ゲームは「今、このキーは押されているか」を、フレームごとに自分から調べに行きます。
+        これを<span class="term" data-term="polling">ポーリング</span>といいます。
+        郵便受けに手紙が来たかどうかを、毎朝のぞいて確かめるようなものです。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 170" role="img" aria-label="時間の線と、キーを押している期間の帯。フレームごとに状態を調べ、押されているフレームは黒丸、押されていないフレームは白丸">
+          <g font-size="15" fill="#9aabbf" text-anchor="middle">
+            <rect x="213" y="36" width="250" height="22" rx="4" fill="#f2cc8f" fill-opacity="0.8" />
+            <text x="338" y="28" fill="#f2cc8f">キーを押している</text>
+            <line x1="40" y1="100" x2="610" y2="100" stroke="#5a6a80" />
+            <text x="604" y="80" text-anchor="end">時間 →</text>
+            <g stroke="#9aabbf" stroke-width="2">
+              <circle cx="50" cy="100" r="7" fill="#0a0e14" /><circle cx="98" cy="100" r="7" fill="#0a0e14" /><circle cx="146" cy="100" r="7" fill="#0a0e14" /><circle cx="194" cy="100" r="7" fill="#0a0e14" />
+              <circle cx="242" cy="100" r="7" fill="#f2cc8f" stroke="#f2cc8f" /><circle cx="290" cy="100" r="7" fill="#f2cc8f" stroke="#f2cc8f" /><circle cx="338" cy="100" r="7" fill="#f2cc8f" stroke="#f2cc8f" /><circle cx="386" cy="100" r="7" fill="#f2cc8f" stroke="#f2cc8f" /><circle cx="434" cy="100" r="7" fill="#f2cc8f" stroke="#f2cc8f" />
+              <circle cx="482" cy="100" r="7" fill="#0a0e14" /><circle cx="530" cy="100" r="7" fill="#0a0e14" /><circle cx="578" cy="100" r="7" fill="#0a0e14" />
+            </g>
+            <text x="50" y="126">1</text><text x="98" y="126">2</text><text x="146" y="126">3</text><text x="194" y="126">4</text><text x="242" y="126">5</text><text x="290" y="126">6</text>
+            <text x="338" y="126">7</text><text x="386" y="126">8</text><text x="434" y="126">9</text><text x="482" y="126">10</text><text x="530" y="126">11</text><text x="578" y="126">12</text>
+            <text x="314" y="154">フレーム番号（丸の位置で、キーの状態を調べる）</text>
+          </g>
+        </svg>
+        <figcaption>図 1　ポーリング。ゲームはフレームごとにキーを調べます（丸の位置）。黄色の丸は「押されていた」、黒い丸は「押されていなかった」フレームです。ゲームに分かるのは、この丸の並びだけです。</figcaption>
+      </figure>
+      <p>
+        ゲームが知ることができるのは、図の丸の並び、つまり「フレームごとに押されていたかどうか」だけです。
+        押し始めた正確な時刻は分からず、フレームの区切り（60 FPS なら約 16.7 ms ごと）でしか分かりません。
+      </p>
+    </section>
+
+    <!-- 2 -->
+    <section class="guide-section" id="s2" aria-labelledby="s2-h">
+      <h2 id="s2-h">2. 3 つの見方: held・down・up</h2>
+      <p>丸の並びから、次の 3 つの情報を取り出せます。</p>
+      <ul>
+        <li><strong><span class="term" data-term="held">held（押している間）</span></strong>: そのフレームで押されている。押しているあいだは毎フレーム「はい」</li>
+        <li><strong><span class="term" data-term="key-down">down（押した瞬間）</span></strong>: 前のフレームでは離れていて、このフレームで押された。押し始めの 1 フレームだけ「はい」</li>
+        <li><strong><span class="term" data-term="key-up">up（離した瞬間）</span></strong>: 前のフレームでは押されていて、このフレームで離された。離した最初の 1 フレームだけ「はい」</li>
+      </ul>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 230" role="img" aria-label="フレームごとの表。キーを押している期間に対して、held は押している 5 フレームすべて、down は最初の 1 フレーム、up は離した直後の 1 フレームだけ印が付く">
+          <g font-size="14" fill="#e8eef6">
+            <text x="12" y="44">キー</text>
+            <text x="12" y="96">held</text>
+            <text x="12" y="146">down</text>
+            <text x="12" y="196">up</text>
+          </g>
+          <rect x="254" y="30" width="208" height="20" rx="4" fill="#f2cc8f" fill-opacity="0.8" />
+          <g stroke="#2d3a4d" fill="#141b24">
+            <rect x="140" y="78" width="36" height="28" /><rect x="180" y="78" width="36" height="28" /><rect x="220" y="78" width="36" height="28" /><rect x="260" y="78" width="36" height="28" fill="#6bcb8f" /><rect x="300" y="78" width="36" height="28" fill="#6bcb8f" /><rect x="340" y="78" width="36" height="28" fill="#6bcb8f" /><rect x="380" y="78" width="36" height="28" fill="#6bcb8f" /><rect x="420" y="78" width="36" height="28" fill="#6bcb8f" /><rect x="460" y="78" width="36" height="28" /><rect x="500" y="78" width="36" height="28" /><rect x="540" y="78" width="36" height="28" /><rect x="580" y="78" width="36" height="28" />
+            <rect x="140" y="128" width="36" height="28" /><rect x="180" y="128" width="36" height="28" /><rect x="220" y="128" width="36" height="28" /><rect x="260" y="128" width="36" height="28" fill="#5b9fd4" /><rect x="300" y="128" width="36" height="28" /><rect x="340" y="128" width="36" height="28" /><rect x="380" y="128" width="36" height="28" /><rect x="420" y="128" width="36" height="28" /><rect x="460" y="128" width="36" height="28" /><rect x="500" y="128" width="36" height="28" /><rect x="540" y="128" width="36" height="28" /><rect x="580" y="128" width="36" height="28" />
+            <rect x="140" y="178" width="36" height="28" /><rect x="180" y="178" width="36" height="28" /><rect x="220" y="178" width="36" height="28" /><rect x="260" y="178" width="36" height="28" /><rect x="300" y="178" width="36" height="28" /><rect x="340" y="178" width="36" height="28" /><rect x="380" y="178" width="36" height="28" /><rect x="420" y="178" width="36" height="28" /><rect x="460" y="178" width="36" height="28" fill="#e07a5f" /><rect x="500" y="178" width="36" height="28" /><rect x="540" y="178" width="36" height="28" /><rect x="580" y="178" width="36" height="28" />
+          </g>
+          <g font-size="14" fill="#9aabbf" text-anchor="middle">
+            <text x="158" y="70">1</text><text x="198" y="70">2</text><text x="238" y="70">3</text><text x="278" y="70">4</text><text x="318" y="70">5</text><text x="358" y="70">6</text>
+            <text x="398" y="70">7</text><text x="438" y="70">8</text><text x="478" y="70">9</text><text x="518" y="70">10</text><text x="558" y="70">11</text><text x="598" y="70">12</text>
+          </g>
+          <text x="378" y="224" font-size="14" fill="#9aabbf" text-anchor="middle">フレーム番号 →</text>
+        </svg>
+        <figcaption>図 2　キーを押している期間（黄色の帯）に対する、3 つの見方。色の付いたマスが「はい」のフレームです。held（緑）は押しているフレームすべて、down（青）は押し始めのフレーム 4 だけ、up（赤）は離した直後のフレーム 9 だけです。</figcaption>
+      </figure>
+      <p>
+        down と up は、状態が変わった瞬間なので、まとめて<span class="term" data-term="edge">エッジ</span>とも呼びます。
+        「今のフレームの状態」と「前のフレームの状態」を比べれば、分かります。
+      </p>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead><tr><th>前のフレーム</th><th>今のフレーム</th><th>held</th><th>down</th><th>up</th></tr></thead>
+          <tbody>
+            <tr><td>離れている</td><td>離れている</td><td>いいえ</td><td>いいえ</td><td>いいえ</td></tr>
+            <tr><td>離れている</td><td>押されている</td><td>はい</td><td><strong>はい</strong></td><td>いいえ</td></tr>
+            <tr><td>押されている</td><td>押されている</td><td>はい</td><td>いいえ</td><td>いいえ</td></tr>
+            <tr><td>押されている</td><td>離れている</td><td>いいえ</td><td>いいえ</td><td><strong>はい</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="guide-section" id="s3" aria-labelledby="s3-h">
+      <h2 id="s3-h">3. どの見方を使うか</h2>
+      <p>ゲームの操作ごとに、ふさわしい見方があります。</p>
+      <ul>
+        <li><strong>ジャンプ</strong>は down。押しっぱなしにしても、1 回だけ跳んでほしいからです</li>
+        <li><strong>移動</strong>は held。押しているあいだ、ずっと進んでほしいからです</li>
+        <li><strong>弾を撃つ</strong>は、ふつうは down（押すたびに 1 発）。held にすると、押しているあいだ毎フレーム 1 発ずつ撃つ「連射」になります</li>
+      </ul>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 170" role="img" aria-label="同じようにキーを押し続けたとき、down で判定する Jump は 1 回、held で判定する Fire は毎フレーム 1 回ずつ起きる">
+          <g font-size="14" fill="#e8eef6">
+            <text x="12" y="40">キー</text>
+            <text x="12" y="92">Jump</text>
+            <text x="12" y="142">Fire</text>
+          </g>
+          <g font-size="14" fill="#9aabbf"><text x="12" y="108">（down）</text><text x="12" y="158">（held）</text></g>
+          <rect x="254" y="26" width="208" height="20" rx="4" fill="#f2cc8f" fill-opacity="0.8" />
+          <g font-size="22" text-anchor="middle">
+            <text x="278" y="98" fill="#5b9fd4">★</text>
+            <text x="278" y="148" fill="#6bcb8f">★</text><text x="318" y="148" fill="#6bcb8f">★</text><text x="358" y="148" fill="#6bcb8f">★</text><text x="398" y="148" fill="#6bcb8f">★</text><text x="438" y="148" fill="#6bcb8f">★</text>
+          </g>
+          <g font-size="15" fill="#9aabbf">
+            <text x="490" y="98">1 回</text>
+            <text x="490" y="148">5 回</text>
+            <text x="490" y="166" font-size="14">押したフレームの数</text>
+          </g>
+        </svg>
+        <figcaption>図 3　同じ長さだけキーを押したとき。down で判定するジャンプは 1 回だけ、held で判定する連射は、押していたフレームの数（ここでは 5）だけ起きます。</figcaption>
+      </figure>
+      <p>
+        60 FPS なら、1 秒押し続けると held は約 60 フレームぶん「はい」になります。
+        デモの Fire は、わざと held で判定している「悪い例」です。1 秒ほど押すと、数十回も撃ってしまいます。
+      </p>
+    </section>
+
+    <!-- 4 -->
+    <section class="guide-section" id="s4" aria-labelledby="s4-h">
+      <h2 id="s4-h">4. 長押しを見分ける</h2>
+      <p>
+        ボタンを長く押すと強い攻撃が出る「溜め攻撃」のように、<span class="term" data-term="long-press">長押し</span>を使う操作もあります。
+        長押しは、held が続いている時間を数えて、決めた長さ（<span class="term" data-term="threshold">閾値</span>）を超えたフレームで 1 回だけ起こします。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 250" role="img" aria-label="押し続けた時間のグラフ。短く押すと閾値 400 ミリ秒に届かず何も起きない。長く押すと 400 ミリ秒を超えた瞬間に長押しが 1 回起きる">
+          <line x1="60" y1="200" x2="610" y2="200" stroke="#5a6a80" />
+          <line x1="60" y1="30" x2="60" y2="200" stroke="#5a6a80" />
+          <text x="604" y="222" font-size="14" fill="#9aabbf" text-anchor="end">時間 →</text>
+          <text x="66" y="24" font-size="14" fill="#9aabbf">押し続けた時間（ms）</text>
+          <g font-size="14" fill="#9aabbf" text-anchor="end"><text x="54" y="204">0</text><text x="54" y="124">400</text><text x="54" y="44">800</text></g>
+          <line x1="60" y1="120" x2="610" y2="120" stroke="#f2cc8f" stroke-dasharray="6 4" />
+          <text x="224" y="112" font-size="14" fill="#f2cc8f">閾値 400 ms</text>
+          <polyline points="98.6,200 214.3,140 214.3,200" fill="none" stroke="#5b9fd4" stroke-width="3" />
+          <text x="156" y="232" font-size="14" fill="#5b9fd4" text-anchor="middle">300 ms 押した</text>
+          <text x="156" y="128" font-size="14" fill="#9aabbf" text-anchor="middle">届かない</text>
+          <polyline points="291.4,200 561.4,60 561.4,200" fill="none" stroke="#6bcb8f" stroke-width="3" />
+          <text x="426" y="232" font-size="14" fill="#6bcb8f" text-anchor="middle">700 ms 押した</text>
+          <text x="445.7" y="127" font-size="26" fill="#f2cc8f" text-anchor="middle">★</text>
+          <text x="445.7" y="98" font-size="14" fill="#f2cc8f" text-anchor="middle">ここで長押しが 1 回</text>
+        </svg>
+        <figcaption>図 4　閾値 400 ms の長押し。300 ms しか押さなかったとき（青）は閾値に届かず、何も起きません。700 ms 押したとき（緑）は、押し始めから 400 ms を超えたところ（★）で 1 回だけ長押しが起き、その後は押し続けても起きません。</figcaption>
+      </figure>
+      <p>
+        ここでも、判定はフレームごとです。60 FPS のとき、閾値 400 ms なら、押し始めから 400 ms を超えた最初のフレームで起きるので、
+        実際には 400〜417 ms くらいのところで起きます。
+      </p>
+      <div class="guide-note">
+        <strong>考えてみよう:</strong> 閾値が短すぎると、ふつうに押しただけで溜め攻撃が出てしまいます。
+        長すぎると、なかなか出なくてイライラします。あなたなら何 ms にしますか？
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="guide-section" id="s5" aria-labelledby="s5-h">
+      <h2 id="s5-h">5. まとめ</h2>
+      <ul>
+        <li>ゲームは、フレームごとにキーの状態を見に行く（ポーリング）。分かるのはフレームの区切りだけ</li>
+        <li>held は押しているあいだ毎フレーム、down は押した瞬間の 1 フレーム、up は離した瞬間の 1 フレーム</li>
+        <li>ジャンプは down、移動は held。held で撃つと連射になる</li>
+        <li>長押しは、held の時間が閾値を超えたフレームで 1 回だけ起こす</li>
+      </ul>
+    </section>
+
+    <section class="guide-try" aria-labelledby="try-h">
+      <h2 id="try-h">やってみよう</h2>
+      <ol>
+        <li><a href="../algorithms/input-basics.html?course=intro">デモ</a>を開き、キャンバスをクリックしてから、Space（Jump）・Z（Fire）・X（Charge）を 1 秒ほど押し続ける。Jump が 1 回で、Fire が増え続けることを確かめる。</li>
+        <li><a href="../algorithms/input-basics.html?course=intro&amp;longms=1000">長押しの閾値を 1000 ms に</a>して、X を 1 秒より短く・長く押し比べる。イベントログに長押し（LONG）が出るかを見る。</li>
+      </ol>
+      <div class="guide-check">
+        <p><strong>確かめよう</strong></p>
+        <details>
+          <summary>問 1. キーをフレーム 4〜8 のあいだ押していた。down が「はい」になるのはどのフレーム？</summary>
+          <p>フレーム 4（押し始めの 1 フレームだけ）。</p>
+        </details>
+        <details>
+          <summary>問 2. 押しっぱなしで何度も跳んでしまうジャンプは、どの見方で判定している？</summary>
+          <p>held。ジャンプは down で判定します。</p>
+        </details>
+        <details>
+          <summary>問 3. 閾値 400 ms の長押しで、キーを 1 秒押し続けた。長押しは何回起きる？</summary>
+          <p>1 回。400 ms を超えたフレームで 1 回起きたあとは、押し続けても起きません。</p>
+        </details>
+      </div>
+    </section>
+
+    <nav class="guide-pager" aria-label="ページ送り">
+      <a class="btn btn-ghost" href="guide-game-loop.html">← 前: ゲームループの解説</a>
+      <a class="btn btn-primary" href="../algorithms/input-basics.html?course=intro">デモを開く</a>
+      <a class="btn btn-ghost" href="guide-velocity-motion.html">次: 速度による移動の解説 →</a>
+    </nav>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="入門コース · くわしい解説 2 入力の基礎"></footer>
+  <script type="module" src="../js/courses/guide.js"></script>
+</body>
+</html>
