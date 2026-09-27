@@ -276,7 +276,7 @@
       </p>
       <p><strong>フレームが始まるときの速さは、同じにして比べます。</strong></p>
       <p>
-        ここでは、フレーム開始時の速さをどちらも 10 にします。
+        ここでは、フレーム開始時の速さをどちらも 10 にします（この例の速さ・時間・位置は、説明のために作った数です。デモの ms や px とは別です）。
         速さがこの 10 のままなら、大きい 1 歩でも細かい 4 歩でも着く場所は同じです。
         道のりは「速さ × 時間」なので、10 × 4 を 1 回で計算しても、10 を 4 回足しても 40 です。
       </p>
@@ -313,37 +313,50 @@
       </div>
       <p>
         細かく 4 歩だと位置は 140、大きい 1 歩だと 200 です。開始時の速さは同じ 10 なのに、60 ずれます。
+        時間 4 のあとの速さは、細かい 4 歩でも大きい 1 歩でも 50 で同じです。ずれるのは位置です。
+      </p>
+      <p>
+        では、本当はどこに着くのでしょうか。速さがなめらかに 10 から 50 まで増えるとき、
+        時間 4 で進む道のりは 10 × 4 ＋ ½ × 10 × 4 × 4 ＝ 120 です（½ × 加速 × 時間 × 時間 の式は高校で習います）。
+        細かい 4 歩の 140 も、大きい 1 歩の 200 も、どちらも行き過ぎています。でも、細かく刻んだほうが本当の 120 に近くなります。
         減速でも同じです。大きい 1 歩は、もう遅くなった終わりの速さで長い時間を進むので、今度は進みが足りなくなります。
       </p>
       <figure class="guide-figure">
-        <svg viewBox="0 0 640 280" role="img" aria-label="上段は開始時の速さ10のまま。細かい4歩と大きい1歩が同じ位置40。下段は開始時の速さは同じ10で、そのあと加速。細かい4歩は140、大きい1歩は200で、60ずれる">
+        <svg viewBox="0 0 640 290" role="img" aria-label="上段は開始時の速さ10のまま。細かい4歩と大きい1歩が同じ位置40。下段は開始時の速さは同じ10で、そのあと加速。本当の位置は120、細かい4歩は140、大きい1歩は200で、細かい4歩と大きい1歩は60ずれる。上下の段は同じ縮尺">
           <text x="16" y="28" font-size="15" fill="#e8eef6">開始時の速さ 10 のまま</text>
-          <line x1="48" y1="78" x2="168" y2="78" stroke="#3d4f66" stroke-width="3" />
+          <line x1="48" y1="70" x2="152.0" y2="70" stroke="#3d4f66" stroke-width="3" />
+          <line x1="48" y1="60" x2="48" y2="80" stroke="#9aabbf" stroke-width="2" />
           <g fill="#6bcb8f">
-            <circle cx="78" cy="78" r="4" /><circle cx="108" cy="78" r="4" /><circle cx="138" cy="78" r="4" /><circle cx="168" cy="78" r="4" />
+            <circle cx="74.0" cy="70" r="4" /><circle cx="100.0" cy="70" r="4" /><circle cx="126.0" cy="70" r="4" /><circle cx="152.0" cy="70" r="4" />
           </g>
-          <circle cx="168" cy="78" r="11" fill="none" stroke="#5b9fd4" stroke-width="2.5" />
-          <text x="184" y="82" font-size="14" fill="#9aabbf">どちらも 40</text>
+          <circle cx="152.0" cy="70" r="11" fill="none" stroke="#5b9fd4" stroke-width="2.5" />
+          <text x="170.0" y="75" font-size="14" fill="#9aabbf">どちらも 40</text>
+          <text x="48" y="100" font-size="14" fill="#9aabbf" text-anchor="middle">位置 0</text>
 
-          <text x="16" y="142" font-size="15" fill="#e8eef6">開始時の速さは同じ 10。そのあと 1 歩ごとに +10</text>
-          <line x1="48" y1="196" x2="568" y2="196" stroke="#3d4f66" stroke-width="3" />
+          <text x="16" y="136" font-size="15" fill="#e8eef6">開始時の速さは同じ 10。そのあと時間 1 ごとに +10</text>
+          <line x1="48" y1="196" x2="568.0" y2="196" stroke="#3d4f66" stroke-width="3" />
+          <line x1="48" y1="186" x2="48" y2="206" stroke="#9aabbf" stroke-width="2" />
           <g fill="#6bcb8f">
-            <circle cx="100" cy="196" r="5" /><circle cx="178" cy="196" r="5" /><circle cx="282" cy="196" r="5" /><circle cx="412" cy="196" r="5" />
+            <circle cx="100.0" cy="196" r="5" /><circle cx="178.0" cy="196" r="5" /><circle cx="282.0" cy="196" r="5" /><circle cx="412.0" cy="196" r="5" />
           </g>
-          <circle cx="568" cy="196" r="11" fill="none" stroke="#5b9fd4" stroke-width="2.5" />
-          <text x="412" y="180" font-size="13" fill="#6bcb8f" text-anchor="middle">細かい4歩 140</text>
-          <text x="620" y="176" font-size="13" fill="#5b9fd4" text-anchor="end">大きい1歩 200</text>
-          <line x1="412" y1="214" x2="568" y2="214" stroke="#f2cc8f" stroke-width="2" />
-          <text x="490" y="234" font-size="14" fill="#f2cc8f" text-anchor="middle">ずれ 60</text>
-          <text x="48" y="218" font-size="13" fill="#9aabbf">開始 10</text>
+          <line x1="360.0" y1="182" x2="360.0" y2="210" stroke="#e07a5f" stroke-width="3" />
+          <circle cx="568.0" cy="196" r="11" fill="none" stroke="#5b9fd4" stroke-width="2.5" />
+          <text x="412.0" y="174" font-size="14" fill="#6bcb8f" text-anchor="middle">細かい4歩 140</text>
+          <text x="568.0" y="174" font-size="14" fill="#5b9fd4" text-anchor="middle">大きい1歩 200</text>
+          <text x="360.0" y="228" font-size="14" fill="#e07a5f" text-anchor="middle">本当は 120</text>
+          <line x1="412.0" y1="214" x2="568.0" y2="214" stroke="#f2cc8f" stroke-width="2" />
+          <text x="490.0" y="232" font-size="14" fill="#f2cc8f" text-anchor="middle">ずれ 60</text>
+          <text x="48" y="228" font-size="14" fill="#9aabbf" text-anchor="middle">位置 0</text>
           <g font-size="14" fill="#9aabbf">
-            <line x1="16" y1="262" x2="46" y2="262" stroke="#6bcb8f" stroke-width="2.5" />
-            <text x="52" y="266">細かい歩</text>
-            <circle cx="168" cy="258" r="8" fill="none" stroke="#5b9fd4" stroke-width="2.5" />
-            <text x="184" y="266">大きい 1 歩の到着</text>
+            <line x1="16" y1="272" x2="46" y2="272" stroke="#6bcb8f" stroke-width="2.5" />
+            <text x="52" y="276">細かい歩</text>
+            <circle cx="148" cy="268" r="8" fill="none" stroke="#5b9fd4" stroke-width="2.5" />
+            <text x="164" y="276">大きい 1 歩の到着</text>
+            <line x1="310" y1="260" x2="310" y2="280" stroke="#e07a5f" stroke-width="3" />
+            <text x="320" y="276">本当の位置</text>
           </g>
         </svg>
-        <figcaption>図 5　フレーム開始時の速さは、どちらも 10。速さが 10 のままなら、細かい 4 歩も大きい 1 歩も位置 40 です。加速すると、細かい 4 歩は 140、大きい 1 歩は終わりの速さ 50 で 4 歩分進んで 200 です。</figcaption>
+        <figcaption>図 5　フレーム開始時の速さは、どちらも 10（上下の段は同じ縮尺）。速さが 10 のままなら、細かい 4 歩も大きい 1 歩も位置 40 です。加速すると、時間 4 のあとの速さはどちらも 50 ですが、位置は細かい 4 歩が 140、終わりの速さ 50 で時間 4 を進む大きい 1 歩が 200 になります。本当の位置は 120 で、細かく刻んだほうが近くなります。</figcaption>
       </figure>
     </section>
 
@@ -484,7 +497,7 @@
         </details>
         <details>
           <summary>問 3. 速さが一定のとき、大きい 1 歩と細かい 4 歩で着く場所は変わる？ 加速しているときは？</summary>
-          <p>開始時の速さが同じなら、一定のときは同じ場所です。このページの例では、速さ 10 のままならどちらも 40 です。加速していると、大きい 1 歩のほうが遠くへ行きます。細かい 4 歩が 140、大きい 1 歩が 200 です。</p>
+          <p>開始時の速さが同じなら、一定のときは同じ場所です。このページの例では、速さ 10 のままならどちらも 40 です。加速していると、大きい 1 歩のほうが遠くへ行きます。細かい 4 歩が 140、大きい 1 歩が 200 です（本当は 120）。時間 4 のあとの速さは、どちらも 50 で同じです。</p>
         </details>
         <details>
           <summary>問 4. 貯金箱に 20 ms 入っているとき、FIXED_DT が 16.7 ms なら、更新は何回で、残りは何 ms？</summary>
