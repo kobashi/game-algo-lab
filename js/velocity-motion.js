@@ -100,7 +100,7 @@ function sync() {
   if (thickVal) thickVal.textContent = String(Math.round(readThick()));
   const step = Math.hypot(readVx() * readDtSec(), readVy() * readDtSec());
   if (readoutEl) {
-    readoutEl.textContent = `1フレームの移動 |v|·dt = ${step.toFixed(1)} px  /  障害物の厚み = ${readThick()} px`;
+    readoutEl.textContent = `1フレームの移動 |v|·dt = ${step.toFixed(1)} px  /  障害物の厚み = ${readThick()} px（ボールの直径 ${2 * R} px）`;
   }
 }
 
@@ -187,7 +187,8 @@ function step(dt) {
 
   if (tunneled) {
     setStatus(
-      `すり抜けた — |v|·dt=${(Math.hypot(readVx(), readVy()) * dt).toFixed(1)}px が厚み ${readThick()}px を超えた`
+      // 判定は「1 歩の前後どちらの位置でも障害物に重ならない」（circleAabbTunneled）。厚みだけでなくボールの直径も効く
+      `すり抜けた — 1 歩 |v|·dt=${(Math.hypot(readVx(), readVy()) * dt).toFixed(1)}px の前後どちらの位置でも障害物に重ならなかった（厚み ${readThick()}px ＋ ボールの直径 ${2 * R}px = ${readThick() + 2 * R}px）`
     );
   } else if (hitObs) {
     setStatus(`障害物に当たって反射  p=(${x.toFixed(1)}, ${y.toFixed(1)})`);

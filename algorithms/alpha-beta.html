@@ -78,6 +78,14 @@
               <span class="controls-label"><span class="term" data-term="alpha-beta-window">窓</span></span>
               <code class="formula-code">α ≤ 真の値 ≤ β の外は刈る</code>
             </div>
+            <div class="controls-group-paint gl-params mm-params">
+              <label class="controls-label" for="ab-leaves">葉の評価値（左からカンマ区切り）</label>
+              <input type="text" id="ab-leaves" class="mm-leaves-input" value="5,3,7,9,4,2,1,3,6,8,7,4" autocomplete="off" spellcheck="false" />
+              <p class="section-lead section-lead-compact">葉は 12 個。数が合わない入力は却下して既定の木に戻します。並べ替えると、読む葉の数（刈りの量）が変わる。</p>
+            </div>
+            <div class="controls-group-paint gl-params url-share-row">
+              <button type="button" id="btn-copy-url" class="btn btn-ghost">この設定のURLをコピー</button>
+            </div>
           </div>
 
           <div id="status" class="status-log" role="status">準備完了</div>

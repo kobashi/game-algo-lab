@@ -43,6 +43,20 @@ const setStatus = createStatus(document.getElementById("status"));
 /** offset from anchor point in parent space */
 let offX = -20;
 let offY = -20;
+const offXEl = /** @type {HTMLInputElement | null} */ (document.getElementById("off-x"));
+const offYEl = /** @type {HTMLInputElement | null} */ (document.getElementById("off-y"));
+/** Offset の入力欄 → 変数（URL の ox・oy もこの欄を通る） */
+function readOffsetInputs() {
+  const x = Number(offXEl?.value);
+  const y = Number(offYEl?.value);
+  if (Number.isFinite(x)) offX = Math.round(x);
+  if (Number.isFinite(y)) offY = Math.round(y);
+}
+/** 変数 → Offset の入力欄（ドラッグ中に呼ぶ） */
+function writeOffsetInputs() {
+  if (offXEl) offXEl.value = String(Math.round(offX));
+  if (offYEl) offYEl.value = String(Math.round(offY));
+}
 let dragging = false;
 let dragStart = { x: 0, y: 0, ox: 0, oy: 0 };
 
@@ -217,14 +231,21 @@ canvas.addEventListener("pointerdown", (e) => {
 canvas.addEventListener("pointermove", (e) => {
   if (!dragging) return;
   const p = pointerPos(e);
-  offX = dragStart.ox + (p.x - dragStart.x);
-  offY = dragStart.oy + (p.y - dragStart.y);
+  offX = Math.round(dragStart.ox + (p.x - dragStart.x));
+  offY = Math.round(dragStart.oy + (p.y - dragStart.y));
+  writeOffsetInputs();
   draw();
 });
 canvas.addEventListener("pointerup", () => {
   dragging = false;
 });
 
+for (const el of [offXEl, offYEl]) {
+  el?.addEventListener("input", () => {
+    readOffsetInputs();
+    draw();
+  });
+}
 for (const el of [anchorEl, pivotXEl, pivotYEl]) {
   el?.addEventListener("input", () => {
     syncLabels();
@@ -255,6 +276,8 @@ const urlSpec = {
   anchor: { el: anchorEl, kind: "select" },
   px: { el: pivotXEl, kind: "range" },
   py: { el: pivotYEl, kind: "range" },
+  ox: { el: offXEl, kind: "number" },
+  oy: { el: offYEl, kind: "number" },
 };
 mountShareLink({
   spec: urlSpec,
@@ -262,6 +285,7 @@ mountShareLink({
   statusEl: document.getElementById("status"),
 });
 const urlResult = applyParamsToControls(urlSpec);
+readOffsetInputs();
 syncLabels();
 applyCanvasSize();
 if (urlResult.warning) setStatus(urlResult.warning);

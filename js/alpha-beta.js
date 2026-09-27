@@ -15,6 +15,8 @@ import {
   escapeXml,
   mountTopicShellFromDataset,
   mountGlossary,
+  applyParamsToControls,
+  mountShareLink,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -26,6 +28,7 @@ const btnPlay = document.getElementById("btn-play");
 const btnStep = document.getElementById("btn-step");
 const btnReset = document.getElementById("btn-reset");
 const speedEl = document.getElementById("speed");
+const leavesEl = /** @type {HTMLInputElement | null} */ (document.getElementById("ab-leaves"));
 const csharpSample = document.getElementById("csharp-sample");
 
 const setStatus = createStatus(document.getElementById("status"));
@@ -136,9 +139,51 @@ function resetState() {
   updateDs();
 }
 
+/** 左から順（子の並び順）の葉 id */
+function leafIdsInOrder(src) {
+  /** @type {string[]} */
+  const out = [];
+  const walk = (id) => {
+    const n = src.nodes[id];
+    if (n.kind === "leaf") out.push(id);
+    else for (const c of n.children || []) walk(c);
+  };
+  walk(src.rootId);
+  return out;
+}
+
+function defaultLeavesString() {
+  return leafIdsInOrder(INITIAL_TREE)
+    .map((id) => String(INITIAL_TREE.nodes[id].score ?? 0))
+    .join(",");
+}
+
+/**
+ * 入力欄の葉の値を木に載せる（URL の `leaves` と同じ書式）。数が合わない・数値でないときは既定に戻す
+ * @returns {string | null} 警告文
+ */
+function applyLeaves() {
+  const ids = leafIdsInOrder(INITIAL_TREE);
+  const tokens = String(leavesEl?.value ?? "").split(",").map((t) => t.trim());
+  const nums = tokens.map((t) => (t === "" ? NaN : Number(t)));
+  if (tokens.length !== ids.length || nums.some((n) => !Number.isFinite(n))) {
+    if (leavesEl) leavesEl.value = defaultLeavesString();
+    return tokens.length !== ids.length
+      ? `⚠ 葉の評価値が${ids.length}個ではありません（入力は${tokens.length}個）。既定の木に戻しました。`
+      : "⚠ 葉の評価値を数値として解釈できません。既定の木に戻しました。";
+  }
+  ids.forEach((id, i) => {
+    nodes[id].score = nums[i];
+  });
+  return null;
+}
+
+/** @returns {string | null} 警告文 */
 function loadInitial() {
   cloneTree(INITIAL_TREE);
+  const warning = applyLeaves();
   resetState();
+  return warning;
 }
 
 function relayout() {
@@ -484,10 +529,28 @@ btnStep?.addEventListener("click", () => {
 });
 btnReset?.addEventListener("click", () => {
   loadInitial();
-  setStatus("木をリセットしました — js/maps/alpha-beta-tree.js");
+  setStatus("探索をリセットしました（葉の値は維持）");
 });
-
-loadInitial();
+if (leavesEl) leavesEl.value = defaultLeavesString();
+const urlSpec = {
+  leaves: { el: leavesEl, kind: "text" },
+  speed: { el: speedEl, kind: "range" },
+};
+mountShareLink({
+  spec: urlSpec,
+  button: document.getElementById("btn-copy-url"),
+  statusEl: document.getElementById("status"),
+});
+const urlResult = applyParamsToControls(urlSpec);
+const leafWarning = loadInitial();
+if (urlResult.warning || leafWarning) {
+  setStatus([urlResult.warning, leafWarning].filter(Boolean).join(" "));
+}
+// URL の値を入れるときにも change が起きるので、受け取りは初期化の後に付ける
+leavesEl?.addEventListener("change", () => {
+  const warning = loadInitial();
+  if (warning) setStatus(warning);
+});
 loadTextSample(
   "../samples/AlphaBetaExample.cs",
   csharpSample,

@@ -56,6 +56,11 @@
         <input type="range" id="pivot-x" class="ttt-range" min="0" max="1" value="0.5" step="0.05" />
         <label class="controls-label" for="pivot-y">Pivot Y <span id="pivot-y-val">0.50</span></label>
         <input type="range" id="pivot-y" class="ttt-range" min="0" max="1" value="0.5" step="0.05" />
+        <label class="controls-label" for="off-x"><span class="term" data-term="offset">Offset</span> X / Y（px。ボタンのドラッグでも変わる）</label>
+        <div class="control-row">
+          <input type="number" id="off-x" class="mc-num" min="-1000" max="1000" step="1" value="-20" aria-label="Offset X" />
+          <input type="number" id="off-y" class="mc-num" min="-1000" max="1000" step="1" value="-20" aria-label="Offset Y" />
+        </div>
         <div class="controls-group-paint gl-params url-share-row">
           <button type="button" id="btn-copy-url" class="btn btn-ghost">この設定のURLをコピー</button>
         </div>
