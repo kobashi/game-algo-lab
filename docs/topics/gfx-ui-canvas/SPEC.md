@@ -5,8 +5,8 @@
 | id | `gfx-ui-canvas` |
 | カテゴリ | graphics |
 | 状態 | implemented |
-| 成熟度 | revised（修正5・更新 2026-09-27） |
-| 最終改訂 | 2026-09-27: 用語注を追加（js/platform/glossary.js）。2026-09-26: Pivot X / Y の 0 が既定の 0.5 に置き換わっていたのを修正。入門コースの課題カード追加（[入門コース改善計画](../../reviews/2026-09-26-intro-course-improvement-plan.md)） |
+| 成熟度 | revised（修正6・更新 2026-09-27） |
+| 最終改訂 | 2026-09-27: Offset X / Y の数値入力欄と URL パラメータ（`ox`・`oy`）を追加。ドラッグ位置が URL に入らなかった（提出課題の計画書 §3）。2026-09-27: 用語注を追加（js/platform/glossary.js）。2026-09-26: Pivot X / Y の 0 が既定の 0.5 に置き換わっていたのを修正。入門コースの課題カード追加（[入門コース改善計画](../../reviews/2026-09-26-intro-course-improvement-plan.md)） |
 | 作成日 | 2026-07-28 |
 | 依存 | coordinates, gfx-sprite-2d |
 
@@ -21,7 +21,7 @@
 - 幅の連続スライダー（320〜960 step 10）で崩れる瞬間を見る
 - 比較用に左上アンカーの要素を同時表示
 - ドラッグでオフセット
-- URL: `res,vieww,anchor,px,py`
+- URL: `res,vieww,anchor,px,py,ox,oy`（ox・oy = Offset）
 
 ## 成功条件
 Anchor=右下 + Pivot=中心で、解像度変更後も角付近に張り付く。

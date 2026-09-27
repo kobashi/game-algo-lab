@@ -67,7 +67,7 @@ export const TOPIC_META = {
   },
   "velocity-motion": {
     maturity: "revised",
-    revisions: 5,
+    revisions: 6,
     updated: "2026-09-27",
   },
   "event-system": {
@@ -369,7 +369,7 @@ export const TOPIC_META = {
   },
   "gfx-ui-canvas": {
     maturity: "revised",
-    revisions: 5,
+    revisions: 6,
     updated: "2026-09-27",
   },
   "gfx-mesh-uv": {
@@ -465,7 +465,7 @@ export const TOPIC_META = {
   "and-or": { maturity: "revised", revisions: 1, updated: "2026-07-19" },
 
   minimax: { maturity: "revised", revisions: 6, updated: "2026-09-27" },
-  "alpha-beta": { maturity: "revised", revisions: 4, updated: "2026-09-27" },
+  "alpha-beta": { maturity: "revised", revisions: 5, updated: "2026-09-27" },
   "monte-carlo": { maturity: "revised", revisions: 1, updated: "2026-07-19" },
   "multi-armed-bandit": {
     maturity: "revised",
