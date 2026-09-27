@@ -26,7 +26,7 @@ public sealed class BallWorld
 
 public static class GameLoopExample
 {
-    /// <summary>可変 timestep: そのフレームの実経過で 1 回だけ更新。</summary>
+    /// <summary>可変 timestep: そのフレームの realDt で 1 回だけ更新。</summary>
     public static void VariableStep(BallWorld world, double realDtSeconds)
     {
         // 巨大 dt は任意でクランプ（タブ復帰対策）
@@ -35,8 +35,8 @@ public static class GameLoopExample
     }
 
     /// <summary>
-    /// 固定 timestep: アキュムレータに realDt を溜め、FIXED ずつ Update。
-    /// 戻り値は残りの accumulator と実行したステップ数。
+    /// 固定 timestep: アキュムレータに realDt を溜め、FIXED_DT ずつ Update。
+    /// 戻り値は残りのアキュムレータと、実行した更新の回数。
     /// </summary>
     public static (double accumulator, int steps) FixedStep(
         BallWorld world,

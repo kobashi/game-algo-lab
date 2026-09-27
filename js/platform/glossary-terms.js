@@ -48,7 +48,7 @@ export const GLOSSARY = {
   },
   "variable-timestep": {
     term: "可変 timestep",
-    text: "そのフレームで実際に経った時間（dt）をそのまま使い、1 フレームに 1 回だけ更新するやり方。作るのは簡単だが、重いフレームで dt が大きくなると結果が変わる。",
+    text: "そのフレームの realDt をそのまま 1 回の更新の dt にするやり方。作るのは簡単だが、重いフレームで realDt が大きくなると結果が変わる。",
   },
   "fixed-timestep": {
     term: "固定 timestep",
@@ -60,7 +60,7 @@ export const GLOSSARY = {
   },
   accumulator: {
     term: "アキュムレータ（accumulator）",
-    text: "まだ更新に使っていない時間を溜めておく入れ物（変数）。毎フレーム経った時間を足し、FIXED_DT 分たまるごとに 1 回更新して、その分を引く。表の「acc ms」がその残り。",
+    text: "まだ更新に使っていない時間を溜めておく入れ物（変数）。毎フレーム経った時間を足し、FIXED_DT 分たまるごとに 1 回更新して、その分を引く。フレームログの「acc」がその残り（ms）です。",
   },
   "max-steps": {
     term: "MAX_STEPS",

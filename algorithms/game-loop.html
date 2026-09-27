@@ -18,8 +18,8 @@
       <h1>ゲームループ</h1>
       <p class="page-header-lead">
         ゲームは <strong><span class="term" data-term="input">入力</span> → <span class="term" data-term="update">更新</span> → <span class="term" data-term="render">描画</span></strong> を繰り返す（<span class="term" data-term="game-loop">ゲームループ</span>）。
-        実経過時間 <span class="term" data-term="dt">dt</span> をそのまま使う<strong><span class="term" data-term="variable-timestep">可変 timestep</span></strong>と、
-        固定 Δt を溜めて回す<strong><span class="term" data-term="fixed-timestep">固定 timestep</span></strong>を、跳ねるボールで比較する。
+        そのフレームの <span class="term" data-term="real-dt">realDt</span> をそのまま使う<strong><span class="term" data-term="variable-timestep">可変 timestep</span></strong>と、
+        <span class="term" data-term="fixed-dt">FIXED_DT</span> を溜めて回す<strong><span class="term" data-term="fixed-timestep">固定 timestep</span></strong>を、跳ねるボールで比較する。
         用語に点線が付いているところは、マウスを乗せる（スマホではタップする）と説明が出る。
         横軸は時間（3 秒分）。ボールは左から右へ進みながら跳ね、通った跡が残る。
         設定: <code>js/maps/game-loop-config.js</code>。
@@ -87,7 +87,7 @@
             <input type="range" id="lag" class="ttt-range" min="0" max="80" value="0" step="5" />
           </div>
           <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="lag-mode">遅延のかけ方</label>
+            <label class="controls-label" for="lag-mode">人工遅延のかけ方</label>
             <select id="lag-mode" class="bandit-select">
               <option value="0" selected>毎フレーム</option>
               <option value="1">ときどき重い（5 フレームに 1 回）</option>
@@ -110,7 +110,7 @@
             <label class="ttt-check"><input type="checkbox" id="trail" checked /> 軌跡（点と輪）</label>
             <label class="ttt-check"><input type="checkbox" id="ref" checked /> 正解の軌道</label>
             <label class="ttt-check"><input type="checkbox" id="draw-load" checked /> 負荷を描画</label>
-            <label class="ttt-check"><input type="checkbox" id="compare" /> 可変と固定を並べる</label>
+            <label class="ttt-check"><input type="checkbox" id="compare" /> 可変と固定を並走</label>
           </div>
           <div class="controls-group-paint gl-params url-share-row">
             <button type="button" id="btn-copy-url" class="btn btn-ghost">この設定のURLをコピー</button>
@@ -123,7 +123,7 @@
     <section class="ds-section" aria-labelledby="log-heading">
       <h2 id="log-heading">フレームログ</h2>
       <p class="section-lead section-lead-compact">
-        直近フレームの <span class="term" data-term="real-dt">realDt</span>・<span class="term" data-term="update">update</span> 回数・<span class="term" data-term="accumulator">accumulator</span> 残り。固定モードで遅延を上げると updates が増えます。
+        直近フレームの <span class="term" data-term="real-dt">realDt</span>・<span class="term" data-term="update">更新</span>回数・<span class="term" data-term="accumulator">アキュムレータ</span>の残り。固定 timestep で人工遅延を上げると、1 フレームの更新が増えます。
       </p>
       <div id="frame-log" class="gl-frame-log" role="log"></div>
     </section>

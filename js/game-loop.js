@@ -141,6 +141,14 @@ function readFixedDtMs() {
 function readLagMs() {
   return Math.min(C.maxLagMs, Math.max(0, Number(lagEl.value) || 0));
 }
+
+/** 画面に出すモード名。値 variable / fixed / compare はそのまま使わない */
+function modeLabel(mode = readMode()) {
+  if (mode === "variable") return "可変";
+  if (mode === "fixed") return "固定";
+  if (mode === "compare") return "並走";
+  return mode;
+}
 function readMaxSteps() {
   return Math.min(
     C.maxMaxSteps,
@@ -380,8 +388,7 @@ function showRunResult(commitPrev = true) {
   if (frameIndex <= 0) return;
   const cur = collectStats();
   const p = prevResult;
-  const modeLabel =
-    cur.mode === "variable" ? "可変" : cur.mode === "fixed" ? "固定" : "並走";
+  const thisMode = modeLabel(cur.mode);
   let body = "";
   if (cur.comparing) {
     body = `
@@ -390,7 +397,7 @@ function showRunResult(commitPrev = true) {
         <tbody>
           <tr><td>経過</td><td colspan="2">${fmtNum(cur.elapsedMs, 0)} ms</td><td>${p ? fmtNum(p.elapsedMs, 0) : "—"}</td></tr>
           <tr><td>更新回数</td><td>${cur.totalStepsVar}</td><td>${cur.totalStepsFix}</td><td>${p ? p.totalSteps : "—"}</td></tr>
-          <tr><td>平均 updates/F</td><td>${fmtNum(cur.avgUpdatesVar, 2)}</td><td>${fmtNum(cur.avgUpdatesFix, 2)}</td><td>${p ? fmtNum(p.avgUpdates, 2) : "—"}</td></tr>
+          <tr><td>平均 更新/フレーム</td><td>${fmtNum(cur.avgUpdatesVar, 2)}</td><td>${fmtNum(cur.avgUpdatesFix, 2)}</td><td>${p ? fmtNum(p.avgUpdates, 2) : "—"}</td></tr>
           <tr><td>平均 FPS</td><td colspan="2">${fmtNum(cur.fps, 0)}</td><td>${p ? fmtNum(p.fps, 0) : "—"}</td></tr>
           <tr><td>1バウンド目の最高点</td><td>${fmtNum(cur.firstPeakVar, 3)}</td><td>${fmtNum(cur.firstPeakFix, 3)}</td><td>${p ? fmtNum(p.firstPeak, 3) : "—"}</td></tr>
           <tr><td>停止までの時間</td><td>${fmtNum(cur.restMsVar, 0)} ms</td><td>${fmtNum(cur.restMsFix, 0)} ms</td><td>${p ? fmtNum(p.restMs, 0) : "—"}</td></tr>
@@ -401,10 +408,10 @@ function showRunResult(commitPrev = true) {
       <table class="gl-log-table">
         <thead><tr><th>項目</th><th>今回</th></tr></thead>
         <tbody>
-          <tr><td>モード</td><td>${modeLabel}${p && p.mode !== cur.mode ? `（前回 ${p.mode === "variable" ? "可変" : p.mode === "fixed" ? "固定" : "並走"}）` : ""}</td></tr>
+          <tr><td>モード</td><td>${thisMode}${p && p.mode !== cur.mode ? `（前回 ${modeLabel(p.mode)}）` : ""}</td></tr>
           <tr><td>経過時間</td><td>${cell(cur.elapsedMs, p?.elapsedMs, 0)} ms</td></tr>
           <tr><td>更新回数</td><td>${cell(cur.totalSteps, p?.totalSteps, 0)}</td></tr>
-          <tr><td>平均 updates/フレーム</td><td>${cell(cur.avgUpdates, p?.avgUpdates, 2)}</td></tr>
+          <tr><td>平均 更新/フレーム</td><td>${cell(cur.avgUpdates, p?.avgUpdates, 2)}</td></tr>
           <tr><td>平均 FPS</td><td>${cell(cur.fps, p?.fps, 0)}</td></tr>
           <tr><td>1バウンド目の最高点</td><td>${cell(cur.firstPeak, p?.firstPeak, 3)}</td></tr>
           <tr><td>床で停止するまでの時間</td><td>${cell(cur.restMs, p?.restMs, 0)} ms</td></tr>
@@ -493,13 +500,14 @@ function runFrame(realMs) {
   draw();
   renderLog();
 
+  const shownMode = modeLabel(compareOn() ? "compare" : readMode());
   if (clamped) {
     setStatus(
-      `フレーム #${frameIndex}: realDt=${realMs.toFixed(1)}ms / steps=${steps} ★MAX_STEPS で打ち切り（追いつき切れず）`
+      `フレーム #${frameIndex}: ${shownMode}  realDt ${realMs.toFixed(1)} ms  更新 ${steps} 回  ★MAX_STEPS で打ち切り（追いつき切れず）`
     );
   } else {
     setStatus(
-      `フレーム #${frameIndex}: ${compareOn() ? "並走" : readMode()} realDt=${realMs.toFixed(1)}ms / updates=${steps}`
+      `フレーム #${frameIndex}: ${shownMode}  realDt ${realMs.toFixed(1)} ms  更新 ${steps} 回`
     );
   }
   setPhase(running ? "run" : "idle");
@@ -679,7 +687,7 @@ function draw() {
   const label = compareOn() ? "並走（更新回数は固定側）" : readMode() === "fixed" ? "固定" : "可変";
   ctx.fillText(
     frameIndex > 0
-      ? `フレーム #${frameIndex}  実経過 ${lastFrame.realMs.toFixed(1)} ms  更新 ${lastFrame.steps} 回  ${label}`
+      ? `フレーム #${frameIndex}  realDt ${lastFrame.realMs.toFixed(1)} ms  更新 ${lastFrame.steps} 回  ${label}`
       : `フレーム #0  ${label}`,
     8,
     15
@@ -709,11 +717,11 @@ function renderLog() {
     .join("");
   logEl.innerHTML = `<table class="gl-log-table">
     <thead><tr>
-      <th>F#</th><th>mode</th><th>${termHtml("real-dt", "realDt")} ms</th><th>${termHtml("update", "updates")}</th><th>${termHtml("accumulator", "acc")} ms</th><th></th>
+      <th>フレーム</th><th>モード</th><th>${termHtml("real-dt", "realDt")} ms</th><th>${termHtml("update", "更新")}</th><th>${termHtml("accumulator", "acc")} ms</th><th></th>
     </tr></thead>
     <tbody>${rows}</tbody>
   </table>
-  <p class="gl-log-sum">累計 updates: ${totalSteps} · MAX_STEPS 警告: ${spiralWarns} 回</p>`;
+  <p class="gl-log-sum">累計 更新: ${totalSteps} · MAX_STEPS 警告: ${spiralWarns} 回</p>`;
 }
 
 function stopLoop() {
@@ -825,7 +833,7 @@ for (const el of [fixedDtEl, lagEl, maxStepsEl, modeEl, lagModeEl]) {
   el?.addEventListener("change", () => {
     syncLabels();
     setStatus(
-      `設定: mode=${readMode()} FIXED=${readFixedDtMs().toFixed(1)}ms lag=${readLagMs()}${spikeOn() ? `（${C.spikeEvery}フレームに1回）` : ""} maxSteps=${readMaxSteps()}`
+      `設定: モード ${modeLabel()}  FIXED_DT ${readFixedDtMs().toFixed(1)} ms  人工遅延 ${readLagMs()} ms${spikeOn() ? `（${C.spikeEvery} フレームに 1 回）` : ""}  MAX_STEPS ${readMaxSteps()}`
     );
   });
 }
@@ -886,5 +894,5 @@ draw();
 if (urlResult.warning) {
   setStatus(urlResult.warning);
 } else if (!urlResult.applied.length) {
-  setStatus("準備完了 — 固定 timestep が既定。「可変と固定を並べる」をオンにして人工遅延を上げると差が出る");
+  setStatus("準備完了 — 固定 timestep が既定。「可変と固定を並走」をオンにして人工遅延を上げると差が出る");
 }
