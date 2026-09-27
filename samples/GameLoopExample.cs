@@ -7,7 +7,7 @@ public sealed class BallWorld
 {
     public double Y;      // 上=0、下へ正
     public double V;
-    public double Gravity = 900;
+    public double Gravity = 8;  // 座標は 0..1.15 に正規化（床 = 1.0）
     public double Floor = 1.0;
     public double Restitution = 0.72;
     public double Radius = 0.045;

@@ -4785,6 +4785,16 @@ details.ds-block:not([open]) > .ds-title::before {
   background: #0a0e14;
 }
 
+.gl-swatch-ref {
+  width: 1.1rem;
+  height: 0;
+  border: none;
+  border-top: 2px dashed rgba(220, 226, 235, 0.6);
+  border-radius: 0;
+  background: none;
+  align-self: center;
+}
+
 .gl-legend {
   margin-top: 0.5rem;
   display: flex;
