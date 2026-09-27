@@ -19,6 +19,7 @@
 | `observe.js` | 軌跡点・再生速度スケール（0.1〜1.0×）・円と矩形の重なり／すり抜け／反射 |
 | `course-nav.js` | 入門コースの「n/14・前後のトピック」ナビ（`?course=intro` のときだけ）。段の順序は `js/courses/intro-stages.js` |
 | `exercises.js` | 演習節（課題カード）の描画（`mountExercises`）。文言は `js/courses/intro-exercises.js` が正 |
+| `glossary.js` / `glossary-terms.js` | 用語注（`mountGlossary`・`termHtml`）。HTML で `<span class="term" data-term="キー">語</span>` と書くと、ホバー・フォーカス・タップで説明が出る。説明文は全トピック共通の辞書 `glossary-terms.js`。辞書に無いキーは smoke で落ちる |
 | `index.js` | 上記の一括 export |
 
 経路探索の再生待ち時間はスライダーが大きいほど速いため  

@@ -13,9 +13,12 @@ import {
   mountShareLink,
   readSpeedScale,
   bindSpeedScaleControl,
+  mountGlossary,
+  termHtml,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
+mountGlossary();
 
 const canvas = /** @type {HTMLCanvasElement} */ (
   document.getElementById("gl-canvas")
@@ -457,7 +460,7 @@ function runFrame(realMs) {
   const fps = realMs > 0.5 ? 1000 / realMs : 60;
   fpsEma = fpsEma * 0.85 + fps * 0.15;
   if (fpsEl) {
-    fpsEl.textContent = `FPS: ${fpsEma.toFixed(0)}（このフレーム ${fps.toFixed(0)}）  負荷 ${Math.max(0, readBalls() - 1)}`;
+    fpsEl.textContent = `${fpsEma.toFixed(0)}（このフレーム ${fps.toFixed(0)}）  負荷 ${Math.max(0, readBalls() - 1)}`;
   }
   if (fpsEma < 15) lowFpsMs += realMs;
   else lowFpsMs = 0;
@@ -706,7 +709,7 @@ function renderLog() {
     .join("");
   logEl.innerHTML = `<table class="gl-log-table">
     <thead><tr>
-      <th>F#</th><th>mode</th><th>realDt ms</th><th>updates</th><th>acc ms</th><th></th>
+      <th>F#</th><th>mode</th><th>${termHtml("real-dt", "realDt")} ms</th><th>${termHtml("update", "updates")}</th><th>${termHtml("accumulator", "acc")} ms</th><th></th>
     </tr></thead>
     <tbody>${rows}</tbody>
   </table>
