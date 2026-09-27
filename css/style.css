@@ -3654,7 +3654,7 @@ details.ds-block:not([open]) > .ds-title::before {
 }
 
 /* ===== 三目並べ ===== */
-/* 盤ゲーム（tic-tac-toe / othello-4x4 / chopsticks / mcts）のプリセット行: 選択肢の名前が長く、
+/* 盤ゲーム（tic-tac-toe / othello-4x4 / chopsticks / mcts / nim）のプリセット行: 選択肢の名前が長く、
    ボタンも並ぶので、狭い画面では折り返して選択欄を縮める
    （.controls-group .control-row は全ページ共通で nowrap のため、この行だけ上書き） */
 .controls-group .control-row.preset-row {
