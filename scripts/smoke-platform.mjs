@@ -28,6 +28,7 @@ import { TOPICS } from "../js/main.js";
 import { STAGES, getCourseOrder } from "../js/courses/intro-stages.js";
 import { EXERCISES } from "../js/courses/intro-exercises.js";
 import { INTRO_QUIZ } from "../js/courses/intro-quiz.js";
+import { GLOSSARY } from "../js/platform/glossary-terms.js";
 
 // --- rng ---
 const r1 = mulberry32(42);
@@ -689,6 +690,31 @@ function mockControl(kind, value, extra = {}) {
       assert.ok(Number.isInteger(q.answer) && q.answer >= 0 && q.answer < 4, `quiz ${id}#${i + 1}: 正解の添字が 0〜3`);
     });
   }
+}
+
+// --- 用語注: HTML と JS で使う data-term / termHtml のキーが辞書にあること。辞書の各項目に語と説明があること ---
+{
+  const root = fileURLToPath(new URL("..", import.meta.url));
+  for (const [key, e] of Object.entries(GLOSSARY)) {
+    assert.ok(e.term && e.text && e.text.length >= 20, `glossary ${key}: 語と説明がある`);
+  }
+  const files = [
+    ...fs.readdirSync(`${root}/algorithms`).map((f) => `${root}/algorithms/${f}`),
+    ...fs.readdirSync(`${root}/js`).filter((f) => f.endsWith(".js")).map((f) => `${root}/js/${f}`),
+  ].filter((f) => /\.(html|js)$/.test(f));
+  let used = 0;
+  for (const f of files) {
+    const text = fs.readFileSync(f, "utf8");
+    const keys = [
+      ...[...text.matchAll(/data-term="([^"$]+)"/g)].map((m) => m[1]),
+      ...[...text.matchAll(/termHtml\("([^"]+)"/g)].map((m) => m[1]),
+    ];
+    for (const k of keys) {
+      used += 1;
+      assert.ok(GLOSSARY[k], `${f.slice(root.length)}: 用語 "${k}" が辞書にある`);
+    }
+  }
+  assert.ok(used > 0, "用語注が少なくとも1つ使われている");
 }
 
 console.log("smoke-platform.mjs: all assertions passed");

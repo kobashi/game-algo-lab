@@ -5705,3 +5705,41 @@ details.ds-block:not([open]) > .ds-title::before {
   color: var(--text-muted);
   margin: 0.25rem 0 0;
 }
+
+/* ===== 用語注（js/platform/glossary.js） ===== */
+.term {
+  text-decoration: underline dotted;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 0.2em;
+  cursor: help;
+  border-radius: 3px;
+}
+
+.term:hover,
+.term:focus-visible {
+  background: var(--accent-soft);
+  outline: none;
+}
+
+.term-tip {
+  position: absolute;
+  z-index: 1000;
+  max-width: min(22rem, calc(100vw - 16px));
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: normal;
+  line-height: 1.6;
+  text-align: left;
+  pointer-events: none;
+}
+
+.term-tip-head {
+  display: block;
+  margin-bottom: 0.15rem;
+  color: var(--accent-hover);
+}

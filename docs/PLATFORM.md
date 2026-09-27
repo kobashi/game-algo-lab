@@ -74,6 +74,7 @@ docs/templates/            # SPEC / スキャフォールド
 | `mountTopicShellFromDataset` | 共通ヘッダー + フッター + 成熟度バッジ + 演習節 + コース内ナビ（該当トピックのみ） |
 | `TOPIC_MATURITY` / `createMaturityBadge` | 修正状況（成熟度）表示 |
 | `mountExercises` | 演習節（課題カード）の描画。`js/courses/intro-exercises.js` のカードを HTML に変換して挿入 |
+| `mountGlossary` / `termHtml` / `GLOSSARY` | 用語注。`<span class="term" data-term="キー">語</span>` にホバー・フォーカス・タップで説明を出す。説明文は `js/platform/glossary-terms.js`（全トピック共通の辞書）。1 ブロックにつき最初の 1 回だけ印を付ける |
 | `mountCourseNav` / `computeCourseNav` | `?course=intro` のときだけ出すコース内ナビ（n/14・前後）。段の順序は `js/courses/intro-stages.js` |
 | `drawScorePair` | 探索マスの大/小ラベル |
 | `escapeHtml` / `escapeXml` | エスケープ |
@@ -288,6 +289,7 @@ python3 scripts/smoke-platform.py
 
 | 日付 | 内容 |
 |------|------|
+| 2026-09-27 | `glossary.js`・`glossary-terms.js`（用語注）を新設。最初は game-loop に適用。smoke で `data-term` のキーが辞書にあるか検査 |
 | 2026-09-26 | `course-nav.js`（`?course=intro` のときのコース内ナビ）・`exercises.js`（課題カードの描画）を新設。`js/courses/intro-stages.js`・`js/courses/intro-exercises.js` を追加し、入門コースを14本に（alpha-beta を追加）。`buildShareUrl` が `course` パラメータを維持するように変更（入門コース改善計画 P0-1・P0-3） |
 | 2026-09-04 | `observe.js`（軌跡点・速度スケール・円と矩形のすり抜け検出） |
 | 2026-09-03 | URL パラメータ: `kind: "text"`（カンマ区切りなど）。`minimax` の葉評価・深さ制限、`fsm` のデモ脚本 |

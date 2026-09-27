@@ -17,9 +17,10 @@
       </p>
       <h1>ゲームループ</h1>
       <p class="page-header-lead">
-        ゲームは <strong>入力 → 更新 → 描画</strong> を繰り返す。
-        実経過時間 dt をそのまま使う<strong>可変 timestep</strong>と、
-        固定 Δt を溜めて回す<strong>固定 timestep</strong>を、跳ねるボールで比較する。
+        ゲームは <strong><span class="term" data-term="input">入力</span> → <span class="term" data-term="update">更新</span> → <span class="term" data-term="render">描画</span></strong> を繰り返す（<span class="term" data-term="game-loop">ゲームループ</span>）。
+        実経過時間 <span class="term" data-term="dt">dt</span> をそのまま使う<strong><span class="term" data-term="variable-timestep">可変 timestep</span></strong>と、
+        固定 Δt を溜めて回す<strong><span class="term" data-term="fixed-timestep">固定 timestep</span></strong>を、跳ねるボールで比較する。
+        用語に点線が付いているところは、マウスを乗せる（スマホではタップする）と説明が出る。
         横軸は時間（3 秒分）。ボールは左から右へ進みながら跳ね、通った跡が残る。
         設定: <code>js/maps/game-loop-config.js</code>。
       </p>
@@ -29,12 +30,12 @@
       <summary>このデモで学ぶこと</summary>
       <div class="lesson-box lesson-box-nested">
         <ul>
-          <li><strong>可変</strong>: 毎フレーム <code>update(realDt)</code> 1 回。実装は簡単だが、重いフレームで物理が不安定になりやすい</li>
-          <li><strong>固定</strong>: アキュムレータに時間を溜め、<code>FIXED_DT</code> ずつ複数回更新。シミュレーションが安定しやすい</li>
-          <li><strong>人工遅延</strong>を上げると「重いフレーム」を再現。描画の間隔が伸びてカクカクになるが、進む速さは同じ。固定側は 1 フレーム内の更新回数が増える</li>
+          <li><strong>可変</strong>: 毎<span class="term" data-term="frame">フレーム</span> <code>update(<span class="term" data-term="real-dt">realDt</span>)</code> 1 回。実装は簡単だが、<span class="term" data-term="heavy-frame">重いフレーム</span>で物理が不安定になりやすい</li>
+          <li><strong>固定</strong>: <span class="term" data-term="accumulator">アキュムレータ</span>に時間を溜め、<code><span class="term" data-term="fixed-dt">FIXED_DT</span></code> ずつ複数回更新。<span class="term" data-term="simulation">シミュレーション</span>が安定しやすい</li>
+          <li><strong><span class="term" data-term="artificial-lag">人工遅延</span></strong>を上げると「重いフレーム」を再現。描画の間隔が伸びてカクカクになるが、進む速さは同じ。固定側は 1 フレーム内の更新回数が増える</li>
           <li><strong>見方</strong>: 小さい点 = 更新 1 回、輪 = 描画した位置、点線 = 正解（同じ物理を 1 ms 刻みで計算）。固定は重いフレームでも輪と輪の間に点が並び、点線に沿う。可変は輪 1 つにつき点 1 つで、点線から外れる</li>
           <li>動きが速くて追えないときは<strong>再生速度</strong>を下げるか、<strong>1フレーム</strong>で送る</li>
-          <li><strong>MAX_STEPS</strong> で 1 フレーム内の更新上限を切ると、スパイラル・オブ・デスを防げる（代わりにシミュレーションが遅れうる）</li>
+          <li><strong><span class="term" data-term="max-steps">MAX_STEPS</span></strong> で 1 フレーム内の更新上限を切ると、<span class="term" data-term="spiral-of-death">スパイラル・オブ・デス</span>を防げる（代わりにシミュレーションが遅れうる）</li>
         </ul>
       </div>
     </details>
@@ -43,7 +44,7 @@
       <section class="gl-main" aria-labelledby="sim-heading">
         <h2 id="sim-heading" class="gl-block-title">シミュレーション</h2>
         <canvas id="gl-canvas" class="gl-canvas" width="640" height="360" aria-label="跳ねるボール"></canvas>
-        <p id="gl-fps" class="gl-fps">FPS: —</p>
+        <p class="gl-fps"><span class="term" data-term="fps">FPS</span>: <span id="gl-fps">—</span></p>
         <div class="legend gl-legend">
           <span><i class="swatch" style="background:#5b9fd4"></i>可変</span>
           <span><i class="swatch" style="background:#6bcb8f"></i>固定</span>
@@ -77,11 +78,11 @@
             </select>
           </div>
           <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="fixed-dt">FIXED_DT <span id="fixed-dt-val">16.7</span> ms</label>
+            <label class="controls-label" for="fixed-dt"><span class="term" data-term="fixed-dt">FIXED_DT</span> <span id="fixed-dt-val">16.7</span> ms</label>
             <input type="range" id="fixed-dt" class="ttt-range" min="8.3" max="33.3" value="16.7" step="0.1" />
           </div>
           <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="lag">人工遅延 <span id="lag-val">0</span> ms</label>
+            <label class="controls-label" for="lag"><span class="term" data-term="artificial-lag">人工遅延</span> <span id="lag-val">0</span> ms</label>
             <input type="range" id="lag" class="ttt-range" min="0" max="80" value="0" step="5" />
           </div>
           <div class="controls-group-paint gl-params">
@@ -92,7 +93,7 @@
             </select>
           </div>
           <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="max-steps">MAX_STEPS <span id="max-steps-val">8</span></label>
+            <label class="controls-label" for="max-steps"><span class="term" data-term="max-steps">MAX_STEPS</span> <span id="max-steps-val">8</span></label>
             <input type="range" id="max-steps" class="ttt-range" min="1" max="16" value="8" step="1" />
           </div>
           <div class="controls-group-paint gl-params">
@@ -100,7 +101,7 @@
             <input type="range" id="speed" class="ttt-range" min="0.1" max="1" value="1" step="0.1" />
           </div>
           <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="balls">負荷ボール数 <span id="balls-val">1</span></label>
+            <label class="controls-label" for="balls"><span class="term" data-term="load">負荷</span>ボール数 <span id="balls-val">1</span></label>
             <input type="range" id="balls" class="ttt-range" min="1" max="200" value="1" step="1" />
           </div>
           <div class="controls-group-paint gl-params">
@@ -121,7 +122,7 @@
     <section class="ds-section" aria-labelledby="log-heading">
       <h2 id="log-heading">フレームログ</h2>
       <p class="section-lead section-lead-compact">
-        直近フレームの realDt・update 回数・accumulator 残り。固定モードで遅延を上げると updates が増えます。
+        直近フレームの <span class="term" data-term="real-dt">realDt</span>・<span class="term" data-term="update">update</span> 回数・<span class="term" data-term="accumulator">accumulator</span> 残り。固定モードで遅延を上げると updates が増えます。
       </p>
       <div id="frame-log" class="gl-frame-log" role="log"></div>
     </section>

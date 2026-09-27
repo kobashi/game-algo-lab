@@ -70,6 +70,8 @@ export {
   mountCourseNav,
 } from "./course-nav.js";
 export { exerciseSectionHtml, mountExercises } from "./exercises.js";
+export { mountGlossary, termHtml } from "./glossary.js";
+export { GLOSSARY } from "./glossary-terms.js";
 export {
   MATURITY_ORDER,
   MATURITY_LABEL,
