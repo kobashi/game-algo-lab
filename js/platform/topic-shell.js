@@ -211,12 +211,14 @@ export const FOOTER_RELATED = {
   ],
   "and-or": [{ href: "minimax.html", label: "次: Min-Max" }],
   minimax: [
-    { href: "and-or.html", label: "AND-OR（前段）" },
-    { href: "alpha-beta.html", label: "次: α-β" },
+    { href: "rng-seed.html?course=intro", label: "乱数とシード（前段）" },
+    { href: "alpha-beta.html?course=intro", label: "次: α-β" },
+    { href: "and-or.html", label: "AND-OR" },
   ],
   "alpha-beta": [
-    { href: "minimax.html", label: "Min-Max（前段）" },
-    { href: "monte-carlo.html", label: "次: モンテカルロ" },
+    { href: "minimax.html?course=intro", label: "Min-Max（前段）" },
+    { href: "tic-tac-toe.html?course=intro", label: "次: 三目並べ" },
+    { href: "monte-carlo.html", label: "モンテカルロ" },
   ],
   "monte-carlo": [
     { href: "minimax.html", label: "Min-Max" },
@@ -228,8 +230,10 @@ export const FOOTER_RELATED = {
     { href: "tic-tac-toe.html", label: "次: 三目並べ" },
   ],
   "tic-tac-toe": [
-    { href: "multi-armed-bandit.html", label: "バンディット（前段）" },
-    { href: "mcts.html", label: "次: MCTS" },
+    { href: "alpha-beta.html?course=intro", label: "α-β（前段）" },
+    { href: "../courses/intro.html", label: "入門コース一覧" },
+    { href: "multi-armed-bandit.html", label: "バンディット" },
+    { href: "mcts.html", label: "MCTS" },
   ],
   mcts: [
     { href: "tic-tac-toe.html", label: "三目並べ（題材・完全解）" },
@@ -252,8 +256,10 @@ export const FOOTER_RELATED = {
     { href: "circle-collision.html", label: "次: 円衝突" },
   ],
   "circle-collision": [
-    { href: "collision.html", label: "AABB（前段）" },
-    { href: "collision-response.html", label: "次: 衝突応答" },
+    { href: "accel-gravity.html?course=intro", label: "加速度と重力（前段）" },
+    { href: "coyote-time.html?course=intro", label: "次: コヨーテタイム" },
+    { href: "collision.html", label: "AABB" },
+    { href: "collision-response.html", label: "衝突応答" },
   ],
   "momentum-1d": [
     { href: "friction-bounce.html", label: "摩擦・反発（前段）" },
@@ -300,8 +306,10 @@ export const FOOTER_RELATED = {
     { href: "uniform-grid.html", label: "グリッド" },
   ],
   "sfx-events": [
-    { href: "event-system.html", label: "イベント（前段）" },
-    { href: "sfx-voice-limit.html", label: "次: 同時発音制限" },
+    { href: "gfx-ui-canvas.html?course=intro", label: "UI（前段）" },
+    { href: "fsm.html?course=intro", label: "次: ステートマシン" },
+    { href: "event-system.html", label: "イベントシステム" },
+    { href: "sfx-voice-limit.html", label: "同時発音制限" },
   ],
   "sfx-voice-limit": [
     { href: "sfx-events.html", label: "SFX イベント（前段）" },
@@ -352,8 +360,11 @@ export const FOOTER_RELATED = {
     { href: "gfx-camera.html", label: "次: カメラ" },
   ],
   "gfx-camera": [
-    { href: "gfx-sprite-2d.html", label: "スプライト（前段）" },
-    { href: "gfx-animation-vfx.html", label: "次: VFX" },
+    { href: "coyote-time.html?course=intro", label: "コヨーテタイム（前段）" },
+    { href: "gfx-ui-canvas.html?course=intro", label: "次: UI" },
+    { href: "coordinates.html", label: "座標" },
+    { href: "gfx-sprite-2d.html", label: "2D スプライト" },
+    { href: "gfx-animation-vfx.html", label: "VFX" },
   ],
   "gfx-animation-vfx": [
     { href: "gfx-sprite-2d.html", label: "スプライト（前段）" },
@@ -372,7 +383,9 @@ export const FOOTER_RELATED = {
     { href: "profiling-loop.html", label: "計測" },
   ],
   "gfx-ui-canvas": [
-    { href: "coordinates.html", label: "座標（前段）" },
+    { href: "gfx-camera.html?course=intro", label: "カメラ（前段）" },
+    { href: "sfx-events.html?course=intro", label: "次: 効果音" },
+    { href: "coordinates.html", label: "座標" },
     { href: "gfx-sprite-2d.html", label: "スプライト" },
   ],
   "gfx-mesh-uv": [
@@ -535,8 +548,9 @@ export const FOOTER_RELATED = {
     { href: "fsm.html", label: "FSM" },
   ],
   fsm: [
-    { href: "event-system.html", label: "次: イベントシステム" },
-    { href: "collision.html", label: "AABB" },
+    { href: "sfx-events.html?course=intro", label: "効果音（前段）" },
+    { href: "rng-seed.html?course=intro", label: "次: 乱数とシード" },
+    { href: "event-system.html", label: "イベントシステム" },
   ],
   "event-system": [
     { href: "fsm.html", label: "FSM（前段）" },
@@ -558,35 +572,43 @@ export const FOOTER_RELATED = {
     { href: "velocity-motion.html", label: "次: 速度による移動" },
   ],
   "velocity-motion": [
-    { href: "grid-pseudo-physics.html", label: "グリッド擬似物理（前段）" },
-    { href: "accel-decel.html", label: "次: 加減速" },
+    { href: "input-basics.html?course=intro", label: "入力の基礎（前段）" },
+    { href: "accel-gravity.html?course=intro", label: "次: 加速度と重力" },
+    { href: "grid-pseudo-physics.html", label: "グリッド擬似物理" },
+    { href: "accel-decel.html", label: "加減速" },
   ],
   "accel-decel": [
     { href: "velocity-motion.html", label: "速度（前段）" },
     { href: "accel-gravity.html", label: "次: 加速度と重力" },
   ],
   "accel-gravity": [
-    { href: "accel-decel.html", label: "加減速（前段）" },
-    { href: "friction-bounce.html", label: "次: 摩擦・反発" },
+    { href: "velocity-motion.html?course=intro", label: "速度による移動（前段）" },
+    { href: "circle-collision.html?course=intro", label: "次: 円の当たり判定" },
+    { href: "accel-decel.html", label: "加減速" },
+    { href: "friction-bounce.html", label: "摩擦・反発" },
   ],
   "friction-bounce": [
     { href: "accel-gravity.html", label: "重力（前段）" },
     { href: "collision.html", label: "次: AABB 衝突" },
   ],
   "game-loop": [
-    { href: "time-management.html", label: "次: 時間管理" },
+    { href: "input-basics.html?course=intro", label: "次: 入力の基礎" },
+    { href: "time-management.html", label: "時間管理" },
   ],
   "time-management": [
     { href: "game-loop.html", label: "ゲームループ（前段）" },
     { href: "input-basics.html", label: "次: 入力の基礎" },
   ],
   "input-basics": [
-    { href: "time-management.html", label: "時間管理（前段）" },
-    { href: "coyote-time.html", label: "次: コヨーテタイム" },
+    { href: "game-loop.html?course=intro", label: "ゲームループ（前段）" },
+    { href: "velocity-motion.html?course=intro", label: "次: 速度による移動" },
+    { href: "time-management.html", label: "時間管理" },
   ],
   "coyote-time": [
-    { href: "input-basics.html", label: "入力の基礎（前段）" },
-    { href: "input-buffer.html", label: "次: 入力バッファ" },
+    { href: "circle-collision.html?course=intro", label: "円の当たり判定（前段）" },
+    { href: "gfx-camera.html?course=intro", label: "次: カメラ" },
+    { href: "input-basics.html?course=intro", label: "入力の基礎" },
+    { href: "input-buffer.html", label: "入力バッファ" },
   ],
   "input-buffer": [
     { href: "coyote-time.html", label: "コヨーテ（対比）" },
@@ -599,8 +621,10 @@ export const FOOTER_RELATED = {
     { href: "rng-seed.html", label: "次: 乱数とシード" },
   ],
   "rng-seed": [
-    { href: "coordinates.html", label: "座標変換（前段）" },
-    { href: "maze-gen.html", label: "次: 迷路生成" },
+    { href: "fsm.html?course=intro", label: "ステートマシン（前段）" },
+    { href: "minimax.html?course=intro", label: "次: Min-Max" },
+    { href: "coordinates.html", label: "座標変換" },
+    { href: "maze-gen.html", label: "迷路生成" },
   ],
   "maze-gen": [
     { href: "rng-seed.html", label: "乱数とシード（前段）" },

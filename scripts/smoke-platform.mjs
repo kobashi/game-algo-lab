@@ -565,6 +565,45 @@ function mockControl(kind, value, extra = {}) {
   // 1本目は前なし、14本目は次なし（前後関係）
   assert.equal(order[0], "game-loop");
   assert.equal(order[order.length - 1], "tic-tac-toe");
+
+  // フッターとリードの「前段 / 次」は、この順番で一本につながっている
+  const fileOf = (id) => byId.get(id).href.split("/").pop();
+  for (let i = 0; i < order.length; i++) {
+    const id = order[i];
+    const links = FOOTER_RELATED[id] ?? [];
+    const prev = links.filter((l) => l.label.includes("（前段）"));
+    const next = links.filter((l) => l.label.startsWith("次:"));
+    if (i === 0) {
+      assert.equal(prev.length, 0, `${id} has no course predecessor`);
+    } else {
+      assert.equal(prev.length, 1, `${id} has one 前段`);
+      assert.equal(prev[0].href, `${fileOf(order[i - 1])}?course=intro`);
+    }
+    if (i === order.length - 1) {
+      assert.equal(next.length, 0, `${id} has no course successor`);
+    } else {
+      assert.equal(next.length, 1, `${id} has one 次`);
+      assert.equal(next[0].href, `${fileOf(order[i + 1])}?course=intro`);
+    }
+    const html = fs.readFileSync(
+      fileURLToPath(new URL(`../algorithms/${fileOf(id)}`, import.meta.url)),
+      "utf8"
+    );
+    const lead = html.match(/<p class="page-header-lead">([\s\S]*?)<\/p>/);
+    assert.ok(lead, `${id} has a lead`);
+    if (i > 0) {
+      assert.ok(
+        lead[1].includes(`href="${fileOf(order[i - 1])}?course=intro"`),
+        `${id} lead links to the previous course topic`
+      );
+    }
+    if (i < order.length - 1) {
+      assert.ok(
+        lead[1].includes(`href="${fileOf(order[i + 1])}?course=intro"`),
+        `${id} lead links to the next course topic`
+      );
+    }
+  }
 }
 
 // --- 入門コース: intro-exercises.js が STAGES の全 id を網羅し、各カードに
