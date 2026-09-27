@@ -5,9 +5,9 @@
 | id | `sfx-events` |
 | カテゴリ | audio |
 | 状態 | implemented |
-| 成熟度 | revised（修正5・更新 2026-09-27） |
+| 成熟度 | revised（修正6・更新 2026-09-28） |
 | 作成日 | 2026-07-28 |
-| 最終改訂 | 2026-09-27: 用語注を追加（js/platform/glossary.js）。2026-09-26: 「このデモで学ぶこと」節を追加。「前段: イベントシステム」を補足扱いに。入門コースの課題カード追加（[入門コース改善計画](../../reviews/2026-09-26-intro-course-improvement-plan.md)） |
+| 最終改訂 | 2026-09-28: 提出課題と提出票を追加（js/platform/submission.js）。2026-09-27: 用語注を追加（js/platform/glossary.js）。2026-09-26: 「このデモで学ぶこと」節を追加。「前段: イベントシステム」を補足扱いに。入門コースの課題カード追加（[入門コース改善計画](../../reviews/2026-09-26-intro-course-improvement-plan.md)） |
 | 依存 | event-system |
 
 ## 学習目標

@@ -7,7 +7,7 @@
 | 状態 | implemented |
 | 成熟度 | revised |
 | 作成日 | 2026-07-17 |
-| 最終改訂 | 2026-09-27: 用語注を追加（js/platform/glossary.js）。2026-09-03 |
+| 最終改訂 | 2026-09-28: 提出課題と提出票を追加（js/platform/submission.js）。2026-09-27: 用語注を追加（js/platform/glossary.js）。2026-09-03 |
 | 依存 | — |
 
 ---

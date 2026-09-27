@@ -366,6 +366,18 @@ function ensureFallbackInput(button, url) {
  *   defaults?: Record<string, string>,
  * }} options
  */
+/** このページで mountShareLink に渡された spec と既定値（提出票が今の設定の URL を作るのに使う） */
+let registeredShare = /** @type {{ spec: ParamSpec, defaults: Record<string, string> } | null} */ (null);
+
+/**
+ * 「この設定のURLをコピー」と同じ URL を返す。mountShareLink を呼んでいないページでは null。
+ * @returns {string | null}
+ */
+export function currentShareUrl() {
+  if (!registeredShare) return null;
+  return buildShareUrl(registeredShare.spec, currentHref(), registeredShare.defaults);
+}
+
 export function mountShareLink(options) {
   const spec = options.spec;
   const button = options.button ?? null;
@@ -376,6 +388,7 @@ export function mountShareLink(options) {
         : null)
   );
   const defaults = options.defaults ?? captureParamDefaults(spec);
+  registeredShare = { spec, defaults };
   if (!button) return;
 
   button.addEventListener("click", async () => {

@@ -29,6 +29,8 @@ import { STAGES, getCourseOrder } from "../js/courses/intro-stages.js";
 import { EXERCISES } from "../js/courses/intro-exercises.js";
 import { INTRO_QUIZ } from "../js/courses/intro-quiz.js";
 import { GLOSSARY } from "../js/platform/glossary-terms.js";
+import { ASSIGNMENTS } from "../js/courses/intro-assignments.js";
+import { buildSubmissionText, checkSubmissionUrl, parseDigit } from "../js/platform/submission.js";
 
 // --- rng ---
 const r1 = mulberry32(42);
@@ -777,6 +779,53 @@ function mockControl(kind, value, extra = {}) {
     }
   }
   assert.ok(used > 0, "用語注が少なくとも1つ使われている");
+}
+
+// --- 入門コース: 提出課題（提出課題の計画書 §4・§9・§10.2）と提出票の純関数 ---
+{
+  const order = getCourseOrder();
+  assert.deepEqual(Object.keys(ASSIGNMENTS).sort(), [...order].sort(), "ASSIGNMENTS covers exactly the 14 course topics");
+  const numbers = order.map((id) => ASSIGNMENTS[id].number);
+  assert.deepEqual(numbers, order.map((_, i) => i + 1), "課題番号はコースの順に 1〜14");
+  const specKeys = (id) => {
+    const text = fs.readFileSync(fileURLToPath(new URL(`../js/${id}.js`, import.meta.url)), "utf8");
+    return new Set([...text.matchAll(/(?:^|[\s{,])([A-Za-z][\w-]*)\s*:\s*\{\s*el:/g)].map((m) => m[1]));
+  };
+  for (const id of order) {
+    const a = ASSIGNMENTS[id];
+    assert.ok(a.title && a.question && a.observe && a.discuss.length, `assignment ${id}: 題・問い・観察・考察の候補がある`);
+    assert.ok(a.urls.length >= 2, `assignment ${id}: URL は 2 本以上`);
+    assert.equal(new Set(a.urls.map((u) => u.id)).size, a.urls.length, `assignment ${id}: URL の id が重複しない`);
+    if (a.personal) {
+      for (let d = 0; d <= 9; d++) assert.ok(typeof a.personal(d) === "string" && a.personal(d).length > 0, `assignment ${id}: d=${d} の個人条件`);
+    }
+    // 課題文中の `key=value` と URL の例のキーが、そのトピックの URL spec にある
+    const keys = specKeys(id);
+    const text = [a.example, a.condition, ...a.urls.map((u) => u.label), a.personal ? a.personal(0) : ""].join("\n");
+    for (const m of text.matchAll(/`([^`]+)`/g)) {
+      const code = m[1];
+      const q = code.includes("?") ? code.slice(code.indexOf("?") + 1) : code.includes("=") ? code : "";
+      if (!q) continue;
+      for (const key of new URLSearchParams(q).keys()) {
+        assert.ok(keys.has(key), `assignment ${id}: "${key}"（\`${code}\`）が js/${id}.js の URL spec にある`);
+      }
+    }
+  }
+  assert.equal(parseDigit("7"), 7);
+  assert.equal(parseDigit("12"), null);
+  assert.equal(parseDigit(""), null);
+  const base = "https://kobashi.github.io/game-algo-lab/algorithms/";
+  assert.equal(checkSubmissionUrl(`${base}game-loop.html?mode=fixed&lag=25&maxsteps=3&course=intro`, "game-loop").warn, null);
+  assert.ok(checkSubmissionUrl(`${base}minimax.html?leaves=1`, "game-loop").ok === false, "別トピックの URL は不可");
+  assert.ok(/既定/.test(checkSubmissionUrl(`${base}game-loop.html?course=intro`, "game-loop").warn || ""), "パラメータ無しは注意");
+  const text = buildSubmissionText(ASSIGNMENTS["game-loop"], "game-loop", {
+    d: 3,
+    urls: { A: `${base}game-loop.html?lag=25&maxsteps=3`, B: "" },
+    observe: "o",
+    discuss: "c",
+  });
+  assert.ok(text.includes("提出課題 1: game-loop") && text.includes("d=3 → 人工遅延 L = 25 ms") && text.includes("URL B（") && text.includes("（未入力）"), "提出用テキストの形");
+  assert.ok(!/`|\*\*/.test(text), "提出用テキストに記号が残らない");
 }
 
 console.log("smoke-platform.mjs: all assertions passed");

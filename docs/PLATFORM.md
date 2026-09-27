@@ -74,6 +74,7 @@ docs/templates/            # SPEC / スキャフォールド
 | `mountTopicShellFromDataset` | 共通ヘッダー + フッター + 成熟度バッジ + 演習節 + コース内ナビ（該当トピックのみ） |
 | `TOPIC_MATURITY` / `createMaturityBadge` | 修正状況（成熟度）表示 |
 | `mountExercises` | 演習節（課題カード）の描画。`js/courses/intro-exercises.js` のカードを HTML に変換して挿入 |
+| `mountSubmission` / `currentShareUrl` | 提出票。`?course=intro` のとき演習節の下に提出課題（正本 `js/courses/intro-assignments.js`）と提出票を出す。「今の設定を入れる」は `currentShareUrl()`（そのページの `mountShareLink` に渡した spec から「この設定のURLをコピー」と同じ URL を作る）。下書きは localStorage だけ |
 | `mountGlossary` / `termHtml` / `GLOSSARY` | 用語注。`<span class="term" data-term="キー">語</span>` にホバー・フォーカス・タップで説明を出す。説明文は `js/platform/glossary-terms.js`（全トピック共通の辞書）。1 ブロックにつき最初の 1 回だけ印を付ける |
 | `mountCourseNav` / `computeCourseNav` | `?course=intro` のときだけ出すコース内ナビ（n/14・前後）。段の順序は `js/courses/intro-stages.js` |
 | `drawScorePair` | 探索マスの大/小ラベル |
@@ -291,6 +292,7 @@ python3 scripts/smoke-platform.py
 |------|------|
 | 2026-09-27 | 入門14本のヘッダーは `NAV_GROUPS.intro`（その14本だけ、コース順）。フッターとリードも前後の入門トピックだけ。コース外へのリンクは置かない |
 | 2026-09-27 | 入門14本のリードとフッターの「前段 / 次」を、`intro-stages.js` の順に繋ぎ直した（`?course=intro`）。コース外の隣は「前段 / 次」から外し、関連として残す |
+| 2026-09-28 | `submission.js`（提出票）と `js/courses/intro-assignments.js`（提出課題 14 本）を新設。`url-params.js` に `currentShareUrl` |
 | 2026-09-27 | 用語注を入門コースの 14 本すべてに展開（辞書 95 語）。各ページのリード・学ぶこと・操作まわりで、最初の 1 回だけ印を付ける |
 | 2026-09-27 | `glossary.js`・`glossary-terms.js`（用語注）を新設。最初は game-loop に適用。smoke で `data-term` のキーが辞書にあるか検査 |
 | 2026-09-26 | `course-nav.js`（`?course=intro` のときのコース内ナビ）・`exercises.js`（課題カードの描画）を新設。`js/courses/intro-stages.js`・`js/courses/intro-exercises.js` を追加し、入門コースを14本に（alpha-beta を追加）。`buildShareUrl` が `course` パラメータを維持するように変更（入門コース改善計画 P0-1・P0-3） |

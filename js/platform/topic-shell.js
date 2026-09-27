@@ -14,6 +14,8 @@ import { mountCourseNav } from "./course-nav.js";
 import { mountExercises } from "./exercises.js";
 import { TOPICS } from "../main.js";
 import { EXERCISES } from "../courses/intro-exercises.js";
+import { ASSIGNMENTS } from "../courses/intro-assignments.js";
+import { mountSubmission } from "./submission.js";
 
 /**
  * @typedef {{ id: string, label: string, href: string }} NavLink
@@ -772,6 +774,9 @@ export function mountTopicShellFromDataset() {
 
   // 入門コースの課題カード（該当トピックのみ・14ページ共通で自動描画）
   mountExercises(EXERCISES[active], active);
+
+  // `?course=intro` のときだけ、演習の下に提出課題と提出票（入門コース 提出課題の計画書 §2.1）
+  mountSubmission(ASSIGNMENTS[active], active);
 
   // `?course=intro` で開かれたときだけ、コース内ナビ（n/14・前後）を表示
   mountCourseNav(TOPICS, active);

@@ -22,6 +22,7 @@ export {
   applyParamsToControls,
   buildShareUrl,
   mountShareLink,
+  currentShareUrl,
   captureParamDefaults,
   formatRejectedMessage,
 } from "./url-params.js";
@@ -71,6 +72,7 @@ export {
 } from "./course-nav.js";
 export { exerciseSectionHtml, mountExercises } from "./exercises.js";
 export { mountGlossary, termHtml } from "./glossary.js";
+export { mountSubmission, buildSubmissionText, checkSubmissionUrl, parseDigit } from "./submission.js";
 export { GLOSSARY } from "./glossary-terms.js";
 export {
   MATURITY_ORDER,
