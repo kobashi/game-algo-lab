@@ -77,6 +77,12 @@ for (const a of INPUT_ACTIONS) {
 }
 
 let playerX = 0.5;
+/** 今のジャンプの残り時間（秒）。0 なら接地。down のときだけ始め、押し続けでは始めない */
+let jumpLeft = 0;
+/** 空中にもう一度 down が来たとき、着地後に続ける回数 */
+let jumpQueued = 0;
+const JUMP_SEC = 0.48;
+const JUMP_PX = 96;
 let jumpCount = 0;
 let fireCount = 0;
 let chargeCount = 0;
@@ -183,8 +189,12 @@ function pollActions(dtSec) {
     }
   }
 
-  // Jump: down only
-  if (actions.jump.down) jumpCount += 1;
+  // Jump: down only。押し続け（held）では始めない
+  if (actions.jump.down) {
+    jumpCount += 1;
+    if (jumpLeft <= 0) jumpLeft = JUMP_SEC;
+    else jumpQueued += 1;
+  }
 
   // Fire: held every frame (bad example)
   if (actions.fire.held) fireCount += 1;
@@ -220,6 +230,7 @@ function tick(realDtMs, bandMs = realDtMs) {
   simMs += bandMs;
   frameIndex += 1;
   pollActions(dt);
+  advanceJump(dt);
   draw();
   drawTimeline();
   renderPanels();
@@ -253,6 +264,25 @@ function tick(realDtMs, bandMs = realDtMs) {
   }
 }
 
+/** 経過割合 0→1 の放物線。端は 0、真ん中が JUMP_PX */
+function jumpLiftPx() {
+  if (jumpLeft <= 0) return 0;
+  const u = 1 - jumpLeft / JUMP_SEC;
+  return 4 * JUMP_PX * u * (1 - u);
+}
+
+/**
+ * @param {number} dtSec
+ */
+function advanceJump(dtSec) {
+  if (jumpLeft <= 0) return;
+  jumpLeft = Math.max(0, jumpLeft - dtSec);
+  if (jumpLeft === 0 && jumpQueued > 0) {
+    jumpQueued -= 1;
+    jumpLeft = JUMP_SEC;
+  }
+}
+
 function draw() {
   if (!ctx || !canvas) return;
   const W = canvas.width;
@@ -265,21 +295,22 @@ function draw() {
   ctx.fillStyle = "#3d4f66";
   ctx.fillRect(0, gy, W, H - gy);
 
-  // player
+  // player。足は地面。Jump の down で一度だけ放物線を描く
   const px = playerX * W;
-  const py = gy - 28;
+  const lift = jumpLiftPx();
+  const bodyW = 28;
+  const bodyH = 40;
+  const footY = gy - lift;
+  const shadowW = 16 * (1 - 0.4 * (lift / JUMP_PX));
+  ctx.fillStyle = "rgba(0,0,0,0.35)";
+  ctx.beginPath();
+  ctx.ellipse(px, gy + 4, Math.max(6, shadowW), 4, 0, 0, Math.PI * 2);
+  ctx.fill();
+  const py = footY - bodyH + 28;
   ctx.fillStyle = "#6bcb8f";
-  ctx.fillRect(px - 14, py - 28, 28, 40);
+  ctx.fillRect(px - bodyW / 2, footY - bodyH, bodyW, bodyH);
   ctx.strokeStyle = "#9ee0b8";
-  ctx.strokeRect(px - 14, py - 28, 28, 40);
-
-  // jump arc indicator
-  if (actions.jump.held) {
-    ctx.strokeStyle = "rgba(91,159,212,0.6)";
-    ctx.beginPath();
-    ctx.arc(px, py - 40, 18, Math.PI, 0);
-    ctx.stroke();
-  }
+  ctx.strokeRect(px - bodyW / 2, footY - bodyH, bodyW, bodyH);
 
   // charge bar
   const thr = readLongMs() / 1000;
@@ -460,6 +491,8 @@ function resetAll() {
   }
   rawDown.clear();
   playerX = 0.5;
+  jumpLeft = 0;
+  jumpQueued = 0;
   jumpCount = 0;
   fireCount = 0;
   chargeCount = 0;

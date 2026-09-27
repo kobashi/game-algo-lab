@@ -9,7 +9,7 @@
 | 状態 | implemented |
 | **成熟度** | `revised` |
 | 作成日 | 2026-07-22 |
-| 最終改訂 | 2026-09-27: 用語注を追加（js/platform/glossary.js）。2026-09-26: 帯グラフの時刻を、再生中の実経過と1ステップ分だけで進めるようにした（1歩の上限は再生速度に応じた間隔の2倍）。入門コースの課題カード追加（[入門コース改善計画](../../reviews/2026-09-26-intro-course-improvement-plan.md)） |
+| 最終改訂 | 2026-09-27: Jump の down で箱が 0.48 秒の放物線を 1 回描く（押し続けでは着地後に跳ねない。空中の追加 down は着地後に 1 回ずつ続ける）。2026-09-27: 用語注を追加（js/platform/glossary.js）。2026-09-26: 帯グラフの時刻を、再生中の実経過と1ステップ分だけで進めるようにした（1歩の上限は再生速度に応じた間隔の2倍）。入門コースの課題カード追加（[入門コース改善計画](../../reviews/2026-09-26-intro-course-improvement-plan.md)） |
 | 依存 | `game-loop`（毎フレーム更新の前提） |
 | 正本 | §4 基礎実行モデル / HCI への入口 |
 
@@ -44,7 +44,7 @@ longPress = down? false : (held && holdTime >= threshold && !longFired)
 ```
 
 デモ: 仮想アクション Jump / Fire / Move。  
-- Jump: **down** のみで +1  
+- Jump: **down** のみで +1。箱はそのとき一度だけ跳ね、held のあいだは着地したまま  
 - Fire: **held** で毎フレーム連射（対比）  
 - Charge: **holdTime ≥ 閾値** で 1 回チャージ完了  
 
