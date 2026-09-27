@@ -251,7 +251,9 @@ function loop(ts) {
   const scale = readSpeedScale(speedEl);
   if (!lastTs) lastTs = ts;
   const elapsed = (ts - lastTs) / 1000;
-  const interval = 1 / 60 / scale;
+  // 1 歩の間隔は dt そのもの（÷ 再生速度）。dt を大きくすると 1 歩が粗くなるだけで、進む速さは変わらない
+  // （以前は dt に関係なく 1 秒 60 歩だったので、dt=200 ms ではボールが 12 倍速になり、すり抜けが一瞬で終わっていた）
+  const interval = readDtSec() / scale;
   if (elapsed < interval) {
     rafId = requestAnimationFrame(loop);
     return;

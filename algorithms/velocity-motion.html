@@ -24,6 +24,7 @@
           <li>位置は速度×時間だけ進む（加速度なし）</li>
           <li>黄色矢印 = 速度ベクトル</li>
           <li>壁バウンスは速度の符号を反転するだけの簡易処理</li>
+          <li><strong>dt</strong> を大きくすると、1 歩の間隔も同じだけ伸びる。進む速さは変わらず、1 歩が粗く（カクカクに）なる。1 歩が障害物より大きいと、重ならないまま通り抜ける</li>
         </ul>
       </div>
     </details>
@@ -51,7 +52,7 @@
         </div>
         <div class="controls-group-paint gl-params">
           <label class="controls-label" for="dt">1ステップ dt <span id="dt-val">16.7</span> ms</label>
-          <input type="range" id="dt" class="ttt-range" min="5" max="200" value="16.7" step="0.5" />
+          <input type="range" id="dt" class="ttt-range" min="5" max="200" value="16.7" step="0.1" />
         </div>
         <div class="controls-group-paint gl-params">
           <label class="ttt-check"><input type="checkbox" id="bounce" checked /> 壁でバウンス</label>

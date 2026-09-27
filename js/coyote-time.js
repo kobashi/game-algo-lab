@@ -9,6 +9,8 @@ import {
   mountTopicShellFromDataset,
   applyParamsToControls,
   mountShareLink,
+  readSpeedScale,
+  bindSpeedScaleControl,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -24,6 +26,8 @@ const coyoteMsEl = /** @type {HTMLInputElement} */ (
   document.getElementById("coyote-ms")
 );
 const coyoteMsVal = document.getElementById("coyote-ms-val");
+const speedEl = /** @type {HTMLInputElement} */ (document.getElementById("speed"));
+const speedVal = document.getElementById("speed-val");
 const statsEl = document.getElementById("ct-stats");
 const btnPlay = document.getElementById("btn-play");
 const btnReset = document.getElementById("btn-reset");
@@ -32,8 +36,9 @@ const setStatus = createStatus(document.getElementById("status"));
 
 /** @type {Set<string>} */
 const keys = new Set();
-let px = 80;
-let py = C.groundY - C.playerH;
+const START = { x: C.startX, y: C.platforms[C.startPlatform].y - C.playerH };
+let px = START.x;
+let py = START.y;
 let vx = 0;
 let vy = 0;
 let grounded = true;
@@ -46,6 +51,12 @@ let running = false;
 let rafId = null;
 let lastTs = 0;
 let jumpEdge = false;
+/** 1 歩の刻み（固定）。再生速度は歩く間隔だけを変えるので、スロー再生でも猶予の長さ（ms）は同じ */
+const STEP_SEC = 1 / 60;
+/** 直近に足場を離れた位置（崖から出た瞬間） */
+let leavePoint = /** @type {{ x: number, y: number } | null} */ (null);
+/** ジャンプを押した位置と結果（接地 / 猶予 / 失敗）。直近 12 回 */
+let jumpMarks = /** @type {{ x: number, y: number, kind: "ground" | "coyote" | "fail" }[]} */ ([]);
 
 function readCoyoteSec() {
   // 0 は 0 のまま扱う（`Number(v) || 既定` だと猶予 0ms が既定の
@@ -88,6 +99,7 @@ function tryJump() {
   const use = !!coyoteOnEl?.checked;
   const ok = grounded || (use && coyoteLeft > 0);
   if (!ok) {
+    markJump("fail");
     jumpFailCount += 1;
     setStatus("ジャンプ失敗（接地でもコヨーテでもない）");
     return;
@@ -97,6 +109,7 @@ function tryJump() {
   vy = C.jumpVy;
   grounded = false;
   coyoteLeft = 0;
+  markJump(viaCoyote ? "coyote" : "ground");
   if (viaCoyote) {
     jumpCoyoteCount += 1;
     setStatus("コヨーテ猶予でジャンプ成功");
@@ -106,7 +119,14 @@ function tryJump() {
   }
 }
 
+/** @param {"ground" | "coyote" | "fail"} kind */
+function markJump(kind) {
+  jumpMarks.push({ x: px + C.playerW / 2, y: py + C.playerH, kind });
+  if (jumpMarks.length > 12) jumpMarks.shift();
+}
+
 function step(dt) {
+  const wasGrounded = grounded;
   // horizontal
   vx = 0;
   if (keys.has("ArrowLeft") || keys.has("KeyA")) vx -= C.moveSpeed;
@@ -121,6 +141,10 @@ function step(dt) {
   px += vx * dt;
   py += vy * dt;
   resolvePlatforms();
+  if (wasGrounded && !grounded && vy >= 0) {
+    // ジャンプではなく、歩いて足場から出た瞬間
+    leavePoint = { x: px + C.playerW / 2, y: py + C.playerH };
+  }
 
   if (grounded) coyoteLeft = readCoyoteSec();
   else coyoteLeft = Math.max(0, coyoteLeft - dt);
@@ -142,9 +166,49 @@ function draw() {
     ctx.fillRect(px - 6, py - 6, C.playerW + 12, C.playerH + 12);
   }
 
+  // 猶予の帯: 足場の端から、猶予のあいだに歩いて進める距離（移動速度 × 猶予）。ここまでならジャンプが間に合う
+  const reach = coyoteOnEl?.checked ? C.moveSpeed * readCoyoteSec() : 0;
+  if (reach > 0) {
+    ctx.fillStyle = "rgba(242, 204, 143, 0.28)";
+    for (const p of C.platforms) {
+      // プレイヤーは体の半分が出るまで接地しているので、帯は端から半身ぶん外側から始まる（印はプレイヤーの中心）
+      if (p.x > 0) ctx.fillRect(p.x - C.playerW / 2 - reach, p.y, reach, p.h);
+      if (p.x + p.w < W) ctx.fillRect(p.x + p.w + C.playerW / 2, p.y, reach, p.h);
+    }
+  }
+
   ctx.fillStyle = "#3d4f66";
   for (const p of C.platforms) {
     ctx.fillRect(p.x, p.y, p.w, p.h);
+  }
+
+  // 足場を離れた位置（縦の点線）とジャンプを押した位置
+  if (leavePoint) {
+    ctx.save();
+    ctx.strokeStyle = "rgba(220, 226, 235, 0.55)";
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    ctx.moveTo(leavePoint.x, leavePoint.y - 36);
+    ctx.lineTo(leavePoint.x, leavePoint.y + 16);
+    ctx.stroke();
+    ctx.restore();
+  }
+  for (const m of jumpMarks) {
+    if (m.kind === "fail") {
+      ctx.strokeStyle = "#e07a7a";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(m.x - 4, m.y - 4);
+      ctx.lineTo(m.x + 4, m.y + 4);
+      ctx.moveTo(m.x + 4, m.y - 4);
+      ctx.lineTo(m.x - 4, m.y + 4);
+      ctx.stroke();
+    } else {
+      ctx.fillStyle = m.kind === "coyote" ? "#f2cc8f" : "#6bcb8f";
+      ctx.beginPath();
+      ctx.arc(m.x, m.y, 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 
   ctx.fillStyle = grounded ? "#6bcb8f" : "#5b9fd4";
@@ -164,7 +228,22 @@ function draw() {
     12,
     40
   );
-  ctx.fillText("←→ 移動 · Space ジャンプ", 12, H - 12);
+  ctx.fillText("←→ 移動 · Space ジャンプ · R 足場に戻る", 12, H - 12);
+  // 凡例（右下）: 印と同じ色で書く
+  const legend = [
+    ["● 接地", "#6bcb8f"],
+    ["● 猶予で成功", "#f2cc8f"],
+    ["× 失敗", "#e07a7a"],
+    ["┆ 足場を離れた位置", "#9aabbf"],
+  ];
+  let lx = W - 12;
+  for (let i = legend.length - 1; i >= 0; i--) {
+    const [text, color] = legend[i];
+    lx -= ctx.measureText(text).width;
+    ctx.fillStyle = color;
+    ctx.fillText(text, lx, H - 12);
+    lx -= 12;
+  }
 }
 
 function renderStats() {
@@ -179,13 +258,21 @@ function renderStats() {
     </table>`;
 }
 
+let stepAcc = 0;
 function loop(ts) {
   if (!running) return;
   if (!lastTs) lastTs = ts;
-  let dt = (ts - lastTs) / 1000;
+  const wall = Math.min(0.1, (ts - lastTs) / 1000);
   lastTs = ts;
-  if (dt > 0.05) dt = 0.05;
-  step(dt);
+  // 実時間 × 再生速度を溜め、1/60 秒たまるごとに 1 歩。スローにしても 1 歩の中身は同じ
+  stepAcc += wall * readSpeedScale(speedEl);
+  let n = 0;
+  while (stepAcc >= STEP_SEC && n < 4) {
+    step(STEP_SEC);
+    stepAcc -= STEP_SEC;
+    n += 1;
+  }
+  if (n >= 4) stepAcc = 0;
   rafId = requestAnimationFrame(loop);
 }
 
@@ -196,10 +283,24 @@ function stop() {
   if (btnPlay) btnPlay.textContent = "再生";
 }
 
+/** 足場の上に戻る。統計とジャンプの印は残す（何回も崖から落ちて試すため） */
+function backToStart() {
+  px = START.x;
+  py = START.y;
+  vx = 0;
+  vy = 0;
+  grounded = true;
+  coyoteLeft = readCoyoteSec();
+  leavePoint = null;
+  draw();
+  renderStats();
+  setStatus("足場に戻った（R）— 統計はそのまま");
+}
+
 function reset() {
   stop();
-  px = 80;
-  py = C.groundY - C.playerH;
+  px = START.x;
+  py = START.y;
   vx = 0;
   vy = 0;
   grounded = true;
@@ -208,9 +309,12 @@ function reset() {
   jumpCoyoteCount = 0;
   jumpFailCount = 0;
   jumpEdge = false;
+  leavePoint = null;
+  jumpMarks = [];
+  stepAcc = 0;
   draw();
   renderStats();
-  setStatus("リセット — 崖から落ちながら Space を試す");
+  setStatus("リセット — 足場の端から歩いて落ち、落ちながら Space を試す。R で足場に戻る");
 }
 
 window.addEventListener("keydown", (e) => {
@@ -218,6 +322,7 @@ window.addEventListener("keydown", (e) => {
     e.preventDefault();
   }
   if (!keys.has(e.code) && e.code === "Space") jumpEdge = true;
+  if (!keys.has(e.code) && e.code === "KeyR") backToStart();
   keys.add(e.code);
 });
 window.addEventListener("keyup", (e) => {
@@ -247,9 +352,12 @@ loadTextSample(
   "// CoyoteTimeExample.cs"
 );
 
+bindSpeedScaleControl(speedEl, speedVal);
+coyoteMsEl?.addEventListener("input", () => draw());
 const urlSpec = {
   coyote: { el: coyoteOnEl, kind: "checkbox" },
   ms: { el: coyoteMsEl, kind: "range" },
+  speed: { el: speedEl, kind: "range" },
 };
 mountShareLink({
   spec: urlSpec,
