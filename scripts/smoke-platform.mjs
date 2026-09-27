@@ -30,6 +30,7 @@ import { EXERCISES } from "../js/courses/intro-exercises.js";
 import { INTRO_QUIZ } from "../js/courses/intro-quiz.js";
 import { GLOSSARY } from "../js/platform/glossary-terms.js";
 import { ASSIGNMENTS } from "../js/courses/intro-assignments.js";
+import { GUIDES } from "../js/courses/intro-guides.js";
 import { buildSubmissionText, checkSubmissionUrl, parseDigit } from "../js/platform/submission.js";
 
 // --- rng ---
@@ -764,6 +765,7 @@ function mockControl(kind, value, extra = {}) {
   }
   const files = [
     ...fs.readdirSync(`${root}/algorithms`).map((f) => `${root}/algorithms/${f}`),
+    ...fs.readdirSync(`${root}/courses`).map((f) => `${root}/courses/${f}`),
     ...fs.readdirSync(`${root}/js`).filter((f) => f.endsWith(".js")).map((f) => `${root}/js/${f}`),
   ].filter((f) => /\.(html|js)$/.test(f));
   let used = 0;
@@ -826,6 +828,37 @@ function mockControl(kind, value, extra = {}) {
   });
   assert.ok(text.includes("提出課題 1: game-loop") && text.includes("d=3 → 人工遅延 L = 65 ms") && text.includes("URL B（") && text.includes("（未入力）"), "提出用テキストの形");
   assert.ok(!/`|\*\*/.test(text), "提出用テキストに記号が残らない");
+}
+
+// --- 入門コースの詳説ページ（courses/guide-*.html）: ファイルがあり、リンク先があり、デモ URL のキーが spec にある ---
+{
+  const root = fileURLToPath(new URL("..", import.meta.url));
+  const specKeys = (id) => {
+    const text = fs.readFileSync(`${root}/js/${id}.js`, "utf8");
+    return new Set([...text.matchAll(/(?:^|[\s{,])([A-Za-z][\w-]*)\s*:\s*\{\s*el:/g)].map((m) => m[1]));
+  };
+  const order = getCourseOrder();
+  for (const [id, g] of Object.entries(GUIDES)) {
+    assert.ok(order.includes(id), `guide ${id}: 入門コースのトピック`);
+    const file = `${root}/${g.href}`;
+    assert.ok(fs.existsSync(file), `guide ${id}: ${g.href} がある`);
+    const html = fs.readFileSync(file, "utf8");
+    assert.ok(html.includes(`../algorithms/${id}.html`), `guide ${id}: デモへのリンクがある`);
+    for (const m of html.matchAll(/href="([^"#]+)(#[^"]*)?"/g)) {
+      const href = m[1].replace(/&amp;/g, "&");
+      if (/^(https?:|mailto:)/.test(href)) continue;
+      const [path, query] = href.split("?");
+      assert.ok(fs.existsSync(`${root}/courses/${path}`), `guide ${id}: リンク先 ${path} がある`);
+      const demo = path.match(/^\.\.\/algorithms\/([\w-]+)\.html$/);
+      if (demo && query) {
+        const keys = specKeys(demo[1]);
+        for (const k of new URLSearchParams(query).keys()) {
+          if (k === "course") continue;
+          assert.ok(keys.has(k), `guide ${id}: デモ URL のキー "${k}" が js/${demo[1]}.js の URL spec にある`);
+        }
+      }
+    }
+  }
 }
 
 console.log("smoke-platform.mjs: all assertions passed");
