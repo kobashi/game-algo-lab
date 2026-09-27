@@ -5,6 +5,8 @@
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.20.0
 
+**2026-09-27 入門14本のリンク（Grok）**: ヘッダーは 1 ループから 14 三目までの順だけ。フッターとリードの前段・次もその隣だけ。コース外（時間管理、AABB、座標、イベントシステム、AND-OR、MCTS など）へのリンクは、この 14 ページから外した。ホームと入門コース一覧は残す。修正回数は増やさない。
+
 **2026-09-27 game-loop の表記（Grok）**: 画面の名前を操作に揃えた。待ちは人工遅延（URL のキーは `lag`）。フレームの経過は realDt。固定の刻みは FIXED_DT。回数は更新。左右同時は並走。状態表示も同じ語。修正回数は増やさない。
 
 **2026-09-27 input-basics のジャンプ（Grok）**: Space の down で緑の箱が一度跳ねる（約 0.48 秒、高さ 96 px）。押し続けても着地後は地面にいる。空中にもう一度押すと、着地のあとにもう一回跳ねる。JumpCount は down の回数のまま。修正 6→7。

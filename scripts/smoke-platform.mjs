@@ -603,7 +603,30 @@ function mockControl(kind, value, extra = {}) {
         `${id} lead links to the next course topic`
       );
     }
+    const courseHrefs = new Set([
+      ...order.map((topicId) => `${fileOf(topicId)}?course=intro`),
+      "../courses/intro.html",
+    ]);
+    for (const link of links) {
+      assert.ok(
+        courseHrefs.has(link.href),
+        `${id} footer stays inside the intro course: ${link.href}`
+      );
+    }
+    assert.ok(html.includes('data-nav="intro"'), `${id} header is the intro nav`);
+    const outside = [...html.matchAll(/href="([^"]+\.html[^"]*)"/g)]
+      .map((m) => m[1])
+      .filter((href) => !href.endsWith("/index.html") && !href.endsWith("intro.html") && href.includes(".html"))
+      .filter((href) => {
+        const file = href.split("/").pop().split("?")[0];
+        return !order.some((topicId) => fileOf(topicId) === file) && file !== "intro.html" && file !== "index.html";
+      });
+    assert.deepEqual(outside, [], `${id} has no link to a topic outside the intro course`);
   }
+  const introIds = NAV_GROUPS.intro
+    .map((link) => link.id)
+    .filter((id) => id !== "home" && id !== "course");
+  assert.deepEqual(introIds, order, "intro header lists the 14 topics in course order");
 }
 
 // --- 入門コース: intro-exercises.js が STAGES の全 id を網羅し、各カードに

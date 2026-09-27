@@ -13,7 +13,7 @@
 | `tree-layout.js` | ゲーム木の水平レイアウト。存在する子節点だけを置く（欠けた `children` id には枝を引かない）。`applySvgSize` は既定で親幅にフィット（横スクロール抑制） |
 | `grid-paint.js` | 経路探索マップの塗り（`bindMapPaint` 等） |
 | `pathfinding-grid.js` | グリッド幾何・下地描画（`drawPathfindingGrid`） |
-| `topic-shell.js` | 共通ヘッダー／フッター（`mountTopicShellFromDataset`）。`NAV_GROUPS.course` は `courses/` 入口用。入門14本のフッター「前段 / 次」は `intro-stages.js` の順（`?course=intro`）。同じ呼び出しで演習節（`exercises.js`）とコース内ナビ（`course-nav.js`）も自動描画する |
+| `topic-shell.js` | 共通ヘッダー／フッター（`mountTopicShellFromDataset`）。`NAV_GROUPS.intro` は入門14本をその順だけ。フッターの前段・次も同じ順で、コース外のトピックへはリンクしない。`NAV_GROUPS.course` は `courses/` 入口用。同じ呼び出しで演習節とコース内ナビも描画する |
 | `maturity.js` | 成熟度・修正回数・更新日（`TOPIC_META`）・バッジ |
 | `url-params.js` | URL クエリで初期コントロールを指定 / 共有 URL コピー（`applyParamsToControls` / `mountShareLink`）。`course` パラメータは共有 URL にそのまま残す |
 | `observe.js` | 軌跡点・再生速度スケール（0.1〜1.0×）・円と矩形の重なり／すり抜け／反射 |
