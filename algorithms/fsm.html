@@ -17,8 +17,8 @@
       </p>
       <h1>ステートマシン</h1>
       <p class="page-header-lead">
-        キャラの行動を<strong>状態</strong>と<strong>イベントによる遷移</strong>で表す。
-        経路探索マップは使わず、状態図・イベント・遷移表で説明します。
+        キャラの行動を<strong><span class="term" data-term="state">状態</span></strong>と<strong><span class="term" data-term="event">イベント</span>による<span class="term" data-term="transition">遷移</span></strong>で表す。
+        経路探索マップは使わず、<span class="term" data-term="state-diagram">状態図</span>・イベント・<span class="term" data-term="transition-table">遷移表</span>で説明します。
         定義は <code>js/maps/fsm-config.js</code>。
       </p>
     </div>
@@ -27,9 +27,9 @@
       <summary>このデモで学ぶこと</summary>
       <div class="lesson-box lesson-box-nested">
         <ul>
-          <li><strong>状態</strong>: 今キャラが何をしているか（Idle / Walk / Attack …）</li>
-          <li><strong>イベント</strong>: 入力やアニメ終了などのきっかけ（Move / Hit …）</li>
-          <li><strong>遷移</strong>: (現在状態, イベント) → 次状態。表に無い組み合わせは無視</li>
+          <li><strong><span class="term" data-term="state">状態</span></strong>: 今キャラが何をしているか（Idle / Walk / Attack …）</li>
+          <li><strong><span class="term" data-term="event">イベント</span></strong>: 入力やアニメ終了などのきっかけ（Move / Hit …）</li>
+          <li><strong><span class="term" data-term="transition">遷移</span></strong>: (現在状態, イベント) → 次状態。表に無い組み合わせは無視</li>
           <li>同じ「Attack」でも Idle からと Dead からでは結果が違う</li>
         </ul>
       </div>
@@ -42,7 +42,7 @@
 
       <div class="fsm-layout">
         <section class="fsm-main-block" aria-labelledby="diagram-heading">
-          <h2 id="diagram-heading" class="fsm-block-title">状態図</h2>
+          <h2 id="diagram-heading" class="fsm-block-title"><span class="term" data-term="state-diagram">状態図</span></h2>
           <div class="fsm-diagram-wrap">
             <svg id="fsm-svg" class="fsm-svg" viewBox="0 0 640 360" role="img" aria-labelledby="fsm-svg-title">
               <title id="fsm-svg-title">ステートマシン状態図</title>
@@ -117,7 +117,7 @@
       </div>
 
       <section class="fsm-table-block" aria-labelledby="table-heading">
-        <h2 id="table-heading" class="fsm-block-title">遷移表</h2>
+        <h2 id="table-heading" class="fsm-block-title"><span class="term" data-term="transition-table">遷移表</span></h2>
         <p class="fsm-table-lead">行 = 現在状態、列 = イベント。空欄は「無視（状態維持）」。</p>
         <div class="fsm-table-scroll">
           <table class="fsm-table" id="trans-table"></table>

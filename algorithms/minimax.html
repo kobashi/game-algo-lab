@@ -17,8 +17,8 @@
       </p>
       <h1>Min-Max 探索</h1>
       <p class="page-header-lead">
-        <strong>MAX</strong>（自分）は評価を最大化、<strong>MIN</strong>（相手）は最小化する。
-        葉の数値を吸い上げて最善手を決める。木は
+        <strong><span class="term" data-term="max-node">MAX</span></strong>（自分）は<span class="term" data-term="eval-value">評価</span>を最大化、<strong><span class="term" data-term="min-node">MIN</span></strong>（相手）は最小化する。
+        <span class="term" data-term="leaf">葉</span>の数値を吸い上げて<span class="term" data-term="best-move">最善手</span>を決める。<span class="term" data-term="game-tree">ゲーム木</span>は
         <code>js/maps/minimax-tree.js</code>。
       </p>
     </div>
@@ -27,12 +27,12 @@
       <summary>このデモで学ぶこと</summary>
       <div class="lesson-box lesson-box-nested">
         <ul>
-          <li><strong>MAX</strong>（青系）: 自分の手番。子の評価の<strong>最大</strong>を取る</li>
-          <li><strong>MIN</strong>（紫系）: 相手の手番。子の評価の<strong>最小</strong>を取る（自分に厳しく）</li>
-          <li><strong>葉</strong>: 終端局面の評価値（大きいほど自分に有利）</li>
-          <li>AND-OR の真偽が「数値の優劣」に拡張された形と捉えられる</li>
-          <li>このデモは<strong>枝刈りなし</strong>。不要な枝を切るのは次の <strong>α-β 法</strong></li>
-          <li>深さ制限で読み切れない局面は<strong>評価関数</strong>で見積もる。0 固定だと局面ごとの差が付かず、手を選べなくなる（「打ち切りの評価」で見比べられる）</li>
+          <li><strong><span class="term" data-term="max-node">MAX</span></strong>（青系）: 自分の手番。子の評価の<strong>最大</strong>を取る</li>
+          <li><strong><span class="term" data-term="min-node">MIN</span></strong>（紫系）: 相手の手番。子の評価の<strong>最小</strong>を取る（自分に厳しく）</li>
+          <li><strong><span class="term" data-term="leaf">葉</span></strong>: 終端局面の<span class="term" data-term="eval-value">評価値</span>（大きいほど自分に有利）</li>
+          <li><span class="term" data-term="and-or">AND-OR</span> の真偽が「数値の優劣」に拡張された形と捉えられる</li>
+          <li>このデモは<strong><span class="term" data-term="pruning">枝刈り</span>なし</strong>。不要な枝を切るのは次の <strong>α-β 法</strong></li>
+          <li><span class="term" data-term="depth-limit">深さ制限</span>で読み切れない局面は<strong><span class="term" data-term="eval-function">評価関数</span></strong>で見積もる。0 固定だと局面ごとの差が付かず、手を選べなくなる（「打ち切りの評価」で見比べられる）</li>
         </ul>
       </div>
     </details>
@@ -85,7 +85,7 @@
             <input type="text" id="mm-leaves" class="mm-leaves-input" value="5,3,7,9,4,2,1,3,6,8,7,4" autocomplete="off" spellcheck="false" />
           </div>
           <div class="controls-group-paint gl-params mm-params">
-            <label class="controls-label" for="mm-depth">深さ制限</label>
+            <label class="controls-label" for="mm-depth"><span class="term" data-term="depth-limit">深さ制限</span></label>
             <select id="mm-depth" class="mm-depth-select">
               <option value="1">1（1手先で打ち切り）</option>
               <option value="2">2（2手先で打ち切り）</option>
@@ -105,7 +105,7 @@
           <div class="controls-group-paint gl-params">
             <label class="ttt-check"><input type="checkbox" id="loop" /> 繰り返し</label>
           </div>
-          <p class="footer-muted">葉は12個。数が合わない入力は却下します。打ち切り節点の評価は「打ち切りの評価」で選んだ方法（既定: 配下の葉の平均）です。葉をクリックで ±1。</p>
+          <p class="footer-muted">葉は12個。数が合わない入力は却下します。打ち切り<span class="term" data-term="node">節点</span>の評価は「打ち切りの評価」で選んだ方法（既定: 配下の葉の平均）です。葉をクリックで ±1。</p>
 
           <div id="status" class="status-log" role="status">準備完了</div>
           <div id="result-compare" class="result-compare" hidden></div>

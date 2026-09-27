@@ -13,7 +13,7 @@
       <p class="breadcrumb"><a href="../index.html">ホーム</a> / 物理・判定 / 加速度と重力</p>
       <h1>加速度と重力</h1>
       <p class="page-header-lead">
-        <strong>v ← v + g·dt</strong> のあと <strong>p ← p + v·dt</strong>。
+        <strong>v ← v + g·<span class="term" data-term="dt">dt</span></strong> のあと <strong>p ← p + v·dt</strong>。
         前段: <a href="velocity-motion.html">速度による移動</a>（加速度なし）。
       </p>
     </div>
@@ -21,9 +21,9 @@
       <summary>このデモで学ぶこと</summary>
       <div class="lesson-box lesson-box-nested">
         <ul>
-          <li>重力は毎フレーム速度に足す加速度</li>
-          <li>軌跡が放物線になる（一定 vx + 下向き g）</li>
-          <li>床バウンスは vy を反転×反発係数</li>
+          <li><span class="term" data-term="gravity">重力</span>は毎<span class="term" data-term="frame">フレーム</span>速度に足す<span class="term" data-term="acceleration">加速度</span></li>
+          <li>軌跡が<span class="term" data-term="parabola">放物線</span>になる（一定 vx + 下向き g）</li>
+          <li>床バウンスは vy を反転×<span class="term" data-term="restitution">反発係数</span></li>
         </ul>
       </div>
     </details>
@@ -42,15 +42,15 @@
           </div>
         </div>
         <div class="controls-group-paint gl-params">
-          <label class="controls-label" for="g">重力 g <span id="g-val">600</span></label>
+          <label class="controls-label" for="g"><span class="term" data-term="gravity">重力 g</span> <span id="g-val">600</span></label>
           <input type="range" id="g" class="ttt-range" min="0" max="1200" value="600" step="20" />
         </div>
         <div class="controls-group-paint gl-params">
-          <label class="controls-label" for="vx">水平 vx <span id="vx-val">120</span></label>
+          <label class="controls-label" for="vx">水平 <span class="term" data-term="velocity-components">vx</span> <span id="vx-val">120</span></label>
           <input type="range" id="vx" class="ttt-range" min="-240" max="240" value="120" step="5" />
         </div>
         <div class="controls-group-paint gl-params">
-          <label class="controls-label" for="restitution">反発 <span id="rest-val">0.75</span></label>
+          <label class="controls-label" for="restitution"><span class="term" data-term="restitution">反発</span> <span id="rest-val">0.75</span></label>
           <input type="range" id="restitution" class="ttt-range" min="0" max="1" value="0.75" step="0.05" />
         </div>
         <div class="controls-group-paint gl-params">

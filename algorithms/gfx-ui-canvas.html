@@ -14,17 +14,17 @@
       <p class="breadcrumb"><a href="../index.html">ホーム</a> / ゲーム CG / UI</p>
       <h1>UI 描画（Canvas・Anchor・Pivot）</h1>
       <p class="page-header-lead">
-        親画面の <strong>Anchor</strong> に貼り、要素の <strong>Pivot</strong> を原点にオフセット。
-        解像度を変えても端に追従する。前段: <a href="coordinates.html">座標</a>。
+        親画面の <strong><span class="term" data-term="anchor">Anchor</span></strong> に貼り、要素の <strong><span class="term" data-term="pivot">Pivot</span></strong> を原点に<span class="term" data-term="offset">オフセット</span>。
+        <span class="term" data-term="resolution">解像度</span>を変えても端に追従する。前段: <a href="coordinates.html">座標</a>。
       </p>
     </div>
     <details class="lesson-details" open>
       <summary>このデモで学ぶこと</summary>
       <div class="lesson-box lesson-box-nested">
         <ul>
-          <li>Anchor = 親の正規化座標（0〜1）</li>
-          <li>Pivot = 自分のどの点を Anchor+Offset に合わせるか</li>
-          <li>解像度変更で絶対 px 固定 UI は破綻しやすい</li>
+          <li><span class="term" data-term="anchor">Anchor</span> = 親の<span class="term" data-term="normalized-coords">正規化座標</span>（0〜1）</li>
+          <li><span class="term" data-term="pivot">Pivot</span> = 自分のどの点を Anchor+<span class="term" data-term="offset">Offset</span> に合わせるか</li>
+          <li><span class="term" data-term="resolution">解像度</span>変更で絶対 px 固定 UI は破綻しやすい</li>
         </ul>
       </div>
     </details>
@@ -35,7 +35,7 @@
         <div id="status" class="status-log" role="status">準備完了</div>
       </section>
       <aside class="gl-side">
-        <label class="controls-label" for="res">仮想解像度</label>
+        <label class="controls-label" for="res">仮想<span class="term" data-term="resolution">解像度</span></label>
         <select id="res" class="bandit-select">
           <option value="640x360">640×360</option>
           <option value="800x450">800×450</option>
@@ -44,7 +44,7 @@
         </select>
         <label class="controls-label" for="vieww">幅（連続） <span id="vieww-val">640</span> px</label>
         <input type="range" id="vieww" class="ttt-range" min="320" max="960" value="640" step="10" />
-        <label class="controls-label" for="anchor">Anchor プリセット</label>
+        <label class="controls-label" for="anchor"><span class="term" data-term="anchor">Anchor</span> プリセット</label>
         <select id="anchor" class="bandit-select">
           <option value="top-left">左上</option>
           <option value="top-right">右上</option>
@@ -52,14 +52,14 @@
           <option value="bottom-right" selected>右下</option>
           <option value="bottom-stretch">下中央</option>
         </select>
-        <label class="controls-label" for="pivot-x">Pivot X <span id="pivot-x-val">0.50</span></label>
+        <label class="controls-label" for="pivot-x"><span class="term" data-term="pivot">Pivot</span> X <span id="pivot-x-val">0.50</span></label>
         <input type="range" id="pivot-x" class="ttt-range" min="0" max="1" value="0.5" step="0.05" />
         <label class="controls-label" for="pivot-y">Pivot Y <span id="pivot-y-val">0.50</span></label>
         <input type="range" id="pivot-y" class="ttt-range" min="0" max="1" value="0.5" step="0.05" />
         <div class="controls-group-paint gl-params url-share-row">
           <button type="button" id="btn-copy-url" class="btn btn-ghost">この設定のURLをコピー</button>
         </div>
-        <p class="footer-muted">ボタンをドラッグして Offset を変更。</p>
+        <p class="footer-muted">ボタンをドラッグして <span class="term" data-term="offset">Offset</span> を変更。</p>
       </aside>
     </div>
     <section class="code-section">

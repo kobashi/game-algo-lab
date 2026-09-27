@@ -289,6 +289,7 @@ python3 scripts/smoke-platform.py
 
 | 日付 | 内容 |
 |------|------|
+| 2026-09-27 | 用語注を入門コースの 14 本すべてに展開（辞書 95 語）。各ページのリード・学ぶこと・操作まわりで、最初の 1 回だけ印を付ける |
 | 2026-09-27 | `glossary.js`・`glossary-terms.js`（用語注）を新設。最初は game-loop に適用。smoke で `data-term` のキーが辞書にあるか検査 |
 | 2026-09-26 | `course-nav.js`（`?course=intro` のときのコース内ナビ）・`exercises.js`（課題カードの描画）を新設。`js/courses/intro-stages.js`・`js/courses/intro-exercises.js` を追加し、入門コースを14本に（alpha-beta を追加）。`buildShareUrl` が `course` パラメータを維持するように変更（入門コース改善計画 P0-1・P0-3） |
 | 2026-09-04 | `observe.js`（軌跡点・速度スケール・円と矩形のすり抜け検出） |

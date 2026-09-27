@@ -14,9 +14,11 @@ import {
   applySvgSize,
   escapeXml,
   mountTopicShellFromDataset,
+  mountGlossary,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
+mountGlossary();
 
 const svg = document.getElementById("tree-svg");
 const dsPanels = document.getElementById("ds-panels");

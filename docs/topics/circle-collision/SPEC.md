@@ -8,7 +8,7 @@
 | 状態 | implemented |
 | 成熟度 | revised |
 | 作成日 | 2026-07-27 |
-| 最終改訂 | 2026-09-03 |
+| 最終改訂 | 2026-09-27: 用語注を追加（js/platform/glossary.js）。2026-09-03 |
 | 依存 | collision (AABB) |
 
 ## 学習目標

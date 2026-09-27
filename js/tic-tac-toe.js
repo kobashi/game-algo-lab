@@ -26,6 +26,7 @@ import {
   mountTopicShellFromDataset,
   applyParamsToControls,
   mountShareLink,
+  mountGlossary,
 } from "./platform/index.js";
 
 const IS_BROWSER = typeof document !== "undefined";
@@ -624,6 +625,7 @@ if (IS_BROWSER) {
 
 function runBrowserUi() {
   mountTopicShellFromDataset();
+  mountGlossary();
 
   const boardEl = document.getElementById("ttt-board");
   const dsPanels = document.getElementById("ds-panels");

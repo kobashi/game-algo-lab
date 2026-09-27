@@ -6,8 +6,8 @@
 | カテゴリ | physics |
 | UI 型 | explain |
 | 状態 | implemented |
-| 成熟度 | revised（修正4・更新 2026-09-26） |
-| 最終改訂 | 2026-09-26: 再生も1ステップと同じ固定刻みにし、再生速度で軌道・最高点が変わらないようにした。入門コースの課題カード追加（[入門コース改善計画](../../reviews/2026-09-26-intro-course-improvement-plan.md)） |
+| 成熟度 | revised（修正5・更新 2026-09-27） |
+| 最終改訂 | 2026-09-27: 用語注を追加（js/platform/glossary.js）。2026-09-26: 再生も1ステップと同じ固定刻みにし、再生速度で軌道・最高点が変わらないようにした。入門コースの課題カード追加（[入門コース改善計画](../../reviews/2026-09-26-intro-course-improvement-plan.md)） |
 | 作成日 | 2026-07-27 |
 | 依存 | velocity-motion, game-loop |
 

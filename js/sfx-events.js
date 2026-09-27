@@ -8,9 +8,11 @@ import {
   mountTopicShellFromDataset,
   applyParamsToControls,
   mountShareLink,
+  mountGlossary,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
+mountGlossary();
 
 const logEl = document.getElementById("sfx-log");
 const muteEl = /** @type {HTMLInputElement} */ (
