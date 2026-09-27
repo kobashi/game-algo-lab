@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="コヨーテタイムのくわしい解説（中学生向け）。接地とジャンプ、崖から出た瞬間の問題、猶予タイマー、猶予の帯を図で説明する。" />
+  <title>コヨーテタイムのくわしい解説 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="course" data-active="intro"></header>
+
+  <main class="container topic-main guide-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="intro.html">入門コース</a> / くわしい解説 6</p>
+      <h1>コヨーテタイム — くわしい解説</h1>
+      <p class="page-header-lead">
+        崖のぎりぎりでジャンプを押したのに、跳べずに落ちてしまった――アクションゲームでよくある「不公平な失敗」です。
+        このページでは、この失敗を減らす「コヨーテタイム」という仕組みを、図を使って説明します。
+        <a href="guide-circle-collision.html">円同士・円と AABB の解説</a>で出てきた考え方も少し使います。
+        <a href="../algorithms/coyote-time.html?course=intro">コヨーテタイムのデモ</a>と合わせて読んでください。
+      </p>
+      <nav class="guide-toc" aria-label="目次">
+        <strong>目次</strong>
+        <ol>
+          <li><a href="#s1">接地とジャンプ（おさらい）</a></li>
+          <li><a href="#s2">崖から出た瞬間の問題</a></li>
+          <li><a href="#s3">コヨーテタイム：短い猶予を足す</a></li>
+          <li><a href="#s4">猶予の帯（歩いて進める距離）</a></li>
+          <li><a href="#s5">デモの印を読む</a></li>
+          <li><a href="#s6">まとめと、やってみよう</a></li>
+        </ol>
+      </nav>
+    </div>
+
+    <!-- 1 -->
+    <section class="guide-section" id="s1" aria-labelledby="s1-h">
+      <h2 id="s1-h">1. 接地とジャンプ（おさらい）</h2>
+      <p>
+        多くのアクションゲームは、キャラが床や足場に触れているかどうかを、毎フレーム調べています。
+        この「触れている」状態を<span class="term" data-term="grounded">接地</span>といいます。
+        そして、ふつうは接地しているときだけ、ジャンプを受け付けます。接地していないのにジャンプできると、
+        空中で何度も跳べてしまうからです。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 200" role="img" aria-label="左は足場の上に立つキャラ（接地・ジャンプ可）。右は足場の外の空中にいるキャラ（接地していない・ふつうはジャンプ不可）">
+          <rect x="60" y="140" width="180" height="16" fill="#3d4f66" />
+          <rect x="139" y="112" width="22" height="28" fill="#6bcb8f" />
+          <text x="150" y="176" font-size="14" fill="#6bcb8f" text-anchor="middle">接地（grounded = true）</text>
+          <text x="150" y="194" font-size="14" fill="#9aabbf" text-anchor="middle">→ ジャンプできる</text>
+
+          <rect x="420" y="140" width="140" height="16" fill="#3d4f66" />
+          <rect x="559" y="90" width="22" height="28" fill="#5b9fd4" />
+          <line x1="500" y1="118" x2="559" y2="104" stroke="#5a6a80" stroke-dasharray="3 3" />
+          <text x="530" y="176" font-size="14" fill="#5b9fd4" text-anchor="middle">空中（grounded = false）</text>
+          <text x="530" y="194" font-size="14" fill="#9aabbf" text-anchor="middle">→ ふつうはジャンプできない</text>
+        </svg>
+        <figcaption>図 1　接地しているキャラ（左、緑）はジャンプできます。足場から離れて空中にいるキャラ（右、青）は、ふつうの判定ではジャンプできません。</figcaption>
+      </figure>
+    </section>
+
+    <!-- 2 -->
+    <section class="guide-section" id="s2" aria-labelledby="s2-h">
+      <h2 id="s2-h">2. 崖から出た瞬間の問題</h2>
+      <p>
+        足場の端から歩いて出ると、次のフレームでいきなり grounded が false に変わります。途中の状態はありません。
+        そのため、プレイヤーが崖のぎりぎりでジャンプを押しても、押した瞬間がほんの 1〜2 フレーム遅かっただけで、
+        「もう空中だから」と判定され、ジャンプに失敗してしまいます。
+      </p>
+      <p>
+        画面で見ると、キャラはまだ崖のすぐそばにいて、人の目には「間に合いそう」に見えます。それでも失敗するので、
+        プレイヤーは「操作をミスした」のではなく「ゲームが不公平だ」と感じやすくなります。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 220" role="img" aria-label="8フレームのタイムライン。最初の4フレームは接地（緑）、崖の端を過ぎた5フレーム目からは空中（青）。5フレーム目でジャンプを押しても、接地判定だけでは失敗する">
+          <text x="70" y="24" font-size="14" fill="#6bcb8f" text-anchor="start">緑 = 接地（grounded = true）</text>
+          <text x="70" y="44" font-size="14" fill="#5b9fd4" text-anchor="start">青 = 空中（grounded = false）</text>
+          <rect x="60" y="150" width="235" height="14" fill="#3d4f66" />
+          <line x1="315" y1="100" x2="315" y2="170" stroke="#9aabbf" stroke-dasharray="3 3" />
+          <text x="315" y="90" font-size="14" fill="#9aabbf" text-anchor="middle">崖の端</text>
+          <line x1="70" y1="140" x2="560" y2="140" stroke="#5a6a80" />
+          <g stroke-width="2">
+            <circle cx="70" cy="140" r="8" fill="#6bcb8f" stroke="#6bcb8f" />
+            <circle cx="140" cy="140" r="8" fill="#6bcb8f" stroke="#6bcb8f" />
+            <circle cx="210" cy="140" r="8" fill="#6bcb8f" stroke="#6bcb8f" />
+            <circle cx="280" cy="140" r="8" fill="#6bcb8f" stroke="#6bcb8f" />
+            <circle cx="350" cy="140" r="8" fill="#5b9fd4" stroke="#5b9fd4" />
+            <circle cx="420" cy="140" r="8" fill="#5b9fd4" stroke="#5b9fd4" />
+            <circle cx="490" cy="140" r="8" fill="#5b9fd4" stroke="#5b9fd4" />
+            <circle cx="560" cy="140" r="8" fill="#5b9fd4" stroke="#5b9fd4" />
+          </g>
+          <g font-size="14" fill="#9aabbf" text-anchor="middle">
+            <text x="70" y="184">1</text><text x="140" y="184">2</text><text x="210" y="184">3</text><text x="280" y="184">4</text>
+            <text x="350" y="184">5</text><text x="420" y="184">6</text><text x="490" y="184">7</text><text x="560" y="184">8</text>
+          </g>
+          <line x1="350" y1="150" x2="350" y2="182" stroke="#e07a5f" stroke-width="2" />
+          <text x="350" y="210" font-size="14" fill="#e07a5f" text-anchor="middle">ここで Space → 猶予が無ければ失敗</text>
+        </svg>
+        <figcaption>図 2　フレーム 4 まで接地、フレーム 5 で空中に変わります（模式図）。猶予の仕組みが無いと、フレーム 5 で押したジャンプは grounded = false のために失敗します。</figcaption>
+      </figure>
+    </section>
+
+    <!-- 3 -->
+    <section class="guide-section" id="s3" aria-labelledby="s3-h">
+      <h2 id="s3-h">3. コヨーテタイム：短い猶予を足す</h2>
+      <p>
+        この問題を減らす定番のやり方が<span class="term" data-term="coyote-time">コヨーテタイム</span>です。
+        接地しているあいだだけジャンプを許すのではなく、足場を離れてから短い
+        <span class="term" data-term="grace-period">猶予</span>のあいだも、ジャンプを受け付けます。
+      </p>
+      <p>
+        仕組みはタイマー 1 つです。接地しているあいだは、毎フレーム、タイマーを最大値（満タン）にリセットし続けます。
+        足場を離れて接地でなくなった瞬間から、タイマーは毎フレーム少しずつ減っていきます。
+        タイマーが 0 より大きいあいだにジャンプを押せば、接地していなくても成功します。0 になったら、ふつうの判定（接地のみ）に戻ります。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 250" role="img" aria-label="時間のグラフ。接地しているあいだはタイマーが満タンのまま。足場を離れた0msから、タイマーが直線的に減っていき、120msでゼロになる。その後はゼロのまま">
+          <line x1="60" y1="200" x2="600" y2="200" stroke="#5a6a80" />
+          <line x1="60" y1="40" x2="60" y2="200" stroke="#5a6a80" />
+          <text x="54" y="45" font-size="14" fill="#9aabbf" text-anchor="end">満タン</text>
+          <text x="54" y="204" font-size="14" fill="#9aabbf" text-anchor="end">0</text>
+          <line x1="60" y1="40" x2="280" y2="40" stroke="#6bcb8f" stroke-width="3" />
+          <text x="170" y="26" font-size="14" fill="#6bcb8f" text-anchor="middle">接地中：タイマーは常に満タン</text>
+          <line x1="280" y1="40" x2="280" y2="200" stroke="#9aabbf" stroke-dasharray="3 3" />
+          <text x="280" y="222" font-size="14" fill="#9aabbf" text-anchor="middle">0 ms（足場を離れる）</text>
+          <line x1="280" y1="40" x2="520" y2="200" stroke="#f2cc8f" stroke-width="3" />
+          <text x="400" y="90" font-size="14" fill="#f2cc8f" text-anchor="middle">空中：タイマーが減っていく</text>
+          <line x1="520" y1="195" x2="520" y2="205" stroke="#9aabbf" />
+          <text x="520" y="222" font-size="14" fill="#9aabbf" text-anchor="middle">120 ms（デモの初期値）</text>
+          <line x1="520" y1="200" x2="600" y2="200" stroke="#e07a5f" stroke-width="3" />
+          <text x="630" y="242" font-size="14" fill="#e07a5f" text-anchor="end">→ 猶予切れ：ふつうの判定に戻る</text>
+        </svg>
+        <figcaption>図 3　接地中はタイマーが満タンのまま。足場を離れると減り始め、猶予の長さ（デモの初期値は 120 ms）でゼロになります。ゼロになったあとは、接地判定だけに戻ります。</figcaption>
+      </figure>
+      <div class="guide-note">
+        <strong>大事なこと:</strong> タイマーが減るのは、あくまで空中にいるあいだだけです。着地すればすぐに満タンに戻るので、
+        歩いているだけなら何度でも同じ猶予が使えます。
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="guide-section" id="s4" aria-labelledby="s4-h">
+      <h2 id="s4-h">4. 猶予の帯（歩いて進める距離）</h2>
+      <p>
+        猶予のあいだも、キャラは横に動き続けています。だから、猶予の長さは「時間」だけでなく、
+        「足場の端から、あとどれだけ歩いた位置までジャンプが間に合うか」という距離としても考えられます。
+        この距離は「移動速度 × 猶予（秒）」で計算できます。
+      </p>
+      <p>
+        デモの初期設定（移動速度 180 px/秒、猶予 120 ms ＝ 0.12 秒）では、
+        180 × 0.12 ＝ 21.6、およそ 22 px です。この範囲を、デモでは足場の外側に色の帯で表示しています。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 220" role="img" aria-label="足場の右端から外側へ伸びる色の帯。帯の幅は移動速度かける猶予（図は分かりやすいように帯の幅を実際より広く描いてある）">
+          <rect x="140" y="120" width="220" height="16" fill="#3d4f66" />
+          <rect x="360" y="120" width="110" height="16" fill="rgba(242,204,143,0.32)" stroke="#f2cc8f" stroke-width="1.5" />
+          <rect x="330" y="95" width="22" height="28" fill="#6bcb8f" />
+          <line x1="352" y1="109" x2="410" y2="109" stroke="#9aabbf" stroke-width="2" marker-end="url(#ct4-arrow)" />
+          <defs>
+            <marker id="ct4-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#9aabbf" /></marker>
+          </defs>
+          <text x="415" y="80" font-size="15" fill="#f2cc8f" text-anchor="middle">帯の幅 ＝ 移動速度 × 猶予</text>
+          <text x="415" y="165" font-size="14" fill="#9aabbf" text-anchor="middle">180 px/秒 × 0.12 秒 ≈ 22 px</text>
+          <text x="415" y="185" font-size="14" fill="#9aabbf" text-anchor="middle">（図は分かりやすいよう帯を実際より広く描いている）</text>
+        </svg>
+        <figcaption>図 4　足場の端から外側に伸びる猶予の帯（模式図。実際の幅はもっと細い約 22 px）。この帯の中でジャンプを押すと、タイマーがまだ残っているので成功します。</figcaption>
+      </figure>
+    </section>
+
+    <!-- 5 -->
+    <section class="guide-section" id="s5" aria-labelledby="s5-h">
+      <h2 id="s5-h">5. デモの印を読む</h2>
+      <p>
+        デモでは、Space を押した位置に印が付きます。緑の点は接地していてジャンプが成功した位置、
+        黄色の点は猶予のおかげでジャンプが成功した位置、× は失敗した位置です。縦の点線は、キャラが足場を離れた位置を表します。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 240" role="img" aria-label="足場の右に、猶予の帯と3つの印がある図。緑の点は足場の上（接地で成功）、黄色の点は帯の中（猶予で成功）、赤い×は帯の外（失敗）。足場を離れた位置に縦の点線">
+          <rect x="40" y="160" width="200" height="16" fill="#3d4f66" />
+          <rect x="240" y="160" width="80" height="16" fill="rgba(242,204,143,0.28)" />
+          <line x1="240" y1="110" x2="240" y2="182" stroke="rgba(220,226,235,0.6)" stroke-dasharray="3 3" />
+          <text x="240" y="100" font-size="14" fill="#9aabbf" text-anchor="middle">┆ 足場を離れた位置</text>
+
+          <circle cx="190" cy="150" r="6" fill="#6bcb8f" />
+          <text x="190" y="128" font-size="14" fill="#6bcb8f" text-anchor="middle">● 接地でジャンプ成功</text>
+
+          <circle cx="280" cy="150" r="6" fill="#f2cc8f" />
+          <text x="280" y="210" font-size="14" fill="#f2cc8f" text-anchor="middle">● 猶予でジャンプ成功</text>
+
+          <g stroke="#e07a5f" stroke-width="2.5">
+            <line x1="394" y1="144" x2="406" y2="156" />
+            <line x1="406" y1="144" x2="394" y2="156" />
+          </g>
+          <text x="400" y="128" font-size="14" fill="#e07a5f" text-anchor="middle">× 失敗（帯の外）</text>
+        </svg>
+        <figcaption>図 5　デモの印（模式図）。緑＝接地で成功、黄＝猶予で成功、赤い×＝失敗、点線＝足場を離れた位置。</figcaption>
+      </figure>
+      <p>
+        画面左上のバーは、コヨーテタイマーの残り時間（ms）を表示しています。動きが速くて見づらいときは、
+        「再生速度」スライダー（0.1〜1.0×）で見た目の速さを落とせます。1 歩の中身（猶予が減る量など）は変わらないので、
+        猶予の長さそのもの（ms）はスライダーを変えても変わりません。ゆっくり見えるようになるだけです。
+        崖から落ちる練習を何度もしたいときは、<kbd>R</kbd> キーで足場の上に戻れます（統計の数はそのまま残ります）。
+      </p>
+    </section>
+
+    <!-- 6 -->
+    <section class="guide-section" id="s6" aria-labelledby="s6-h">
+      <h2 id="s6-h">6. まとめ</h2>
+      <ul>
+        <li>ふつうの判定は「接地しているときだけジャンプ可」。崖を出た次のフレームでいきなり接地でなくなる</li>
+        <li>コヨーテタイムは、足場を離れてからの短い猶予のあいだも、ジャンプを受け付ける仕組み</li>
+        <li>接地中はタイマーを満タンにリセットし続け、空中では毎フレーム減らす</li>
+        <li>猶予は時間だけでなく、「移動速度 × 猶予」の距離（帯）としても考えられる</li>
+        <li>デモの印（緑・黄・×）と点線で、成功・失敗と足場を離れた位置が分かる。再生速度を下げても猶予の長さ（ms）は変わらない</li>
+      </ul>
+    </section>
+
+    <section class="guide-try" aria-labelledby="try-h">
+      <h2 id="try-h">やってみよう</h2>
+      <ol>
+        <li><a href="../algorithms/coyote-time.html?course=intro">デモ</a>を再生し、足場の端から歩いて落ちながら Space を押して、緑・黄・× の印を見比べる。</li>
+        <li><a href="../algorithms/coyote-time.html?course=intro&amp;coyote=0">猶予を OFF</a>にして再生し、崖を少し過ぎてからのジャンプが必ず失敗することを確かめる。</li>
+        <li><a href="../algorithms/coyote-time.html?course=intro&amp;speed=0.3">再生速度を 0.3× に</a>して、タイマーの減り方と帯の位置をゆっくり観察する。</li>
+      </ol>
+      <div class="guide-check">
+        <p><strong>確かめよう</strong></p>
+        <details>
+          <summary>問 1. 接地しているとき、コヨーテタイマーはどうなっている？</summary>
+          <p>常に満タンにリセットされ続けている。</p>
+        </details>
+        <details>
+          <summary>問 2. 足場を離れた直後、grounded は true と false のどちらになる？ それでもジャンプが成功することがあるのはなぜ？</summary>
+          <p>false になる。コヨーテタイマーがまだ 0 より大きく残っていれば、猶予でジャンプが成功するから。</p>
+        </details>
+        <details>
+          <summary>問 3. 移動速度 200 px/秒、猶予 100 ms のとき、猶予の帯の幅はおよそ何 px？</summary>
+          <p>200 × 0.1 ＝ 20 px。</p>
+        </details>
+      </div>
+    </section>
+
+    <nav class="guide-pager" aria-label="ページ送り">
+      <a class="btn btn-ghost" href="guide-circle-collision.html">← 前: 円同士・円と AABB の解説</a>
+      <a class="btn btn-primary" href="../algorithms/coyote-time.html?course=intro">デモを開く</a>
+      <a class="btn btn-ghost" href="guide-gfx-camera.html">次: カメラの解説 →</a>
+    </nav>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="入門コース · くわしい解説 6 コヨーテタイム"></footer>
+  <script type="module" src="../js/courses/guide.js"></script>
+</body>
+</html>

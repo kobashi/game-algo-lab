@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="カメラのくわしい解説（中学生向け）。ワールド座標とスクリーン座標、デッドゾーン、追従係数を図で説明する。" />
+  <title>カメラのくわしい解説 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="course" data-active="intro"></header>
+
+  <main class="container topic-main guide-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="intro.html">入門コース</a> / くわしい解説 7</p>
+      <h1>カメラ — くわしい解説</h1>
+      <p class="page-header-lead">
+        横スクロールのゲームでは、プレイヤーが動いても、いつも画面のだいたい同じあたりに映っています。
+        これは「カメラ」という仕組みが、プレイヤーを追いかけているからです。
+        このページでは、世界の中の位置と画面の中の位置の関係、そしてカメラの追い方を、図を使って説明します。
+        <a href="../algorithms/gfx-camera.html?course=intro">カメラのデモ</a>と合わせて読んでください。
+      </p>
+      <nav class="guide-toc" aria-label="目次">
+        <strong>目次</strong>
+        <ol>
+          <li><a href="#s1">ワールド座標とスクリーン座標</a></li>
+          <li><a href="#s2">カメラがプレイヤーを追う</a></li>
+          <li><a href="#s3">デッドゾーン</a></li>
+          <li><a href="#s4">追従係数</a></li>
+          <li><a href="#s5">1 歩は 1/60 秒に固定</a></li>
+          <li><a href="#s6">まとめと、やってみよう</a></li>
+        </ol>
+      </nav>
+    </div>
+
+    <!-- 1 -->
+    <section class="guide-section" id="s1" aria-labelledby="s1-h">
+      <h2 id="s1-h">1. ワールド座標とスクリーン座標</h2>
+      <p>
+        ゲームのキャラは、ゲームの世界全体の中でどこにいるかという位置を持っています。これを
+        <span class="term" data-term="world-coords">ワールド座標</span>といいます。
+        <a href="guide-velocity-motion.html#s1">速度による移動の解説</a>で見た画面の座標と考え方は同じですが、
+        こちらは「世界全体」の中での位置という点がちがいます。世界は、画面よりずっと広いことがよくあります。
+      </p>
+      <p>
+        プレイヤーの画面には、その広い世界の一部だけが切り取られて映ります。画面の中での位置を
+        <span class="term" data-term="screen-coords">スクリーン座標</span>といい、画面の左上が (0, 0) です。
+        世界のどこを画面に映すかを決めているのが<span class="term" data-term="camera">カメラ</span>です。
+        2D では、カメラは「画面の左端が、世界のどの x 座標に当たるか」という 1 つの数だけで表せます。
+      </p>
+      <p style="text-align:center;font-size:1.1rem"><strong>スクリーン座標 ＝ ワールド座標 − カメラ</strong></p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 225" role="img" aria-label="ワールド座標460、カメラ200のとき、スクリーン座標は260になる図。画面に映る部分は世界の200から920までの帯">
+          <text x="40" y="14" font-size="14" fill="#9aabbf">ワールド座標（世界全体）</text>
+          <text x="344" y="16" font-size="14" fill="#f2cc8f" text-anchor="middle">画面（カメラ ＝ 200 〜 920）</text>
+          <rect x="40" y="26" width="560" height="34" fill="#141b24" stroke="#3d4f66" stroke-width="2" />
+          <rect x="140" y="26" width="320" height="46" fill="rgba(242,204,143,0.10)" stroke="#f2cc8f" stroke-width="2" stroke-dasharray="5 4" />
+          <circle cx="255.6" cy="49" r="7" fill="#5b9fd4" />
+          <text x="266" y="54" font-size="14" fill="#5b9fd4">P（460）</text>
+          <line x1="140" y1="72" x2="140" y2="130" stroke="#5a6a80" stroke-dasharray="3 3" />
+          <line x1="460" y1="72" x2="460" y2="130" stroke="#5a6a80" stroke-dasharray="3 3" />
+          <line x1="255.6" y1="56" x2="255.6" y2="144" stroke="#5a6a80" stroke-dasharray="3 3" />
+          <text x="148" y="122" font-size="14" fill="#9aabbf">画面（スクリーン座標は左端が 0）</text>
+          <rect x="140" y="130" width="320" height="42" fill="#141b24" stroke="#3d4f66" stroke-width="2" />
+          <text x="140" y="188" font-size="14" fill="#9aabbf">0</text>
+          <text x="460" y="188" font-size="14" fill="#9aabbf" text-anchor="end">720</text>
+          <circle cx="255.6" cy="151" r="7" fill="#5b9fd4" />
+          <text x="266" y="156" font-size="14" fill="#5b9fd4">screen x ＝ 260</text>
+          <text x="320" y="212" font-size="15" fill="#e8eef6" text-anchor="middle">スクリーン x ＝ ワールド x − カメラ ＝ 460 − 200 ＝ 260</text>
+        </svg>
+        <figcaption>図 1　ワールド座標 460 にいるプレイヤーを、カメラ 200 の位置から幅 720 で見ると、画面の中では x ＝ 260 の位置に映ります。カメラの値を変えると、プレイヤーは同じ world 座標のままでも、画面での映る位置（screen 座標）が変わります。</figcaption>
+      </figure>
+    </section>
+
+    <!-- 2 -->
+    <section class="guide-section" id="s2" aria-labelledby="s2-h">
+      <h2 id="s2-h">2. カメラがプレイヤーを追う</h2>
+      <p>
+        カメラの値を、プレイヤーの動きに合わせて動かせば、プレイヤーは画面の中でだいたい同じあたりに映り続けます。
+        プレイヤーが世界を右へ進めば、カメラの値も右へ動かします。デモのカメラは、動ける範囲が世界の広さで決まっていて、
+        世界の右はしまで行っても、それ以上は右へ動きません（このデモでは世界の幅 1200、画面の幅 720 なので、カメラは 0 から 480 までしか動きません）。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 190" role="img" aria-label="模式図。カメラの窓が世界の帯の上を左から右へ動く。t1ではカメラ0、プレイヤーはworld300で画面x300。t2ではカメラ480、プレイヤーはworld900で画面x420">
+          <rect x="40" y="90" width="560" height="24" fill="#141b24" stroke="#3d4f66" stroke-width="2" />
+          <text x="40" y="132" font-size="14" fill="#9aabbf">0</text>
+          <text x="600" y="132" font-size="14" fill="#9aabbf" text-anchor="end">1200（世界の右はし）</text>
+          <rect x="40" y="86" width="336" height="32" fill="none" stroke="#5b9fd4" stroke-width="2" stroke-dasharray="5 4" />
+          <text x="208" y="76" font-size="14" fill="#5b9fd4" text-anchor="middle">t1: カメラ ＝ 0</text>
+          <circle cx="180" cy="102" r="6" fill="#5b9fd4" />
+          <rect x="264" y="86" width="336" height="32" fill="none" stroke="#6bcb8f" stroke-width="2" stroke-dasharray="5 4" />
+          <text x="432" y="76" font-size="14" fill="#6bcb8f" text-anchor="middle">t2: カメラ ＝ 480（上限）</text>
+          <circle cx="460" cy="102" r="6" fill="#6bcb8f" />
+          <path d="M376 100 Q420 60 460 88" fill="none" stroke="#9aabbf" stroke-width="2" marker-end="url(#cam-arrow1)" />
+          <defs>
+            <marker id="cam-arrow1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#9aabbf" /></marker>
+          </defs>
+          <text x="418" y="55" font-size="14" fill="#9aabbf" text-anchor="middle">カメラも右へ動く</text>
+          <text x="40" y="155" font-size="14" fill="#5b9fd4">t1: プレイヤー world ＝ 300、カメラ ＝ 0 → 画面 x ＝ 300</text>
+          <text x="40" y="175" font-size="14" fill="#6bcb8f">t2: プレイヤー world ＝ 900、カメラ ＝ 480 → 画面 x ＝ 420</text>
+        </svg>
+        <figcaption>図 2　（模式図）プレイヤーが世界を右へ進むと、カメラの窓（点線）も右へついていきます。カメラは世界の外を映さないように、0 から 480 の範囲でしか動きません。</figcaption>
+      </figure>
+      <p>
+        ただし、カメラはプレイヤーにぴったりくっついて動くわけではありません。次の 2 つの仕組みで、
+        動き方を調整しています。
+      </p>
+    </section>
+
+    <!-- 3 -->
+    <section class="guide-section" id="s3" aria-labelledby="s3-h">
+      <h2 id="s3-h">3. デッドゾーン</h2>
+      <p>
+        画面の中央付近に、カメラが動かない範囲を決めておきます。これを<span class="term" data-term="dead-zone">デッドゾーン</span>といいます。
+        デモの初期値ではデッドゾーンは 40 px で、画面の中心（x ＝ 360）から左右に 40 px、
+        つまり画面座標の 320〜400 の範囲です。プレイヤーがこの範囲の中にいるあいだは、カメラはまったく動きません。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 195" role="img" aria-label="画面の中に幅80のデッドゾーンの帯。プレイヤーAは帯の中にいてカメラは動かない。プレイヤーCは帯の外にいて、カメラは帯のふちまで戻ろうとする">
+          <rect x="40" y="40" width="560" height="110" fill="#141b24" stroke="#3d4f66" stroke-width="2" />
+          <rect x="288.9" y="40" width="62.2" height="110" fill="rgba(242,204,143,0.12)" stroke="#f2cc8f" stroke-width="2" stroke-dasharray="5 4" />
+          <text x="320" y="30" font-size="14" fill="#f2cc8f" text-anchor="middle">デッドゾーン（画面中心 ± 40 px）</text>
+          <circle cx="304.4" cy="95" r="7" fill="#5b9fd4" />
+          <text x="304.4" y="170" font-size="14" fill="#5b9fd4" text-anchor="middle">A: 中 → 動かない</text>
+          <circle cx="428.9" cy="95" r="7" fill="#5b9fd4" />
+          <text x="428.9" y="170" font-size="14" fill="#5b9fd4" text-anchor="middle">C: 外 → 動き出す</text>
+          <defs>
+            <marker id="cam-arrow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#f2cc8f" /></marker>
+          </defs>
+          <line x1="421" y1="95" x2="359" y2="95" stroke="#f2cc8f" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#cam-arrow2)" />
+          <text x="372" y="130" font-size="14" fill="#f2cc8f">戻る先は帯のふち（中心ではない）</text>
+        </svg>
+        <figcaption>図 3　デッドゾーン（黄色の帯）。プレイヤー A のように帯の中にいるあいだ、カメラは動きません。プレイヤー C のように帯の外に出ると、カメラは動き出しますが、目指す先は画面の中心ではなく、帯のふち（この場合は画面座標 400）です。</figcaption>
+      </figure>
+    </section>
+
+    <!-- 4 -->
+    <section class="guide-section" id="s4" aria-labelledby="s4-h">
+      <h2 id="s4-h">4. 追従係数</h2>
+      <p>
+        カメラが目標の位置に、1 歩でどれだけ近づくかを決めるのが<span class="term" data-term="follow-factor">追従係数</span>です（0〜1 の数）。
+        たとえば追従係数が 0.5 なら、1 歩ごとに、カメラと目標との差が半分になります。1 に近いとすぐ追い付き、
+        小さいとゆっくり時間をかけて追い付きます。
+      </p>
+      <p>
+        プレイヤーが止まったところを想像してみましょう。差が 140 px あるところから、追従係数 0.5 で 1 歩ずつ近づくと、
+        差は次のように減っていきます。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 230" role="img" aria-label="追従係数0.5のときの差の減り方の棒グラフ。0歩で140、1歩で70、2歩で35、3歩で17.5、4歩で8.75、5歩で4.375と、1歩ごとに半分になる">
+          <text x="500" y="35" font-size="15" fill="#f2cc8f" text-anchor="middle">追従係数 0.5</text>
+          <line x1="40" y1="190" x2="560" y2="190" stroke="#5a6a80" stroke-width="2" />
+          <g fill="#5b9fd4">
+            <rect x="60" y="40" width="60" height="150" />
+            <rect x="140" y="115" width="60" height="75" />
+            <rect x="220" y="152.5" width="60" height="37.5" />
+            <rect x="300" y="171.25" width="60" height="18.75" />
+            <rect x="380" y="180.6" width="60" height="9.4" />
+            <rect x="460" y="185.3" width="60" height="4.7" />
+          </g>
+          <g font-size="14" fill="#e8eef6" text-anchor="middle">
+            <text x="90" y="32">140</text><text x="170" y="107">70</text><text x="250" y="145">35</text>
+            <text x="330" y="163">17.5</text><text x="410" y="173">8.75</text><text x="490" y="178">4.375</text>
+          </g>
+          <g font-size="14" fill="#9aabbf" text-anchor="middle">
+            <text x="90" y="207">0 歩</text><text x="170" y="207">1 歩</text><text x="250" y="207">2 歩</text>
+            <text x="330" y="207">3 歩</text><text x="410" y="207">4 歩</text><text x="490" y="207">5 歩</text>
+          </g>
+          <text x="300" y="222" font-size="14" fill="#9aabbf" text-anchor="middle">経過した歩数（カメラと目標との差、px）</text>
+        </svg>
+        <figcaption>図 4　追従係数 0.5 のとき、プレイヤーが止まっていれば、カメラと目標との差は 1 歩ごとに半分になります（140 → 70 → 35 → …）。差はだんだん 0 に近づきますが、ぴったり 0 にはなりません。</figcaption>
+      </figure>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead><tr><th>歩数</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+          <tbody>
+            <tr><td>追従係数 0.5 の差（px）</td><td>140</td><td>70</td><td>35</td><td>17.5</td><td>8.75</td><td>4.4</td></tr>
+            <tr><td>追従係数 0.2 の差（px）</td><td>140</td><td>112</td><td>89.6</td><td>71.7</td><td>57.3</td><td>45.9</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        追従係数が小さい（0.2）ほど、1 歩で詰まる量が少なく、差がゆっくりとしか減りません。
+        デッドゾーンと追従係数は、どちらも「カメラをどれだけプレイヤーにぴったり合わせるか」を調整する仕組みです。
+      </p>
+      <div class="guide-note">
+        <strong>考えてみよう:</strong> ここまでは、プレイヤーが止まった場合を見ました。では、プレイヤーが止まらずに歩き続けたら、
+        カメラとの遅れはどうなっていくでしょうか。デモの「軌跡」を付けて、歩き続けながら確かめてみましょう
+        （提出課題 7 のテーマです）。
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="guide-section" id="s5" aria-labelledby="s5-h">
+      <h2 id="s5-h">5. 1 歩は 1/60 秒に固定</h2>
+      <p>
+        <a href="guide-game-loop.html#s3">ゲームループの解説</a>で見たように、1 回の更新で世界を進める時間を
+        <span class="term" data-term="dt">dt</span> といいます。このデモでは、追従の計算をする 1 歩を、いつも
+        1/60 秒（約 0.0167 秒）に固定しています。プレイヤーの速さは 220 なので、1 歩で進む道のりは
+        220 × 1/60 ≈ 3.67 px です。
+      </p>
+      <p>
+        追従係数は「1 歩でどれだけ差を詰めるか」という割合なので、1 歩の長さが変わると、同じ追従係数でも結果が変わってしまいます。
+        そこでこのデモでは、再生速度を変えても、1 歩の中身（3.67 px 進む、差を詰める割合）はまったく同じにしてあります。
+        変わるのは、その 1 歩を何秒おきに実行するか（壁時計での間隔）だけです。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 230" role="img" aria-label="壁時計で同じ66.7ミリ秒のあいだに、再生速度1.0倍では4歩、0.5倍では2歩しか進まない。しかし1歩の中身はどちらも同じ">
+          <rect x="136" y="40" width="440" height="140" fill="none" stroke="#2d3a4d" stroke-dasharray="4 4" />
+          <text x="320" y="30" font-size="14" fill="#9aabbf" text-anchor="middle">同じ 66.7 ms（壁時計）のあいだ</text>
+          <text x="20" y="84" font-size="14" fill="#5b9fd4">再生速度 1.0×</text>
+          <line x1="136" y1="80" x2="560" y2="80" stroke="#5a6a80" stroke-width="2" />
+          <g fill="#5b9fd4">
+            <circle cx="200" cy="80" r="6" /><circle cx="320" cy="80" r="6" /><circle cx="440" cy="80" r="6" /><circle cx="560" cy="80" r="6" />
+          </g>
+          <g font-size="14" fill="#9aabbf" text-anchor="middle">
+            <text x="200" y="100">1 歩</text><text x="320" y="100">2 歩</text><text x="440" y="100">3 歩</text><text x="560" y="100">4 歩</text>
+          </g>
+          <text x="20" y="174" font-size="14" fill="#6bcb8f">再生速度 0.5×</text>
+          <line x1="136" y1="170" x2="560" y2="170" stroke="#5a6a80" stroke-width="2" />
+          <g fill="#6bcb8f">
+            <circle cx="320" cy="170" r="6" /><circle cx="560" cy="170" r="6" />
+          </g>
+          <g font-size="14" fill="#9aabbf" text-anchor="middle">
+            <text x="320" y="190">1 歩</text><text x="560" y="190">2 歩</text>
+          </g>
+          <text x="320" y="215" font-size="14" fill="#9aabbf" text-anchor="middle">1 歩の中身（3.67 px 移動・追従の計算）はどちらも同じ</text>
+        </svg>
+        <figcaption>図 5　同じ壁時計の 66.7 ms のあいだに、再生速度 1.0× では 4 歩進みますが、0.5× ではその半分の 2 歩しか進みません。ただし、1 歩ごとに起きる計算（進む距離や追従の割合）はどちらも同じです。だから、再生速度を下げても、歩数がそろえば結果は同じになります。</figcaption>
+      </figure>
+    </section>
+
+    <!-- 6 -->
+    <section class="guide-section" id="s6" aria-labelledby="s6-h">
+      <h2 id="s6-h">6. まとめ</h2>
+      <ul>
+        <li>ワールド座標は世界全体での位置、スクリーン座標は画面の中での位置。スクリーン ＝ ワールド − カメラ</li>
+        <li>カメラは、プレイヤーが画面の中にだいたい映り続けるように動く。ただし動ける範囲は世界の広さで決まる</li>
+        <li>デッドゾーンの中では、カメラはまったく動かない。外に出ると、帯のふちを目指して動き出す</li>
+        <li>追従係数は「1 歩で差の何割を詰めるか」。大きいほど早く追い付き、小さいほどゆっくり付いてくる</li>
+        <li>追従の 1 歩は 1/60 秒に固定されているので、再生速度を変えても結果は変わらない</li>
+      </ul>
+    </section>
+
+    <section class="guide-try" aria-labelledby="try-h">
+      <h2 id="try-h">やってみよう</h2>
+      <ol>
+        <li><a href="../algorithms/gfx-camera.html?course=intro&amp;trail=1">既定のまま再生</a>して、←→ でプレイヤーを動かし、ワールド座標・スクリーン座標・カメラ X の数値がどう変わるかを見る。</li>
+        <li><a href="../algorithms/gfx-camera.html?course=intro&amp;dead=120&amp;trail=1">デッドゾーンを 120 px に広げて</a>再生する。プレイヤーがどれだけ動いてもカメラが動かない範囲が広くなることを確かめる。</li>
+        <li><a href="../algorithms/gfx-camera.html?course=intro&amp;follow=0.03&amp;trail=1">追従係数を 0.03 に小さくして</a>再生する。カメラがゆっくりとしか追い付かない様子を見る。</li>
+      </ol>
+      <div class="guide-check">
+        <p><strong>確かめよう</strong></p>
+        <details>
+          <summary>問 1. プレイヤーの world x が 500、カメラが 180 のとき、画面での x 座標は？</summary>
+          <p>500 − 180 ＝ 320。</p>
+        </details>
+        <details>
+          <summary>問 2. プレイヤーがデッドゾーンの中で少しだけ動いた。カメラはどうなる？</summary>
+          <p>動かない。デッドゾーンの中にいるあいだ、カメラは止まったままです。</p>
+        </details>
+        <details>
+          <summary>問 3. 追従係数が 0.5 のとき、差が 40 px あった。プレイヤーが止まっていれば、1 歩後の差は？</summary>
+          <p>40 × 0.5 ＝ 20 px。</p>
+        </details>
+      </div>
+    </section>
+
+    <nav class="guide-pager" aria-label="ページ送り">
+      <a class="btn btn-ghost" href="guide-coyote-time.html">← 前: コヨーテタイムの解説</a>
+      <a class="btn btn-primary" href="../algorithms/gfx-camera.html?course=intro">デモを開く</a>
+      <a class="btn btn-ghost" href="guide-gfx-ui-canvas.html">次: UI の配置の解説 →</a>
+    </nav>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="入門コース · くわしい解説 7 カメラ"></footer>
+  <script type="module" src="../js/courses/guide.js"></script>
+</body>
+</html>

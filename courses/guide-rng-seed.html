@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="乱数とシードのくわしい解説（中学生向け）。疑似乱数（PRNG）、シードによる再現性、LCGの式と周期、ヒストグラム、XorShiftを図で説明する。" />
+  <title>乱数とシードのくわしい解説 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="course" data-active="intro"></header>
+
+  <main class="container topic-main guide-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="intro.html">入門コース</a> / くわしい解説 11</p>
+      <h1>乱数とシード — くわしい解説</h1>
+      <p class="page-header-lead">
+        「乱数」に見える数も、じつはコンピュータが決まった計算で作り出しています。
+        このページでは、その仕組み（疑似乱数）と、同じ出発点から始めれば同じ列になる「シード」の使い方、
+        LCG という作り方の式と繰り返し（周期）、そして XorShift というもう 1 つの作り方を、図と手計算で説明します。
+        <a href="../algorithms/rng-seed.html?course=intro">乱数とシードのデモ</a>と合わせて読んでください。
+      </p>
+      <nav class="guide-toc" aria-label="目次">
+        <strong>目次</strong>
+        <ol>
+          <li><a href="#s1">疑似乱数（PRNG）ってなに</a></li>
+          <li><a href="#s2">シードと再現性</a></li>
+          <li><a href="#s3">LCG の式を手計算してみる</a></li>
+          <li><a href="#s4">なぜ同じ列を繰り返す？（周期）</a></li>
+          <li><a href="#s5">ヒストグラムで散らばりを見る</a></li>
+          <li><a href="#s6">XorShift：ビット操作で作る乱数</a></li>
+          <li><a href="#s7">まとめと、やってみよう</a></li>
+        </ol>
+      </nav>
+    </div>
+
+    <!-- 1 -->
+    <section class="guide-section" id="s1" aria-labelledby="s1-h">
+      <h2 id="s1-h">1. 疑似乱数（PRNG）ってなに</h2>
+      <p>
+        コンピュータは、あらかじめ決められた計算しかできません。サイコロのように「本当に何が出るか分からない」数を作ることはできず、
+        代わりに「今の数から、決まった式で次の数を計算する」ことをくり返して、人の目には<strong>でたらめに見える</strong>数の列を作ります。
+        この仕組みを<span class="term" data-term="prng">疑似乱数（PRNG）</span>といいます。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 190" role="img" aria-label="シードを入れると、PRNGが決まった式で計算し、見た目はでたらめな数の列が出てくる仕組みの模式図">
+          <defs>
+            <marker id="rs1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#9aabbf" /></marker>
+          </defs>
+          <rect x="20" y="55" width="130" height="80" rx="10" fill="#1a2536" stroke="#5b9fd4" stroke-width="2" />
+          <text x="85" y="90" font-size="16" fill="#e8eef6" text-anchor="middle" font-weight="bold">シード</text>
+          <text x="85" y="112" font-size="14" fill="#9aabbf" text-anchor="middle">出発点の数</text>
+          <line x1="154" y1="95" x2="216" y2="95" stroke="#9aabbf" stroke-width="2" marker-end="url(#rs1-arrow)" />
+          <rect x="220" y="40" width="210" height="110" rx="10" fill="#2d2618" stroke="#f2cc8f" stroke-width="2" />
+          <text x="325" y="78" font-size="16" fill="#e8eef6" text-anchor="middle" font-weight="bold">PRNG の計算</text>
+          <text x="325" y="100" font-size="14" fill="#9aabbf" text-anchor="middle">決まった式で次の数を作る</text>
+          <text x="325" y="120" font-size="14" fill="#9aabbf" text-anchor="middle">（毎回、同じ式）</text>
+          <line x1="434" y1="95" x2="466" y2="95" stroke="#9aabbf" stroke-width="2" marker-end="url(#rs1-arrow)" />
+          <g>
+            <rect x="470" y="72" width="52" height="28" rx="5" fill="#6bcb8f" />
+            <text x="496" y="91" font-size="14" fill="#0a0e14" text-anchor="middle">0.60</text>
+            <rect x="528" y="72" width="52" height="28" rx="5" fill="#6bcb8f" />
+            <text x="554" y="91" font-size="14" fill="#0a0e14" text-anchor="middle">0.45</text>
+            <rect x="586" y="72" width="40" height="28" rx="5" fill="#6bcb8f" />
+            <text x="606" y="91" font-size="14" fill="#0a0e14" text-anchor="middle">…</text>
+          </g>
+          <text x="548" y="120" font-size="14" fill="#9aabbf" text-anchor="middle">でたらめに見える数の列</text>
+          <text x="628" y="160" font-size="14" fill="#9aabbf" text-anchor="end">（模式図）</text>
+        </svg>
+        <figcaption>図 1　PRNG（疑似乱数生成器）の仕組み。出発点の数（シード）を、決まった式に通すと、次の数が出てきます。式はいつも同じですが、出てくる数の並びは人の目にはでたらめに見えます。</figcaption>
+      </figure>
+      <p>
+        ゲームでは、敵の出現やアイテムの配置、カードの並びなど、いろいろな場面でこの疑似乱数を使います。
+      </p>
+    </section>
+
+    <!-- 2 -->
+    <section class="guide-section" id="s2" aria-labelledby="s2-h">
+      <h2 id="s2-h">2. シードと再現性</h2>
+      <p>
+        PRNG の出発点になる数を<span class="term" data-term="seed">シード</span>といいます。
+        PRNG は「決まった計算」なので、<strong>同じシードから始めれば、必ず同じ数の列</strong>になります。
+        これを<span class="term" data-term="reproducibility">再現性</span>といいます。
+      </p>
+      <p>
+        たとえば、デモを標準の PRNG（Mulberry32）でシード 42 にして生成すると、最初の数は
+        0.6011, 0.4483, 0.8525, 0.6697 … という列になります。もう一度「同じ設定で再生成」しても、まったく同じ列が出ます。
+        シードを 43 に変えると、0.9998, 0.2764, 0.5294, 0.0591 … という別の列になります。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 175" role="img" aria-label="シード42で2回生成すると同じ数列になり、シード43にすると違う数列になることを示す図">
+          <text x="10" y="35" font-size="14" fill="#9aabbf">シード 42（1回目）</text>
+          <g fill="#5b9fd4">
+            <rect x="230" y="18" width="66" height="28" rx="5" /><rect x="304" y="18" width="66" height="28" rx="5" />
+            <rect x="378" y="18" width="66" height="28" rx="5" /><rect x="452" y="18" width="66" height="28" rx="5" />
+          </g>
+          <g font-size="14" fill="#0a0e14" text-anchor="middle">
+            <text x="263" y="37">0.6011</text><text x="337" y="37">0.4483</text><text x="411" y="37">0.8525</text><text x="485" y="37">0.6697</text>
+          </g>
+
+          <text x="10" y="85" font-size="14" fill="#9aabbf">シード 42（2回目）</text>
+          <g fill="#5b9fd4">
+            <rect x="230" y="68" width="66" height="28" rx="5" /><rect x="304" y="68" width="66" height="28" rx="5" />
+            <rect x="378" y="68" width="66" height="28" rx="5" /><rect x="452" y="68" width="66" height="28" rx="5" />
+          </g>
+          <g font-size="14" fill="#0a0e14" text-anchor="middle">
+            <text x="263" y="87">0.6011</text><text x="337" y="87">0.4483</text><text x="411" y="87">0.8525</text><text x="485" y="87">0.6697</text>
+          </g>
+          <text x="600" y="87" font-size="15" fill="#6bcb8f" text-anchor="end">同じ列</text>
+
+          <line x1="10" y1="112" x2="630" y2="112" stroke="#3d4f66" stroke-dasharray="4 4" />
+
+          <text x="10" y="150" font-size="14" fill="#9aabbf">シード 43</text>
+          <g fill="#f2cc8f">
+            <rect x="230" y="133" width="66" height="28" rx="5" /><rect x="304" y="133" width="66" height="28" rx="5" />
+            <rect x="378" y="133" width="66" height="28" rx="5" /><rect x="452" y="133" width="66" height="28" rx="5" />
+          </g>
+          <g font-size="14" fill="#0a0e14" text-anchor="middle">
+            <text x="263" y="152">0.9998</text><text x="337" y="152">0.2764</text><text x="411" y="152">0.5294</text><text x="485" y="152">0.0591</text>
+          </g>
+          <text x="600" y="152" font-size="15" fill="#e07a5f" text-anchor="end">別の列</text>
+        </svg>
+        <figcaption>図 2　デモ（Mulberry32）で実際に測った値。シード 42 は 2 回とも同じ列（先頭 4 個）になり、シード 43 にすると別の列になります。</figcaption>
+      </figure>
+      <div class="guide-note">
+        <strong>再現性が役に立つ場面:</strong> 同じシードを保存しておけば、ゲームの展開をもう一度そのまま作り直せます。
+        リプレイ（もう一度同じ動きを見せる機能）や、バグが起きたときにもう一度同じ状況を再現するのに使われます。
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="guide-section" id="s3" aria-labelledby="s3-h">
+      <h2 id="s3-h">3. LCG の式を手計算してみる</h2>
+      <p>
+        いちばん簡単な PRNG の作り方が<span class="term" data-term="lcg">LCG（線形合同法）</span>です。式はこうです。
+      </p>
+      <p style="text-align:center;font-size:1.1rem"><strong>次の数 ＝ (a × 今の数 ＋ c) を <span class="term" data-term="modulus">m（法）</span> で割った余り</strong></p>
+      <p>
+        a・c・m は好きな数を決めておく定数です。割り算の余りは、必ず 0 から m−1 までの数になります。
+        小さな数で、実際に手を動かして計算してみましょう。ここでは a = 2、c = 1、m = 5、出発点（シード）を 0 とします。
+      </p>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead><tr><th>手順</th><th>計算</th><th>結果</th></tr></thead>
+          <tbody>
+            <tr><td>X0（シード）</td><td>—</td><td>0</td></tr>
+            <tr><td>X1</td><td>(2 × 0 ＋ 1) mod 5</td><td>1</td></tr>
+            <tr><td>X2</td><td>(2 × 1 ＋ 1) mod 5</td><td>3</td></tr>
+            <tr><td>X3</td><td>(2 × 3 ＋ 1) mod 5 ＝ 7 mod 5</td><td>2</td></tr>
+            <tr><td>X4</td><td>(2 × 2 ＋ 1) mod 5 ＝ 5 mod 5</td><td>0（＝ X0）</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 230" role="img" aria-label="X0=0、X1=1、X2=3、X3=2 と計算が続き、次の計算でまた0に戻って最初のX0に一致する図">
+          <defs>
+            <marker id="rs3-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#f2cc8f" /></marker>
+          </defs>
+          <g fill="#5b9fd4">
+            <circle cx="90" cy="150" r="28" /><circle cx="260" cy="150" r="28" /><circle cx="430" cy="150" r="28" /><circle cx="600" cy="150" r="28" />
+          </g>
+          <g font-size="18" fill="#0a0e14" text-anchor="middle" font-weight="bold">
+            <text x="90" y="157">0</text><text x="260" y="157">1</text><text x="430" y="157">3</text><text x="600" y="157">2</text>
+          </g>
+          <g font-size="14" fill="#9aabbf" text-anchor="middle">
+            <text x="90" y="202">X0</text><text x="260" y="202">X1</text><text x="430" y="202">X2</text><text x="600" y="202">X3</text>
+          </g>
+          <line x1="118" y1="150" x2="232" y2="150" stroke="#9aabbf" stroke-width="2" marker-end="url(#rs3-arrow)" />
+          <line x1="288" y1="150" x2="402" y2="150" stroke="#9aabbf" stroke-width="2" marker-end="url(#rs3-arrow)" />
+          <line x1="458" y1="150" x2="572" y2="150" stroke="#9aabbf" stroke-width="2" marker-end="url(#rs3-arrow)" />
+          <path d="M600 122 C 600 80 90 80 90 122" fill="none" stroke="#f2cc8f" stroke-width="2.5" marker-end="url(#rs3-arrow)" />
+          <text x="345" y="42" font-size="15" fill="#f2cc8f" text-anchor="middle">(2 × 2 ＋ 1) mod 5 ＝ 0 ＝ X0</text>
+          <text x="345" y="64" font-size="14" fill="#9aabbf" text-anchor="middle">また出発点と同じ数に戻った</text>
+        </svg>
+        <figcaption>図 3　a=2, c=1, m=5, シード 0 の場合。X0 → X1 → X2 → X3 と計算していくと、4 回目の計算でまた X0（0）に戻ります。ここから先は、まったく同じ並びをくり返します。</figcaption>
+      </figure>
+    </section>
+
+    <!-- 4 -->
+    <section class="guide-section" id="s4" aria-labelledby="s4-h">
+      <h2 id="s4-h">4. なぜ同じ列を繰り返す？（周期）</h2>
+      <p>
+        m で割った余りは、0 から m−1 までの<strong>m 通りしかありません</strong>。
+        つまり、LCG が今持っている数（状態）は、多くても m 通りしかない、ということです。
+        計算をずっと続けていくと、有限個の状態しかないのですから、いつか<strong>前に一度出てきた数ともう一度出会います</strong>。
+      </p>
+      <p>
+        次の数は「今の数」だけで決まるので、同じ数に戻れば、そこから先はまったく同じ計算をくり返し、まったく同じ並びが出てきます。
+        この、繰り返しが始まるまでの長さを<span class="term" data-term="period">周期</span>といいます。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 300" role="img" aria-label="状態は0,1,2,3,4の5通りだけ。0→1→3→2→0という4個の輪と、4は計算しても4のままという1個だけの輪に分かれる図">
+          <defs>
+            <marker id="rs4-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#9aabbf" /></marker>
+          </defs>
+          <g stroke="#9aabbf" stroke-width="2" fill="none">
+            <path d="M346 58 C 395 68 425 88 441 110" marker-end="url(#rs4-arrow)" />
+            <path d="M454 156 C 452 190 440 212 426 228" marker-end="url(#rs4-arrow)" />
+            <path d="M384 250 L246 250" marker-end="url(#rs4-arrow)" />
+            <path d="M232 225 C 260 165 285 110 308 75" marker-end="url(#rs4-arrow)" />
+          </g>
+          <g fill="#5b9fd4">
+            <circle cx="320" cy="50" r="26" /><circle cx="460" cy="130" r="26" /><circle cx="410" cy="250" r="26" /><circle cx="220" cy="250" r="26" />
+          </g>
+          <g font-size="18" fill="#0a0e14" text-anchor="middle" font-weight="bold">
+            <text x="320" y="57">0</text><text x="460" y="137">1</text><text x="410" y="257">3</text><text x="220" y="257">2</text>
+          </g>
+
+          <circle cx="110" cy="130" r="26" fill="#e07a5f" fill-opacity="0.8" />
+          <text x="110" y="137" font-size="18" fill="#0a0e14" text-anchor="middle" font-weight="bold">4</text>
+          <path d="M92 108 C 70 90 70 60 95 55 C 110 52 125 65 122 82" fill="none" stroke="#e07a5f" stroke-width="2" marker-end="url(#rs4-arrow)" />
+          <text x="110" y="35" font-size="14" fill="#e07a5f" text-anchor="middle">4 は計算しても 4 のまま</text>
+
+          <text x="320" y="295" font-size="14" fill="#9aabbf" text-anchor="middle">0→1→3→2→0 の輪（周期 4）と、4 だけの輪（周期 1）</text>
+        </svg>
+        <figcaption>図 4　同じ a=2, c=1, m=5 の場合。状態は 0〜4 の 5 通りしかありません。実際に計算すると、0→1→3→2→0 という長さ 4 の輪と、4 が自分自身に戻るだけの長さ 1 の輪に分かれます。</figcaption>
+      </figure>
+      <div class="guide-note">
+        <strong>考えてみよう:</strong> 法 m の LCG で、周期がちょうど m になる a・c の組はどんな組でしょうか。
+        デモで a・c・m をいろいろ変えて、周期の表示を見ながら考えてみましょう（提出課題 11 のテーマです）。
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="guide-section" id="s5" aria-labelledby="s5-h">
+      <h2 id="s5-h">5. ヒストグラムで散らばりを見る</h2>
+      <p>
+        PRNG が作る数が、0 から 1 の間にまんべんなく散らばっているかを確かめる方法があります。
+        0〜1 の範囲をいくつかの区間に分け、それぞれの区間に何個の数が入ったかを、棒の高さで表したグラフです。これを
+        <span class="term" data-term="histogram">ヒストグラム</span>といいます。
+      </p>
+      <p>
+        質の良い PRNG なら、どの区間にもだいたい同じくらいの数が入り、棒の高さがそろいます。
+        質の悪い PRNG だと、まったく数が入らない区間や、逆にたくさん入ってしまう区間ができ、棒の高さがばらばらになります。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 270" role="img" aria-label="そろった分布の棒グラフと、偏った分布の棒グラフを並べた図。そろった例はどの棒も同じくらいの高さ、偏った例は0の棒とすごく高い棒が混ざっている">
+          <text x="158" y="20" font-size="15" fill="#e8eef6" text-anchor="middle">そろった分布（良い例）</text>
+          <line x1="40" y1="220" x2="276" y2="220" stroke="#5a6a80" />
+          <g fill="#5b9fd4">
+            <rect x="40" y="130" width="20" height="90" /><rect x="64" y="112" width="20" height="108" /><rect x="88" y="130" width="20" height="90" />
+            <rect x="112" y="148" width="20" height="72" /><rect x="136" y="112" width="20" height="108" /><rect x="160" y="130" width="20" height="90" />
+            <rect x="184" y="130" width="20" height="90" /><rect x="208" y="148" width="20" height="72" /><rect x="232" y="112" width="20" height="108" /><rect x="256" y="130" width="20" height="90" />
+          </g>
+          <text x="40" y="236" font-size="14" fill="#9aabbf">0.0</text>
+          <text x="256" y="236" font-size="14" fill="#9aabbf" text-anchor="end">1.0</text>
+
+          <text x="498" y="20" font-size="15" fill="#e8eef6" text-anchor="middle">偏った分布（悪い例）</text>
+          <line x1="380" y1="220" x2="616" y2="220" stroke="#5a6a80" />
+          <g>
+            <rect x="380" y="108" width="20" height="112" fill="#e07a5f" />
+            <rect x="404" y="216" width="20" height="4" fill="#e07a5f" fill-opacity="0.35" />
+            <rect x="428" y="216" width="20" height="4" fill="#e07a5f" fill-opacity="0.35" />
+            <rect x="452" y="92" width="20" height="128" fill="#e07a5f" />
+            <rect x="476" y="216" width="20" height="4" fill="#e07a5f" fill-opacity="0.35" />
+            <rect x="500" y="76" width="20" height="144" fill="#e07a5f" />
+            <rect x="524" y="216" width="20" height="4" fill="#e07a5f" fill-opacity="0.35" />
+            <rect x="548" y="216" width="20" height="4" fill="#e07a5f" fill-opacity="0.35" />
+            <rect x="572" y="172" width="20" height="48" fill="#5b9fd4" />
+            <rect x="596" y="216" width="20" height="4" fill="#e07a5f" fill-opacity="0.35" />
+          </g>
+          <text x="380" y="236" font-size="14" fill="#9aabbf">0.0</text>
+          <text x="596" y="236" font-size="14" fill="#9aabbf" text-anchor="end">1.0</text>
+          <text x="498" y="260" font-size="14" fill="#9aabbf" text-anchor="middle">空の区間と、多すぎる区間が混ざる</text>
+        </svg>
+        <figcaption>図 5　ヒストグラムの読み方（模式図。説明のために作った例）。良い例はどの棒もそろった高さ、悪い例は 0 の区間と極端に高い区間が混ざります。デモの画面でも、偏った区間は赤で目立たせます。</figcaption>
+      </figure>
+    </section>
+
+    <!-- 6 -->
+    <section class="guide-section" id="s6" aria-labelledby="s6-h">
+      <h2 id="s6-h">6. XorShift：ビット操作で作る乱数</h2>
+      <p>
+        LCG は掛け算・足し算・割り算を使いますが、<span class="term" data-term="xorshift">XorShift</span> は
+        もっと計算が軽い「ビット操作」だけで作る PRNG です。数を 2 進数（0 と 1 の並び）で見て、
+        ずらす（シフト）操作と、排他的論理和（XOR。同じビットなら 0、違うビットなら 1 になる計算）だけをくり返します。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 210" role="img" aria-label="4ビットの簡単な例。元の数1011を1つ左にずらすと0110になり、この2つをXORすると1101になる">
+          <text x="176" y="42" font-size="14" fill="#9aabbf" text-anchor="end">① 元の x</text>
+          <g fill="#141b24" stroke="#5b9fd4" stroke-width="2">
+            <rect x="190" y="14" width="56" height="46" /><rect x="252" y="14" width="56" height="46" /><rect x="314" y="14" width="56" height="46" /><rect x="376" y="14" width="56" height="46" />
+          </g>
+          <g font-size="18" fill="#e8eef6" text-anchor="middle" font-weight="bold">
+            <text x="218" y="43">1</text><text x="280" y="43">0</text><text x="342" y="43">1</text><text x="404" y="43">1</text>
+          </g>
+
+          <text x="176" y="112" font-size="14" fill="#9aabbf" text-anchor="end">② x を左へ 1 つ</text>
+          <g fill="#141b24" stroke="#f2cc8f" stroke-width="2">
+            <rect x="190" y="84" width="56" height="46" /><rect x="252" y="84" width="56" height="46" /><rect x="314" y="84" width="56" height="46" /><rect x="376" y="84" width="56" height="46" />
+          </g>
+          <g font-size="18" fill="#e8eef6" text-anchor="middle" font-weight="bold">
+            <text x="218" y="113">0</text><text x="280" y="113">1</text><text x="342" y="113">1</text><text x="404" y="113">0</text>
+          </g>
+          <text x="446" y="112" font-size="14" fill="#9aabbf">← 右はしに 0 が入る</text>
+
+          <text x="176" y="182" font-size="14" fill="#9aabbf" text-anchor="end">①⊕② の結果</text>
+          <g fill="#2d2618" stroke="#6bcb8f" stroke-width="2">
+            <rect x="190" y="154" width="56" height="46" /><rect x="252" y="154" width="56" height="46" /><rect x="314" y="154" width="56" height="46" /><rect x="376" y="154" width="56" height="46" />
+          </g>
+          <g font-size="18" fill="#e8eef6" text-anchor="middle" font-weight="bold">
+            <text x="218" y="183">1</text><text x="280" y="183">1</text><text x="342" y="183">0</text><text x="404" y="183">1</text>
+          </g>
+          <text x="446" y="182" font-size="15" fill="#9aabbf">x ^= x&lt;&lt;1</text>
+        </svg>
+        <figcaption>図 6　XorShift の考え方（模式図・4 ビットの簡略例）。ビットをずらしたものと元の数を XOR で混ぜます。実際は 32 ビットの数を使い、これを 3 回（シフトの向きと量を変えて）くり返します。</figcaption>
+      </figure>
+      <p>
+        1 つだけ注意があります。<span class="term" data-term="degenerate-seed">シード 0 は退化</span>してしまい、
+        XorShift はシードが 0 だと、何回計算しても 0 のまま変わりません。0 と 0 を XOR しても 0 のままだからです。
+        そのため、実装ではシードが 0 のときは、あらかじめ別の数にずらしてから計算を始めます。
+      </p>
+    </section>
+
+    <!-- 7 -->
+    <section class="guide-section" id="s7" aria-labelledby="s7-h">
+      <h2 id="s7-h">7. まとめ</h2>
+      <ul>
+        <li>コンピュータの乱数は「疑似乱数」。決まった式で、見た目だけでたらめな数の列を作る</li>
+        <li>出発点の数をシードという。同じシードなら必ず同じ列になる（再現性）。リプレイやバグの再現に使える</li>
+        <li>LCG は「次 ＝ (a × 今 ＋ c) を m で割った余り」。余りは m 通りしかないので、いつか同じ数に戻り、そこから同じ列を繰り返す（周期）</li>
+        <li>ヒストグラムで、数が 0〜1 にまんべんなく散らばっているかを確かめられる</li>
+        <li>XorShift はビットのシフトと XOR だけで作る。シード 0 は 0 のまま変わらないので、実装ではずらして使う</li>
+      </ul>
+    </section>
+
+    <section class="guide-try" aria-labelledby="try-h">
+      <h2 id="try-h">やってみよう</h2>
+      <ol>
+        <li><a href="../algorithms/rng-seed.html?course=intro&amp;seed=42">シード 42 で生成</a>し、「同じ設定で再生成」を押して、まったく同じ列になることを確かめる。</li>
+        <li><a href="../algorithms/rng-seed.html?course=intro&amp;algo=lcg&amp;preset=tiny-bad">質が悪い LCG（m=16）</a>で生成し、ヒストグラムの棒の高さと、周期の表示を見る。</li>
+        <li><a href="../algorithms/rng-seed.html?course=intro&amp;algo=xorshift32&amp;seed=0">XorShift のシードを 0 に</a>して生成し、周期の表示を読む。</li>
+      </ol>
+      <div class="guide-check">
+        <p><strong>確かめよう</strong></p>
+        <details>
+          <summary>問 1. 同じシードで乱数を 2 回生成すると、出てくる数の列はどうなる？</summary>
+          <p>まったく同じ列になります（再現性）。</p>
+        </details>
+        <details>
+          <summary>問 2. LCG で、余り（状態）は何通りある？</summary>
+          <p>m 通り（0 から m−1 まで）です。</p>
+        </details>
+        <details>
+          <summary>問 3. XorShift でシードを 0 にすると、どうなる？</summary>
+          <p>計算しても 0 のまま変わりません（退化）。実装では、0 を別の数にずらしてから使います。</p>
+        </details>
+      </div>
+    </section>
+
+    <nav class="guide-pager" aria-label="ページ送り">
+      <a class="btn btn-ghost" href="guide-fsm.html">← 前: ステートマシンの解説</a>
+      <a class="btn btn-primary" href="../algorithms/rng-seed.html?course=intro">デモを開く</a>
+      <a class="btn btn-ghost" href="guide-minimax.html">次: Min-Max 探索の解説 →</a>
+    </nav>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="入門コース · くわしい解説 11 乱数とシード"></footer>
+  <script type="module" src="../js/courses/guide.js"></script>
+</body>
+</html>
