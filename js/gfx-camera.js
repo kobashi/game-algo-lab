@@ -215,13 +215,26 @@ function step(dt) {
   setStatus(`cam=${camX.toFixed(0)} p.screen=${(playerX - camX).toFixed(0)} 遅れ=${(p.sx - canvas.width / 2).toFixed(0)}px`);
 }
 
+/**
+ * 追従係数は「1 歩で差の何割を詰めるか」なので、1 歩の長さが変わると結果も変わる。
+ * そこで 1 歩を 1/60 秒に固定し、実時間 × 再生速度が 1/60 秒たまるごとに 1 歩進める。
+ * （以前は実経過 × 再生速度を 1 歩にしていたので、スロー再生や 120 Hz の画面では遅れが小さく出ていた）
+ */
+const STEP_SEC = 1 / 60;
+let stepAcc = 0;
 function loop(ts) {
   if (!running) return;
   if (!lastTs) lastTs = ts;
-  let dt = (ts - lastTs) / 1000;
+  const wall = Math.min(0.1, (ts - lastTs) / 1000);
   lastTs = ts;
-  if (dt > 0.05) dt = 0.05;
-  step(dt * readSpeedScale(speedEl));
+  stepAcc += wall * readSpeedScale(speedEl);
+  let n = 0;
+  while (stepAcc >= STEP_SEC && n < 4) {
+    step(STEP_SEC);
+    stepAcc -= STEP_SEC;
+    n += 1;
+  }
+  if (n >= 4) stepAcc = 0;
   rafId = requestAnimationFrame(loop);
 }
 

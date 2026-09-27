@@ -9,6 +9,9 @@ export const COYOTE_TIME_CONFIG = {
   minCoyoteMs: 0,
   maxCoyoteMs: 400,
   groundY: 240,
+  /** 開始位置（左の足場の上）。床からはジャンプが届かないので、崖から落ちる練習はここから始める */
+  startX: 200,
+  startPlatform: 1,
   platforms: [
     { x: 0, y: 260, w: 640, h: 20 },
     { x: 180, y: 190, w: 120, h: 14 },

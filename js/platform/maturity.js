@@ -67,8 +67,8 @@ export const TOPIC_META = {
   },
   "velocity-motion": {
     maturity: "revised",
-    revisions: 3,
-    updated: "2026-09-26",
+    revisions: 4,
+    updated: "2026-09-27",
   },
   "event-system": {
     maturity: "oneshot",
@@ -76,7 +76,7 @@ export const TOPIC_META = {
     updated: "2026-07-27",
   },
   "object-pool": { maturity: "oneshot", revisions: 0, updated: "2026-07-27" },
-  "coyote-time": { maturity: "revised", revisions: 4, updated: "2026-09-26" },
+  "coyote-time": { maturity: "revised", revisions: 5, updated: "2026-09-27" },
   "grid-pseudo-physics": {
     maturity: "oneshot",
     revisions: 0,
@@ -319,8 +319,8 @@ export const TOPIC_META = {
   },
   "gfx-camera": {
     maturity: "revised",
-    revisions: 4,
-    updated: "2026-09-26",
+    revisions: 5,
+    updated: "2026-09-27",
   },
   "net-prediction": {
     maturity: "oneshot",
