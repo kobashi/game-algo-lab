@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="円同士・円と AABB のくわしい解説（中学生向け）。中心の距離、距離の2乗で比べる理由、AABB、最近点、Clampを図で説明する。" />
+  <title>円同士・円と AABBのくわしい解説 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="course" data-active="intro"></header>
+
+  <main class="container topic-main guide-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="intro.html">入門コース</a> / くわしい解説 5</p>
+      <h1>円同士・円と AABB — くわしい解説</h1>
+      <p class="page-header-lead">
+        ボールとボールがぶつかった、ボールが壁にぶつかった――ゲームは、いつも「重なっているか」を調べています。
+        このページでは、円と円、円と四角い箱がぶつかっているかを、平方根を使わずにすばやく調べる方法を、図を使って説明します。
+        <a href="guide-accel-gravity.html">加速度と重力の解説</a>を先に読んでおくと、位置の考え方が分かりやすくなります。
+        <a href="../algorithms/circle-collision.html?course=intro">円同士・円と AABBのデモ</a>と合わせて読んでください。
+      </p>
+      <nav class="guide-toc" aria-label="目次">
+        <strong>目次</strong>
+        <ol>
+          <li><a href="#s1">円が重なるとはどういうことか</a></li>
+          <li><a href="#s2">距離の2乗で比べる（平方根を省く）</a></li>
+          <li><a href="#s3">AABB（回転していない箱）</a></li>
+          <li><a href="#s4">円と箱は「最近点」との距離で判定する</a></li>
+          <li><a href="#s5">Clampで最近点を求める</a></li>
+          <li><a href="#s6">衝突応答は別の段階</a></li>
+          <li><a href="#s7">まとめと、やってみよう</a></li>
+        </ol>
+      </nav>
+    </div>
+
+    <!-- 1 -->
+    <section class="guide-section" id="s1" aria-labelledby="s1-h">
+      <h2 id="s1-h">1. 円が重なるとはどういうことか</h2>
+      <p>
+        2つの丸いもの（ボールや弾）がぶつかったかどうかを、絵を見て「重なって見えるか」で毎回確かめるわけにはいきません。
+        もっと簡単な調べ方があります。
+      </p>
+      <p>
+        2つの円が重なる（触れる、または重なる）条件はとてもシンプルです。
+        <strong>中心どうしの距離が、2つの半径を足した長さ以下</strong>なら、円は重なっています。
+        2枚のコインを机の上で近づけていくところを想像してください。ふちとふちがちょうど触れる瞬間、
+        中心と中心の距離は、ちょうど半径の和と同じになります。もっと近づけると、その距離は半径の和より短くなり、重なります。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 240" role="img" aria-label="2つの円。中心の距離 d が 120、半径 r1 が 70、r2 が 55。d は r1+r2（125）以下なので重なっている（模式図）">
+          <circle cx="290" cy="130" r="70" fill="rgba(91,159,212,0.25)" stroke="#5b9fd4" stroke-width="3" />
+          <circle cx="410" cy="130" r="55" fill="rgba(107,203,143,0.25)" stroke="#6bcb8f" stroke-width="3" />
+          <line x1="290" y1="130" x2="410" y2="130" stroke="#f2cc8f" stroke-width="2" stroke-dasharray="5 4" />
+          <circle cx="290" cy="130" r="4" fill="#e8eef6" />
+          <circle cx="410" cy="130" r="4" fill="#e8eef6" />
+          <text x="350" y="118" font-size="15" fill="#f2cc8f" text-anchor="middle">d = 120</text>
+          <line x1="290" y1="130" x2="290" y2="60" stroke="#5b9fd4" stroke-width="2" />
+          <text x="298" y="95" font-size="14" fill="#5b9fd4">r1 = 70</text>
+          <line x1="410" y1="130" x2="410" y2="75" stroke="#6bcb8f" stroke-width="2" />
+          <text x="418" y="100" font-size="14" fill="#6bcb8f">r2 = 55</text>
+          <text x="320" y="225" font-size="15" fill="#e8eef6" text-anchor="middle">d（120） ≤ r1+r2（125） → 重なっている</text>
+        </svg>
+        <figcaption>図 1　円が重なる条件（模式図。数値はこの図だけの例）。中心どうしの距離 d が、半径の和 r1+r2 以下なら、2つの円は重なっています。</figcaption>
+      </figure>
+      <p>
+        デモの初期状態（円A 半径40・円B 半径32）では、中心どうしの距離は約 145.6、半径の和は 72.0 なので離れています（miss）。
+        円Bを円Aの右へ動かして、中心を <code>(180,160)</code> と <code>(252,160)</code> にすると、距離はちょうど 72.0 になり、
+        半径の和 72.0 と等しくなって「ぎりぎり接触」します。もう 3px 離すと、距離は 75.0 になり、離れます（miss）。
+      </p>
+    </section>
+
+    <!-- 2 -->
+    <section class="guide-section" id="s2" aria-labelledby="s2-h">
+      <h2 id="s2-h">2. 距離の2乗で比べる（平方根を省く）</h2>
+      <p>
+        中心どうしの距離は、横のずれ dx と縦のずれ dy から、三平方の定理（中学 3 年）で求められます。
+        d = √(dx² ＋ dy²) です。でも、平方根の計算はコンピュータにとって少し重く、たくさんの円を毎フレーム調べるゲームでは、できれば避けたい計算です。
+      </p>
+      <p>
+        よく考えると、平方根を計算しなくても比べられます。d と r1+r2 はどちらもマイナスにならない数なので、
+        両方を 2乗しても、大小関係は変わりません。つまり、
+        <span class="term" data-term="squared-distance">dx² ＋ dy² と (r1+r2)² を、2乗のまま比べればよい</span>のです。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 265" role="img" aria-label="円Aと円Bの位置から作った直角三角形。横の辺が dx=140、縦の辺が dy=40、斜辺が距離 d（約145.6）。実際に比べるのは、2乗した値どうし">
+          <defs>
+            <marker id="cc2-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#e07a5f" /></marker>
+          </defs>
+          <line x1="100" y1="190" x2="400" y2="190" stroke="#5a6a80" stroke-width="2" />
+          <line x1="400" y1="190" x2="400" y2="70" stroke="#5a6a80" stroke-width="2" />
+          <line x1="100" y1="190" x2="400" y2="70" stroke="#e07a5f" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#cc2-arrow)" />
+          <circle cx="100" cy="190" r="6" fill="#5b9fd4" />
+          <circle cx="400" cy="70" r="6" fill="#6bcb8f" />
+          <text x="90" y="212" font-size="14" fill="#5b9fd4" text-anchor="start">円A中心</text>
+          <text x="410" y="66" font-size="14" fill="#6bcb8f">円B中心</text>
+          <text x="250" y="212" font-size="15" fill="#e8eef6" text-anchor="middle">dx = 140</text>
+          <text x="410" y="130" font-size="15" fill="#e8eef6">dy = 40</text>
+          <text x="100" y="40" font-size="14" fill="#e07a5f">d = √(140²＋40²) ≈ 145.6（中 3 の三平方の定理）</text>
+          <g>
+            <rect x="70" y="222" width="500" height="34" rx="6" fill="#141b24" stroke="#3d4f66" />
+            <text x="320" y="235" font-size="14" fill="#f2cc8f" text-anchor="middle">140² ＋ 40² ＝ 21200　　(rA+rB)² ＝ 72² ＝ 5184</text>
+            <text x="320" y="251" font-size="14" fill="#e8eef6" text-anchor="middle">21200 ＞ 5184 なので、離れている（miss）</text>
+          </g>
+        </svg>
+        <figcaption>図 2　デモの初期状態（円A(180,160)・円B(320,200)）の dx・dy。平方根で d を求めなくても、2乗した値どうしを比べれば同じ答えが出ます。</figcaption>
+      </figure>
+      <div class="guide-note">
+        <strong>大事なこと:</strong> このやり方で分かるのは「重なっているかどうか」だけです。d そのもの（何 px 離れているか）が必要なときは、
+        やはり平方根を計算します。
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="guide-section" id="s3" aria-labelledby="s3-h">
+      <h2 id="s3-h">3. AABB（回転していない箱）</h2>
+      <p>
+        円と円の判定は「中心どうしの距離」で調べました。では、円と四角い箱がぶつかっているかは、どう調べればよいでしょうか。
+        まず、このデモで扱う箱がどんな箱かを確認します。
+      </p>
+      <p>
+        <span class="term" data-term="aabb">AABB</span>は、辺が画面のたて・よこに平行な長方形のことです（回転していない箱）。
+        回転していないので、左上の点 (x, y) と、幅・高さ (w, h) の 4つの数だけで、箱の形と位置をぴったり表せます。
+        デモの箱は、既定で <code>x=420, y=120, w=120, h=90</code>、つまり x が 420〜540、y が 120〜210 の範囲です。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 230" role="img" aria-label="左は辺が画面のたて・よこに平行な箱（AABB）。右は回転した箱で、このデモでは扱わない">
+          <line x1="70" y1="35" x2="270" y2="35" stroke="#9aabbf" stroke-width="1.5" stroke-dasharray="3 3" />
+          <text x="170" y="26" font-size="14" fill="#9aabbf" text-anchor="middle">x軸と平行</text>
+          <text x="40" y="115" font-size="14" fill="#9aabbf" text-anchor="middle" transform="rotate(-90 40 115)">y軸と平行</text>
+          <rect x="70" y="50" width="200" height="120" fill="rgba(91,159,212,0.15)" stroke="#5b9fd4" stroke-width="2.5" />
+          <text x="170" y="195" font-size="15" fill="#e8eef6" text-anchor="middle">AABB（回転していない箱）</text>
+          <text x="170" y="215" font-size="14" fill="#9aabbf" text-anchor="middle">x=420, y=120, w=120, h=90</text>
+          <rect x="360" y="60" width="180" height="100" fill="rgba(154,171,191,0.12)" stroke="#9aabbf" stroke-width="2" transform="rotate(-20 450 110)" />
+          <text x="450" y="195" font-size="15" fill="#9aabbf" text-anchor="middle">回転した箱（AABB ではない）</text>
+          <text x="450" y="215" font-size="14" fill="#9aabbf" text-anchor="middle">このデモでは扱わない</text>
+        </svg>
+        <figcaption>図 3　AABB（左）と、回転した箱（右、模式図）。回転していないおかげで、辺と辺を比べるだけで済み、計算が簡単になります。</figcaption>
+      </figure>
+    </section>
+
+    <!-- 4 -->
+    <section class="guide-section" id="s4" aria-labelledby="s4-h">
+      <h2 id="s4-h">4. 円と箱は「最近点」との距離で判定する</h2>
+      <p>
+        円と箱には、円のような「中心」が箱にはありません。そこで、箱の中（または縁）で、円の中心にいちばん近い点を探します。
+        これを<span class="term" data-term="closest-point">最近点</span>といいます。
+        円の中心から最近点までの距離が、円の半径以下なら、円と箱は重なっています。
+      </p>
+      <p>
+        たとえば、円Aの半径を 40 のまま、中心を箱の少し上、<code>(480, 80)</code> に置いてみます
+        （箱は既定の <code>x=420, y=120, w=120, h=90</code>）。円の中心の x（480）はちょうど箱の x の範囲（420〜540）の中にあるので、
+        最近点の x も 480 のままです。円の中心の y（80）は箱の上端（120）より上（外）にあるので、最近点の y は箱の上端 120 になります。
+        つまり最近点は <code>(480, 120)</code> で、箱の上辺の上、円の中心の真下にあります。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 240" role="img" aria-label="箱の上に円がある図。円の中心(480,80)から、箱の上辺の点(480,120)まで、まっすぐ下に距離40。これは円の半径と同じなので、ちょうど触れている">
+          <rect x="420" y="120" width="120" height="90" fill="rgba(224,122,95,0.22)" stroke="#e07a5f" stroke-width="2" />
+          <text x="428" y="138" font-size="14" fill="#9aabbf">AABB</text>
+          <text x="414" y="134" font-size="14" fill="#9aabbf" text-anchor="end">(420, 120)</text>
+          <text x="544" y="224" font-size="14" fill="#9aabbf">(540,210)</text>
+          <circle cx="480" cy="80" r="40" fill="rgba(107,203,143,0.3)" stroke="#6bcb8f" stroke-width="2.5" />
+          <text x="430" y="62" font-size="14" fill="#e8eef6" text-anchor="end">円の中心 (480, 80)</text>
+          <text x="430" y="80" font-size="14" fill="#e8eef6" text-anchor="end">半径 40</text>
+          <line x1="480" y1="80" x2="480" y2="120" stroke="#f2cc8f" stroke-width="2" stroke-dasharray="4 4" />
+          <circle cx="480" cy="120" r="5" fill="#f2cc8f" />
+          <text x="528" y="82" font-size="14" fill="#f2cc8f">距離 40（＝半径）</text>
+          <text x="528" y="100" font-size="14" fill="#f2cc8f">→ ちょうど接触</text>
+          <text x="480" y="228" font-size="14" fill="#9aabbf" text-anchor="middle">最近点 (480, 120)</text>
+        </svg>
+        <figcaption>図 4　円の中心から最近点までの距離（40）が半径（40）とちょうど同じなので、この配置ではぎりぎり接触します。円を 1px でも上へ動かすと、距離が 41 になり、離れます（デモで確認できます）。</figcaption>
+      </figure>
+    </section>
+
+    <!-- 5 -->
+    <section class="guide-section" id="s5" aria-labelledby="s5-h">
+      <h2 id="s5-h">5. Clampで最近点を求める</h2>
+      <p>
+        図 4 の最近点は、頭の中で考えれば分かりますが、プログラムでは
+        <span class="term" data-term="clamp">Clamp（クランプ）</span>という操作で機械的に求めます。
+        Clamp は「値を決まった範囲に押し込める」操作です。値が範囲より小さければ下限に、大きければ上限にし、範囲の中にあればそのままにします。
+      </p>
+      <p>
+        円の中心の x と y に、それぞれの軸で別々に Clamp を使います。x は箱の x の範囲（420〜540）に、y は箱の y の範囲（120〜210）に押し込めます。
+        図 4 の例（中心 (480, 80)）だと、次のようになります。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 280" role="img" aria-label="2本の数直線。上は x のクランプで、480 は箱の範囲420〜540の中なのでそのまま。下は y のクランプで、80 は範囲120〜210より外（小さい）なので、下限の120に押し込められる（模式図）">
+          <text x="20" y="60" font-size="14" fill="#e8eef6">x のクランプ</text>
+          <rect x="200" y="82" width="240" height="16" fill="rgba(91,159,212,0.3)" stroke="#5b9fd4" stroke-width="1.5" />
+          <text x="200" y="66" font-size="14" fill="#9aabbf" text-anchor="middle">420（箱の左端）</text>
+          <text x="440" y="66" font-size="14" fill="#9aabbf" text-anchor="middle">540（箱の右端）</text>
+          <circle cx="320" cy="90" r="6" fill="#f2cc8f" stroke="#e8eef6" />
+          <text x="320" y="124" font-size="14" fill="#e8eef6" text-anchor="middle">中心 x = 480 → 範囲内なのでそのまま</text>
+
+          <text x="20" y="200" font-size="14" fill="#e8eef6">y のクランプ</text>
+          <rect x="200" y="212" width="240" height="16" fill="rgba(107,203,143,0.3)" stroke="#6bcb8f" stroke-width="1.5" />
+          <text x="200" y="196" font-size="14" fill="#9aabbf" text-anchor="middle">120（箱の上端）</text>
+          <text x="440" y="196" font-size="14" fill="#9aabbf" text-anchor="middle">210（箱の下端）</text>
+          <circle cx="140" cy="220" r="6" fill="#e07a5f" />
+          <text x="140" y="254" font-size="14" fill="#e07a5f" text-anchor="middle">中心 y = 80（範囲外）</text>
+          <line x1="150" y1="220" x2="196" y2="220" stroke="#9aabbf" stroke-width="2" marker-end="url(#cc5-arrow)" />
+          <defs>
+            <marker id="cc5-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#9aabbf" /></marker>
+          </defs>
+          <text x="172" y="208" font-size="14" fill="#9aabbf" text-anchor="middle">Clamp</text>
+          <circle cx="200" cy="220" r="6" fill="#f2cc8f" stroke="#e8eef6" />
+          <text x="245" y="254" font-size="14" fill="#f2cc8f" text-anchor="start">→ 120（箱の上端に押し込められる）</text>
+        </svg>
+        <figcaption>図 5　x は範囲の中にあるのでそのまま、y は範囲より小さいので下限（箱の上端）に押し込められます。結果の (480, 120) が最近点になります。</figcaption>
+      </figure>
+      <div class="guide-note">
+        <strong>考えてみよう:</strong> 円が箱の角のななめ外にあると、x も y も箱の範囲外になることがあります。
+        そのとき、Clamp をそれぞれの軸に当てはめると、最近点はどこになるでしょうか。デモで円を箱の角の外側に置いて、確かめてみましょう（提出課題 5 のテーマです）。
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="guide-section" id="s6" aria-labelledby="s6-h">
+      <h2 id="s6-h">6. 衝突応答は別の段階</h2>
+      <p>
+        ここまでで分かるのは「重なっているかどうか」だけです。重なっていると分かったあとに、めり込みをどう直すか、
+        跳ね返すのかどうかを決める処理を<span class="term" data-term="collision-response">衝突応答</span>といいます。
+        当たり判定（重なっているかを調べる）と衝突応答（どう動かすか）は、別の段階として考えます。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 150" role="img" aria-label="2つの箱が矢印でつながっている。左は当たり判定（このデモ）、右は衝突応答（次の段階、このデモでは扱わない）">
+          <defs>
+            <marker id="cc6-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#9aabbf" /></marker>
+          </defs>
+          <rect x="20" y="40" width="270" height="70" rx="10" fill="#1a2536" stroke="#5b9fd4" stroke-width="2" />
+          <text x="155" y="70" font-size="17" fill="#e8eef6" text-anchor="middle" font-weight="bold">① 当たり判定</text>
+          <text x="155" y="94" font-size="14" fill="#9aabbf" text-anchor="middle">重なっているか調べる（このデモ）</text>
+          <line x1="294" y1="75" x2="342" y2="75" stroke="#9aabbf" stroke-width="2.5" marker-end="url(#cc6-arrow)" />
+          <rect x="346" y="40" width="284" height="70" rx="10" fill="#141b24" stroke="#5a6a80" stroke-width="2" stroke-dasharray="5 4" />
+          <text x="488" y="70" font-size="17" fill="#9aabbf" text-anchor="middle" font-weight="bold">② 衝突応答</text>
+          <text x="488" y="94" font-size="14" fill="#9aabbf" text-anchor="middle">めり込みを直す・跳ね返す（次の段階）</text>
+        </svg>
+        <figcaption>図 6　当たり判定と衝突応答は別の段階です。このデモは①だけを表示します。②は、入門コースの外にある別のトピック「<a href="../algorithms/collision-response.html">衝突応答</a>」で扱います。</figcaption>
+      </figure>
+    </section>
+
+    <!-- 7 -->
+    <section class="guide-section" id="s7" aria-labelledby="s7-h">
+      <h2 id="s7-h">7. まとめ</h2>
+      <ul>
+        <li>円同士は「中心の距離 ≤ 半径の和」で重なりが分かる</li>
+        <li>距離そのもの（平方根）を求めなくても、2乗した値どうしを比べれば同じ答えが出る</li>
+        <li>AABB は回転していない箱。x, y, w, h の 4つの数で表せる</li>
+        <li>円と箱は、箱の中で円の中心にいちばん近い点（最近点）との距離で判定する</li>
+        <li>最近点は、円の中心の x・y を、箱の範囲にそれぞれ Clamp すると求まる</li>
+        <li>重なっているかを調べる（当たり判定）と、その後どう動かすか（衝突応答）は別の段階</li>
+      </ul>
+    </section>
+
+    <section class="guide-try" aria-labelledby="try-h">
+      <h2 id="try-h">やってみよう</h2>
+      <ol>
+        <li><a href="../algorithms/circle-collision.html?course=intro">デモ</a>を開き、円Aと円Bをドラッグして近づけたり離したりして、円同士がHITに変わる瞬間を探す。</li>
+        <li><a href="../algorithms/circle-collision.html?course=intro&amp;ax=180&amp;ay=160&amp;bx=252&amp;by=160&amp;ar=40&amp;br=32">円同士がぎりぎり接触</a>する配置を開く（矢印キーで円Bを 3px 右へ動かすと miss に変わる）。</li>
+        <li><a href="../algorithms/circle-collision.html?course=intro&amp;ax=480&amp;ay=80&amp;ar=40">円が箱の上辺にちょうど触れる</a>配置を開く。矢印キーで円Aを 1px 上へ動かすと、離れることを確かめる。</li>
+      </ol>
+      <div class="guide-check">
+        <p><strong>確かめよう</strong></p>
+        <details>
+          <summary>問 1. 半径 50 の円と半径 30 の円がある。中心の距離が何 px 以下なら重なる？</summary>
+          <p>50 ＋ 30 ＝ 80 px 以下。</p>
+        </details>
+        <details>
+          <summary>問 2. dx = 6, dy = 8 のとき、平方根を使わずに求める「距離の2乗」はいくつ？</summary>
+          <p>6² ＋ 8² ＝ 36 ＋ 64 ＝ 100。</p>
+        </details>
+        <details>
+          <summary>問 3. 箱の x の範囲が 100〜200 のとき、円の中心 x が 250 なら、Clamp した後の x はいくつ？</summary>
+          <p>200。範囲より大きいので、上限（200）に押し込められます。</p>
+        </details>
+      </div>
+    </section>
+
+    <nav class="guide-pager" aria-label="ページ送り">
+      <a class="btn btn-ghost" href="guide-accel-gravity.html">← 前: 加速度と重力の解説</a>
+      <a class="btn btn-primary" href="../algorithms/circle-collision.html?course=intro">デモを開く</a>
+      <a class="btn btn-ghost" href="guide-coyote-time.html">次: コヨーテタイムの解説 →</a>
+    </nav>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="入門コース · くわしい解説 5 円同士・円と AABB"></footer>
+  <script type="module" src="../js/courses/guide.js"></script>
+</body>
+</html>
