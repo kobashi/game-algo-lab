@@ -11,7 +11,6 @@ import {
   mountTopicShellFromDataset,
   applyParamsToControls,
   mountShareLink,
-  drawTrailDots,
   readSpeedScale,
   bindSpeedScaleControl,
 } from "./platform/index.js";
@@ -45,6 +44,10 @@ const drawLoadEl = /** @type {HTMLInputElement} */ (
 const compareEl = /** @type {HTMLInputElement} */ (
   document.getElementById("compare")
 );
+const lagModeEl = /** @type {HTMLSelectElement} */ (
+  document.getElementById("lag-mode")
+);
+const refEl = /** @type {HTMLInputElement} */ (document.getElementById("ref"));
 const speedVal = document.getElementById("speed-val");
 const ballsVal = document.getElementById("balls-val");
 const fpsEl = document.getElementById("gl-fps");
@@ -59,9 +62,16 @@ const resultPanel = createResultPanel(
 );
 
 const START_Y = 0.12;
-const REST_V = 8;
+const REST_V = C.restVelocity;
+/** 浮動小数の誤差で FIXED_DT ちょうどの時間が「足りない」と判定されないように */
+const ACC_EPS = 1e-6;
 
-/** @typedef {{ y: number, v: number, bounces: number, apex: number, firstPeak: number | null, rising: boolean, restMs: number | null }} Hero */
+/** @typedef {{ t: number, y: number }} TimePoint */
+/**
+ * simMs: 物理が進んだ時間。横軸の位置に使う
+ * updates: 更新1回ごとの位置（小さい点） / frames: 描画した位置（輪）
+ * @typedef {{ y: number, v: number, bounces: number, apex: number, firstPeak: number | null, rising: boolean, restMs: number | null, simMs: number, updates: TimePoint[], frames: TimePoint[] }} Hero
+ */
 
 function makeHero() {
   return {
@@ -72,6 +82,9 @@ function makeHero() {
     firstPeak: /** @type {number | null} */ (null),
     rising: false,
     restMs: /** @type {number | null} */ (null),
+    simMs: 0,
+    updates: /** @type {TimePoint[]} */ ([]),
+    frames: /** @type {TimePoint[]} */ ([]),
   };
 }
 
@@ -98,13 +111,12 @@ let totalStepsVar = 0;
 let totalStepsFix = 0;
 /** @type {{ y: number, v: number }[]} */
 let extras = [];
-/** @type {{x:number,y:number}[]} */
-let trail = [];
-/** @type {{x:number,y:number}[]} */
-let trailVar = [];
-/** @type {{x:number,y:number}[]} */
-let trailFix = [];
 let fpsEma = 60;
+/** 再生中: 実時間（再生速度を掛けたもの）の溜まり。フレーム間隔に達したら1フレーム進める */
+let wallAcc = 0;
+let lastSimTs = 0;
+/** 直近フレームの表示用 */
+let lastFrame = { realMs: 0, steps: 0 };
 let lowFpsMs = 0;
 let elapsedMs = 0;
 let suppressResult = false;
@@ -113,10 +125,15 @@ let suppressResult = false;
 let prevResult = null;
 
 function readFixedDtMs() {
-  return Math.min(
+  const v = Math.min(
     C.maxFixedDtMs,
     Math.max(C.minFixedDtMs, Number(fixedDtEl.value) || C.defaultFixedDtMs)
   );
+  // スライダーは 0.1 ms 刻み。16.7 のように整数 Hz の周期に近い値はその周期（1000/60 など）として扱う。
+  // そうしないと描画 1 回（1000/60 ms）と FIXED_DT がわずかにずれ、ときどき更新 0 回や 2 回のフレームが出る
+  const hz = Math.round(1000 / v);
+  const exact = 1000 / hz;
+  return Math.abs(exact - v) < 0.05 ? exact : v;
 }
 function readLagMs() {
   return Math.min(C.maxLagMs, Math.max(0, Number(lagEl.value) || 0));
@@ -133,6 +150,25 @@ function readMode() {
 function readBalls() {
   const n = Math.floor(Number(ballsEl?.value) || 1);
   return Math.min(200, Math.max(1, n));
+}
+function spikeOn() {
+  return lagModeEl?.value === "1";
+}
+function refOn() {
+  return refEl ? !!refEl.checked : true;
+}
+/**
+ * i 番目（1 始まり）のフレームにかける人工遅延。「ときどき重い」は spikeEvery ごとに1回だけ
+ * @param {number} i
+ */
+function lagForFrame(i) {
+  const lag = readLagMs();
+  if (!spikeOn()) return lag;
+  return i % C.spikeEvery === 0 ? lag : 0;
+}
+/** @param {number} i */
+function frameMsFor(i) {
+  return C.frameMs + lagForFrame(i);
 }
 function compareOn() {
   return !!compareEl?.checked;
@@ -180,12 +216,12 @@ function resetWorld() {
   totalSteps = 0;
   totalStepsVar = 0;
   totalStepsFix = 0;
-  trail = [];
-  trailVar = [];
-  trailFix = [];
   fpsEma = 60;
   lowFpsMs = 0;
   elapsedMs = 0;
+  wallAcc = 0;
+  lastSimTs = 0;
+  lastFrame = { realMs: 0, steps: 0 };
   rebuildExtras();
 }
 
@@ -196,11 +232,13 @@ function floorY() {
 /**
  * @param {Hero} body
  * @param {number} dtSec
- * @param {number} elapsedNow
+ * @param {boolean} [record] 更新1回ごとの位置を残す（正解の軌道の計算では残さない）
  */
-function updateBody(body, dtSec, elapsedNow) {
+function updateBody(body, dtSec, record = true) {
   body.v += C.gravity * dtSec;
   body.y += body.v * dtSec;
+  body.simMs += dtSec * 1000;
+  const elapsedNow = body.simMs;
   const floor = floorY();
   if (body.y > floor) {
     body.y = floor;
@@ -226,7 +264,21 @@ function updateBody(body, dtSec, elapsedNow) {
       body.rising = false;
     }
   }
+  if (record) body.updates.push({ t: body.simMs, y: body.y });
 }
+
+/** 正解の軌道: 同じ物理を 1 ms 刻みで計算したもの（描画用に 10 ms ごとに間引く） */
+const REF = (() => {
+  const b = makeHero();
+  /** @type {TimePoint[]} */
+  const pts = [{ t: 0, y: b.y }];
+  let n = 0;
+  while (b.simMs < C.windowMs) {
+    updateBody(b, C.refDtMs / 1000, false);
+    if (++n % 10 === 0) pts.push({ t: b.simMs, y: b.y });
+  }
+  return { pts, firstPeak: b.firstPeak, restMs: b.restMs };
+})();
 
 function updateLoadBody(body, dtSec) {
   body.v += C.gravity * dtSec;
@@ -259,7 +311,7 @@ function stepHero(hero, realMs, mode, accBox, withExtras) {
   let clamped = false;
   if (mode === "variable") {
     const dt = Math.min(realMs / 1000, 0.1);
-    updateBody(hero, dt, elapsedMs + realMs);
+    updateBody(hero, dt);
     if (withExtras) updateExtras(dt);
     steps = 1;
   } else {
@@ -267,17 +319,18 @@ function stepHero(hero, realMs, mode, accBox, withExtras) {
     const fixedSec = fixedMs / 1000;
     const maxSteps = readMaxSteps();
     accBox.acc += Math.min(realMs, 250);
-    while (accBox.acc >= fixedMs && steps < maxSteps) {
-      updateBody(hero, fixedSec, elapsedMs + realMs);
+    while (accBox.acc + ACC_EPS >= fixedMs && steps < maxSteps) {
+      updateBody(hero, fixedSec);
       if (withExtras) updateExtras(fixedSec);
       accBox.acc -= fixedMs;
       steps += 1;
     }
-    if (steps >= maxSteps && accBox.acc >= fixedMs) {
+    if (steps >= maxSteps && accBox.acc + ACC_EPS >= fixedMs) {
       clamped = true;
       accBox.acc = Math.min(accBox.acc, fixedMs * 2);
     }
   }
+  hero.frames.push({ t: hero.simMs, y: hero.y });
   return { steps, clamped, acc: accBox.acc };
 }
 
@@ -335,7 +388,7 @@ function showRunResult(commitPrev = true) {
           <tr><td>経過</td><td colspan="2">${fmtNum(cur.elapsedMs, 0)} ms</td><td>${p ? fmtNum(p.elapsedMs, 0) : "—"}</td></tr>
           <tr><td>更新回数</td><td>${cur.totalStepsVar}</td><td>${cur.totalStepsFix}</td><td>${p ? p.totalSteps : "—"}</td></tr>
           <tr><td>平均 updates/F</td><td>${fmtNum(cur.avgUpdatesVar, 2)}</td><td>${fmtNum(cur.avgUpdatesFix, 2)}</td><td>${p ? fmtNum(p.avgUpdates, 2) : "—"}</td></tr>
-          <tr><td>平均 FPS（実測）</td><td colspan="2">${fmtNum(cur.fps, 0)}</td><td>${p ? fmtNum(p.fps, 0) : "—"}</td></tr>
+          <tr><td>平均 FPS</td><td colspan="2">${fmtNum(cur.fps, 0)}</td><td>${p ? fmtNum(p.fps, 0) : "—"}</td></tr>
           <tr><td>1バウンド目の最高点</td><td>${fmtNum(cur.firstPeakVar, 3)}</td><td>${fmtNum(cur.firstPeakFix, 3)}</td><td>${p ? fmtNum(p.firstPeak, 3) : "—"}</td></tr>
           <tr><td>停止までの時間</td><td>${fmtNum(cur.restMsVar, 0)} ms</td><td>${fmtNum(cur.restMsFix, 0)} ms</td><td>${p ? fmtNum(p.restMs, 0) : "—"}</td></tr>
         </tbody>
@@ -349,7 +402,7 @@ function showRunResult(commitPrev = true) {
           <tr><td>経過時間</td><td>${cell(cur.elapsedMs, p?.elapsedMs, 0)} ms</td></tr>
           <tr><td>更新回数</td><td>${cell(cur.totalSteps, p?.totalSteps, 0)}</td></tr>
           <tr><td>平均 updates/フレーム</td><td>${cell(cur.avgUpdates, p?.avgUpdates, 2)}</td></tr>
-          <tr><td>平均 FPS（実測）</td><td>${cell(cur.fps, p?.fps, 0)}</td></tr>
+          <tr><td>平均 FPS</td><td>${cell(cur.fps, p?.fps, 0)}</td></tr>
           <tr><td>1バウンド目の最高点</td><td>${cell(cur.firstPeak, p?.firstPeak, 3)}</td></tr>
           <tr><td>床で停止するまでの時間</td><td>${cell(cur.restMs, p?.restMs, 0)} ms</td></tr>
         </tbody>
@@ -363,17 +416,16 @@ function showRunResult(commitPrev = true) {
     <h3>この実行の結果</h3>
     ${body}
     ${spiral}
-    <p class="result-note">最高点は床からの正規化座標。FPS は実測なので実行ごとに少し変わります。更新回数と最高点は同じ操作なら一致します。</p>
+    <p class="result-note">正解（同じ物理を 1 ms 刻みで計算）: 最高点 ${fmtNum(REF.firstPeak, 3)}、停止まで ${fmtNum(REF.restMs, 0)} ms。キャンバスの点線がこの軌道です。</p>
+    <p class="result-note">最高点は床からの正規化座標。更新回数と最高点は同じ操作なら一致します（負荷ボールで実際に重くなったときを除く）。</p>
   `);
   if (commitPrev) prevResult = cur;
 }
 
 /**
- * @param {number} realDtMs 実経過（人工遅延込み）
+ * @param {number} realMs このフレームの実経過（人工遅延込み）
  */
-function runFrame(realDtMs) {
-  const lag = readLagMs();
-  const realMs = realDtMs + lag;
+function runFrame(realMs) {
   let steps = 0;
   let clamped = false;
 
@@ -405,7 +457,7 @@ function runFrame(realDtMs) {
   const fps = realMs > 0.5 ? 1000 / realMs : 60;
   fpsEma = fpsEma * 0.85 + fps * 0.15;
   if (fpsEl) {
-    fpsEl.textContent = `FPS: ${fpsEma.toFixed(0)}（実測 ${fps.toFixed(0)}）  負荷 ${Math.max(0, readBalls() - 1)}`;
+    fpsEl.textContent = `FPS: ${fpsEma.toFixed(0)}（このフレーム ${fps.toFixed(0)}）  負荷 ${Math.max(0, readBalls() - 1)}`;
   }
   if (fpsEma < 15) lowFpsMs += realMs;
   else lowFpsMs = 0;
@@ -424,6 +476,7 @@ function runFrame(realDtMs) {
 
   setPhase("render");
   frameIndex += 1;
+  lastFrame = { realMs, steps };
   log.unshift({
     i: frameIndex,
     realMs,
@@ -448,52 +501,103 @@ function runFrame(realDtMs) {
   }
   setPhase(running ? "run" : "idle");
 
-  const floor = floorY();
-  if (loopEl?.checked) {
-    const h = compareOn() ? worldFix : world;
-    if (Math.abs(h.v) < REST_V && h.y >= floor - 0.002) {
+  // 横軸（windowMs）の右端まで進んだら、繰り返しなら最初から、そうでなければ止めて結果を出す
+  const simNow = compareOn() ? Math.min(worldVar.simMs, worldFix.simMs) : world.simMs;
+  if (simNow >= C.windowMs) {
+    if (loopEl?.checked) {
       const wasRunning = running;
       suppressResult = true;
       resetWorld();
       suppressResult = false;
       if (!wasRunning) draw();
+    } else if (running) {
+      stopLoop();
+      setStatus(`${(C.windowMs / 1000).toFixed(0)} 秒分を再生しました — 結果を右に表示。リセットでやり直し`);
     }
   }
 }
 
-function drawHero(hero, cx, trailPts, color, label) {
-  if (!ctx || !canvas) return;
+const PAD_L = 34;
+const PAD_R = 14;
+const COLOR_VAR = "91,159,212";
+const COLOR_FIX = "107,203,143";
+
+/** 横軸: シミュレーション時間 → x */
+function xOf(tMs) {
   const W = canvas.width;
+  return PAD_L + (Math.min(tMs, C.windowMs) / C.windowMs) * (W - PAD_L - PAD_R);
+}
+function yOf(y) {
+  return (y / C.worldHeight) * canvas.height;
+}
+
+function drawReference() {
+  if (!ctx || !refOn()) return;
+  ctx.save();
+  ctx.strokeStyle = "rgba(220,226,235,0.45)";
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([5, 4]);
+  ctx.beginPath();
+  REF.pts.forEach((p, i) => {
+    const x = xOf(p.t);
+    const y = yOf(p.y);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+  ctx.restore();
+}
+
+/**
+ * 更新1回ごと = 小さい点、描画した位置 = 輪、今の位置 = ボール
+ * @param {Hero} hero
+ * @param {string} color "r,g,b"
+ * @param {string} label
+ */
+function drawHero(hero, color, label) {
+  if (!ctx || !canvas) return;
   const H = canvas.height;
-  const floorPy = (C.floorY / C.worldHeight) * H;
-  const cy = (hero.y / C.worldHeight) * H;
-  const r = (C.ballRadius / C.worldHeight) * H;
-  if (trailEl?.checked && trailPts) {
-    trailPts.push({ x: cx, y: cy });
-    if (trailPts.length > 90) trailPts.shift();
-    drawTrailDots(ctx, trailPts, { rgb: color, radius: 2 });
+  if (trailEl?.checked) {
+    ctx.fillStyle = `rgba(${color},0.9)`;
+    for (const p of hero.updates) {
+      ctx.beginPath();
+      ctx.arc(xOf(p.t), yOf(p.y), 1.8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.strokeStyle = `rgba(${color},0.75)`;
+    ctx.lineWidth = 1.5;
+    for (const p of hero.frames) {
+      ctx.beginPath();
+      ctx.arc(xOf(p.t), yOf(p.y), 4.5, 0, Math.PI * 2);
+      ctx.stroke();
+    }
   }
-  ctx.fillStyle = `rgb(${color})`;
+  const cx = xOf(hero.simMs);
+  const cy = yOf(hero.y);
+  const r = (C.ballRadius / C.worldHeight) * H;
+  ctx.fillStyle = `rgba(${color},0.85)`;
   ctx.beginPath();
   ctx.arc(cx, cy, r, 0, Math.PI * 2);
   ctx.fill();
-  ctx.strokeStyle = "#8ec0e8";
-  ctx.lineWidth = 2;
+  ctx.strokeStyle = "#dfe8f2";
+  ctx.lineWidth = 1.5;
   ctx.stroke();
+  // 速度の矢印（0.05 秒で進む距離）
   ctx.strokeStyle = "#f2cc8f";
+  ctx.lineWidth = 2;
   ctx.beginPath();
   ctx.moveTo(cx, cy);
-  ctx.lineTo(cx, cy + hero.v * 0.04);
+  ctx.lineTo(cx, cy + yOf(hero.v) * 0.05);
   ctx.stroke();
   if (label) {
-    ctx.fillStyle = "#9aabbf";
-    ctx.font = "12px ui-monospace, monospace";
-    ctx.textAlign = "center";
-    ctx.fillText(label, cx, 16);
+    // 並走で2つのボールが重なってもラベルが重ならないよう、可変は左・固定は右に書く
+    const left = color === COLOR_VAR;
+    ctx.fillStyle = `rgb(${color})`;
+    ctx.font = "bold 12px ui-monospace, monospace";
+    ctx.textAlign = left ? "right" : "left";
+    ctx.fillText(label, left ? cx - r - 4 : cx + r + 4, cy - r);
     ctx.textAlign = "left";
   }
-  void W;
-  void floorPy;
 }
 
 function drawLoadStrip() {
@@ -539,39 +643,43 @@ function draw() {
   ctx.lineTo(W, floorPy);
   ctx.stroke();
 
-  ctx.strokeStyle = "rgba(90,106,128,0.35)";
-  for (let i = 1; i < 4; i++) {
-    const y = (i / 4) * floorPy;
+  // 時間の目盛り（0.5 秒ごと）
+  ctx.font = "10px ui-monospace, monospace";
+  ctx.textAlign = "center";
+  for (let t = 0; t <= C.windowMs; t += 500) {
+    const x = xOf(t);
+    ctx.strokeStyle = t % 1000 === 0 ? "rgba(90,106,128,0.45)" : "rgba(90,106,128,0.2)";
     ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(W, y);
+    ctx.moveTo(x, 22);
+    ctx.lineTo(x, floorPy);
     ctx.stroke();
+    ctx.fillStyle = "#6a7d94";
+    ctx.fillText(`${(t / 1000).toFixed(1)}s`, x, floorPy + 12);
   }
+  ctx.textAlign = "left";
 
+  drawReference();
   if (compareOn()) {
-    ctx.strokeStyle = "rgba(90,106,128,0.6)";
-    ctx.beginPath();
-    ctx.moveTo(W / 2, 0);
-    ctx.lineTo(W / 2, floorPy);
-    ctx.stroke();
-    drawHero(worldVar, W * 0.25, trailVar, "91,159,212", "可変");
-    drawHero(worldFix, W * 0.75, trailFix, "107,203,143", "固定");
+    drawHero(worldVar, COLOR_VAR, "可変");
+    drawHero(worldFix, COLOR_FIX, "固定");
   } else {
-    const r = (C.ballRadius / C.worldHeight) * H;
-    void r;
-    drawHero(world, W * 0.5, trail, "91,159,212", "");
+    const fixed = readMode() === "fixed";
+    drawHero(world, fixed ? COLOR_FIX : COLOR_VAR, fixed ? "固定" : "可変");
   }
 
   drawLoadStrip();
 
-  ctx.fillStyle = "#9aabbf";
+  // このフレームで何回更新したか
+  ctx.fillStyle = "#c9d4e0";
   ctx.font = "12px ui-monospace, monospace";
   ctx.textAlign = "left";
-  const h = compareOn() ? worldFix : world;
+  const label = compareOn() ? "並走（更新回数は固定側）" : readMode() === "fixed" ? "固定" : "可変";
   ctx.fillText(
-    `y=${h.y.toFixed(3)}  v=${h.v.toFixed(1)}  ${compareOn() ? "並走" : readMode()}`,
-    12,
-    floorPy - 8
+    frameIndex > 0
+      ? `フレーム #${frameIndex}  実経過 ${lastFrame.realMs.toFixed(1)} ms  更新 ${lastFrame.steps} 回  ${label}`
+      : `フレーム #0  ${label}`,
+    8,
+    15
   );
 }
 
@@ -591,7 +699,7 @@ function renderLog() {
         <td>${mode}</td>
         <td>${e.realMs.toFixed(1)}</td>
         <td>${e.steps}</td>
-        <td>${e.mode === "variable" ? "—" : e.accMs.toFixed(1)}</td>
+        <td>${e.mode === "variable" ? "—" : Math.max(0, e.accMs).toFixed(1)}</td>
         <td>${e.clamped ? "打ち切り" : ""}</td>
       </tr>`;
     })
@@ -621,34 +729,42 @@ function stopLoop() {
   if (wasRunning && !suppressResult) showRunResult();
 }
 
+/**
+ * 再生: requestAnimationFrame で実時間を溜め、次のフレームの間隔（基本 + 人工遅延）に達したら1フレーム進める。
+ * 人工遅延は描画の間隔そのものを伸ばすので、重いフレームは「カクカクになる」ように見える（進む速さは同じ）。
+ * 再生速度は溜める実時間に掛ける。負荷ボールで実際に間隔が大きく伸びたときだけ、実測の経過を使う。
+ */
 function scheduleNext() {
   if (!running) return;
-  const scale = readSpeedScale(speedEl);
-  if (scale >= 0.995) {
-    rafId = requestAnimationFrame((ts) => {
-      if (!running) return;
-      if (!lastTs) lastTs = ts;
-      let dt = ts - lastTs;
-      lastTs = ts;
-      if (dt < 1) dt = 1;
-      if (dt > 100) dt = 100;
-      runFrame(dt);
-      scheduleNext();
-    });
-  } else {
-    const wait = 16.7 / scale;
-    timerId = setTimeout(() => {
-      if (!running) return;
-      runFrame(16.7);
-      scheduleNext();
-    }, wait);
-  }
+  rafId = requestAnimationFrame((ts) => {
+    if (!running) return;
+    const scale = readSpeedScale(speedEl);
+    if (!lastTs) lastTs = ts;
+    const dt = Math.min(250, Math.max(0, ts - lastTs));
+    lastTs = ts;
+    wallAcc += dt * scale;
+    const need = frameMsFor(frameIndex + 1);
+    if (wallAcc + 2 >= need) {
+      let realMs = need;
+      if (lastSimTs) {
+        const since = (ts - lastSimTs) * scale;
+        if (since > need * 1.5 + 8) realMs = Math.min(250, since);
+      }
+      wallAcc = Math.max(0, wallAcc - realMs);
+      if (wallAcc > need) wallAcc = 0;
+      lastSimTs = ts;
+      runFrame(realMs);
+    }
+    scheduleNext();
+  });
 }
 
 function startLoop() {
   if (running) return;
   running = true;
   lastTs = 0;
+  lastSimTs = 0;
+  wallAcc = 0;
   if (btnPlay) btnPlay.textContent = "一時停止";
   setPhase("run");
   scheduleNext();
@@ -657,8 +773,14 @@ function startLoop() {
 function togglePlay() {
   if (running) {
     stopLoop();
-    setStatus("一時停止 — 結果を下に表示");
+    setStatus("一時停止 — 結果を右に表示");
     return;
+  }
+  const simNow = compareOn() ? Math.min(worldVar.simMs, worldFix.simMs) : world.simMs;
+  if (simNow >= C.windowMs) {
+    resetWorld();
+    draw();
+    renderLog();
   }
   startLoop();
 }
@@ -679,7 +801,7 @@ btnStep?.addEventListener("click", () => {
   suppressResult = true;
   stopLoop();
   suppressResult = false;
-  runFrame(1000 / 60);
+  runFrame(frameMsFor(frameIndex + 1));
   showRunResult(false);
 });
 btnReset?.addEventListener("click", () => {
@@ -693,14 +815,14 @@ btnReset?.addEventListener("click", () => {
   setPhase("idle");
 });
 
-for (const el of [fixedDtEl, lagEl, maxStepsEl, modeEl]) {
+for (const el of [fixedDtEl, lagEl, maxStepsEl, modeEl, lagModeEl]) {
   el?.addEventListener("input", () => {
     syncLabels();
   });
   el?.addEventListener("change", () => {
     syncLabels();
     setStatus(
-      `設定: mode=${readMode()} FIXED=${readFixedDtMs().toFixed(1)}ms lag=${readLagMs()} maxSteps=${readMaxSteps()}`
+      `設定: mode=${readMode()} FIXED=${readFixedDtMs().toFixed(1)}ms lag=${readLagMs()}${spikeOn() ? `（${C.spikeEvery}フレームに1回）` : ""} maxSteps=${readMaxSteps()}`
     );
   });
 }
@@ -719,6 +841,9 @@ compareEl?.addEventListener("change", () => {
 drawLoadEl?.addEventListener("change", () => {
   draw();
 });
+for (const el of [trailEl, refEl, modeEl]) {
+  el?.addEventListener("change", () => draw());
+}
 
 bindSpeedScaleControl(speedEl, speedVal);
 loadTextSample(
@@ -736,6 +861,7 @@ const urlSpec = {
   mode: { el: modeEl, kind: "select" },
   dt: { el: fixedDtEl, kind: "range" },
   lag: { el: lagEl, kind: "range" },
+  spike: { el: lagModeEl, kind: "select" },
   maxsteps: { el: maxStepsEl, kind: "range" },
   speed: { el: speedEl, kind: "range" },
   balls: { el: ballsEl, kind: "range" },
@@ -743,6 +869,7 @@ const urlSpec = {
   trail: { el: trailEl, kind: "checkbox" },
   drawload: { el: drawLoadEl, kind: "checkbox" },
   compare: { el: compareEl, kind: "checkbox" },
+  ref: { el: refEl, kind: "checkbox" },
 };
 mountShareLink({
   spec: urlSpec,
@@ -756,5 +883,5 @@ draw();
 if (urlResult.warning) {
   setStatus(urlResult.warning);
 } else if (!urlResult.applied.length) {
-  setStatus("準備完了 — 固定 timestep が既定。人工遅延を上げて重いフレームを試す");
+  setStatus("準備完了 — 固定 timestep が既定。「可変と固定を並べる」をオンにして人工遅延を上げると差が出る");
 }
