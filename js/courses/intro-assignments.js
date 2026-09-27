@@ -47,7 +47,7 @@ export const ASSIGNMENTS = {
     number: 1,
     title: "打ち切らない MAX_STEPS を予想する",
     question: "重いフレームが続くとき、1 フレームに何回更新すれば遅れずに済むか。",
-    personal: (d) => `人工遅延 L = ${10 + 5 * d} ms（モードは固定 timestep、遅延のかけ方は毎フレーム）`,
+    personal: (d) => `人工遅延 L = ${10 + 5 * d} ms（モードは固定 timestep、人工遅延のかけ方は毎フレーム）`,
     urls: [
       { id: "A", label: "打ち切りが出ない最小の MAX_STEPS" },
       { id: "B", label: "A より 1 小さい MAX_STEPS（打ち切りが出る）" },
