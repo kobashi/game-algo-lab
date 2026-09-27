@@ -312,21 +312,24 @@
         </svg>
         <figcaption>図 5　1 フレームに 41.7 ms かかったとき。貯金箱に 41.7 ms 入れ、16.7 ms ずつ 2 回取り出して 2 回更新します。残った 8.3 ms は、次のフレームの分に足されます。</figcaption>
       </figure>
-      <p>1 フレームにいつも 41.7 ms かかるとき、貯金箱の中身は次のように動きます。</p>
+      <p>
+        図 5 の 16.7 ms は、3 回分（50.1 ms）とぴったり割り切れません。
+        2 回と 3 回のくり返しを計算しやすいように、ここでは 1 回の更新を 20 ms、1 フレームを 50 ms にして表にします。
+      </p>
       <div class="guide-table-wrap">
         <table class="guide-table">
           <thead><tr><th>フレーム</th><th>入れる前の残り</th><th>入れた後</th><th>更新の回数</th><th>取り出した後の残り</th></tr></thead>
           <tbody>
-            <tr><td>1</td><td>0</td><td>41.7</td><td>2 回</td><td>8.3</td></tr>
-            <tr><td>2</td><td>8.3</td><td>50.0</td><td>3 回</td><td>0</td></tr>
-            <tr><td>3</td><td>0</td><td>41.7</td><td>2 回</td><td>8.3</td></tr>
-            <tr><td>4</td><td>8.3</td><td>50.0</td><td>3 回</td><td>0</td></tr>
+            <tr><td>1</td><td>0</td><td>50</td><td>2 回</td><td>10</td></tr>
+            <tr><td>2</td><td>10</td><td>60</td><td>3 回</td><td>0</td></tr>
+            <tr><td>3</td><td>0</td><td>50</td><td>2 回</td><td>10</td></tr>
+            <tr><td>4</td><td>10</td><td>60</td><td>3 回</td><td>0</td></tr>
           </tbody>
         </table>
       </div>
       <p>
         更新の回数は 2 回と 3 回をくり返し、平均すると 2.5 回です。
-        41.7 ÷ 16.7 ≈ 2.5 と同じになっていることを確かめてみましょう。余りを捨てずに持ち越すので、時間がずれていきません。
+        50 ÷ 20 = 2.5 と同じです。余りを捨てずに持ち越すので、時間がずれていきません。
       </p>
     </section>
 
@@ -356,8 +359,8 @@
             <text x="320" y="140" font-size="14" fill="#e07a5f">スパイラル・オブ・デス</text>
 
             <g transform="translate(150 96)">
-              <rect x="-62" y="-20" width="124" height="34" rx="6" fill="#f2cc8f" />
-              <text x="0" y="3" font-size="15" fill="#0a0e14" font-weight="bold">MAX_STEPS で</text>
+              <rect x="-78" y="-20" width="156" height="34" rx="6" fill="#f2cc8f" />
+              <text x="0" y="3" font-size="15" fill="#0a0e14" font-weight="bold" text-anchor="middle">MAX_STEPS で</text>
             </g>
             <text x="150" y="146" font-size="14" fill="#f2cc8f">回数を打ち切る</text>
           </g>
