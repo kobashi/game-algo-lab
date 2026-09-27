@@ -824,7 +824,7 @@ function mockControl(kind, value, extra = {}) {
     observe: "o",
     discuss: "c",
   });
-  assert.ok(text.includes("提出課題 1: game-loop") && text.includes("d=3 → 人工遅延 L = 25 ms") && text.includes("URL B（") && text.includes("（未入力）"), "提出用テキストの形");
+  assert.ok(text.includes("提出課題 1: game-loop") && text.includes("d=3 → 人工遅延 L = 65 ms") && text.includes("URL B（") && text.includes("（未入力）"), "提出用テキストの形");
   assert.ok(!/`|\*\*/.test(text), "提出用テキストに記号が残らない");
 }
 

@@ -47,12 +47,13 @@ export const ASSIGNMENTS = {
     number: 1,
     title: "打ち切らない MAX_STEPS を予想する",
     question: "重いフレームが続くとき、1 フレームに何回更新すれば遅れずに済むか。",
-    personal: (d) => `人工遅延 L = ${10 + 5 * d} ms（モードは固定 timestep、人工遅延のかけ方は毎フレーム）`,
+    personal: (d) => `人工遅延 L = ${80 - 5 * d} ms（モードは固定 timestep、人工遅延のかけ方は毎フレーム）`,
     urls: [
       { id: "A", label: "打ち切りが出ない最小の MAX_STEPS" },
       { id: "B", label: "A より 1 小さい MAX_STEPS（打ち切りが出る）" },
     ],
-    observe: "A と B それぞれの、結果表の「平均 更新/フレーム」と「経過時間」、状態表示の打ち切り回数。",
+    observe:
+      "A と B それぞれの、結果表の「平均 更新/フレーム」と「経過時間」と、打ち切りの回数（結果表の下の「MAX_STEPS 打ち切り … 回」。フレームログの「MAX_STEPS 警告」も同じ）。",
     discuss: [
       "なぜその回数か（1 フレームの実経過 16.7 + L ms と、アキュムレータで説明する）",
       "B でシミュレーションが遅れる理由",
@@ -84,19 +85,19 @@ export const ASSIGNMENTS = {
     number: 3,
     title: "すり抜けの境目を探す",
     question: "1 歩が「障害物の厚み ＋ ボールの直径」より大きくなると、必ずすり抜けるか。",
-    personal: (d) => `障害物の厚み T = ${8 + d} px（vx = 220、vy = 0、障害物あり）`,
+    personal: (d) => `横の速さ vx = ${195 + 5 * d}（vy = 0、障害物あり、障害物の厚み 10 px）`,
     urls: [
       { id: "A", label: "すり抜ける最小の dt（0.1 ms 刻みで探す）" },
       { id: "B", label: "A より 0.1 ms 小さい dt（当たる）" },
     ],
     observe:
-      "A と B の「1フレームの移動 |v|·dt」。A ですり抜けたときの状態表示（何ステップ目か、厚みと直径を含む文）。",
+      "A と B の「1フレームの移動 |v|·dt」。A ですり抜けたときの状態表示（厚みと直径を含む文）と、何回目の「1ステップ」ですり抜けたか（自分で数える）。",
     discuss: [
       "A の 1 歩と「厚み ＋ 直径」を比べる",
       "1 歩が厚み ＋ 直径より大きいのに当たる dt はあるか。あるならなぜか",
       "すり抜けを防ぐ方法",
     ],
-    example: "`velocity-motion.html?vx=220&vy=0&obs=1&trail=1&thick=T&dt=…`",
+    example: "`velocity-motion.html?vx=…&vy=0&obs=1&trail=1&thick=10&dt=…`",
   },
 
   "accel-gravity": {
@@ -104,7 +105,7 @@ export const ASSIGNMENTS = {
     title: "狙った高さの比を作る",
     question: "跳ねるたびに高さが決まった割合になるよう、反発係数を選べるか。",
     personal: (d) => {
-      const e = 0.5 + 0.05 * d;
+      const e = 0.9 - 0.05 * d;
       return `目標の高さの比 R = ${(e * e).toFixed(2)}（障害物は消す: \`obs=0\`）`;
     },
     urls: [
@@ -124,7 +125,7 @@ export const ASSIGNMENTS = {
     number: 5,
     title: "角でぎりぎり触れる配置",
     question: "円が箱の角に触れる瞬間を作れるか。辺で触れるときと何が違うか。",
-    personal: (d) => `円 A の半径 = ${20 + 2 * d}`,
+    personal: (d) => `円 A の半径 = ${30 + 3 * d}`,
     urls: [
       { id: "A", label: "円 A が箱の角に接触（円A–AABB が HIT）" },
       { id: "B", label: "A から 1 px 離して miss" },
@@ -178,7 +179,7 @@ export const ASSIGNMENTS = {
     number: 8,
     title: "どの幅でも崩れない HUD",
     question: "画面の幅が変わっても、決めた場所に UI を置き続けられるか。",
-    personal: (d) => `置く場所 = ${UI_PLACES[d % 5]}`,
+    personal: (d) => `置く場所 = ${UI_PLACES[(d + 2) % 5]}`,
     urls: [
       { id: "A", label: "幅（連続）480（`vieww=480`）" },
       { id: "B", label: "幅（連続）640（`vieww=640`）" },
@@ -230,7 +231,7 @@ export const ASSIGNMENTS = {
     number: 11,
     title: "周期が最大になる LCG",
     question: "法 m の LCG で、周期がちょうど m になる a・c の組はどんな組か。",
-    personal: (d) => `法 m = ${2 ** (6 + (d % 4))}`,
+    personal: (d) => `法 m = ${2 ** (6 + ((d + 1) % 4))}`,
     urls: [
       { id: "A", label: "周期が m になる a・c" },
       { id: "B", label: "周期が m より短くなる a・c" },
@@ -285,12 +286,12 @@ export const ASSIGNMENTS = {
     number: 14,
     title: "MC が正しくなる試行回数",
     question: "モンテカルロ法が完全解析と同じ手を選ぶには、何回試せばよいか。",
-    personal: (d) => `シード = ${10 + d}（プリセットは初手: 隅 \`preset=open-corner\`）`,
+    personal: (d) => `シード = ${30 + d}（プリセットは初手: 隅 \`preset=open-corner\`）`,
     urls: [
       { id: "A", label: "N = 10〜1000 の範囲で、最後に不一致になる N（N は 10 刻み）" },
       { id: "B", label: "A + 10（一致する）" },
     ],
-    observe: "A と B で「解析」と「MC 実行」をしたときの、MC の推奨手・勝率と、完全解の最善手（状態表示）。",
+    observe: "A と B で「解析」と「MC 実行」をしたときの状態表示（MC の最善手・勝率と、「完全解と一致」か「不一致」か）。",
     discuss: [
       "N を増やすと一致する理由",
       "シードを変えると境目が変わる理由",
