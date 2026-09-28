@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="C# 解説 3（C 言語の経験者向け）。速度による移動のサンプルコードで、struct・コンストラクタ・式形式メンバー・new(...) と、位置の積分の計算を説明する。" />
+  <title>C# 解説 3 速度による移動 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="course" data-active="intro"></header>
+
+  <main class="container topic-main guide-main cs-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="intro.html">入門コース</a> / C# 解説 3</p>
+      <h1>速度による移動 — C# 解説 3</h1>
+      <p class="page-header-lead">
+        <code>samples/VelocityMotionExample.cs</code> を読みながら、C# の書き方と、コードの中の計算を説明します。
+        第 2 回までを読んでいることを前提にします。
+        移動の考え方そのものは<a href="guide-velocity-motion.html">速度による移動のくわしい解説</a>に図で説明しています。
+        <a href="../algorithms/velocity-motion.html?course=intro">速度による移動のデモ</a>でも、同じコードを見られます。
+      </p>
+      <nav class="guide-toc" aria-label="目次">
+        <strong>目次</strong>
+        <ol>
+          <li><a href="#s1">このコードがすること</a></li>
+          <li><a href="#s2">新しく出てくる C# の文法</a></li>
+          <li><a href="#s3">計算式とアルゴリズムのポイント</a></li>
+          <li><a href="#s4">呼び出してみる（Main と出力）</a></li>
+          <li><a href="#s5">まとめと、やってみよう</a></li>
+          <li><a href="#s6">全体のコード</a></li>
+        </ol>
+      </nav>
+    </div>
+
+    <!-- 1 -->
+    <section class="guide-section" id="s1" aria-labelledby="s1-h">
+      <h2 id="s1-h">1. このコードがすること</h2>
+      <p>このファイルには、次の 2 つがあります。</p>
+      <ul>
+        <li><code>Vec2</code>: x と y をひと組にして持つ小さな入れ物。位置にも速度にも使えます。</li>
+        <li><code>VelocityMotionExample.Integrate(p, v, dt)</code>: 位置 <code>p</code>・速度 <code>v</code>・時間 <code>dt</code> から、<strong>新しい位置</strong>を計算して返します。<code>p</code> 自身は変わりません。</li>
+      </ul>
+    </section>
+
+    <!-- 2 -->
+    <section class="guide-section" id="s2" aria-labelledby="s2-h">
+      <h2 id="s2-h">2. 新しく出てくる C# の文法</h2>
+
+      <div class="cs-syntax">
+        <h3>2.1 <code>struct</code>: 値型。フィールドをまとめて宣言、コンストラクタ</h3>
+        <pre class="code-block cs-excerpt"><code>public struct Vec2 { public double X, Y; public Vec2(double x, double y){X=x;Y=y;} }</code></pre>
+        <div class="cs-pair">
+          <div>
+            <p class="cs-pair-label">C で書くと</p>
+            <pre class="code-block"><code>struct Vec2 {
+    double x, y;
+};</code></pre>
+          </div>
+          <div>
+            <p class="cs-pair-label">C#（1 行にまとめて書いてある）</p>
+            <pre class="code-block"><code>public struct Vec2
+{
+    public double X, Y;
+    public Vec2(double x, double y)
+    {
+        X = x;
+        Y = y;
+    }
+}</code></pre>
+          </div>
+        </div>
+        <p>
+          <code>struct</code> は C の構造体と同じ感覚で使えます。<strong>値型</strong>で、代入や引数渡しのたびに中身がコピーされます。
+          <a href="cs-game-loop.html#s3">第 1 回</a>の <code>class</code>（<code>BallWorld</code>）は<strong>参照型</strong>で、渡しても実体は 1 つのままでした。ここが対照的です。
+        </p>
+        <p>
+          <code>public double X, Y;</code> は、同じ型のフィールドをコンマで区切って 1 行にまとめて書けるという意味です。C の <code>double x, y;</code> と同じ書き方です。
+        </p>
+        <p>
+          <code>public Vec2(double x, double y){X=x;Y=y;}</code> は<strong>コンストラクタ</strong>です。型名と同じ名前のメソッドで、<code>new</code> で作るときに自動で呼ばれ、フィールドへ初期値を入れます。
+          C では、こういう初期化は <code>vec2_make(x, y)</code> のような別の関数を自分で用意して呼ぶ必要がありました。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.2 式形式メンバー <code>=&gt;</code> と、型を省略した <code>new(...)</code></h3>
+        <pre class="code-block cs-excerpt"><code>public static Vec2 Integrate(Vec2 p, Vec2 v, double dt)
+    => new(p.X + v.X * dt, p.Y + v.Y * dt);</code></pre>
+        <p>
+          <code>=&gt;</code> は、中身が <code>return 式;</code> だけのメソッドを短く書く書き方です（<strong>式形式メンバー</strong>）。次の書き方と同じ意味です。
+        </p>
+        <pre class="code-block"><code>public static Vec2 Integrate(Vec2 p, Vec2 v, double dt)
+{
+    return new(p.X + v.X * dt, p.Y + v.Y * dt);
+}</code></pre>
+        <p>
+          <code>new(...)</code> は、型名を省いた <code>new</code> です。戻り値の型がすでに <code>Vec2</code> だと分かっているので、
+          <code>new Vec2(...)</code> と書かなくても、<code>new(...)</code> だけで「今分かっている型（ここでは <code>Vec2</code>）で作る」という意味になります。
+          <a href="cs-game-loop.html#s3">第 1 回</a>では <code>new BallWorld()</code> と型名を書いていました。型がはっきり分かる場面でだけ、こう省略できます。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.3 新しい値を返して、元を変えない書き方</h3>
+        <p>
+          <code>Integrate</code> は、渡された <code>p</code> の中身を書き換えず、計算した結果を新しい <code>Vec2</code> として <code>return</code> します。
+          <a href="cs-game-loop.html#s3">第 1 回</a>の <code>BallWorld.Update</code> は、自分の <code>Y</code>・<code>V</code> を直接書き換えていました。ここは書き方が違います。
+        </p>
+        <p>
+          位置を実際に進めるには、呼び出す側で <code>p = VelocityMotionExample.Integrate(p, v, dt);</code> のように、戻り値を <code>p</code> へ入れ直します。
+          戻り値を受け取らずに <code>VelocityMotionExample.Integrate(p, v, dt);</code> とだけ書くと、<code>p</code> は変わりません（4 節で確かめます）。
+        </p>
+      </div>
+
+      <p class="cs-known">
+        これまでに出たもの: <code>using System;</code>・<code>public static class</code>（<a href="cs-game-loop.html#s3">第 1 回</a>）、<code>///</code> のコメント（<a href="cs-game-loop.html#s3">第 1 回</a>）。<br />
+        C と同じもの: <code>double</code>、<code>+</code>・<code>*</code>。
+      </p>
+    </section>
+
+    <!-- 3 -->
+    <section class="guide-section" id="s3" aria-labelledby="s3-h">
+      <h2 id="s3-h">3. 計算式とアルゴリズムのポイント</h2>
+
+      <h3>3.1 新しい位置 ＝ 今の位置 ＋ 速さ × dt</h3>
+      <pre class="code-block cs-excerpt"><code>=> new(p.X + v.X * dt, p.Y + v.Y * dt);</code></pre>
+      <p>
+        式で書くと <strong>p' = p + v · dt</strong> です。考え方は<a href="guide-velocity-motion.html#s2">くわしい解説の 2 節</a>のとおりで、
+        横（<code>X</code>）と縦（<code>Y</code>）を、それぞれ独立に <code>p.X + v.X * dt</code>・<code>p.Y + v.Y * dt</code> と計算しているだけです（<a href="guide-velocity-motion.html#s3">3 節の速度ベクトル</a>）。
+      </p>
+
+      <h3>3.2 なぜ新しい値を返すのか</h3>
+      <p>
+        <code>Vec2</code> は <code>struct</code>（値型）なので、引数の <code>p</code> には、呼び出し元の <code>Vec2</code> の<strong>コピー</strong>が渡ってきます。
+        もし <code>Integrate</code> の中で <code>p.X += v.X * dt;</code> のように <code>p</code> 自身を書き換えても、それはコピーを書き換えるだけで、呼び出し元の変数は変わりません。
+        だから、新しい値を計算して <code>return</code> し、呼び出す側で <code>p = ...</code> と受け取る書き方になっています。
+      </p>
+    </section>
+
+    <!-- 4 -->
+    <section class="guide-section" id="s4" aria-labelledby="s4-h">
+      <h2 id="s4-h">4. 呼び出してみる（Main と出力）</h2>
+      <p>
+        <code>v = (60, -30)</code>（1 秒に右へ 60、上へ 30）、<code>dt = 1/60</code> 秒で、3 フレームぶん動かします。
+      </p>
+      <pre class="code-block"><code>using System;
+
+public static class Program
+{
+    public static void Main()
+    {
+        Vec2 p = new(0, 0);
+        Vec2 v = new(60, -30);
+        double dt = 1.0 / 60;
+
+        for (int frame = 1; frame &lt;= 3; frame++)
+        {
+            p = VelocityMotionExample.Integrate(p, v, dt);
+            Console.WriteLine("frame " + frame + ": x=" + Math.Round(p.X, 3) + " y=" + Math.Round(p.Y, 3));
+        }
+    }
+}</code></pre>
+      <p>実行結果:</p>
+      <pre class="code-block"><code>frame 1: x=1 y=-0.5
+frame 2: x=2 y=-1
+frame 3: x=3 y=-1.5</code></pre>
+      <p>
+        1 フレームごとに x が 1 ずつ、y が -0.5 ずつ変わっています（60 × 1/60 = 1、-30 × 1/60 = -0.5）。y がマイナス方向へ進むのは、上へ動いているからです。
+      </p>
+      <p>3 節で説明した「戻り値を受け取らないと <code>p</code> は変わらない」ことも確かめます。</p>
+      <pre class="code-block"><code>Vec2 p = new(0, 0);
+Vec2 v = new(60, 0);
+VelocityMotionExample.Integrate(p, v, 1.0 / 60); // 戻り値を受け取らない
+Console.WriteLine("x=" + p.X); // 0 のまま</code></pre>
+      <pre class="code-block"><code>x=0</code></pre>
+    </section>
+
+    <!-- まとめ -->
+    <section class="guide-section guide-try" id="s5" aria-labelledby="s5-h">
+      <h2 id="s5-h">5. まとめと、やってみよう</h2>
+      <p>この回で出てきた C# の文法です。後の回では、ここへのリンクだけを置きます。</p>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead><tr><th>文法</th><th>ひとことで</th><th>C では</th></tr></thead>
+          <tbody>
+            <tr><td><a href="#s2"><code>struct</code></a></td><td>値型。代入・引数でコピーされる</td><td>構造体（同じ感覚）</td></tr>
+            <tr><td><code>public double X, Y;</code></td><td>同じ型のフィールドを 1 行にまとめる</td><td>C と同じ</td></tr>
+            <tr><td>コンストラクタ</td><td>型名と同じ名前のメソッド。<code>new</code> で自動的に呼ばれる</td><td>初期化用の関数を自分で用意</td></tr>
+            <tr><td>式形式メンバー <code>=&gt;</code></td><td><code>return 式;</code> だけの短い書き方</td><td>—</td></tr>
+            <tr><td>型を省略した <code>new(...)</code></td><td>型が分かる場面で <code>new</code> の後の型名を省ける</td><td>—</td></tr>
+            <tr><td>新しい値を返す書き方</td><td>元を変えず、計算結果を <code>return</code> する</td><td>—（構造体を値で返す関数と同じ）</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>やってみよう</h3>
+      <ol>
+        <li>4 節の <code>v</code> を <code>new(0, 100)</code>（真下へ進む）に変えて、3 フレーム後の <code>x</code>・<code>y</code> を予想してから確かめる。</li>
+        <li><code>p = VelocityMotionExample.Integrate(p, v, dt);</code> の <code>p = </code> を消して実行し、<code>x</code>・<code>y</code> がどうなるかを確かめる。</li>
+      </ol>
+      <div class="guide-check">
+        <h3>確かめよう</h3>
+        <details>
+          <summary>問 1. <code>Vec2</code> が <code>class</code> ではなく <code>struct</code> なのは何を意味する？</summary>
+          <p>値型だということです。代入したり引数として渡したりすると、中身がコピーされます。</p>
+        </details>
+        <details>
+          <summary>問 2. <code>Integrate(p, v, dt)</code> の戻り値を <code>p</code> に代入しないと、何が起きる？</summary>
+          <p><code>p</code> は変わりません。<code>Integrate</code> は自分に渡された <code>p</code> のコピーを計算に使うだけで、書き換えないからです。</p>
+        </details>
+        <details>
+          <summary>問 3. <code>new(60, -30)</code> のように型名を省略できるのはどんなとき？</summary>
+          <p>代入先や戻り値の型が、すでにコンパイラに分かっているときです。ここでは <code>Vec2 v = ...</code> や、戻り値の型が <code>Vec2</code> と決まっているためです。</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- 全体 -->
+    <section class="guide-section" id="s6" aria-labelledby="s6-h">
+      <h2 id="s6-h">6. 全体のコード</h2>
+      <p><code>samples/VelocityMotionExample.cs</code> の全体です（デモのページに出ているものと同じファイル）。</p>
+      <pre class="code-block" data-sample="../samples/VelocityMotionExample.cs"><code>// 読み込み中…</code></pre>
+    </section>
+
+    <nav class="guide-pager" aria-label="ページ送り">
+      <a class="btn btn-ghost" href="cs-input-basics.html">← 前: C# 解説 2 入力の基礎</a>
+      <a class="btn btn-primary" href="../algorithms/velocity-motion.html?course=intro">デモを開く</a>
+      <a class="btn btn-ghost" href="cs-accel-gravity.html">次: C# 解説 4 加速度と重力 →</a>
+    </nav>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="入門コース · C# 解説 3 速度による移動"></footer>
+  <script type="module" src="../js/courses/guide.js"></script>
+</body>
+</html>

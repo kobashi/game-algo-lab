@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="C# 解説 4（C 言語の経験者向け）。加速度と重力のサンプルコードで、float と double・可変 struct とコピーの落とし穴と、落下と跳ね返りの計算を説明する。" />
+  <title>C# 解説 4 加速度と重力 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="course" data-active="intro"></header>
+
+  <main class="container topic-main guide-main cs-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="intro.html">入門コース</a> / C# 解説 4</p>
+      <h1>加速度と重力 — C# 解説 4</h1>
+      <p class="page-header-lead">
+        <code>samples/AccelGravityExample.cs</code> を読みながら、C# の書き方と、コードの中の計算を説明します。
+        第 3 回までを読んでいることを前提にします。
+        落下や跳ね返りの考え方そのものは<a href="guide-accel-gravity.html">加速度と重力のくわしい解説</a>に図で説明しています。
+        <a href="../algorithms/accel-gravity.html?course=intro">加速度と重力のデモ</a>でも、同じコードを見られます。
+      </p>
+      <nav class="guide-toc" aria-label="目次">
+        <strong>目次</strong>
+        <ol>
+          <li><a href="#s1">このコードがすること</a></li>
+          <li><a href="#s2">新しく出てくる C# の文法</a></li>
+          <li><a href="#s3">計算式とアルゴリズムのポイント</a></li>
+          <li><a href="#s4">呼び出してみる（Main と出力）</a></li>
+          <li><a href="#s5">まとめと、やってみよう</a></li>
+          <li><a href="#s6">全体のコード</a></li>
+        </ol>
+      </nav>
+    </div>
+
+    <!-- 1 -->
+    <section class="guide-section" id="s1" aria-labelledby="s1-h">
+      <h2 id="s1-h">1. このコードがすること</h2>
+      <p><code>Body2D</code> は 1 つの構造体で、次の 2 つのメソッドを持ちます。</p>
+      <ul>
+        <li><code>Integrate(dt)</code>: 重力で縦の速さ <code>Vy</code> を変え、その速さで位置 <code>X</code>・<code>Y</code> を動かします。自分のフィールドを直接書き換えます。</li>
+        <li><code>BounceFloor(floorY, restitution)</code>: 床（<code>floorY</code>）を超えていたら、位置を床の上に戻し、縦の速さの向きを反転して弱めます。</li>
+      </ul>
+    </section>
+
+    <!-- 2 -->
+    <section class="guide-section" id="s2" aria-labelledby="s2-h">
+      <h2 id="s2-h">2. 新しく出てくる C# の文法</h2>
+
+      <div class="cs-syntax">
+        <h3>2.1 <code>float</code> と <code>double</code></h3>
+        <pre class="code-block cs-excerpt"><code>public float X, Y, Vx, Vy;
+public float Gravity; // a.y</code></pre>
+        <p>
+          C と同じく、C# にも小数を表す型が 2 つあります。<code>float</code>（単精度。約 7 桁の精度）と <code>double</code>（倍精度。約 15 桁の精度）です。
+          これまでのサンプル（<a href="cs-game-loop.html#s3">第 1 回</a>・<a href="cs-velocity-motion.html#s2">第 3 回</a>）は <code>double</code> を使っていましたが、このサンプルは <code>float</code> です。
+        </p>
+        <p>
+          C# の小数リテラル（<code>3.14</code> のような数の書き方）は、既定で <code>double</code> として扱われます。<code>float</code> の変数に代入するには、数の後ろに <code>f</code> を付けます。
+          実際に <code>f</code> を付けずに書いてコンパイルすると、次のエラーになります。
+        </p>
+        <pre class="code-block"><code>float f = 3.14;
+// error CS0664: Literal of type double cannot be implicitly
+// converted to type 'float'; use an 'F' suffix to create a literal of this type</code></pre>
+        <p>
+          また、<code>double</code> の変数を <code>float</code> の変数へ代入することも、暗黙にはできません（精度が落ちるため）。
+        </p>
+        <pre class="code-block"><code>double d = 3.14;
+float f = d;
+// error CS0266: Cannot implicitly convert type 'double' to 'float'.
+// An explicit conversion exists (are you missing a cast?)</code></pre>
+        <p>
+          逆に <code>float</code> を <code>double</code> の変数へ入れるのは、精度が広がる方向なので暗黙にできます。狭くなる変換だけ、キャスト（<code>(float)d</code>）が必要です。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.2 struct のメソッドが自分のフィールドを書き換える</h3>
+        <pre class="code-block cs-excerpt"><code>public void Integrate(float dt)
+{
+    Vy += Gravity * dt;
+    X += Vx * dt;
+    Y += Vy * dt;
+}</code></pre>
+        <p>
+          <a href="cs-velocity-motion.html#s2">第 3 回</a>の <code>Vec2.Integrate</code> は <code>static</code> で、新しい値を <code>return</code> していました。
+          こちらの <code>Integrate</code> は <code>static</code> が付いておらず、<code>this</code>（呼び出したボディ自身）の <code>Vy</code>・<code>X</code>・<code>Y</code> を直接書き換えます。
+          <code>class</code> のメソッドと同じ書き方ですが、<code>Body2D</code> は <code>struct</code>（値型）のままです。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.3 コピーの落とし穴</h3>
+        <p>
+          <code>struct</code> は値型なので、変数へ取り出したり配列の要素をコピーしたりすると、そのコピーに対して <code>Integrate</code> を呼んでも、元の値は変わりません。
+          実際に試すと、次のようになります。
+        </p>
+        <pre class="code-block"><code>Body2D[] bodies = new Body2D[1];
+bodies[0] = new Body2D();
+bodies[0].Vy = 100f;
+bodies[0].Gravity = 600f;
+
+bodies[0].Integrate(1f / 60f); // 配列の要素に直接呼ぶ → 配列の中身が変わる
+Console.WriteLine("array element: y=" + bodies[0].Y);
+
+Body2D copy = bodies[0]; // ここで値がコピーされる
+copy.Integrate(1f / 60f); // copy だけが変わる
+Console.WriteLine("local copy:    y=" + copy.Y);
+Console.WriteLine("array element (unchanged): y=" + bodies[0].Y);</code></pre>
+        <pre class="code-block"><code>array element: y=1.8333334
+local copy:    y=3.8333335
+array element (unchanged): y=1.8333334</code></pre>
+        <p>
+          <code>bodies[0].Integrate(...)</code> は配列の要素そのものを書き換えるので、<code>Y</code> が変わります。
+          いっぽう、いったん <code>Body2D copy = bodies[0];</code> で別の変数に取り出すと、それはコピーです。<code>copy.Integrate(...)</code> は <code>copy</code> だけを変え、<code>bodies[0]</code> はそのままです。
+          関数の引数に渡すときも同じことが起きます。「配列やフィールドから読み出した struct を、いったん別の変数に入れてから使う」ときは注意してください。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.4 <code>BounceFloor</code> の <code>-Vy</code>（<code>Math.Abs</code> を使わない）</h3>
+        <pre class="code-block cs-excerpt"><code>public void BounceFloor(float floorY, float restitution)
+{
+    if (Y &gt; floorY)
+    {
+        Y = floorY;
+        Vy = -Vy * restitution;
+    }
+}</code></pre>
+        <p>
+          <a href="cs-game-loop.html#s4">第 1 回</a>の <code>BallWorld.Update</code> は、床に着いたとき <code>-Math.Abs(V) * Restitution</code> と書いていました。
+          <code>Abs</code> で向きを消してから <code>-</code> を付けるので、<code>V</code> がどんな符号でも必ず上向きになります。
+        </p>
+        <p>
+          こちらの <code>BounceFloor</code> は、<code>Abs</code> を使わず <code>-Vy * restitution</code> とだけ書いています。
+          <code>Integrate</code> が先に重力で <code>Vy</code> を増やしてから位置を進めるので、床を超えた瞬間はふつう <code>Vy</code> が下向き（正）になっており、<code>-Vy</code> で上向きに変わります。
+          ただし、これは「床にぶつかる瞬間は必ず下向きに動いている」という前提に頼った書き方です。<code>Math.Abs</code> を使う書き方のほうが、その前提が崩れても安全です。
+        </p>
+      </div>
+
+      <p class="cs-known">
+        これまでに出たもの: <code>public</code>（<a href="cs-game-loop.html#s3">第 1 回</a>）、<code>struct</code>（<a href="cs-velocity-motion.html#s2">第 3 回</a>）。<br />
+        C と同じもの: <code>+=</code>、<code>-</code>（単項）、比較演算子 <code>&gt;</code>。
+      </p>
+    </section>
+
+    <!-- 3 -->
+    <section class="guide-section" id="s3" aria-labelledby="s3-h">
+      <h2 id="s3-h">3. 計算式とアルゴリズムのポイント</h2>
+
+      <h3>3.1 速さ ← 速さ ＋ g・dt、位置 ← 位置 ＋ 速さ・dt</h3>
+      <pre class="code-block cs-excerpt"><code>Vy += Gravity * dt;
+X += Vx * dt;
+Y += Vy * dt;</code></pre>
+      <p>
+        <a href="guide-accel-gravity.html#s1">くわしい解説の 1 節</a>の式そのままです。<code>Vx</code> は重力の影響を受けないので変わらず、<code>X</code> は毎フレーム同じだけ進みます。
+        <code>Vy</code> だけが重力で増えていくので、<code>Y</code> の進み方はだんだん大きくなります（<a href="guide-accel-gravity.html#s2">2 節の表</a>・<a href="guide-accel-gravity.html#s4">4 節の放物線</a>）。
+      </p>
+
+      <h3>3.2 床での跳ね返り</h3>
+      <pre class="code-block cs-excerpt"><code>if (Y &gt; floorY)
+{
+    Y = floorY;
+    Vy = -Vy * restitution;
+}</code></pre>
+      <p>
+        <code>Y = floorY;</code> で床にめり込んだ分を戻し（<a href="guide-accel-gravity.html#s5">5 節</a>）、<code>Vy = -Vy * restitution;</code> で向きを反対にして弱めます。
+        跳ね上がる高さが反発係数の 2 乗に比例することは、<a href="guide-accel-gravity.html#s6">くわしい解説の 6 節</a>で説明しています。
+      </p>
+
+      <h3>3.3 なぜコピーだと変わらないのか</h3>
+      <p>
+        2.3 節の結果は、<code>struct</code> が値型であることの直接の結果です。<code>Body2D copy = bodies[0];</code> の行で、<code>bodies[0]</code> の <code>X</code>・<code>Y</code>・<code>Vx</code>・<code>Vy</code>・<code>Gravity</code> の値が、
+        すべて <code>copy</code> という<strong>別の場所</strong>にコピーされます。そのあと <code>copy.Integrate(...)</code> が書き換えるのは、この別の場所のフィールドだけです。
+        <code>bodies[0]</code> 自身のフィールドは、どこからも触られていないので変わりません。
+      </p>
+    </section>
+
+    <!-- 4 -->
+    <section class="guide-section" id="s4" aria-labelledby="s4-h">
+      <h2 id="s4-h">4. 呼び出してみる（Main と出力）</h2>
+      <p>
+        重力 600、反発係数 0.6、床 <code>floorY = 100</code>、<code>dt = 1/60</code> 秒で、40 フレーム落として、5 フレームおきに <code>Y</code>・<code>Vy</code> を表示します。
+      </p>
+      <pre class="code-block"><code>using System;
+
+public static class Program
+{
+    public static void Main()
+    {
+        Body2D body = new Body2D();
+        body.Gravity = 600f;
+        body.Y = 0f;
+        float floorY = 100f;
+        float restitution = 0.6f;
+        float dt = 1f / 60f;
+
+        for (int frame = 1; frame &lt;= 40; frame++)
+        {
+            body.Integrate(dt);
+            body.BounceFloor(floorY, restitution);
+
+            if (frame % 5 == 0)
+                Console.WriteLine("frame " + frame + ": y=" + Math.Round(body.Y, 2) + " vy=" + Math.Round(body.Vy, 2));
+        }
+    }
+}</code></pre>
+      <p>実行結果:</p>
+      <pre class="code-block"><code>frame 5: y=2.5 vy=50
+frame 10: y=9.17 vy=100
+frame 15: y=20 vy=150
+frame 20: y=35 vy=200
+frame 25: y=54.17 vy=250
+frame 30: y=77.5 vy=300
+frame 35: y=100 vy=-210
+frame 40: y=85 vy=-160</code></pre>
+      <p>
+        フレーム 5〜30 では <code>y</code> と <code>vy</code> がだんだん大きくなり、落ちる速さが増えています。フレーム 30〜35 のあいだで床（<code>y=100</code>）に着き、
+        フレーム 35 では <code>vy</code> がマイナス（上向き）に変わって跳ね返っていることが分かります。<code>body.Y</code> や <code>body.Vx</code> は初期値 0 のままにしています。
+      </p>
+    </section>
+
+    <!-- まとめ -->
+    <section class="guide-section guide-try" id="s5" aria-labelledby="s5-h">
+      <h2 id="s5-h">5. まとめと、やってみよう</h2>
+      <p>この回で出てきた C# の文法です。後の回では、ここへのリンクだけを置きます。</p>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead><tr><th>文法</th><th>ひとことで</th><th>C では</th></tr></thead>
+          <tbody>
+            <tr><td><a href="#s2"><code>float</code>・<code>double</code></a></td><td>精度が違う 2 つの小数型。<code>float</code> は <code>f</code> サフィックスが要る</td><td>C と同じ 2 つの型がある</td></tr>
+            <tr><td>double→float の暗黙変換</td><td>できない（キャストが要る）。逆はできる</td><td>暗黙に変換される（精度が落ちる）</td></tr>
+            <tr><td>可変 <code>struct</code></td><td>値型のままメソッドが自分のフィールドを書き換えられる</td><td>—（構造体を受け取る関数がポインタ経由で書き換える）</td></tr>
+            <tr><td>struct のコピーの落とし穴</td><td>別変数・配列から取り出すとコピー。書き換えても元は不変</td><td>構造体の代入と同じ</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>やってみよう</h3>
+      <ol>
+        <li>4 節の <code>restitution</code> を <code>0.8</code> に変えて、跳ね返ったあとの <code>vy</code> の絶対値が、跳ね返る前よりどれだけ小さくなるかを確かめる。</li>
+        <li>2.3 節のコードで、<code>copy.Integrate(...)</code> の代わりに <code>bodies[0].Integrate(...)</code> をもう一度呼んだらどうなるかを予想してから確かめる。</li>
+      </ol>
+      <div class="guide-check">
+        <h3>確かめよう</h3>
+        <details>
+          <summary>問 1. <code>float f = 3.14;</code> と書くと、C# ではどうなる？</summary>
+          <p>コンパイルエラーになります（CS0664）。<code>3.14</code> は既定で <code>double</code> のリテラルなので、<code>3.14f</code> と書く必要があります。</p>
+        </details>
+        <details>
+          <summary>問 2. <code>Body2D copy = bodies[0];</code> のあと <code>copy.Integrate(dt);</code> を呼んでも <code>bodies[0]</code> が変わらないのはなぜ？</summary>
+          <p><code>struct</code> は値型なので、<code>copy</code> には <code>bodies[0]</code> の値のコピーが入っています。<code>copy</code> を書き換えても、<code>bodies[0]</code> という別の場所には影響しません。</p>
+        </details>
+        <details>
+          <summary>問 3. <code>BounceFloor</code> が <code>-Vy * restitution</code> でなく <code>-Math.Abs(Vy) * restitution</code> だったら、何が変わる？</summary>
+          <p><code>Vy</code> がすでに上向き（マイナス）のときに <code>BounceFloor</code> が呼ばれても、必ず上向きの結果になります。<code>-Vy</code> だけだと、その場合は下向きになってしまいます。</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- 全体 -->
+    <section class="guide-section" id="s6" aria-labelledby="s6-h">
+      <h2 id="s6-h">6. 全体のコード</h2>
+      <p><code>samples/AccelGravityExample.cs</code> の全体です（デモのページに出ているものと同じファイル）。</p>
+      <pre class="code-block" data-sample="../samples/AccelGravityExample.cs"><code>// 読み込み中…</code></pre>
+    </section>
+
+    <nav class="guide-pager" aria-label="ページ送り">
+      <a class="btn btn-ghost" href="cs-velocity-motion.html">← 前: C# 解説 3 速度による移動</a>
+      <a class="btn btn-primary" href="../algorithms/accel-gravity.html?course=intro">デモを開く</a>
+      <a class="btn btn-ghost" href="cs-circle-collision.html">次: C# 解説 5 円同士・円と AABB →</a>
+    </nav>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="入門コース · C# 解説 4 加速度と重力"></footer>
+  <script type="module" src="../js/courses/guide.js"></script>
+</body>
+</html>

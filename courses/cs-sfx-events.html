@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="C# 解説 9（C 言語の経験者向け）。イベントと効果音のサンプルコードで、ジェネリクス（List・Dictionary）・readonly・Action とラムダ式・キャプチャ・foreach・var・string 型を説明する。EventBus の発行と購読の対応もあわせて説明する。" />
+  <title>C# 解説 9 イベントと効果音 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="course" data-active="intro"></header>
+
+  <main class="container topic-main guide-main cs-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="intro.html">入門コース</a> / C# 解説 9</p>
+      <h1>イベントと効果音 — C# 解説 9</h1>
+      <p class="page-header-lead">
+        <code>samples/SfxEventsExample.cs</code> を読みながら、C# の書き方と、コードの中の計算を説明します。
+        第 8 回までを読んでいることを前提にします。
+        イベントと効果音の考え方そのものは<a href="guide-sfx-events.html">イベントと効果音のくわしい解説</a>に図で説明しています。
+        <a href="../algorithms/sfx-events.html?course=intro">イベントと効果音のデモ</a>でも、同じコードを見られます。
+      </p>
+      <nav class="guide-toc" aria-label="目次">
+        <strong>目次</strong>
+        <ol>
+          <li><a href="#s1">このコードがすること</a></li>
+          <li><a href="#s2">新しく出てくる C# の文法</a></li>
+          <li><a href="#s3">計算式とアルゴリズムのポイント</a></li>
+          <li><a href="#s4">呼び出してみる（Main と出力）</a></li>
+          <li><a href="#s5">まとめと、やってみよう</a></li>
+          <li><a href="#s6">全体のコード</a></li>
+        </ol>
+      </nav>
+    </div>
+
+    <!-- 1 -->
+    <section class="guide-section" id="s1" aria-labelledby="s1-h">
+      <h2 id="s1-h">1. このコードがすること</h2>
+      <p>このファイルには、次の 3 つがあります。</p>
+      <ul>
+        <li><code>EventBus</code>: イベント名（文字列）ごとに、呼び出す処理の一覧を持つ。<code>On</code> で登録、<code>Emit</code> で発行する。</li>
+        <li><code>SfxService</code>: 音を鳴らす係。<code>Muted</code> なら鳴らさない。</li>
+        <li><code>SfxEventsExample.Main</code>: 両方を組み立てて、Jump・Land・Hit を発行してみる実行例。</li>
+      </ul>
+      <p>発行する側（ゲームの処理）と、鳴らす側（<code>SfxService</code>）が、<code>EventBus</code> を介して分かれているのがポイントです。</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="guide-section" id="s2" aria-labelledby="s2-h">
+      <h2 id="s2-h">2. 新しく出てくる C# の文法</h2>
+
+      <div class="cs-syntax">
+        <h3>2.1 ジェネリクス <code>List&lt;T&gt;</code>・<code>Dictionary&lt;TKey, TValue&gt;</code></h3>
+        <pre class="code-block cs-excerpt"><code>private readonly Dictionary&lt;string, List&lt;Action&gt;&gt; _handlers = new();</code></pre>
+        <p>
+          <code>List&lt;T&gt;</code> は、大きさが伸び縮みする配列のようなものです。<code>T</code> のところに、
+          その <code>List</code> がしまう要素の型（ここでは <code>Action</code>）を書きます。<code>Dictionary&lt;TKey, TValue&gt;</code> は、
+          キー（ここでは <code>string</code> のイベント名）から値（ここでは <code>List&lt;Action&gt;</code>）を引ける入れ物です。
+          <code>&lt;…&gt;</code> の中に型を指定して使う仕組みを<strong>ジェネリクス</strong>といいます。
+        </p>
+        <div class="cs-pair">
+          <div>
+            <p class="cs-pair-label">C で近いことをすると</p>
+            <pre class="code-block"><code>// 型ごとに別の名前の配列・関数を書くか、void* とサイズを自分で管理する</code></pre>
+          </div>
+          <div>
+            <p class="cs-pair-label">C#（ジェネリクス）</p>
+            <pre class="code-block"><code>Dictionary&lt;string, List&lt;Action&gt;&gt; handlers;</code></pre>
+          </div>
+        </div>
+        <p>
+          C には配列の自動拡張や、キーから値を引く仕組みが標準では無いので、自分で確保・拡張・解放を書くか、
+          型ごとに別々の実装を用意します。C# の <code>List&lt;T&gt;</code>・<code>Dictionary&lt;TKey, TValue&gt;</code> は、
+          どんな型を入れても、拡張や検索の中身を書き直さずに使い回せます。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.2 <code>readonly</code> フィールド</h3>
+        <pre class="code-block cs-excerpt"><code>private readonly Dictionary&lt;string, List&lt;Action&gt;&gt; _handlers = new();</code></pre>
+        <p>
+          <code>readonly</code> を付けたフィールドは、宣言のとき（またはコンストラクタの中）でしか代入できません。
+          <code>_handlers</code> という<strong>入れ物そのもの</strong>を後から別の物に差し替えることは無い、という宣言です
+          （入れ物の中身を <code>Add</code> したり書き換えたりすることはできます）。差し替えようとすると、コンパイルエラーになります。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.3 <code>Action</code> とラムダ式 <code>() =&gt; …</code></h3>
+        <pre class="code-block cs-excerpt"><code>public void On(string ev, Action fn)</code></pre>
+        <pre class="code-block cs-excerpt"><code>bus.On("Jump", () =&gt; sfx.PlayTone(440f, 0.08f));</code></pre>
+        <p>
+          <code>Action</code> は「引数も戻り値も無い処理」を表す型で、<strong>関数そのものを値として渡せる</strong>ようにするものです。
+          <code>() =&gt; sfx.PlayTone(440f, 0.08f)</code> は<strong>ラムダ式</strong>で、「その場で作る名前の無い小さな関数」です。
+          <code>()</code> が引数（無し）、<code>=&gt;</code> の右が実行する中身です。
+        </p>
+        <div class="cs-pair">
+          <div>
+            <p class="cs-pair-label">C（関数ポインタ）</p>
+            <pre class="code-block"><code>void jump_sound(void) { play_tone(440, 0.08); }
+void (*fn)(void) = jump_sound;
+fn();</code></pre>
+          </div>
+          <div>
+            <p class="cs-pair-label">C#（Action ＋ ラムダ式）</p>
+            <pre class="code-block"><code>Action fn = () =&gt; sfx.PlayTone(440f, 0.08f);
+fn();</code></pre>
+          </div>
+        </div>
+        <p>
+          C の関数ポインタは、あらかじめ名前を付けた関数しか指せません。C# のラムダ式は、その場で処理を書くだけで、
+          わざわざ別名の関数を用意しなくてよいのが便利なところです。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.4 ラムダのキャプチャ（外の変数を使う）</h3>
+        <pre class="code-block cs-excerpt"><code>bus.On("Jump", () =&gt; sfx.PlayTone(440f, 0.08f));</code></pre>
+        <p>
+          このラムダ式の中の <code>sfx</code> は、ラムダ式の外（<code>Main</code>）で作った変数です。ラムダ式は、自分の外にある変数を
+          そのまま使えます。これを<strong>キャプチャ</strong>といいます。あとで <code>sfx.Muted</code> を変えると、
+          もう登録し終わったこのラムダ式の動きも変わります（4 節で確認します）。C の関数はこのような「外の変数を覚えておく」仕組みを持ちません。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.5 <code>foreach</code></h3>
+        <pre class="code-block cs-excerpt"><code>foreach (Action fn in _handlers[ev])
+    fn();</code></pre>
+        <p>
+          <code>foreach</code> は、<code>List</code> などの中身を先頭から順に 1 つずつ取り出すループです。
+          C の <code>for (int i = 0; i &lt; n; i++) fn(list[i]);</code> のように添字を自分で管理する必要がありません。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.6 <code>var</code></h3>
+        <pre class="code-block cs-excerpt"><code>var bus = new EventBus();
+var sfx = new SfxService();</code></pre>
+        <p>
+          <code>var</code> は、型を書く代わりに、右辺（<code>new EventBus()</code>）から型を推測してもらう書き方です。
+          <code>EventBus bus = new EventBus();</code> と書いたのとまったく同じ意味で、型が変わるわけではありません。
+          右辺を見れば型が明らかなときによく使われます。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.7 <code>ContainsKey</code> とインデクサ</h3>
+        <pre class="code-block cs-excerpt"><code>if (!_handlers.ContainsKey(ev))
+    _handlers[ev] = new List&lt;Action&gt;();
+_handlers[ev].Add(fn);</code></pre>
+        <p>
+          <code>ContainsKey(ev)</code> は、そのキーがすでに入っているかを調べます。<code>_handlers[ev]</code> のように
+          <code>[ ]</code> で書く部分を<strong>インデクサ</strong>といい、配列と同じ書き方でキーから値を読み書きできます。
+          C の配列の添字アクセスに近い感覚ですが、添字が整数とは限らず、ここでは文字列です。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.8 <code>string</code> 型（C の <code>char*</code> との違い）</h3>
+        <pre class="code-block cs-excerpt"><code>public void On(string ev, Action fn)</code></pre>
+        <p>
+          C の文字列は <code>char*</code>（文字の配列の先頭アドレス）で、長さは自分で管理し（<code>\0</code> を探す）、
+          <code>==</code> は中身ではなくアドレスを比べます。C# の <code>string</code> は、長さを気にしなくてよく、
+          <code>==</code> は中身（文字の並び）を比べます。また、一度作った <code>string</code> の中身は変更できません
+          （変えたければ新しい <code>string</code> を作ります）。
+        </p>
+        <pre class="code-block"><code>string a = "Ju" + "mp";
+string b = "Jump";
+Console.WriteLine(a == b);   // True（別々に作られても中身が同じなら true）</code></pre>
+      </div>
+
+      <p class="cs-known">
+        これまでに出たもの: <code>using System.Collections.Generic;</code>（<a href="cs-game-loop.html#s3">using は第 1 回</a>）、<code>440f</code> の <code>f</code> サフィックス（<a href="cs-accel-gravity.html#s2">第 4 回</a>）、
+        <code>public sealed class</code>（<a href="cs-game-loop.html#s3">第 1 回</a>）、<code>bool</code>（<a href="cs-input-basics.html#s2">第 2 回</a>）。
+        C と同じもの: <code>if</code>・<code>!</code>・<code>return</code>。
+      </p>
+    </section>
+
+    <!-- 3 -->
+    <section class="guide-section" id="s3" aria-labelledby="s3-h">
+      <h2 id="s3-h">3. 計算式とアルゴリズムのポイント</h2>
+
+      <h3>3.1 登録（<code>On</code>）</h3>
+      <pre class="code-block cs-excerpt"><code>if (!_handlers.ContainsKey(ev))
+    _handlers[ev] = new List&lt;Action&gt;();
+_handlers[ev].Add(fn);</code></pre>
+      <p>
+        そのイベント名で登録するのが初めてなら、まず空の <code>List</code> を作ってから、<code>Add</code> で処理を追加します。
+        2 回目以降は、すでにある <code>List</code> にそのまま追加していくので、1 つのイベントに複数の処理を登録できます
+        （<a href="guide-sfx-events.html#s3">くわしい解説の図 2</a>の「あとから購読者を足す」動きです）。
+      </p>
+
+      <h3>3.2 発行（<code>Emit</code>）</h3>
+      <pre class="code-block cs-excerpt"><code>if (!_handlers.ContainsKey(ev)) return;   // 誰も聞いていないイベントは何もしない
+foreach (Action fn in _handlers[ev])
+    fn();</code></pre>
+      <p>
+        誰も登録していないイベント名なら、何もせずに戻ります。登録があれば、<code>foreach</code> で 1 つずつ順番に呼び出します。
+        <code>Emit</code> 自身は、呼び出す処理の中身（音を鳴らすのか、画面を揺らすのか）をまったく知りません。
+      </p>
+
+      <h3>3.3 落とし穴: <code>ContainsKey</code> を確かめずにインデクサを使うと</h3>
+      <p>
+        <code>_handlers[ev]</code> は、キーが無いとどうなるか試しました。登録の無いキーでいきなり読み出すと、例外で止まります。
+      </p>
+      <pre class="code-block"><code>Dictionary&lt;string, List&lt;Action&gt;&gt; handlers = new();
+List&lt;Action&gt; list = handlers["Foo"];   // "Foo" は登録していない
+// Unhandled exception: System.Collections.Generic.KeyNotFoundException:
+// The given key 'Foo' was not present in the dictionary.</code></pre>
+      <p><code>Emit</code> や <code>On</code> が先に <code>ContainsKey</code> で確かめているのは、この例外を避けるためです。</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="guide-section" id="s4" aria-labelledby="s4-h">
+      <h2 id="s4-h">4. 呼び出してみる（Main と出力）</h2>
+      <p>
+        このサンプルには <code>SfxEventsExample.Main</code> という実行の入口がすでにあるので、そのまま動かします。
+      </p>
+      <pre class="code-block cs-excerpt"><code>var bus = new EventBus();
+var sfx = new SfxService();
+
+// イベントと音の対応（デモの既定値）。ゲーム側は音を知らなくてよい
+bus.On("Jump", () =&gt; sfx.PlayTone(440f, 0.08f));
+bus.On("Land", () =&gt; sfx.PlayTone(180f, 0.1f));
+bus.On("Hit", () =&gt; sfx.PlayTone(120f, 0.12f));
+
+bus.Emit("Jump");   // ゲーム側は「ジャンプした」と知らせるだけ
+bus.Emit("Land");
+sfx.Muted = true;
+bus.Emit("Hit");    // イベントは起きるが、音は鳴らない</code></pre>
+      <p>実行結果:</p>
+      <pre class="code-block"><code>Emit Jump
+  play 440 Hz, 0.08 s
+Emit Land
+  play 180 Hz, 0.1 s
+Emit Hit</code></pre>
+      <ul>
+        <li>Jump・Land は、登録した処理が呼ばれて音が鳴っています（<code>Emit</code> の行のあとに <code>play</code> の行）。</li>
+        <li>Hit の前に <code>sfx.Muted = true;</code> としたので、<code>Emit "Hit"</code> の行だけが出て、<code>play</code> の行が出ていません。
+          <code>bus.On("Hit", …)</code> のラムダ式は <code>sfx</code> をキャプチャしているので、あとから <code>Muted</code> を変えると、
+          すでに登録済みのこのラムダ式の結果も変わります（2.4 節）。</li>
+        <li>誰も登録していないイベント名（例えば <code>"Pickup"</code>）を <code>Emit</code> しても、<code>Emit …</code> の行が出るだけで、エラーにはなりません（試して確認済み）。</li>
+      </ul>
+    </section>
+
+    <!-- まとめ -->
+    <section class="guide-section guide-try" id="s5" aria-labelledby="s5-h">
+      <h2 id="s5-h">5. まとめと、やってみよう</h2>
+      <p>この回で出てきた C# の文法です。後の回では、ここへのリンクだけを置きます。</p>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead><tr><th>文法</th><th>ひとことで</th><th>C では</th></tr></thead>
+          <tbody>
+            <tr><td><a href="#s2"><code>List&lt;T&gt;</code>・<code>Dictionary&lt;K,V&gt;</code></a></td><td>型を指定して使う、伸び縮みする配列・キーで引ける入れ物</td><td>無い（自分で配列やハッシュ表を書く）</td></tr>
+            <tr><td><code>readonly</code></td><td>宣言時かコンストラクタでしか代入できないフィールド</td><td><code>const</code> に近いが、フィールド単位</td></tr>
+            <tr><td><code>Action</code>・ラムダ式 <code>() =&gt; …</code></td><td>処理そのものを値として渡す</td><td>関数ポインタ（名前が要る）</td></tr>
+            <tr><td>キャプチャ</td><td>ラムダ式が外の変数を覚えて使う</td><td>無い</td></tr>
+            <tr><td><code>foreach</code></td><td>要素を順番に取り出すループ</td><td><code>for</code> ＋ 添字</td></tr>
+            <tr><td><code>var</code></td><td>右辺から型を推測してもらう</td><td>無い（型を書く必要がある）</td></tr>
+            <tr><td><code>ContainsKey</code>・インデクサ <code>[ ]</code></td><td>キーがあるか調べる・キーで読み書きする</td><td>配列の添字アクセスに近い</td></tr>
+            <tr><td><code>string</code></td><td>長さを気にしない。<code>==</code> は中身を比較。変更できない</td><td><code>char*</code>（アドレス比較、長さは自己管理）</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>やってみよう</h3>
+      <ol>
+        <li>4 節の呼び出し例に、<code>bus.On("Jump", () =&gt; Console.WriteLine("  flash!"));</code> をもう 1 行足して、1 つのイベントに 2 つの処理を登録し、両方呼ばれることを確かめる。</li>
+        <li>3.3 節の例をまねて、登録していないキーを <code>Dictionary</code> のインデクサでいきなり読み出し、同じ例外が出ることを自分の手元でも確かめる。</li>
+      </ol>
+      <div class="guide-check">
+        <h3>確かめよう</h3>
+        <details>
+          <summary>問 1. <code>bus.On("Jump", () =&gt; sfx.PlayTone(440f, 0.08f));</code> の <code>sfx</code> は、どこで作られた変数？</summary>
+          <p><code>Main</code> の中で作られたローカル変数です。ラムダ式がそれをキャプチャして使っています。</p>
+        </details>
+        <details>
+          <summary>問 2. <code>sfx.Muted = true;</code> のあとに <code>bus.Emit("Hit")</code> を呼ぶと、<code>Emit Hit</code> の行は出る？ <code>play</code> の行は？</summary>
+          <p><code>Emit Hit</code> は出ます（発行そのものは止まらない）。<code>play</code> の行は出ません（<code>PlayTone</code> の中で <code>Muted</code> を見て鳴らさないため）。</p>
+        </details>
+        <details>
+          <summary>問 3. <code>_handlers.ContainsKey(ev)</code> を確かめずに <code>_handlers[ev]</code> を読むと、キーが無いときどうなる？</summary>
+          <p><code>KeyNotFoundException</code> という例外が発生して、プログラムが止まります。</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- 全体 -->
+    <section class="guide-section" id="s6" aria-labelledby="s6-h">
+      <h2 id="s6-h">6. 全体のコード</h2>
+      <p><code>samples/SfxEventsExample.cs</code> の全体です（デモのページに出ているものと同じファイル）。</p>
+      <pre class="code-block" data-sample="../samples/SfxEventsExample.cs"><code>// 読み込み中…</code></pre>
+    </section>
+
+    <nav class="guide-pager" aria-label="ページ送り">
+      <a class="btn btn-ghost" href="cs-gfx-ui-canvas.html">← 前: C# 解説 8 UI の配置</a>
+      <a class="btn btn-primary" href="../algorithms/sfx-events.html?course=intro">デモを開く</a>
+      <a class="btn btn-ghost" href="cs-fsm.html">次: C# 解説 10 ステートマシン →</a>
+    </nav>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="入門コース · C# 解説 9 イベントと効果音"></footer>
+  <script type="module" src="../js/courses/guide.js"></script>
+</body>
+</html>

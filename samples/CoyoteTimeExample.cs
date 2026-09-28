@@ -1,6 +1,8 @@
 // デモ: algorithms/coyote-time.html
 // 接地を離れた直後の短い猶予でもジャンプを許可する。
 
+using System;
+
 public sealed class CoyoteJump
 {
     public float CoyoteSeconds { get; set; } = 0.12f;

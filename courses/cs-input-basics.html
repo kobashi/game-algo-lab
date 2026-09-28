@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="C# 解説 2（C 言語の経験者向け）。入力の基礎のサンプルコードで、bool・if/else の省略・using・命名の慣習と、held/down/up・長押しの判定を説明する。" />
+  <title>C# 解説 2 入力の基礎 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="course" data-active="intro"></header>
+
+  <main class="container topic-main guide-main cs-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="intro.html">入門コース</a> / C# 解説 2</p>
+      <h1>入力の基礎 — C# 解説 2</h1>
+      <p class="page-header-lead">
+        <code>samples/InputBasicsExample.cs</code> を読みながら、C# の書き方と、コードの中の計算を説明します。
+        第 1 回までを読んでいることを前提にします。
+        入力の考え方そのものは<a href="guide-input-basics.html">入力の基礎のくわしい解説</a>に図で説明しています。
+        <a href="../algorithms/input-basics.html?course=intro">入力の基礎のデモ</a>でも、同じコードを見られます。
+      </p>
+      <nav class="guide-toc" aria-label="目次">
+        <strong>目次</strong>
+        <ol>
+          <li><a href="#s1">このコードがすること</a></li>
+          <li><a href="#s2">新しく出てくる C# の文法</a></li>
+          <li><a href="#s3">計算式とアルゴリズムのポイント</a></li>
+          <li><a href="#s4">呼び出してみる（Main と出力）</a></li>
+          <li><a href="#s5">まとめと、やってみよう</a></li>
+          <li><a href="#s6">全体のコード</a></li>
+        </ol>
+      </nav>
+    </div>
+
+    <!-- 1 -->
+    <section class="guide-section" id="s1" aria-labelledby="s1-h">
+      <h2 id="s1-h">1. このコードがすること</h2>
+      <p>このファイルには、次の 3 つがあります。</p>
+      <ul>
+        <li><code>ActionState</code>: 1 つのボタン（キー）の状態を持つクラス。<code>Held</code>・<code>Down</code>・<code>Up</code>・<code>HoldTime</code>・<code>LongPressFired</code> を持ちます。</li>
+        <li><code>InputBasicsExample.Poll</code>: 毎フレーム呼ぶ関数。前フレームの <code>Held</code> と、今フレームの生の <code>isDownNow</code>（実際にキーが押されているか）から、<code>Down</code>・<code>Up</code>・<code>HoldTime</code> を更新します。</li>
+        <li><code>InputBasicsExample.ConsumeLongPress</code>: <code>HoldTime</code> が閾値を超えたフレームで、1 回だけ <code>true</code> を返します。</li>
+      </ul>
+      <p>
+        キーボードやマウスを実際に読む部分（<code>isDownNow</code> を作るところ）は入っていません。<code>held</code>・<code>down</code>・<code>up</code>・長押しの考え方は
+        <a href="guide-input-basics.html">くわしい解説</a>を先に読んでください。
+      </p>
+    </section>
+
+    <!-- 2 -->
+    <section class="guide-section" id="s2" aria-labelledby="s2-h">
+      <h2 id="s2-h">2. 新しく出てくる C# の文法</h2>
+
+      <div class="cs-syntax">
+        <h3>2.1 <code>bool</code> 型 — C の「0 でなければ真」とは違う</h3>
+        <pre class="code-block cs-excerpt"><code>public bool Held;</code></pre>
+        <p>
+          C では、真偽を <code>int</code> の 0（偽）・0 以外（真）で表します（C99 の <code>_Bool</code>・<code>stdbool.h</code> の <code>bool</code> も中身は整数で、<code>if</code> には <code>int</code> をそのまま書けます）。
+          C# には、真偽だけを表す <strong><code>bool</code></strong> 型があり、値は <code>true</code> か <code>false</code> のどちらかだけです。
+        </p>
+        <div class="cs-pair">
+          <div>
+            <p class="cs-pair-label">C</p>
+            <pre class="code-block"><code>int held;
+if (held) { ... }   // 0 以外なら真</code></pre>
+          </div>
+          <div>
+            <p class="cs-pair-label">C#</p>
+            <pre class="code-block"><code>bool held;
+if (held) { ... }   // true でなければコンパイルエラー</code></pre>
+          </div>
+        </div>
+        <p>
+          C# では <code>int</code> を <code>bool</code> の代わりに使えません。<code>if (1)</code> のように書くと、コンパイルエラーになります。
+          実際に <code>int flag = 1; if (flag) { }</code> と書いてコンパイルすると、次のエラーになります。
+        </p>
+        <pre class="code-block"><code>error CS0029: Cannot implicitly convert type 'int' to 'bool'</code></pre>
+        <p><code>int</code> から <code>bool</code> への暗黙の変換もありません。真偽は、必ず比較や論理式（<code>==</code>・<code>&lt;</code>・<code>&amp;&amp;</code> など）から作ります。</p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.2 比較・論理式の結果を <code>bool</code> 変数に代入する</h3>
+        <pre class="code-block cs-excerpt"><code>bool prev = state.Held;
+state.Held = isDownNow;
+state.Down = state.Held && !prev;
+state.Up = !state.Held && prev;</code></pre>
+        <p>
+          <code>&amp;&amp;</code>（かつ）や <code>!</code>（否定）は C と同じ書き方ですが、C# では結果がそのまま <code>bool</code> の値になるので、
+          <code>if</code> を使わずに <code>bool</code> の変数へ直接代入できます。<code>state.Held &amp;&amp; !prev</code> は「今 held で、かつ前は held でなかった」という 1 つの真偽値です。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.3 <code>if</code>・<code>else</code> の <code>{ }</code> 省略</h3>
+        <pre class="code-block cs-excerpt"><code>if (state.Held)
+    state.HoldTime += dtSeconds;
+else
+{
+    state.HoldTime = 0;
+    state.LongPressFired = false;
+}</code></pre>
+        <p>
+          文が 1 つだけのときは、C と同じく <code>{ }</code> を省略できます。<code>if</code> 側は 1 文なので省略、<code>else</code> 側は 2 文なので <code>{ }</code> が要ります。
+          C と同じ注意点として、あとから <code>if</code> 側に文を 1 つ足すと、その文は <code>if</code> の中に入らず、いつも実行されてしまいます。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.4 使っていない <code>using</code></h3>
+        <pre class="code-block cs-excerpt"><code>using System.Collections.Generic;</code></pre>
+        <p>
+          このファイルには <code>List</code> や <code>Dictionary</code>（第 9 回で説明します）は出てきません。使っていない <code>using</code> を書いてもエラーにはならず、
+          コンパイルできます。C の使っていない <code>#include</code> と同じで、害はありませんが、あとで使う予定がある場合や、書き直す前の名残りとして残っていることがあります。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.5 名前の付け方の慣習</h3>
+        <p>
+          C# にはコンパイラが強制するルールではありませんが、広く使われている名前の付け方があります。
+          <code>public</code> なクラス名・メソッド名・フィールド名は、単語の頭を大文字にする<strong>パスカルケース</strong>（<code>ActionState</code>・<code>HoldTime</code>・<code>Poll</code>）。
+          引数やメソッドの中のローカル変数は、最初の単語だけ小文字にする<strong>キャメルケース</strong>（<code>isDownNow</code>・<code>dtSeconds</code>・<code>prev</code>）です。
+        </p>
+        <pre class="code-block cs-excerpt"><code>public static void Poll(
+    ActionState state,
+    bool isDownNow,
+    double dtSeconds,
+    double longPressThresholdSeconds)</code></pre>
+        <p><code>Poll</code>（パスカルケース、public なメソッド）に対して、<code>isDownNow</code>・<code>dtSeconds</code>（キャメルケース、引数）という書き分けが見えます。</p>
+      </div>
+
+      <p class="cs-known">
+        これまでに出たもの: <code>using</code>（<a href="cs-game-loop.html#s3">第 1 回</a>）、<code>public static class</code>（<a href="cs-game-loop.html#s3">第 1 回</a>）、<code>///</code> のコメント（<a href="cs-game-loop.html#s3">第 1 回</a>）。<br />
+        C と同じもの: <code>&amp;&amp;</code>・<code>!</code>、<code>+=</code>、比較演算子、コメントの <code>//</code>。
+      </p>
+    </section>
+
+    <!-- 3 -->
+    <section class="guide-section" id="s3" aria-labelledby="s3-h">
+      <h2 id="s3-h">3. 計算式とアルゴリズムのポイント</h2>
+
+      <h3>3.1 エッジ検出（前フレームとの比較）</h3>
+      <pre class="code-block cs-excerpt"><code>bool prev = state.Held;
+state.Held = isDownNow;
+state.Down = state.Held && !prev;
+state.Up = !state.Held && prev;</code></pre>
+      <p>
+        <code>Down</code>・<code>Up</code> の求め方は、<a href="guide-input-basics.html#s2">くわしい解説の表</a>と同じです。
+        大事なのは順番です。<strong>まず <code>prev</code> に今までの <code>Held</code> を保存してから</strong>、<code>Held</code> を新しい値に書き換えます。
+        先に <code>state.Held = isDownNow;</code> をしてしまうと、<code>prev</code> に入るのが「前フレーム」ではなく「今フレーム」の値になり、
+        <code>Down</code>・<code>Up</code> が正しく求まりません。
+      </p>
+
+      <h3>3.2 <code>HoldTime</code> の増加とリセット</h3>
+      <pre class="code-block cs-excerpt"><code>if (state.Held)
+    state.HoldTime += dtSeconds;
+else
+{
+    state.HoldTime = 0;
+    state.LongPressFired = false;
+}</code></pre>
+      <p>
+        押しているあいだ（<code>Held</code>）は、<code>HoldTime</code> に毎フレーム <code>dtSeconds</code> を足し続けます。
+        離すと、<code>HoldTime</code> を 0 に戻し、<code>LongPressFired</code>（長押しをもう発火したか）も戻します。次に押したときに、また 0 から数えられるようにするためです。
+      </p>
+
+      <h3>3.3 長押しは 1 回だけ発火</h3>
+      <pre class="code-block cs-excerpt"><code>if (!state.Held || state.LongPressFired) return false;
+if (state.HoldTime &lt; longPressThresholdSeconds) return false;
+state.LongPressFired = true;
+return true;</code></pre>
+      <p>
+        <code>ConsumeLongPress</code> は、次の 2 つのどちらかなら <code>false</code> を返して終わります。押していない、またはもう発火した（1 行目）。まだ閾値に届いていない（2 行目）。
+        どちらでもなければ、<code>LongPressFired</code> を <code>true</code> にしてから <code>true</code> を返します。
+        次のフレームでは 1 行目の条件に当てはまるので、押し続けても 2 回目は発火しません。
+      </p>
+    </section>
+
+    <!-- 4 -->
+    <section class="guide-section" id="s4" aria-labelledby="s4-h">
+      <h2 id="s4-h">4. 呼び出してみる（Main と出力）</h2>
+      <p>
+        次のコードは、60 FPS（<code>dt = 1/60</code>）で、キーを 25 フレームぶん押し続けてから離す状況を作ります。長押しの閾値は 0.4 秒です。
+        <code>Down</code>・<code>Up</code>・長押しが起きたフレームだけを表示します。
+      </p>
+      <pre class="code-block"><code>using System;
+
+public static class Program
+{
+    public static void Main()
+    {
+        ActionState state = new ActionState();
+        double dt = 1.0 / 60;
+        double threshold = 0.4;
+
+        for (int frame = 1; frame &lt;= 30; frame++)
+        {
+            bool isDownNow = frame &lt;= 25;
+            InputBasicsExample.Poll(state, isDownNow, dt, threshold);
+            bool longPress = InputBasicsExample.ConsumeLongPress(state, threshold);
+
+            if (state.Down || state.Up || longPress)
+            {
+                Console.WriteLine("frame " + frame
+                    + ": held=" + state.Held
+                    + " down=" + state.Down
+                    + " up=" + state.Up
+                    + " holdTime=" + Math.Round(state.HoldTime, 3)
+                    + " longPress=" + longPress);
+            }
+        }
+    }
+}</code></pre>
+      <p>実行結果:</p>
+      <pre class="code-block"><code>frame 1: held=True down=True up=False holdTime=0.017 longPress=False
+frame 25: held=True down=False up=False holdTime=0.417 longPress=True
+frame 26: held=False down=False up=True holdTime=0 longPress=False</code></pre>
+      <ul>
+        <li>フレーム 1 で <code>down=True</code>。押し始めの 1 フレームだけです。</li>
+        <li><code>bool</code> を文字列につなげると、<code>"True"</code>・<code>"False"</code>（先頭が大文字）になります。</li>
+        <li>長押しは、<code>HoldTime</code> が 0.4 秒を超えたフレーム 25 で 1 回だけ発火します。<code>dt</code> を 24 回足した値は、計算上ちょうど 0.4 のはずですが、
+          小数の足し算をくり返すと少しの誤差が出て、24 フレーム目はわずかに 0.4 に届きません。そのため発火は 1 フレームあとの 25 になります。</li>
+        <li>フレーム 26 で <code>isDownNow</code> が <code>false</code> になり、<code>up=True</code>。<code>holdTime</code> は 0 に戻っています。</li>
+      </ul>
+    </section>
+
+    <!-- まとめ -->
+    <section class="guide-section guide-try" id="s5" aria-labelledby="s5-h">
+      <h2 id="s5-h">5. まとめと、やってみよう</h2>
+      <p>この回で出てきた C# の文法です。後の回では、ここへのリンクだけを置きます。</p>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead><tr><th>文法</th><th>ひとことで</th><th>C では</th></tr></thead>
+          <tbody>
+            <tr><td><a href="#s2"><code>bool</code></a></td><td>真偽だけを表す型。<code>int</code> は使えない</td><td>（型がなく <code>int</code> で代用）</td></tr>
+            <tr><td>比較・論理式を <code>bool</code> に代入</td><td><code>a &amp;&amp; !b</code> を直接代入できる</td><td>同じ書き方（型は <code>int</code>）</td></tr>
+            <tr><td><code>if</code>・<code>else</code> の <code>{ }</code> 省略</td><td>1 文なら省略できる</td><td>C と同じ</td></tr>
+            <tr><td>使っていない <code>using</code></td><td>書いてもエラーにならない</td><td>使っていない <code>#include</code> と同じ</td></tr>
+            <tr><td>名前の付け方の慣習</td><td>public はパスカルケース、引数・ローカルはキャメルケース</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>やってみよう</h3>
+      <ol>
+        <li>4 節の <code>threshold</code> を <code>0.25</code> に変えて、長押しが発火するフレームがどう変わるか予想してから確かめる。</li>
+        <li><code>isDownNow</code> を 10 フレーム目だけ <code>false</code> にして（押している途中で一瞬離す）、<code>HoldTime</code> と <code>LongPressFired</code> がどうなるかを確かめる。</li>
+      </ol>
+      <div class="guide-check">
+        <h3>確かめよう</h3>
+        <details>
+          <summary>問 1. <code>Poll</code> の中で、<code>state.Held = isDownNow;</code> より先に <code>bool prev = state.Held;</code> をするのはなぜ？</summary>
+          <p>先に <code>Held</code> を書き換えてしまうと、<code>prev</code> に「前フレームの値」ではなく「今フレームの値」が入ってしまい、<code>Down</code>・<code>Up</code> を正しく求められないからです。</p>
+        </details>
+        <details>
+          <summary>問 2. <code>int flag = 1; if (flag) { }</code> と書くと、C# ではどうなる？</summary>
+          <p>コンパイルエラーになります（<code>int</code> から <code>bool</code> への暗黙の変換がないため）。C ならそのまま真として動きます。</p>
+        </details>
+        <details>
+          <summary>問 3. キーを押し続けているのに、<code>ConsumeLongPress</code> が 2 回目以降 <code>false</code> を返すのはなぜ？</summary>
+          <p><code>LongPressFired</code> が <code>true</code> になっているからです。最初の行の <code>state.LongPressFired</code> のチェックで、すぐ <code>false</code> が返ります。</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- 全体 -->
+    <section class="guide-section" id="s6" aria-labelledby="s6-h">
+      <h2 id="s6-h">6. 全体のコード</h2>
+      <p><code>samples/InputBasicsExample.cs</code> の全体です（デモのページに出ているものと同じファイル）。</p>
+      <pre class="code-block" data-sample="../samples/InputBasicsExample.cs"><code>// 読み込み中…</code></pre>
+    </section>
+
+    <nav class="guide-pager" aria-label="ページ送り">
+      <a class="btn btn-ghost" href="cs-game-loop.html">← 前: C# 解説 1 ゲームループ</a>
+      <a class="btn btn-primary" href="../algorithms/input-basics.html?course=intro">デモを開く</a>
+      <a class="btn btn-ghost" href="cs-velocity-motion.html">次: C# 解説 3 速度による移動 →</a>
+    </nav>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="入門コース · C# 解説 2 入力の基礎"></footer>
+  <script type="module" src="../js/courses/guide.js"></script>
+</body>
+</html>

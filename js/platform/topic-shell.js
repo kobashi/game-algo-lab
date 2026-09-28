@@ -16,6 +16,7 @@ import { TOPICS } from "../main.js";
 import { EXERCISES } from "../courses/intro-exercises.js";
 import { ASSIGNMENTS } from "../courses/intro-assignments.js";
 import { GUIDES } from "../courses/intro-guides.js";
+import { CS_GUIDES } from "../courses/intro-csharp.js";
 import { mountSubmission } from "./submission.js";
 
 /**
@@ -778,6 +779,7 @@ export function mountTopicShellFromDataset() {
 
   // 入門コースの詳説ページ（中学生向け）があるトピックは、リードの下にリンクを出す
   mountGuideLink(GUIDES[active]);
+  mountCsGuideLink(CS_GUIDES[active]);
 
   // `?course=intro` のときだけ、演習の下に提出課題と提出票（入門コース 提出課題の計画書 §2.1）
   mountSubmission(ASSIGNMENTS[active], active);
@@ -802,4 +804,22 @@ function mountGuideLink(guide) {
   a.textContent = `くわしい解説（中学生向け・図つき）: ${guide.title} →`;
   p.appendChild(a);
   lead.insertAdjacentElement("afterend", p);
+}
+
+/** C# 実装例の欄に、C# 解説（C 言語の既修得者向け）へのリンクを出す */
+function mountCsGuideLink(guide) {
+  if (!guide || typeof document === "undefined") return;
+  if (document.querySelector(".cs-guide-link")) return;
+  // ツールバーの下。ツールバーの無いページは、コードの直前に置く
+  const anchor =
+    document.querySelector(".code-section .code-toolbar") ??
+    document.querySelector(".code-section .code-block");
+  if (!anchor) return;
+  const p = document.createElement("p");
+  p.className = "cs-guide-link";
+  const a = document.createElement("a");
+  a.href = `../${guide.href}`;
+  a.textContent = `このコードの解説（C 言語の経験者向け）: C# 解説 ${guide.number} →`;
+  p.appendChild(a);
+  anchor.insertAdjacentElement(anchor.classList.contains("code-toolbar") ? "afterend" : "beforebegin", p);
 }

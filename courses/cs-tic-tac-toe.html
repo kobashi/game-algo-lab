@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="C# 解説 14（C 言語の経験者向け）。三目並べの全解析サンプルで、ジャグ配列・文字列の不変性・yield return・record・文字列補間と、negamax・メモ化・対称性除去を説明する。" />
+  <title>C# 解説 14 三目並べ — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="course" data-active="intro"></header>
+
+  <main class="container topic-main guide-main cs-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="intro.html">入門コース</a> / C# 解説 14</p>
+      <h1>三目並べ — C# 解説 14</h1>
+      <p class="page-header-lead">
+        <code>samples/TicTacToeExample.cs</code> を読みながら、C# の書き方と、コードの中の計算を説明します。
+        第 13 回までを読んでいる前提です。
+        三目並べの探索の考え方そのものは<a href="guide-tic-tac-toe.html">三目並べのくわしい解説</a>に図で説明しています。
+        <a href="../algorithms/tic-tac-toe.html?course=intro">三目並べのデモ</a>でも、同じコードを見られます。
+      </p>
+      <nav class="guide-toc" aria-label="目次">
+        <strong>目次</strong>
+        <ol>
+          <li><a href="#s1">このコードがすること</a></li>
+          <li><a href="#s2">新しく出てくる C# の文法</a></li>
+          <li><a href="#s3">計算式とアルゴリズムのポイント</a></li>
+          <li><a href="#s4">呼び出してみる（Main と出力）</a></li>
+          <li><a href="#s5">まとめと、やってみよう</a></li>
+          <li><a href="#s6">全体のコード</a></li>
+        </ol>
+      </nav>
+    </div>
+
+    <!-- 1 -->
+    <section class="guide-section" id="s1" aria-labelledby="s1-h">
+      <h2 id="s1-h">1. このコードがすること</h2>
+      <p>
+        盤面を 9 文字の <code>string</code>（<code>'.'</code> が空きマス、<code>'X'</code>・<code>'O'</code> が石）として表し、次のものを用意しています。
+      </p>
+      <ul>
+        <li><code>CurrentPlayer</code>・<code>LegalMoves</code>・<code>Apply</code>: 手番を求める・打てるマスを列挙する・1 手打った後の盤面を作る。</li>
+        <li><code>Winner</code>・<code>IsTerminal</code>・<code>TerminalValue</code>: 勝敗の判定と、手番から見た終局値。</li>
+        <li><code>TransformIndex</code>・<code>TransformBoard</code>・<code>Canonical</code>: 盤面の回転・裏返し 8 通りと、その代表値。</li>
+        <li><code>Solve</code>: negamax（α-β・メモ化・対称性除去を on/off できる）で、盤面の値を求める本体。</li>
+      </ul>
+      <p>
+        ここまでの<a href="cs-minimax.html">第 12 回</a>・<a href="cs-alpha-beta.html">第 13 回</a>は、あらかじめ用意した木を読みました。
+        このファイルは、盤面のルールに従ってその場で木を作りながら探索します。考え方は<a href="guide-tic-tac-toe.html">くわしい解説</a>に譲り、
+        ここではコードとの対応に絞って説明します。
+      </p>
+    </section>
+
+    <!-- 2 -->
+    <section class="guide-section" id="s2" aria-labelledby="s2-h">
+      <h2 id="s2-h">2. 新しく出てくる C# の文法</h2>
+
+      <div class="cs-syntax">
+        <h3>2.1 ジャグ配列 <code>int[][]</code> と <code>new[] { … }</code></h3>
+        <pre class="code-block cs-excerpt"><code>private static readonly int[][] Lines =
+{
+    new[] { 0, 1, 2 }, new[] { 3, 4, 5 }, new[] { 6, 7, 8 },
+    new[] { 0, 3, 6 }, new[] { 1, 4, 7 }, new[] { 2, 5, 8 },
+    new[] { 0, 4, 8 }, new[] { 2, 4, 6 },
+};</code></pre>
+        <p>
+          C の 2 次元配列 <code>int lines[8][3]</code> は、8×3 個の要素が一続きのメモリに並んだ「長方形」です。
+          C# の <code>int[][]</code> は違います。要素 1 つ 1 つが <code>int[]</code>（配列）で、その配列をさらに 8 個集めた「配列の配列」です。
+          <strong>ジャグ配列</strong>と呼ばれ、各行の長さが違ってもかまいません（このコードでは全部 3 個ですが）。
+        </p>
+        <div class="cs-pair">
+          <div>
+            <p class="cs-pair-label">C で書くと</p>
+            <pre class="code-block"><code>int lines[8][3] = {
+    {0,1,2}, {3,4,5}, {6,7,8},
+    ...
+};</code></pre>
+          </div>
+          <div>
+            <p class="cs-pair-label">C#（ジャグ配列）</p>
+            <pre class="code-block"><code>int[][] lines = {
+    new[] { 0, 1, 2 }, ...
+};</code></pre>
+          </div>
+        </div>
+        <p>
+          <code>new[] { 0, 1, 2 }</code> は「要素の型は書かなくてよい配列」の作り方です。中身の <code>0, 1, 2</code> が全部 <code>int</code> なので、
+          コンパイラが <code>new int[] { 0, 1, 2 }</code> だと判断してくれます。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.2 <code>static readonly</code>: 参照は固定、中身は書き換えられる</h3>
+        <p>
+          <code>readonly</code> フィールド自体は<a href="cs-sfx-events.html#s2">第 9 回</a>で出てきました。<code>Lines</code> は <code>static</code>（クラスに 1 つだけ）でもあり、
+          <code>private static readonly int[][] Lines = ...</code> と両方付いています。ここで注意したいのは、<code>readonly</code> が止めているのは
+          <strong>「配列という参照そのものの差し替え」</strong>だけだ、ということです。
+        </p>
+        <p>
+          試しに、このクラスのメソッドの中で <code>Lines = new int[][] { ... };</code> のように <strong>差し替えようとする</strong>と、
+          <code>error CS0198: A static readonly field cannot be assigned to (except in a static constructor or a variable initializer)</code> になります。
+          いっぽう、<code>Lines[0][0] = 9;</code> のように <strong>中身の要素を書き換える</strong>のはコンパイルが通ります。
+          <a href="cs-minimax.html#s2">第 12 回</a>の <code>Children</code>（取得専用プロパティ）の「箱は固定・中身は変えられる」と同じ感覚です。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.3 <code>char</code>・文字リテラルと、<code>string</code> は変更できない</h3>
+        <pre class="code-block cs-excerpt"><code>public static char? Winner(string board)
+{
+    foreach (var line in Lines)
+    {
+        char a = board[line[0]], b = board[line[1]], c = board[line[2]];
+        if (a != '.' && a == b && b == c) return a;
+    }
+    return null;
+}</code></pre>
+        <p>
+          <code>char</code> は 1 文字を表す型で、<code>'.'</code>・<code>'X'</code> のように <code>'</code>（シングルクォート）で書きます。C の <code>char</code> と同じです。
+          <code>board[line[0]]</code> のように、<code>string</code> は添字（<code>[ ]</code>）で 1 文字を取り出せます。ここまでは C の文字配列に近い感覚です。
+        </p>
+        <pre class="code-block cs-excerpt"><code>public static string Apply(string board, int index, char piece)
+{
+    var chars = board.ToCharArray();
+    chars[index] = piece;
+    return new string(chars);
+}</code></pre>
+        <p>
+          違うのは、C# の <code>string</code> は <strong>作った後は 1 文字も書き換えられない</strong>（<strong>不変</strong>）ことです。
+          試しに <code>string s = "abc"; s[0] = 'X';</code> と書くと、<code>error CS0200: Property or indexer 'string.this[int]' cannot be assigned to -- it is read only</code> になります。
+          <code>Apply</code> が 1 手進めた盤面を作るときは、<code>ToCharArray()</code> で書き換え可能な <code>char[]</code> にコピーしてから 1 マスだけ変え、
+          <code>new string(chars)</code> でその <code>char[]</code> から新しい <code>string</code> を作り直しています。元の <code>board</code> はそのまま残ります。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.4 <code>new string('.', 9)</code>: 同じ文字を並べた文字列</h3>
+        <pre class="code-block cs-excerpt"><code>string empty = new string('.', 9);</code></pre>
+        <p>
+          <code>new string(文字, 個数)</code> は、その文字を指定した個数だけ並べた文字列を作るコンストラクタです。
+          C で <code>memset(buf, '.', 9)</code> とするのに近いですが、<code>string</code> は不変なので、はじめから欲しい中身をまとめて作ります。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.5 <code>IEnumerable&lt;int&gt;</code> と <code>yield return</code></h3>
+        <pre class="code-block cs-excerpt"><code>public static IEnumerable&lt;int&gt; LegalMoves(string board)
+{
+    for (int i = 0; i &lt; board.Length; i++)
+        if (board[i] == '.') yield return i;
+}</code></pre>
+        <p>
+          C で「打てるマスの一覧」を返すには、配列とその個数を一緒に返すか、呼び出し側にポインタとバッファを渡してもらう必要があります。
+          C# では、戻り値の型を <code>IEnumerable&lt;int&gt;</code>（<code>int</code> を順番に取り出せるもの）にして、
+          <code>return i;</code> の代わりに <strong><code>yield return i;</code></strong> と書くと、呼び出し側が <code>foreach</code> で 1 つずつ受け取れる「値を作る関数」になります。
+        </p>
+        <p>
+          <code>yield return</code> のたびに、いったん関数の実行がそこで止まり、呼び出し側が次の値を求めたときに続きから再開します。
+          全部のマスをあらかじめ配列にためてから返すのではなく、<code>foreach (int m in LegalMoves(board))</code>（<a href="#s3">3 節</a>）のように、
+          必要になった分だけその場で作ります。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.6 <code>record</code>（位置指定）</h3>
+        <pre class="code-block cs-excerpt"><code>public sealed record SolveOptions(bool AlphaBeta, bool Memo, bool Symmetry);
+
+public sealed record MemoEntry(int Value, char Flag); // 'e'=exact, 'l'=lower, 'u'=upper</code></pre>
+        <p>
+          <code>record</code> は <code>class</code> の仲間で、「複数の値をひとまとめにして持ち歩く」ためによく使われます。
+          <code>record SolveOptions(bool AlphaBeta, bool Memo, bool Symmetry)</code> と書くだけで、<code>AlphaBeta</code>・<code>Memo</code>・<code>Symmetry</code> という
+          3 つの取得専用プロパティと、それを受け取るコンストラクタが自動で作られます（<a href="cs-minimax.html#s2">第 12 回</a>で 1 つずつ手で書いた
+          <code>{ get; }</code> とコンストラクタを、まとめて生成してくれるイメージです）。
+        </p>
+        <p>
+          <code>class</code> と違うのは、中身の値が同じであれば <code>==</code> で等しいと判定される点です（<code>class</code> は、既定では中身でなく「同じ実体か」を比べます）。
+          このコードでは <code>new SolveOptions(AlphaBeta: true, Memo: true, Symmetry: true)</code>（名前付き引数・<a href="cs-gfx-ui-canvas.html#s2">第 8 回</a>）のように、まとめて設定を渡すのに使っています。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.7 文字列補間 <code>$"..."</code></h3>
+        <pre class="code-block cs-excerpt"><code>Console.WriteLine($"Solve(empty) = {value} (0=引き分け)"); // 0</code></pre>
+        <p>
+          ここまでは <code>"frame " + frame + ": steps=" + steps</code>（<a href="cs-game-loop.html#s5">第 1 回</a>）のように、文字列と値を <code>+</code> でつないできました。
+          文字列の頭に <code>$</code> を付けると、<code>{ }</code> の中に変数や式をそのまま書けます。<code>$"Solve(empty) = {value} ..."</code> は、
+          <code>"Solve(empty) = " + value + " ..."</code> と同じ意味です。<code>+</code> をいくつも並べるより、出来上がる文字列の形が見た目でも分かりやすくなります。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.8 <code>string.CompareOrdinal</code>: 文字列の大小を比べる</h3>
+        <pre class="code-block cs-excerpt"><code>if (best == null || string.CompareOrdinal(t, best) &lt; 0) best = t;</code></pre>
+        <p>
+          C の <code>strcmp</code> と同じように、<code>string.CompareOrdinal(a, b)</code> は <code>a</code> が <code>b</code> より小さければ負の数、大きければ正の数、
+          同じなら 0 を返します。C# の <code>string</code> は <code>&lt;</code>・<code>&gt;</code> で直接は比べられないので、この専用のメソッドを使います
+          （<code>Ordinal</code> は「文字コードの順で比べる」という意味です。言語ごとの辞書の並び順は使わないので、どの環境でも同じ結果になります）。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.9 参照型の <code>null</code>: 「まだ何もない」を表す</h3>
+        <pre class="code-block cs-excerpt"><code>string best = null;</code></pre>
+        <p>
+          <code>string</code> はクラスと同じ参照型（<a href="cs-game-loop.html#s3">第 1 回</a>）なので、変数には <code>null</code>（何も指していない）を入れられます。
+          C の <code>char *p = NULL;</code> に近い感覚ですが、<code>int</code> のような値型はそのままでは <code>null</code> にできません
+          （値がないかもしれないことを表すには <code>int?</code>・<a href="cs-minimax.html#s2">第 12 回</a>が必要でした）。
+          <code>Canonical</code> はここから始めて、8 通りを順に比べながら、いちばん小さいものへ <code>best</code> を書き換えていきます。
+        </p>
+      </div>
+
+      <p class="cs-known">
+        これまでに出たもの: <code>class</code>・フィールド・メソッド（<a href="cs-game-loop.html#s2">第 1 回</a>）、式形式メンバー <code>=&gt;</code>（<a href="cs-velocity-motion.html#s2">第 3 回</a>）、
+        名前付き引数（<a href="cs-gfx-ui-canvas.html#s2">第 8 回</a>）、<code>List&lt;T&gt;</code>・<code>Dictionary&lt;TKey,TValue&gt;</code>・<code>foreach</code>・<code>var</code>・ラムダ（<a href="cs-sfx-events.html#s2">第 9 回</a>）、LINQ（<code>board.Count(c =&gt; c == 'X')</code> の <code>Count</code>。<a href="cs-minimax.html#s2">第 12 回</a>）、
+          <code>TryGetValue</code> と <code>out var</code>（<a href="cs-fsm.html#s2">第 10 回</a>）、条件演算子 <code>?:</code>（<a href="cs-rng-seed.html#s2">第 11 回</a>）、
+          <code>enum</code>・<code>int?</code>・取得専用プロパティ（<a href="cs-minimax.html#s2">第 12 回</a>）。
+        C と同じもの: <code>for</code>、<code>break</code>、比較演算子。
+      </p>
+    </section>
+
+    <!-- 3 -->
+    <section class="guide-section" id="s3" aria-labelledby="s3-h">
+      <h2 id="s3-h">3. 計算式とアルゴリズムのポイント</h2>
+
+      <h3>3.1 negamax: 1 つの関数で両者を扱う</h3>
+      <pre class="code-block cs-excerpt"><code>char mover = CurrentPlayer(board);
+int best = int.MinValue;
+foreach (int m in LegalMoves(board))
+{
+    string child = Apply(board, m, mover);
+    int v = -Solve(child, -beta, -alpha, opt, memo);
+    if (v > best) best = v;
+    if (opt.AlphaBeta)
+    {
+        if (best > alpha) alpha = best;
+        if (alpha >= beta) break; // 枝刈り
+    }
+}</code></pre>
+      <p>
+        <a href="cs-minimax.html">第 12 回</a>・<a href="cs-alpha-beta.html">第 13 回</a>の <code>Evaluate</code> は、MAX と MIN で別々の分岐を書いていました。
+        <code>Solve</code> はどちらの手番でも同じコードを 1 回だけ通ります。仕組みは、子（相手の手番）を <code>Solve(child, -beta, -alpha, ...)</code> のように
+        <strong>符号を反転した窓</strong>で呼び、返ってきた値も <code>-Solve(...)</code> と<strong>符号を反転</strong>させることです。
+        「相手にとっての最善」を「自分にとっての最悪」として、マイナスを付けるだけで読み替えています。<code>alpha</code>・<code>beta</code> の更新と
+        <code>if (alpha &gt;= beta) break;</code> による枝刈りは、<a href="cs-alpha-beta.html#s3">第 13 回</a>の β カット・α カットと同じ考え方です。
+      </p>
+
+      <h3>3.2 終局値: 手番から見て 1・0・−1</h3>
+      <pre class="code-block cs-excerpt"><code>/// &lt;summary&gt;終局値。手番から見て 1=勝ち, 0=引き分け, -1=負け。&lt;/summary&gt;
+public static int TerminalValue(string board) =&gt; Winner(board) != null ? -1 : 0;</code></pre>
+      <p>
+        コメントには「1=勝ち」ともありますが、<code>TerminalValue</code> のコードが返すのは <code>-1</code> か <code>0</code> だけです。
+        三目並べは 1 手ごとに手番が交代するので、「今、手番の人から見て盤面が終わっている」のは、<strong>直前に相手が 3 つ並べた</strong>ときだけです。
+        自分が今まさに 3 つ並べて手番が回ってくることはないので、終局のときの評価は「負け（−1）」か「引き分け（0）」のどちらかにしかなりません。
+      </p>
+
+      <h3>3.3 メモ化: exact・lower・upper の 3 つのフラグ</h3>
+      <pre class="code-block cs-excerpt"><code>int alphaOrig = alpha;
+string key = null;
+if (opt.Memo)
+{
+    key = opt.Symmetry ? Canonical(board) : board;
+    if (memo.TryGetValue(key, out var entry))
+    {
+        if (entry.Flag == 'e') return entry.Value;
+        if (entry.Flag == 'l' && entry.Value &gt;= beta) return entry.Value;
+        if (entry.Flag == 'u' && entry.Value &lt;= alpha) return entry.Value;
+        if (opt.AlphaBeta)
+        {
+            if (entry.Flag == 'l' && entry.Value &gt; alpha) alpha = entry.Value;
+            if (entry.Flag == 'u' && entry.Value &lt; beta) beta = entry.Value;
+        }
+    }
+}</code></pre>
+      <pre class="code-block cs-excerpt"><code>if (opt.Memo)
+{
+    char flag = best &lt;= alphaOrig ? 'u' : best &gt;= beta ? 'l' : 'e';
+    memo[key] = new MemoEntry(best, flag);
+}</code></pre>
+      <p>
+        α-β 法は、枝刈りをした節点の値を「正確な値」ではなく「これ以上（下限）」・「これ以下（上限）」としてしか知りません。
+        値だけをそのままキャッシュすると、次に別の窓（別の <code>alpha</code>・<code>beta</code>）で同じ局面を調べたときに、
+        下限・上限でしかない値を正確な値と取り違えてしまいます。そこで <code>MemoEntry</code> には、値と一緒に
+        <code>'e'</code>（exact・正確）・<code>'l'</code>（lower・下限）・<code>'u'</code>（upper・上限）のフラグを保存し、
+        フラグに応じて「そのまま返してよいか」「窓を狭めるだけに使うか」を使い分けています。
+      </p>
+
+      <h3>3.4 対称性: 8 通りの変換と <code>Canonical</code></h3>
+      <pre class="code-block cs-excerpt"><code>public static int TransformIndex(int i, int k)
+{
+    int r = i / 3, c = i % 3;
+    if (k &gt;= 4) { c = 2 - c; k -= 4; }
+    for (int t = 0; t &lt; k; t++)
+    {
+        int nr = c, nc = 2 - r;
+        r = nr; c = nc;
+    }
+    return r * 3 + c;
+}</code></pre>
+      <pre class="code-block cs-excerpt"><code>public static string Canonical(string board)
+{
+    string best = null;
+    for (int k = 0; k &lt; 8; k++)
+    {
+        string t = TransformBoard(board, k);
+        if (best == null || string.CompareOrdinal(t, best) &lt; 0) best = t;
+    }
+    return best;
+}</code></pre>
+      <p>
+        <code>TransformIndex(i, k)</code> は、マス <code>i</code> が <code>k</code> 番目の変換（回転・裏返しの組み合わせ、全 8 通り）でどこへ移るかを計算します。
+        <code>Canonical</code> は、8 通りすべてに変換した盤面を作り、<code>string.CompareOrdinal</code> でいちばん小さい（辞書順で先頭に来る）ものを選びます。
+        回転・裏返しで見た目が違うだけの盤面は、この代表値がすべて同じになるので、メモ化の <code>key</code> として使うと、まとめて 1 つの局面として扱えます。
+        8 通りの変換そのものの図は<a href="guide-tic-tac-toe.html#s5">くわしい解説の 5 節</a>にあります。
+      </p>
+    </section>
+
+    <!-- 4 -->
+    <section class="guide-section" id="s4" aria-labelledby="s4-h">
+      <h2 id="s4-h">4. 呼び出してみる（Main と出力）</h2>
+      <p>
+        このサンプルには、すでに実行の入口（<code>Main</code>）が入っています。空盤から、α-β・メモ化・対称性除去をすべて有効にして解析します。
+      </p>
+      <pre class="code-block cs-excerpt"><code>public static void Main()
+{
+    var opt = new SolveOptions(AlphaBeta: true, Memo: true, Symmetry: true);
+    var memo = new Dictionary&lt;string, MemoEntry&gt;();
+    string empty = new string('.', 9);
+    int value = Solve(empty, int.MinValue + 1, int.MaxValue - 1, opt, memo);
+    Console.WriteLine($"Solve(empty) = {value} (0=引き分け)"); // 0
+}</code></pre>
+      <p>実行結果:</p>
+      <pre class="code-block"><code>Solve(empty) = 0 (0=引き分け)</code></pre>
+      <ul>
+        <li>空盤から完全に読み切ると、値は <code>0</code>（引き分け）になります。お互いが最善を尽くすと、どちらも勝てないという意味です。</li>
+        <li><code>Solve</code> の最初の呼び出しは <code>alpha = int.MinValue + 1</code>・<code>beta = int.MaxValue - 1</code> です。
+          <code>int.MinValue</code>（<a href="cs-minimax.html#s2">第 12 回</a>）そのものではなく 1 ずらしているのは、<code>Solve</code> の中で <code>-alpha</code>・<code>-beta</code> と
+          符号を反転する箇所があり、<code>int.MinValue</code> をそのまま反転しようとすると <code>int</code> の表せる範囲を超えてしまう（オーバーフローする）ためです。</li>
+      </ul>
+    </section>
+
+    <!-- まとめ -->
+    <section class="guide-section guide-try" id="s5" aria-labelledby="s5-h">
+      <h2 id="s5-h">5. まとめと、やってみよう</h2>
+      <p>この回で出てきた C# の文法です。</p>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead><tr><th>文法</th><th>ひとことで</th><th>C では</th></tr></thead>
+          <tbody>
+            <tr><td><a href="#s2">ジャグ配列 <code>int[][]</code></a></td><td>配列の配列。行ごとに別の配列</td><td>連続メモリの 2 次元配列</td></tr>
+            <tr><td><code>static readonly</code></td><td>参照は固定。中身の要素は書き換えられる</td><td>—</td></tr>
+            <tr><td><code>string</code> の不変性</td><td>作った後は書き換えられない。<code>ToCharArray</code>→<code>new string</code> で作り直す</td><td>文字配列は書き換えられる</td></tr>
+            <tr><td><code>new string('.', 9)</code></td><td>同じ文字を並べた文字列を作る</td><td><code>memset</code></td></tr>
+            <tr><td><code>IEnumerable&lt;int&gt;</code>・<code>yield return</code></td><td>必要な分だけその場で値を作って返す</td><td>配列＋個数、または引数で受け渡し</td></tr>
+            <tr><td><code>record</code>（位置指定）</td><td>複数の値をまとめる型を短く書く。中身で等しさを比較</td><td>構造体</td></tr>
+            <tr><td>文字列補間 <code>$"..."</code></td><td><code>{ }</code> の中に値を直接書ける</td><td><code>sprintf</code></td></tr>
+            <tr><td><code>string.CompareOrdinal</code></td><td>文字列の大小を比べる</td><td><code>strcmp</code></td></tr>
+            <tr><td>参照型の <code>null</code></td><td>「何も指していない」を表す</td><td><code>NULL</code> ポインタ</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>やってみよう</h3>
+      <ol>
+        <li><code>Lines[0][0] = 9;</code> と、<code>Lines = new int[][] { };</code> を試して、どちらがコンパイルエラーになるか確かめる。</li>
+        <li><code>SolveOptions</code> を <code>record</code> ではなく普通の <code>class</code>（第 12 回の書き方）で書き直し、同じように動くことを確かめる。</li>
+      </ol>
+      <div class="guide-check">
+        <h3>確かめよう</h3>
+        <details>
+          <summary>問 1. <code>string</code> の中身を 1 文字だけ変えたいとき、どうする？</summary>
+          <p><code>ToCharArray()</code> で <code>char[]</code> にコピーし、その要素を書き換えてから、<code>new string(chars)</code> で新しい <code>string</code> を作ります。元の <code>string</code> は変わりません。</p>
+        </details>
+        <details>
+          <summary>問 2. negamax で、子を呼ぶときに符号を反転させる（<code>-Solve(...)</code>）のはなぜ？</summary>
+          <p>相手の手番にとっての最善は、自分にとっては最悪だからです。符号を反転させることで、MAX 用・MIN 用の 2 つの分岐を書かずに、1 つの関数で両方の手番を扱えます。</p>
+        </details>
+        <details>
+          <summary>問 3. メモ化で、値だけでなくフラグ（exact/lower/upper）も保存するのはなぜ？</summary>
+          <p>α-β 法で枝刈りした節点の値は、正確な値ではなく下限・上限でしかないことがあるからです。フラグがないと、別の探索窓で読んだときに、不正確な値を正確な値と取り違えてしまいます。</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- 全体 -->
+    <section class="guide-section" id="s6" aria-labelledby="s6-h">
+      <h2 id="s6-h">6. 全体のコード</h2>
+      <p><code>samples/TicTacToeExample.cs</code> の全体です（デモのページに出ているものと同じファイル）。</p>
+      <pre class="code-block" data-sample="../samples/TicTacToeExample.cs"><code>// 読み込み中…</code></pre>
+    </section>
+
+    <nav class="guide-pager" aria-label="ページ送り">
+      <a class="btn btn-ghost" href="cs-alpha-beta.html">← 前: C# 解説 13 α-β 法</a>
+      <a class="btn btn-primary" href="../algorithms/tic-tac-toe.html?course=intro">デモを開く</a>
+      <a class="btn btn-ghost" href="intro.html">入門コースへ →</a>
+    </nav>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="入門コース · C# 解説 14 三目並べ"></footer>
+  <script type="module" src="../js/courses/guide.js"></script>
+</body>
+</html>

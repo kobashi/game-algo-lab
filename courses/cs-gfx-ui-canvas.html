@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="C# 解説 8（C 言語の経験者向け）。UI の配置のサンプルコードで、引数が多いときの改行の書き方と名前付き引数を説明する。Anchor・Pivot・Offset から UI の左上の座標を求める式もあわせて説明する。" />
+  <title>C# 解説 8 UI の配置 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="course" data-active="intro"></header>
+
+  <main class="container topic-main guide-main cs-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="intro.html">入門コース</a> / C# 解説 8</p>
+      <h1>UI の配置 — C# 解説 8</h1>
+      <p class="page-header-lead">
+        <code>samples/GfxUiCanvasExample.cs</code> を読みながら、C# の書き方と、コードの中の計算を説明します。
+        第 7 回までを読んでいることを前提にします。
+        UI の配置の考え方そのものは<a href="guide-gfx-ui-canvas.html">UI の配置のくわしい解説</a>に図で説明しています。
+        <a href="../algorithms/gfx-ui-canvas.html?course=intro">UI の配置のデモ</a>でも、同じコードを見られます。
+      </p>
+      <nav class="guide-toc" aria-label="目次">
+        <strong>目次</strong>
+        <ol>
+          <li><a href="#s1">このコードがすること</a></li>
+          <li><a href="#s2">新しく出てくる C# の文法</a></li>
+          <li><a href="#s3">計算式とアルゴリズムのポイント</a></li>
+          <li><a href="#s4">呼び出してみる（Main と出力）</a></li>
+          <li><a href="#s5">まとめと、やってみよう</a></li>
+          <li><a href="#s6">全体のコード</a></li>
+        </ol>
+      </nav>
+    </div>
+
+    <!-- 1 -->
+    <section class="guide-section" id="s1" aria-labelledby="s1-h">
+      <h2 id="s1-h">1. このコードがすること</h2>
+      <p>
+        <code>UiLayout.TopLeft</code> は、Anchor（親のどこを基準にするか）・Pivot（自分のどの点を合わせるか）・Offset（px のずれ）と、
+        親の大きさ・自分の大きさを受け取り、UI 要素の左上の座標を計算して返す 1 つの関数です。
+      </p>
+      <p>画面に実際に描く処理は入っていません。位置を計算するだけの、純粋な関数です。</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="guide-section" id="s2" aria-labelledby="s2-h">
+      <h2 id="s2-h">2. 新しく出てくる C# の文法</h2>
+
+      <div class="cs-syntax">
+        <h3>2.1 引数が多いときの改行</h3>
+        <pre class="code-block cs-excerpt"><code>public static (float x, float y) TopLeft(
+    float parentW, float parentH,
+    float anchorX, float anchorY,
+    float pivotX, float pivotY,
+    float offsetX, float offsetY,
+    float w, float h)</code></pre>
+        <p>
+          <code>TopLeft</code> は引数が 10 個もあります。C と同じく、C# も <code>(</code> と <code>)</code> の間であれば、
+          好きなところで改行してかまいません。ここでは、意味のまとまりごと（親の大きさ・Anchor・Pivot・Offset・自分の大きさ）に
+          2 個ずつ改行して並べ、読みやすくしています。動きには関係なく、見た目だけの工夫です。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.2 名前付き引数</h3>
+        <p>
+          呼び出すときに、<code>引数名: 値</code> の形で書くと、順番を気にせず渡せます。これを<strong>名前付き引数</strong>といいます。
+        </p>
+        <pre class="code-block"><code>UiLayout.TopLeft(
+    parentW: 640, parentH: 480,
+    anchorX: 0f, anchorY: 0.5f,
+    pivotX: 0f, pivotY: 0.5f,
+    offsetX: 16f, offsetY: 0f,
+    w: 100f, h: 30f);</code></pre>
+        <p>
+          <code>TopLeft</code> は <code>float</code> の引数ばかり 10 個並んでいるので、順番だけを頼りに呼び出すと、
+          <code>anchorX</code> と <code>pivotX</code> を取り違えるといったミスが起きやすくなります。名前を書けば、
+          どの値がどの引数なのかがその場で分かります。C には、この書き方はありません（引数は並べた順番だけで決まります）。
+        </p>
+      </div>
+
+      <p class="cs-known">
+        これまでに出たもの: 名前付きタプルの戻り値（<a href="cs-game-loop.html#s3">第 1 回</a>）、<code>static class</code>・<code>public static</code>（<a href="cs-game-loop.html#s3">第 1 回</a>）、
+        <code>float</code> と <code>f</code> サフィックス（<a href="cs-accel-gravity.html#s2">第 4 回</a>）。
+        C と同じもの: 括弧の中の自由な改行、<code>*</code>・<code>+</code>・<code>-</code>。
+      </p>
+    </section>
+
+    <!-- 3 -->
+    <section class="guide-section" id="s3" aria-labelledby="s3-h">
+      <h2 id="s3-h">3. 計算式とアルゴリズムのポイント</h2>
+
+      <h3>3.1 Anchor の位置（px に変換）</h3>
+      <pre class="code-block cs-excerpt"><code>float ax = anchorX * parentW;
+float ay = anchorY * parentH;</code></pre>
+      <p>
+        <code>anchorX</code>・<code>anchorY</code> は 0〜1 の割合（<a href="guide-gfx-ui-canvas.html#s2">正規化座標</a>）です。
+        親の大きさ（<code>parentW</code>・<code>parentH</code>）を掛けると、px での Anchor の位置になります。
+      </p>
+
+      <h3>3.2 左上の座標を求める式</h3>
+      <pre class="code-block cs-excerpt"><code>return (ax + offsetX - pivotX * w, ay + offsetY - pivotY * h);</code></pre>
+      <p>
+        <a href="guide-gfx-ui-canvas.html#s5">くわしい解説の式</a> 「箱の左上 ＝ Anchor の位置 ＋ Offset − Pivot × 箱の大きさ」を、
+        x・y それぞれについてそのままコードにしたものです。<code>pivotX * w</code> は、自分の大きさのうち Pivot が示す位置までの距離です。
+      </p>
+
+      <h3>3.3 落とし穴: 名前付き引数でも、省略できる引数は増えない</h3>
+      <p>
+        名前付き引数は「順番を変えられる」だけで、引数の数そのものを減らせるわけではありません。<code>h</code>（自分の高さ）を書き忘れて呼び出すと、
+        名前付きで書いていても、次のようにコンパイルエラーになります。
+      </p>
+      <pre class="code-block"><code>UiLayout.TopLeft(
+    parentW: 640, parentH: 480,
+    anchorX: 0f, anchorY: 0.5f,
+    pivotX: 0f, pivotY: 0.5f,
+    offsetX: 16f, offsetY: 0f,
+    w: 100f);
+// エラー: CS7036 There is no argument given that corresponds to
+// the required parameter 'h' of 'UiLayout.TopLeft(...)'</code></pre>
+      <p><code>TopLeft</code> の引数には既定値（省略したときの値）が 1 つも無いので、10 個すべてを渡す必要があります。</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="guide-section" id="s4" aria-labelledby="s4-h">
+      <h2 id="s4-h">4. 呼び出してみる（Main と出力）</h2>
+      <p>
+        サンプルには実行の入口がないので、次のようなファイルを足して動かします。親（画面）を 640 × 480、
+        Anchor を左のふちの真ん中 (0, 0.5)、Pivot も自分の左のふちの真ん中 (0, 0.5)、Offset を (16, 0)、
+        自分の大きさを 100 × 30 にした例です。
+      </p>
+      <pre class="code-block"><code>using System;
+
+public static class Program
+{
+    public static void Main()
+    {
+        (float x, float y) pos = UiLayout.TopLeft(
+            parentW: 640, parentH: 480,
+            anchorX: 0f, anchorY: 0.5f,
+            pivotX: 0f, pivotY: 0.5f,
+            offsetX: 16f, offsetY: 0f,
+            w: 100f, h: 30f);
+        Console.WriteLine("left=" + pos.x + ", top=" + pos.y);
+    }
+}</code></pre>
+      <p>実行結果:</p>
+      <pre class="code-block"><code>left=16, top=225</code></pre>
+      <ul>
+        <li>Anchor は (0, 0.5) なので、px では (0, 240)（画面の左のふちの真ん中）です。</li>
+        <li>Pivot も (0, 0.5) なので、<code>pivotX * w = 0</code>、<code>pivotY * h = 15</code>（自分の高さの半分）です。</li>
+        <li>左上の x は <code>0 + 16 - 0 = 16</code>、y は <code>240 + 0 - 15 = 225</code> になります。</li>
+      </ul>
+      <p>
+        名前付き引数の順番を入れ替えて（<code>anchorX</code> を先に、<code>parentW</code> を後に、のように）同じ値で呼び出しても、
+        結果は同じ <code>left=16, top=225</code> になることを確認しています。
+      </p>
+    </section>
+
+    <!-- まとめ -->
+    <section class="guide-section guide-try" id="s5" aria-labelledby="s5-h">
+      <h2 id="s5-h">5. まとめと、やってみよう</h2>
+      <p>この回で出てきた C# の文法です。後の回では、ここへのリンクだけを置きます。</p>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead><tr><th>文法</th><th>ひとことで</th><th>C では</th></tr></thead>
+          <tbody>
+            <tr><td><a href="#s2">引数が多いときの改行</a></td><td>括弧の中は自由に改行できる。意味のまとまりで分けると読みやすい</td><td>同じ（自由）</td></tr>
+            <tr><td><a href="#s2">名前付き引数</a></td><td><code>名前: 値</code> で呼ぶ。順番を入れ替えられる</td><td>無い（位置だけで決まる）</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>やってみよう</h3>
+      <ol>
+        <li>4 節の呼び出し例の <code>offsetX</code>・<code>offsetY</code> を別の値に変えて、左上の座標がどう変わるか確かめる。</li>
+        <li>4 節の呼び出し例から <code>w</code> か <code>h</code> のどちらかを 1 つ抜いて呼び出し、3.3 節と同じエラーになることを確かめる。</li>
+      </ol>
+      <div class="guide-check">
+        <h3>確かめよう</h3>
+        <details>
+          <summary>問 1. 名前付き引数を使うと、何が読みやすくなる？</summary>
+          <p><code>float</code> ばかりが並ぶ呼び出しで、どの値がどの引数なのかが、名前を見るだけで分かるようになります。</p>
+        </details>
+        <details>
+          <summary>問 2. 名前付き引数で呼び出すとき、必須の引数を 1 つ書き忘れるとどうなる？</summary>
+          <p>コンパイルエラーになります。名前付きでも、既定値の無い引数は省略できません。</p>
+        </details>
+        <details>
+          <summary>問 3. Anchor (0, 0.5)・Pivot (0, 0.5)・Offset (16, 0)、親 640×480、自分 100×30 のとき、左上の x 座標は？</summary>
+          <p>16 です。Anchor の x（0×640＝0）に Offset の x（16）を足し、Pivot×幅（0×100＝0）を引くと 16 になります。</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- 全体 -->
+    <section class="guide-section" id="s6" aria-labelledby="s6-h">
+      <h2 id="s6-h">6. 全体のコード</h2>
+      <p><code>samples/GfxUiCanvasExample.cs</code> の全体です（デモのページに出ているものと同じファイル）。</p>
+      <pre class="code-block" data-sample="../samples/GfxUiCanvasExample.cs"><code>// 読み込み中…</code></pre>
+    </section>
+
+    <nav class="guide-pager" aria-label="ページ送り">
+      <a class="btn btn-ghost" href="cs-gfx-camera.html">← 前: C# 解説 7 カメラ</a>
+      <a class="btn btn-primary" href="../algorithms/gfx-ui-canvas.html?course=intro">デモを開く</a>
+      <a class="btn btn-ghost" href="cs-sfx-events.html">次: C# 解説 9 イベントと効果音 →</a>
+    </nav>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="入門コース · C# 解説 8 UI の配置"></footer>
+  <script type="module" src="../js/courses/guide.js"></script>
+</body>
+</html>
