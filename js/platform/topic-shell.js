@@ -810,13 +810,16 @@ function mountGuideLink(guide) {
 function mountCsGuideLink(guide) {
   if (!guide || typeof document === "undefined") return;
   if (document.querySelector(".cs-guide-link")) return;
-  const toolbar = document.querySelector(".code-section .code-toolbar");
-  if (!toolbar) return;
+  // ツールバーの下。ツールバーの無いページは、コードの直前に置く
+  const anchor =
+    document.querySelector(".code-section .code-toolbar") ??
+    document.querySelector(".code-section .code-block");
+  if (!anchor) return;
   const p = document.createElement("p");
   p.className = "cs-guide-link";
   const a = document.createElement("a");
   a.href = `../${guide.href}`;
   a.textContent = `このコードの解説（C 言語の経験者向け）: C# 解説 ${guide.number} →`;
   p.appendChild(a);
-  toolbar.insertAdjacentElement("afterend", p);
+  anchor.insertAdjacentElement(anchor.classList.contains("code-toolbar") ? "afterend" : "beforebegin", p);
 }

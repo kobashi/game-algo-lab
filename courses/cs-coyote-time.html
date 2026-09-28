@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="C# 解説 6（C 言語の経験者向け）。コヨーテタイムのサンプルコードで、自動実装プロパティ・フィールドとプロパティの違い・アクセス修飾子の省略と命名の慣習・数値の暗黙の型変換と、タイマーを減らして 0 未満にしない計算を説明する。" />
+  <title>C# 解説 6 コヨーテタイム — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="course" data-active="intro"></header>
+
+  <main class="container topic-main guide-main cs-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="intro.html">入門コース</a> / C# 解説 6</p>
+      <h1>コヨーテタイム — C# 解説 6</h1>
+      <p class="page-header-lead">
+        <code>samples/CoyoteTimeExample.cs</code> を読みながら、C# の書き方と、コードの中の計算を説明します。
+        第 5 回までを読んでいることを前提にします。
+        コヨーテタイムの考え方そのものは<a href="guide-coyote-time.html">コヨーテタイムのくわしい解説</a>に図で説明しています。
+        <a href="../algorithms/coyote-time.html?course=intro">コヨーテタイムのデモ</a>でも、同じコードを見られます。
+      </p>
+      <nav class="guide-toc" aria-label="目次">
+        <strong>目次</strong>
+        <ol>
+          <li><a href="#s1">このコードがすること</a></li>
+          <li><a href="#s2">新しく出てくる C# の文法</a></li>
+          <li><a href="#s3">計算式とアルゴリズムのポイント</a></li>
+          <li><a href="#s4">呼び出してみる（Main と出力）</a></li>
+          <li><a href="#s5">まとめと、やってみよう</a></li>
+          <li><a href="#s6">全体のコード</a></li>
+        </ol>
+      </nav>
+    </div>
+
+    <!-- 1 -->
+    <section class="guide-section" id="s1" aria-labelledby="s1-h">
+      <h2 id="s1-h">1. このコードがすること</h2>
+      <p>
+        <code>CoyoteJump</code> クラスは、足場を離れてからの短い猶予のあいだもジャンプを受け付ける仕組みを持っています。
+      </p>
+      <ul>
+        <li><code>CoyoteSeconds</code>: 猶予の長さ（秒）。既定値は 0.12。</li>
+        <li><code>_coyoteLeft</code>: 猶予タイマーの残り（秒）。</li>
+        <li><code>Grounded</code>: 接地しているかどうか。呼び出す側が毎フレーム設定します。</li>
+        <li><code>Update(dt)</code>: 1 フレームぶん、タイマーを進める（接地中は満タンに戻し、空中では減らす）。</li>
+        <li><code>TryJump(jumpPressedEdge, useCoyote)</code>: ジャンプを試す。接地中か、猶予が残っていれば成功します。</li>
+      </ul>
+      <p>入力の読み取りや、実際にキャラを飛ばす処理は入っていません。判定の部分だけを取り出したコードです。</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="guide-section" id="s2" aria-labelledby="s2-h">
+      <h2 id="s2-h">2. 新しく出てくる C# の文法</h2>
+
+      <div class="cs-syntax">
+        <h3>2.1 自動実装プロパティ <code>{ get; set; }</code></h3>
+        <pre class="code-block cs-excerpt"><code>public float CoyoteSeconds { get; set; } = 0.12f;</code></pre>
+        <div class="cs-pair">
+          <div>
+            <p class="cs-pair-label">C で書くと</p>
+            <pre class="code-block"><code>typedef struct {
+    float coyote_seconds;
+} CoyoteJump;
+
+float coyote_get_seconds(const CoyoteJump *j) { return j-&gt;coyote_seconds; }
+void coyote_set_seconds(CoyoteJump *j, float v) { j-&gt;coyote_seconds = v; }</code></pre>
+          </div>
+          <div>
+            <p class="cs-pair-label">C#（自動実装プロパティ）</p>
+            <pre class="code-block"><code>public float CoyoteSeconds { get; set; } = 0.12f;</code></pre>
+          </div>
+        </div>
+        <p>
+          <code>{ get; set; }</code> と書くと、値を読む（get）・書く（set）ための仕組みを、フィールドと同じ見た目のまま用意してくれます。
+          これを<strong>自動実装プロパティ</strong>といいます。裏では、値をしまう場所と、それを読み書きする 2 つの小さな関数が自動で作られています。
+          <code>= 0.12f;</code> は、フィールドと同じように書ける初期値です（<code>f</code> サフィックスは第 4 回）。
+        </p>
+        <p>
+          呼び出す側は <code>jump.CoyoteSeconds</code> のように、ふつうのフィールドと同じ書き方で読み書きできます。
+          C のようにゲッター・セッター関数を自分で呼ぶ必要はありません。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.2 フィールドとプロパティの違い</h3>
+        <pre class="code-block cs-excerpt"><code>float _coyoteLeft;
+public bool Grounded { get; set; }</code></pre>
+        <p>
+          <code>_coyoteLeft</code> はただの<strong>フィールド</strong>です。値が入る場所そのもので、初期値を書かなければ既定値（<code>float</code> なら 0）になります（第 1 回）。
+          いっぽう <code>Grounded</code> は 2.1 と同じ<strong>プロパティ</strong>です。初期値を書いていないので、既定値 <code>false</code> から始まります。
+        </p>
+        <p>
+          外から見ると、フィールドもプロパティも <code>jump.Grounded = true;</code> のように同じ書き方で使えます。ちがうのは中身で、
+          プロパティは実際には get/set の関数を呼んでいます。あとから「値を設定するときに 0 未満を弾く」のような処理を足したくなっても、
+          プロパティなら呼び出す側のコードを変えずに済みます（フィールドのままだと書き換えられません）。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.3 アクセス修飾子の省略は private・<code>_</code> で始まる名前</h3>
+        <pre class="code-block cs-excerpt"><code>float _coyoteLeft;</code></pre>
+        <p>
+          第 1 回で、<code>public</code> を付けると外から使える、と説明しました。<code>_coyoteLeft</code> には <code>public</code> も
+          <code>private</code> も付いていません。C# では、修飾子を<strong>省略すると自動的に <code>private</code></strong>（このクラスの中からしか使えない）になります。
+          <code>jump._coyoteLeft</code> のように外から読もうとすると、コンパイルエラーになります。
+        </p>
+        <p>
+          また、<code>_coyoteLeft</code> のように名前の先頭に <code>_</code> を付けるのは、「これは private なフィールドです」という
+          プログラマーどうしの<strong>慣習</strong>です（PascalCase・camelCase の慣習は第 2 回）。コンパイラが強制するものではありませんが、
+          プロパティ（大文字始まり・<code>_</code> なし）と見分けやすくなります。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.4 数値の暗黙の型変換（広がる変換と狭まる変換）</h3>
+        <pre class="code-block cs-excerpt"><code>else _coyoteLeft = Math.Max(0, _coyoteLeft - dt);</code></pre>
+        <p>
+          <code>Math.Max</code> は、2 つの引数が同じ型であることを期待します。ここでは <code>0</code>（int の整数リテラル）と、
+          <code>_coyoteLeft - dt</code>（<code>float</code>）を渡しています。型がちがうのにエラーにならないのは、
+          <code>int</code> の <code>0</code> が自動的に <code>float</code> に変換されるからです。これを<strong>広がる変換（widening）</strong>といい、
+          値の大きさが変わらない（情報が失われない）ので、C# は黙って変換してくれます。
+        </p>
+        <p>
+          逆に、<code>float</code> から <code>int</code> のように<strong>狭まる変換（narrowing）</strong>は、小数点以下が消えるなど情報が失われる可能性があるので、
+          自分で <code>(int)</code> のようにキャストを書かないとコンパイルエラーになります。実際に試すと、次のようになります。
+        </p>
+        <pre class="code-block"><code>float f = 3.9f;
+int n = f;   // エラー: CS0266 Cannot implicitly convert type 'float' to 'int'</code></pre>
+        <div class="guide-note">
+          <strong>C との違い:</strong> C では <code>int n = f;</code> と書いても、警告が出るだけでコンパイルは通り、小数点以下が切り捨てられて実行できてしまいます。
+          C# では狭まる変換をコンパイルエラーにするので、キャストの書き忘れにその場で気づけます。
+        </div>
+      </div>
+
+      <p class="cs-known">
+        これまでに出たもの: <code>public</code>（<a href="cs-game-loop.html#s3">第 1 回</a>）、<code>float</code>・<code>f</code> サフィックス（<a href="cs-accel-gravity.html#s2">第 4 回</a>）、
+        <code>bool</code>・PascalCase/camelCase の命名（<a href="cs-input-basics.html#s2">第 2 回</a>）。
+        C と同じもの: <code>if</code>・<code>else</code>、<code>||</code>・<code>&amp;&amp;</code>・<code>!</code>、比較演算子、<code>//</code> のコメント。
+      </p>
+    </section>
+
+    <!-- 3 -->
+    <section class="guide-section" id="s3" aria-labelledby="s3-h">
+      <h2 id="s3-h">3. 計算式とアルゴリズムのポイント</h2>
+
+      <h3>3.1 タイマーを減らす（<code>Update</code>）</h3>
+      <pre class="code-block cs-excerpt"><code>if (Grounded) _coyoteLeft = CoyoteSeconds;
+else _coyoteLeft = Math.Max(0, _coyoteLeft - dt);</code></pre>
+      <p>
+        接地しているあいだは、毎フレーム <code>_coyoteLeft</code> を満タン（<code>CoyoteSeconds</code>）にリセットし続けます。
+        接地していなければ、毎フレーム <code>dt</code> だけ減らします。<code>Math.Max(0, …)</code> を挟んでいるのは、
+        タイマーが 0 より下（マイナス）にならないようにするためです。この考え方の図は
+        <a href="guide-coyote-time.html#s3">くわしい解説の 3 節</a>にあります。
+      </p>
+
+      <h3>3.2 猶予でジャンプを許可する（<code>TryJump</code>）</h3>
+      <pre class="code-block cs-excerpt"><code>bool ok = Grounded || (useCoyote && _coyoteLeft &gt; 0);
+if (!jumpPressedEdge || !ok) return false;</code></pre>
+      <ul>
+        <li><code>ok</code> は「接地している」か「猶予機能が有効で、かつ猶予がまだ残っている」のどちらかで真になります。</li>
+        <li>次の行は、ジャンプを押した瞬間でない、または <code>ok</code> でないときに、早めに <code>false</code> を返す書き方です（ガード節）。両方の条件をくぐり抜けたときだけ、下のジャンプ成立の処理に進みます。</li>
+      </ul>
+
+      <h3>3.3 落とし穴: <code>&gt; 0</code> を <code>&gt;= 0</code> にすると</h3>
+      <p>
+        <code>_coyoteLeft &gt; 0</code> を <code>_coyoteLeft &gt;= 0</code> に変えるとどうなるか、実際に試しました。
+        <code>Math.Max(0, …)</code> のおかげで、タイマーは 0 未満にはならず、猶予が切れたあとはずっと <strong>ちょうど 0</strong> のままになります。
+        <code>&gt;= 0</code> だと、ちょうど 0 でも条件が真になってしまうので、猶予が切れたあとも永遠にジャンプできてしまいます。
+      </p>
+      <pre class="code-block"><code>bool ok = Grounded || _coyoteLeft &gt;= 0;  // わざと &gt;= にしたバグ版</code></pre>
+      <p>接地せず 0.05 秒おきに 6 フレーム、毎回ジャンプを押した結果です。</p>
+      <pre class="code-block"><code>frame 1: jumped=True
+frame 2: jumped=True
+frame 3: jumped=True
+frame 4: jumped=True
+frame 5: jumped=True
+frame 6: jumped=True</code></pre>
+      <p>猶予（0.12 秒）はとっくに切れているのに、6 フレーム目まで毎回ジャンプが成功してしまっています。等号を付けるかどうかの違いだけで、ここまで結果が変わります。</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="guide-section" id="s4" aria-labelledby="s4-h">
+      <h2 id="s4-h">4. 呼び出してみる（Main と出力）</h2>
+      <p>
+        サンプルには実行の入口がないので、次のようなファイルを足して動かします。まず接地させてタイマーを満タンにし、
+        足場を離れたことにして、0.05 秒間隔で 3 フレーム進めます。1 フレーム目と 3 フレーム目でジャンプを押します。
+      </p>
+      <pre class="code-block"><code>using System;
+
+public static class Program
+{
+    public static void Main()
+    {
+        CoyoteJump jump = new CoyoteJump();
+        jump.Grounded = true;
+        jump.Update(0.016f);    // 接地中：タイマーは満タンのまま
+        jump.Grounded = false;  // 足場から出た
+
+        for (int frame = 1; frame &lt;= 3; frame++)
+        {
+            jump.Update(0.05f);
+            bool pressed = (frame == 1) || (frame == 3);
+            bool jumped = jump.TryJump(pressed, true);
+            Console.WriteLine("frame " + frame + ": jumped=" + jumped);
+        }
+    }
+}</code></pre>
+      <p>実行結果:</p>
+      <pre class="code-block"><code>frame 1: jumped=True
+frame 2: jumped=False
+frame 3: jumped=False</code></pre>
+      <ul>
+        <li>1 フレーム目は、足場を離れてから 0.05 秒しか経っておらず、猶予（0.12 秒）がまだ残っているのでジャンプは成功します。</li>
+        <li>2 フレーム目はジャンプを押していない（<code>pressed = false</code>）ので、そもそも判定に進みません。</li>
+        <li>3 フレーム目は、合計 0.1 秒経ってタイマーが 0 になっているので、同じようにボタンを押しても失敗します。</li>
+        <li><code>true</code>・<code>false</code> を文字列と <code>+</code> でつなぐと、<code>"True"</code>・<code>"False"</code>（先頭大文字）になります。</li>
+      </ul>
+    </section>
+
+    <!-- まとめ -->
+    <section class="guide-section guide-try" id="s5" aria-labelledby="s5-h">
+      <h2 id="s5-h">5. まとめと、やってみよう</h2>
+      <p>この回で出てきた C# の文法です。後の回では、ここへのリンクだけを置きます。</p>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead><tr><th>文法</th><th>ひとことで</th><th>C では</th></tr></thead>
+          <tbody>
+            <tr><td><a href="#s2"><code>{ get; set; }</code></a></td><td>自動実装プロパティ。フィールドのように読み書きでき、初期値も書ける</td><td>構造体メンバー ＋ 別々のゲッター・セッター関数</td></tr>
+            <tr><td>フィールドとプロパティ</td><td>外からは同じに見えるが、プロパティは実際には関数呼び出し</td><td>構造体メンバーだけ</td></tr>
+            <tr><td>アクセス修飾子の省略</td><td>何も書かなければ <code>private</code></td><td>（private の概念が無い）</td></tr>
+            <tr><td><code>_</code> で始まる名前</td><td>private なフィールドの慣習的な印</td><td>—</td></tr>
+            <tr><td>広がる変換・狭まる変換</td><td>小さい型→大きい型は自動。大きい型→小さい型はキャストが要る</td><td>どちらも警告だけで通ってしまう</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>やってみよう</h3>
+      <ol>
+        <li><code>Math.Max(0, _coyoteLeft - dt)</code> の <code>0</code> を <code>0f</code> に書き換えて、結果が変わらないことを確かめる（もともと <code>float</code> に変換されているので同じになるはず）。</li>
+        <li><code>_coyoteLeft &gt; 0</code> を <code>_coyoteLeft &gt;= 0</code> に変え、3.3 節の実験を自分の手元でも動かして、同じ結果になることを確かめる。</li>
+      </ol>
+      <div class="guide-check">
+        <h3>確かめよう</h3>
+        <details>
+          <summary>問 1. <code>float _coyoteLeft;</code> には <code>public</code> も <code>private</code> も書かれていません。それでも外のクラスから読めないのはなぜ？</summary>
+          <p>アクセス修飾子を省略すると、自動的に <code>private</code> になるからです。</p>
+        </details>
+        <details>
+          <summary>問 2. <code>Math.Max(0, _coyoteLeft - dt)</code> の <code>0</code> は何型に変換されて渡される？ キャストを書かなくてよいのはなぜ？</summary>
+          <p><code>float</code> に変換されます。int から float は広がる変換で、値が失われないので、C# が自動でやってくれるからです。</p>
+        </details>
+        <details>
+          <summary>問 3. <code>CoyoteSeconds</code> と <code>_coyoteLeft</code> は、どちらもクラスの中に値を持っていますが、書き方に違いがあります。何が違う？</summary>
+          <p><code>CoyoteSeconds</code> は自動実装プロパティ（<code>{ get; set; }</code>）で、外から読み書きでき、初期値も書けます。<code>_coyoteLeft</code> はただのフィールドで、修飾子が無いので private です。</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- 全体 -->
+    <section class="guide-section" id="s6" aria-labelledby="s6-h">
+      <h2 id="s6-h">6. 全体のコード</h2>
+      <p><code>samples/CoyoteTimeExample.cs</code> の全体です（デモのページに出ているものと同じファイル）。</p>
+      <pre class="code-block" data-sample="../samples/CoyoteTimeExample.cs"><code>// 読み込み中…</code></pre>
+    </section>
+
+    <nav class="guide-pager" aria-label="ページ送り">
+      <a class="btn btn-ghost" href="cs-circle-collision.html">← 前: C# 解説 5 円同士・円と AABB</a>
+      <a class="btn btn-primary" href="../algorithms/coyote-time.html?course=intro">デモを開く</a>
+      <a class="btn btn-ghost" href="cs-gfx-camera.html">次: C# 解説 7 カメラ →</a>
+    </nav>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="入門コース · C# 解説 6 コヨーテタイム"></footer>
+  <script type="module" src="../js/courses/guide.js"></script>
+</body>
+</html>

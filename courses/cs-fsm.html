@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="C# 解説 10（C 言語の経験者向け）。ステートマシンのサンプルコードで、{ get; private set; }・式形式プロパティと IReadOnlyList・TryGetValue と out var と、&quot;From|Event&quot; の遷移表の考え方を説明する。" />
+  <title>C# 解説 10 ステートマシン — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="course" data-active="intro"></header>
+
+  <main class="container topic-main guide-main cs-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="intro.html">入門コース</a> / C# 解説 10</p>
+      <h1>ステートマシン — C# 解説 10</h1>
+      <p class="page-header-lead">
+        <code>samples/FsmExample.cs</code> を読みながら、C# の書き方と、コードの中の計算を説明します。
+        第 9 回までを読んでいることを前提にします。
+        ステートマシンの考え方そのものは<a href="guide-fsm.html">ステートマシンのくわしい解説</a>に状態図と遷移表で説明しています。
+        <a href="../algorithms/fsm.html?course=intro">ステートマシンのデモ</a>でも、同じ考え方のコードを見られます。
+      </p>
+      <nav class="guide-toc" aria-label="目次">
+        <strong>目次</strong>
+        <ol>
+          <li><a href="#s1">このコードがすること</a></li>
+          <li><a href="#s2">新しく出てくる C# の文法</a></li>
+          <li><a href="#s3">計算式とアルゴリズムのポイント</a></li>
+          <li><a href="#s4">呼び出してみる（Main と出力）</a></li>
+          <li><a href="#s5">まとめと、やってみよう</a></li>
+          <li><a href="#s6">全体のコード</a></li>
+        </ol>
+      </nav>
+    </div>
+
+    <!-- 1 -->
+    <section class="guide-section" id="s1" aria-labelledby="s1-h">
+      <h2 id="s1-h">1. このコードがすること</h2>
+      <p>このファイルには、<code>StateMachine</code> クラスが 1 つあります。</p>
+      <ul>
+        <li>コンストラクタで、初期状態と遷移表（<code>Dictionary&lt;string, string&gt;</code>）を受け取ります。</li>
+        <li><code>Current</code>: 今の状態。外からは読めますが、書き換えられません。</li>
+        <li><code>History</code>: これまで通ってきた状態の列。読み取り専用として公開します。</li>
+        <li><code>TryHandle(eventId)</code>: イベントを 1 つ処理します。遷移表に定義があれば状態を進めて <code>true</code>、無ければ無視して <code>false</code> を返します。</li>
+      </ul>
+      <p>
+        状態・イベント・遷移そのものの考え方は<a href="guide-fsm.html">くわしい解説</a>にあります。ここでは、そのルールがコードでどう書かれているかに集中します。
+      </p>
+    </section>
+
+    <!-- 2 -->
+    <section class="guide-section" id="s2" aria-labelledby="s2-h">
+      <h2 id="s2-h">2. 新しく出てくる C# の文法</h2>
+
+      <div class="cs-syntax">
+        <h3>2.1 <code>{ get; private set; }</code>: 外からは読むだけ</h3>
+        <pre class="code-block cs-excerpt"><code>public string Current { get; private set; }</code></pre>
+        <p>
+          自動実装プロパティ <code>{ get; set; }</code> は<a href="cs-coyote-time.html#s2">第 6 回</a>で出てきました。
+          ここでは <code>set</code> の前に <code>private</code> が付いています。<code>get</code>（読み出し）はクラスの外からもできますが、
+          <code>set</code>（書き込み）は <code>StateMachine</code> クラスの中からしかできません。
+        </p>
+        <p>
+          C には、こういう「読むのは自由だが書けるのは中だけ」という仕組みがありません。ふつうは、書き換える関数だけを公開して、
+          フィールドを直接触らせないようにする、といった工夫で似たことをします。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.2 式形式プロパティと <code>IReadOnlyList&lt;T&gt;</code></h3>
+        <pre class="code-block cs-excerpt"><code>public IReadOnlyList&lt;string&gt; History =&gt; _history;</code></pre>
+        <p>
+          <code>=&gt;</code> で 1 行の式をそのまま返す書き方は<a href="cs-velocity-motion.html#s2">（第 3 回）</a>に出てきました。ここでは、プロパティ全体を
+          <code>get</code> だけの式にして、内部のフィールド <code>_history</code>（<code>List&lt;string&gt;</code>、<a href="cs-sfx-events.html#s2">第 9 回</a>）をそのまま返しています。
+        </p>
+        <p>
+          型が <code>List&lt;string&gt;</code> ではなく <code>IReadOnlyList&lt;string&gt;</code> になっている点に注目してください。
+          ジェネリクスの書き方自体は<a href="cs-sfx-events.html#s2">第 9 回</a>と同じですが、<code>IReadOnlyList&lt;T&gt;</code> には <code>Add</code> や <code>Remove</code> がありません。
+          <code>foreach</code> で回したり、<code>Count</code> や添字で読んだりはできますが、書き換える手段が型として無いのです。
+          呼び出す側が誤って履歴を書き換えてしまう心配がありません。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.3 <code>new()</code> によるフィールドの初期化（復習）</h3>
+        <pre class="code-block cs-excerpt"><code>private readonly List&lt;string&gt; _history = new();</code></pre>
+        <p>
+          新しい文法ではありません。<a href="cs-velocity-motion.html#s2">第 3 回</a>の <code>new(...)</code>（型を省略した <code>new</code>）と、<a href="cs-sfx-events.html#s2">第 9 回</a>の <code>readonly</code> を、
+          フィールドの宣言の場所で組み合わせただけです。「<code>_history</code> は別のリストに差し替えられないリストで、宣言と同時に空のリストで始める」という意味になります。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.4 <code>TryGetValue</code> と <code>out var</code></h3>
+        <pre class="code-block cs-excerpt"><code>if (!_transitions.TryGetValue(key, out var next))
+    return false;</code></pre>
+        <p>
+          <code>Dictionary&lt;TKey, TValue&gt;</code> は<a href="cs-sfx-events.html#s2">第 9 回</a>で出てきましたが、<code>TryGetValue</code> は新しいメソッドです。
+          「キーがあったかどうか」を <code>bool</code> の戻り値で返しつつ、「あったときの値」を <code>out</code> 引数に書き込みます。
+        </p>
+        <div class="cs-pair">
+          <div>
+            <p class="cs-pair-label">C（見つかったかを戻り値、値をポインタで受け取る）</p>
+            <pre class="code-block"><code>const char *next;
+if (!dict_try_get(transitions, key, &amp;next)) {
+    return false;
+}</code></pre>
+          </div>
+          <div>
+            <p class="cs-pair-label">C#（<code>out</code> でその場に変数を作って受け取る）</p>
+            <pre class="code-block cs-excerpt"><code>if (!_transitions.TryGetValue(key, out var next))
+    return false;</code></pre>
+          </div>
+        </div>
+        <p>
+          <a href="cs-game-loop.html#s3">第 1 回</a>の <code>ref</code> は「すでにある変数を書き換える」ものでしたが、<code>out</code> は「呼ばれた側が必ず値を書き込む」約束の引数です。
+          呼び出し前に <code>next</code> を用意しておく必要はありません。<code>out var next</code> のように、呼び出しの中でその場に変数を宣言できます。
+        </p>
+      </div>
+
+      <p class="cs-known">
+        これまでに出たもの: <code>readonly</code>・<code>Dictionary&lt;TKey, TValue&gt;</code>・<code>var</code>・<code>foreach</code>（<a href="cs-sfx-events.html#s2">第 9 回</a>）、
+        自動実装プロパティ <code>{ get; set; }</code>（<a href="cs-coyote-time.html#s2">第 6 回</a>）、コンストラクタ・式形式メンバー <code>=&gt;</code>（<a href="cs-velocity-motion.html#s2">第 3 回</a>）、
+        <code>new(...)</code> の省略形（第 3 回・第 9 回）。
+      </p>
+      <p class="cs-known">
+        C と同じもの: <code>if</code>・<code>!</code>・<code>return</code>。
+      </p>
+    </section>
+
+    <!-- 3 -->
+    <section class="guide-section" id="s3" aria-labelledby="s3-h">
+      <h2 id="s3-h">3. 計算式とアルゴリズムのポイント</h2>
+      <p>
+        遷移のルールそのもの（状態図・遷移表の読み方）は<a href="guide-fsm.html#s3">くわしい解説の 3 節</a>にあります。
+        ここでは、そのルールがコードでどう表されているかだけを見ます。
+      </p>
+      <pre class="code-block cs-excerpt"><code>var key = Current + "|" + eventId;
+if (!_transitions.TryGetValue(key, out var next))
+    return false;
+
+Current = next;
+_history.Add(next);
+return true;</code></pre>
+      <ul>
+        <li>
+          「今の状態」と「イベント」を <code>"|"</code> でつないだ 1 本の文字列を作り、それを遷移表のキーにします。
+          <code>Current</code> が <code>"Idle"</code>、<code>eventId</code> が <code>"Move"</code> なら、キーは <code>"Idle|Move"</code> です。
+        </li>
+        <li>
+          そのキーで <code>Dictionary</code> を引きます。見つからなければ、そのイベントはその状態では定義されていない、つまり<strong>無視</strong>です（<code>false</code> を返し、状態はそのまま）。
+        </li>
+        <li>見つかれば、<code>Current</code> を次の状態に書き換え、<code>_history</code> に積んでから <code>true</code> を返します。</li>
+      </ul>
+      <div class="guide-note">
+        <strong>落とし穴:</strong> キーの照合は文字どおりの一致です。<code>"|"</code> の代わりに別の区切り文字を使ったり、
+        大文字・小文字や余分な空白が違ったりすると、<code>TryGetValue</code> は静かに「見つからない」を返します。
+        例外にもならず、ただイベントが無視された状態になるので、遷移表の作り方と <code>eventId</code> の綴りは正確に合わせる必要があります。
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="guide-section" id="s4" aria-labelledby="s4-h">
+      <h2 id="s4-h">4. 呼び出してみる（Main と出力）</h2>
+      <p>
+        次のような遷移表（デモの <code>js/maps/fsm-config.js</code> の一部）を作って、いくつかイベントを送ってみます。
+      </p>
+      <pre class="code-block"><code>using System;
+using System.Collections.Generic;
+
+public static class Program
+{
+    public static void Main()
+    {
+        var transitions = new Dictionary&lt;string, string&gt;();
+        transitions["Idle|Move"] = "Walk";
+        transitions["Idle|Jump"] = "Jump";
+        transitions["Walk|Stop"] = "Idle";
+        transitions["Walk|Jump"] = "Jump";
+        transitions["Jump|Land"] = "Idle";
+
+        var fsm = new StateMachine("Idle", transitions);
+
+        Report(fsm, "Move");
+        Report(fsm, "Jump");
+        Report(fsm, "Land");
+        Report(fsm, "Land");
+
+        Console.Write("history:");
+        foreach (var s in fsm.History)
+        {
+            Console.Write(" " + s);
+        }
+        Console.WriteLine();
+    }
+
+    private static void Report(StateMachine fsm, string eventId)
+    {
+        bool handled = fsm.TryHandle(eventId);
+        Console.WriteLine(eventId + " -&gt; " + fsm.Current + " (handled=" + handled + ")");
+    }
+}</code></pre>
+      <p>実行結果:</p>
+      <pre class="code-block"><code>Move -&gt; Walk (handled=True)
+Jump -&gt; Jump (handled=True)
+Land -&gt; Idle (handled=True)
+Land -&gt; Idle (handled=False)
+history: Idle Walk Jump Idle</code></pre>
+      <ul>
+        <li>Idle に Move が来て Walk へ、Walk に Jump が来て Jump へ、Jump に Land が来て Idle へと、遷移表どおりに進みます。</li>
+        <li>最後の Land はもう一度送っています。Idle には Land の定義が無いので、<code>handled=False</code> になり、状態は Idle のまま変わりません。</li>
+        <li><code>History</code> を <code>foreach</code> で読み出すと、初期状態から順に <code>Idle Walk Jump Idle</code> と積まれているのが分かります。無視された Land は履歴に足されません。</li>
+      </ul>
+    </section>
+
+    <!-- まとめ -->
+    <section class="guide-section guide-try" id="s5" aria-labelledby="s5-h">
+      <h2 id="s5-h">5. まとめと、やってみよう</h2>
+      <p>この回で出てきた C# の文法です。後の回では、ここへのリンクだけを置きます。</p>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead><tr><th>文法</th><th>ひとことで</th><th>C では</th></tr></thead>
+          <tbody>
+            <tr><td><a href="#s2"><code>{ get; private set; }</code></a></td><td>読み出しは外から自由、書き込みはクラスの中だけ</td><td>直接には無い（公開する関数を絞るなどで代用）</td></tr>
+            <tr><td>式形式プロパティ・<code>IReadOnlyList&lt;T&gt;</code></td><td>内部のリストを読み取り専用として公開する</td><td>書き込めない型は無い</td></tr>
+            <tr><td><code>new()</code> のフィールド初期化</td><td>宣言の場所で <code>new()</code>（第 3 回・第 9 回の組み合わせ）</td><td>宣言時に初期化式は書けない</td></tr>
+            <tr><td><code>TryGetValue</code>・<code>out var</code></td><td>見つかったかどうかと値を同時に受け取る</td><td>戻り値 ＋ ポインタ引数</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>やってみよう</h3>
+      <ol>
+        <li>4 節の呼び出し例に、遷移表へ <code>"Walk|Attack"</code> と <code>"Attack|AttackEnd"</code> の 2 行を足し、<code>Report(fsm, "Attack")</code> を呼んで Attack 状態に進めてみる。</li>
+        <li><code>Report(fsm, "Foo")</code> のように、遷移表に無いイベント名を送ってみて、<code>handled</code> と <code>Current</code> がどうなるか確かめる。</li>
+      </ol>
+      <div class="guide-check">
+        <h3>確かめよう</h3>
+        <details>
+          <summary>問 1. <code>Current</code> が <code>{ get; private set; }</code> になっているのはなぜ？</summary>
+          <p>クラスの外から <code>fsm.Current = "Dead";</code> のように直接書き換えられないようにするためです。状態を変えるのは <code>TryHandle</code> の中だけにしたいからです。</p>
+        </details>
+        <details>
+          <summary>問 2. <code>TryGetValue</code> が <code>false</code> を返したとき、<code>out</code> で受け取った <code>next</code> の中身をそのまま使っても大丈夫？</summary>
+          <p>大丈夫ではありませんが、このコードでは <code>false</code> のときに <code>return false;</code> しているので、そもそも <code>next</code> を使いません。<code>false</code> のときの <code>next</code> は既定値（<code>string</code> なので <code>null</code>）です。</p>
+        </details>
+        <details>
+          <summary>問 3. <code>History</code> の型が <code>List&lt;string&gt;</code> ではなく <code>IReadOnlyList&lt;string&gt;</code> なのはなぜ？</summary>
+          <p>呼び出し側が <code>Add</code> や <code>Remove</code> で履歴を書き換えられないようにするためです。読むための操作だけを持つ型として公開しています。</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- 全体 -->
+    <section class="guide-section" id="s6" aria-labelledby="s6-h">
+      <h2 id="s6-h">6. 全体のコード</h2>
+      <p><code>samples/FsmExample.cs</code> の全体です（デモのページに出ているものと同じファイル）。</p>
+      <pre class="code-block" data-sample="../samples/FsmExample.cs"><code>// 読み込み中…</code></pre>
+    </section>
+
+    <nav class="guide-pager" aria-label="ページ送り">
+      <a class="btn btn-ghost" href="cs-sfx-events.html">← 前: C# 解説 9 イベントと効果音</a>
+      <a class="btn btn-primary" href="../algorithms/fsm.html?course=intro">デモを開く</a>
+      <a class="btn btn-ghost" href="cs-rng-seed.html">次: C# 解説 11 乱数とシード →</a>
+    </nav>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="入門コース · C# 解説 10 ステートマシン"></footer>
+  <script type="module" src="../js/courses/guide.js"></script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="C# 解説 5（C 言語の経験者向け）。円同士・円と AABB のサンプルコードで、Math.Clamp と、距離の 2 乗での比較・最近点の求め方を説明する。" />
+  <title>C# 解説 5 円同士・円と AABB — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="course" data-active="intro"></header>
+
+  <main class="container topic-main guide-main cs-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="intro.html">入門コース</a> / C# 解説 5</p>
+      <h1>円同士・円と AABB — C# 解説 5</h1>
+      <p class="page-header-lead">
+        <code>samples/CircleCollisionExample.cs</code> を読みながら、C# の書き方と、コードの中の計算を説明します。
+        第 4 回までを読んでいることを前提にします。
+        当たり判定の考え方そのものは<a href="guide-circle-collision.html">円同士・円と AABB のくわしい解説</a>に図で説明しています。
+        <a href="../algorithms/circle-collision.html?course=intro">円同士・円と AABB のデモ</a>でも、同じコードを見られます。
+      </p>
+      <nav class="guide-toc" aria-label="目次">
+        <strong>目次</strong>
+        <ol>
+          <li><a href="#s1">このコードがすること</a></li>
+          <li><a href="#s2">新しく出てくる C# の文法</a></li>
+          <li><a href="#s3">計算式とアルゴリズムのポイント</a></li>
+          <li><a href="#s4">呼び出してみる（Main と出力）</a></li>
+          <li><a href="#s5">まとめと、やってみよう</a></li>
+          <li><a href="#s6">全体のコード</a></li>
+        </ol>
+      </nav>
+    </div>
+
+    <!-- 1 -->
+    <section class="guide-section" id="s1" aria-labelledby="s1-h">
+      <h2 id="s1-h">1. このコードがすること</h2>
+      <p><code>CircleCollision</code> には、次の 2 つの判定があります。</p>
+      <ul>
+        <li><code>Circles(x1, y1, r1, x2, y2, r2)</code>: 2 つの円が重なっているかを、<code>true</code>/<code>false</code> で返します。</li>
+        <li><code>CircleAabb(cx, cy, r, minX, minY, maxX, maxY)</code>: 円と AABB（回転していない箱）が重なっているかを返します。</li>
+      </ul>
+      <p>どちらも「重なっているかどうか」だけを調べます。重なったあとどう動かすか（衝突応答）は入っていません。</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="guide-section" id="s2" aria-labelledby="s2-h">
+      <h2 id="s2-h">2. 新しく出てくる C# の文法</h2>
+
+      <div class="cs-syntax">
+        <h3>2.1 <code>Math.Clamp</code></h3>
+        <pre class="code-block cs-excerpt"><code>float nx = Math.Clamp(cx, minX, maxX);
+float ny = Math.Clamp(cy, minY, maxY);</code></pre>
+        <p>
+          <code>Math.Clamp(value, min, max)</code> は、値を <code>min</code>〜<code>max</code> の範囲に押し込める関数です。範囲より小さければ <code>min</code>、大きければ <code>max</code>、範囲の中ならそのままになります。
+        </p>
+        <div class="cs-pair">
+          <div>
+            <p class="cs-pair-label">C（標準にはないので自分で書く）</p>
+            <pre class="code-block"><code>float nx = fmaxf(minX, fminf(cx, maxX));</code></pre>
+          </div>
+          <div>
+            <p class="cs-pair-label">C#</p>
+            <pre class="code-block"><code>float nx = Math.Clamp(cx, minX, maxX);</code></pre>
+          </div>
+        </div>
+        <p>C の標準ライブラリには clamp に当たる関数がなく、<code>fmin</code>・<code>fmax</code> を組み合わせて書きます。C# では 1 つの関数にまとまっています。</p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.2 比較の結果をそのまま <code>return</code></h3>
+        <pre class="code-block cs-excerpt"><code>return dx * dx + dy * dy &lt;= rr * rr;
+return dx * dx + dy * dy &lt;= r * r;</code></pre>
+        <p>
+          <code>if</code> で分けて <code>return true;</code>・<code>return false;</code> と書かず、比較の結果（<code>bool</code>）をそのまま <code>return</code> しています。
+          戻り値の型が <code>bool</code> の <code>Circles</code>・<code>CircleAabb</code> だからこそできる書き方です。C でも比較はそのまま <code>return</code> できますが、戻り値は <code>bool</code> 型ではなく <code>int</code>（0 か 1）になります。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.3 <code>float dx = ..., dy = ...;</code>（C と同じ）</h3>
+        <pre class="code-block cs-excerpt"><code>float dx = x2 - x1, dy = y2 - y1;</code></pre>
+        <p>同じ型の変数を、コンマで区切って 1 行で宣言・初期化しています。C とまったく同じ書き方です。</p>
+      </div>
+
+      <p class="cs-known">
+        これまでに出たもの: <code>using System;</code>・<code>public static class</code>（<a href="cs-game-loop.html#s3">第 1 回</a>）、<code>bool</code>（<a href="cs-input-basics.html#s2">第 2 回</a>）、<code>float</code>（<a href="cs-accel-gravity.html#s2">第 4 回</a>）。<br />
+        C と同じもの: <code>&lt;=</code>、<code>*</code>・<code>+</code>・<code>-</code>、コメントの <code>//</code>。
+      </p>
+    </section>
+
+    <!-- 3 -->
+    <section class="guide-section" id="s3" aria-labelledby="s3-h">
+      <h2 id="s3-h">3. 計算式とアルゴリズムのポイント</h2>
+
+      <h3>3.1 距離の 2 乗で比較する（<code>Circles</code>）</h3>
+      <pre class="code-block cs-excerpt"><code>float dx = x2 - x1, dy = y2 - y1;
+float rr = r1 + r2;
+return dx * dx + dy * dy &lt;= rr * rr;</code></pre>
+      <p>
+        <a href="guide-circle-collision.html#s2">くわしい解説の 2 節</a>で説明した「平方根を使わずに比べる」方法です。
+        <code>dx</code>・<code>dy</code> は中心どうしの横・縦のずれ、<code>rr</code> は半径の和です。<code>dx*dx + dy*dy</code>（距離の 2 乗）と <code>rr*rr</code>（半径の和の 2 乗）を、2 乗のまま比べています。
+      </p>
+
+      <h3>3.2 Clamp で最近点を求める（<code>CircleAabb</code>）</h3>
+      <pre class="code-block cs-excerpt"><code>float nx = Math.Clamp(cx, minX, maxX);
+float ny = Math.Clamp(cy, minY, maxY);
+float dx = cx - nx, dy = cy - ny;
+return dx * dx + dy * dy &lt;= r * r;</code></pre>
+      <p>
+        <code>(nx, ny)</code> が、箱の中で円の中心にいちばん近い点（最近点）です。x と y、それぞれの軸で別々に <code>Math.Clamp</code> を使って求めています
+        （<a href="guide-circle-collision.html#s5">くわしい解説の 5 節</a>）。あとは円の中心 <code>(cx, cy)</code> から最近点までの距離の 2 乗を、半径の 2 乗と比べるだけです（<a href="guide-circle-collision.html#s4">4 節</a>）。
+      </p>
+    </section>
+
+    <!-- 4 -->
+    <section class="guide-section" id="s4" aria-labelledby="s4-h">
+      <h2 id="s4-h">4. 呼び出してみる（Main と出力）</h2>
+      <p>
+        <a href="guide-circle-collision.html#s1">くわしい解説</a>と同じ数値で、円同士・円と箱の判定を試します。
+      </p>
+      <pre class="code-block"><code>using System;
+
+public static class Program
+{
+    public static void Main()
+    {
+        bool missFar = CircleCollision.Circles(180, 160, 40, 320, 200, 32);
+        bool touch = CircleCollision.Circles(180, 160, 40, 252, 160, 32);
+        bool missNear = CircleCollision.Circles(180, 160, 40, 255, 160, 32);
+        Console.WriteLine("Circles far:   " + missFar);
+        Console.WriteLine("Circles touch: " + touch);
+        Console.WriteLine("Circles near:  " + missNear);
+
+        bool aabbTouch = CircleCollision.CircleAabb(480, 80, 40, 420, 120, 540, 210);
+        bool aabbMiss = CircleCollision.CircleAabb(480, 79, 40, 420, 120, 540, 210);
+        Console.WriteLine("CircleAabb touch: " + aabbTouch);
+        Console.WriteLine("CircleAabb miss:  " + aabbMiss);
+    }
+}</code></pre>
+      <p>実行結果:</p>
+      <pre class="code-block"><code>Circles far:   False
+Circles touch: True
+Circles near:  False
+CircleAabb touch: True
+CircleAabb miss:  False</code></pre>
+      <ul>
+        <li>円 A(180,160,r=40) と円 B(320,200,r=32) は離れていて <code>False</code>（<a href="guide-circle-collision.html#s2">くわしい解説 2 節</a>の例と同じです）。</li>
+        <li>円 B を <code>(252,160)</code> にすると、中心の距離がちょうど半径の和（72）と等しくなり、<code>True</code>（ぎりぎり接触）。</li>
+        <li>そこから 3 px 離す（<code>(255,160)</code>）と <code>False</code> に変わります。</li>
+        <li>円 A の中心を <code>(480,80)</code>、箱を <code>x=420,y=120,w=120,h=90</code> にすると、円の下端がちょうど箱の上辺に届き <code>True</code>。円を 1 px 上（<code>y=79</code>）にすると <code>False</code> になります。</li>
+      </ul>
+    </section>
+
+    <!-- まとめ -->
+    <section class="guide-section guide-try" id="s5" aria-labelledby="s5-h">
+      <h2 id="s5-h">5. まとめと、やってみよう</h2>
+      <p>この回で出てきた C# の文法です。後の回では、ここへのリンクだけを置きます。</p>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead><tr><th>文法</th><th>ひとことで</th><th>C では</th></tr></thead>
+          <tbody>
+            <tr><td><a href="#s2"><code>Math.Clamp</code></a></td><td>値を範囲に押し込める</td><td>標準にはない（<code>fmin</code>・<code>fmax</code> を組み合わせる）</td></tr>
+            <tr><td>比較結果をそのまま <code>return</code></td><td><code>bool</code> の戻り値に、比較式をそのまま返す</td><td>戻り値は <code>int</code>（0/1）になる</td></tr>
+            <tr><td><code>float dx = a, dy = b;</code></td><td>同じ型の変数をコンマで区切って宣言</td><td>C と同じ</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>やってみよう</h3>
+      <ol>
+        <li>4 節の <code>CircleAabb</code> の呼び出しで、円の中心を箱の内側（例えば <code>(480, 160)</code>）にすると、最近点はどこになり、結果はどうなるか予想してから確かめる。</li>
+        <li><code>Circles</code> の 2 つの円の半径を大きくしていくと、<code>rr * rr</code> はどう変わるかを、実際に数値を入れて確かめる。</li>
+      </ol>
+      <div class="guide-check">
+        <h3>確かめよう</h3>
+        <details>
+          <summary>問 1. <code>Math.Clamp(250, 100, 200)</code> の結果は？</summary>
+          <p>200。範囲より大きいので、上限に押し込められます。</p>
+        </details>
+        <details>
+          <summary>問 2. <code>Circles</code> が平方根を計算しないのはなぜ？</summary>
+          <p>距離や半径の和はマイナスにならないので、2 乗のまま比べても大小関係が変わらないからです。</p>
+        </details>
+        <details>
+          <summary>問 3. <code>CircleAabb</code> で、円の中心の x・y がどちらも箱の範囲の中にあるとき、最近点はどこになる？</summary>
+          <p>円の中心そのもの（<code>Math.Clamp</code> がどちらの軸でも値を変えないため）。つまり円の中心が箱の中にあり、必ず重なります。</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- 全体 -->
+    <section class="guide-section" id="s6" aria-labelledby="s6-h">
+      <h2 id="s6-h">6. 全体のコード</h2>
+      <p><code>samples/CircleCollisionExample.cs</code> の全体です（デモのページに出ているものと同じファイル）。</p>
+      <pre class="code-block" data-sample="../samples/CircleCollisionExample.cs"><code>// 読み込み中…</code></pre>
+    </section>
+
+    <nav class="guide-pager" aria-label="ページ送り">
+      <a class="btn btn-ghost" href="cs-accel-gravity.html">← 前: C# 解説 4 加速度と重力</a>
+      <a class="btn btn-primary" href="../algorithms/circle-collision.html?course=intro">デモを開く</a>
+      <a class="btn btn-ghost" href="cs-coyote-time.html">次: C# 解説 6 コヨーテタイム →</a>
+    </nav>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="入門コース · C# 解説 5 円同士・円と AABB"></footer>
+  <script type="module" src="../js/courses/guide.js"></script>
+</body>
+</html>

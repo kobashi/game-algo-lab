@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="C# 解説 13（C 言語の経験者向け）。α-β 法のサンプルコードで、if の外の { } だけのブロックとループ途中の return、α・βの更新とカット条件を説明する。" />
+  <title>C# 解説 13 α-β 法 — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="course" data-active="intro"></header>
+
+  <main class="container topic-main guide-main cs-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="intro.html">入門コース</a> / C# 解説 13</p>
+      <h1>α-β 法 — C# 解説 13</h1>
+      <p class="page-header-lead">
+        <code>samples/AlphaBetaExample.cs</code> を読みながら、C# の書き方と、コードの中の計算を説明します。
+        第 12 回までを読んでいる前提です。
+        α-β 法の考え方そのものは<a href="guide-alpha-beta.html">α-β 法のくわしい解説</a>に図で説明しています。
+        <a href="../algorithms/alpha-beta.html?course=intro">α-β 法のデモ</a>でも、同じコードを見られます。
+      </p>
+      <nav class="guide-toc" aria-label="目次">
+        <strong>目次</strong>
+        <ol>
+          <li><a href="#s1">このコードがすること</a></li>
+          <li><a href="#s2">新しく出てくる C# の文法</a></li>
+          <li><a href="#s3">計算式とアルゴリズムのポイント</a></li>
+          <li><a href="#s4">呼び出してみる（Main と出力）</a></li>
+          <li><a href="#s5">まとめと、やってみよう</a></li>
+          <li><a href="#s6">全体のコード</a></li>
+        </ol>
+      </nav>
+    </div>
+
+    <!-- 1 -->
+    <section class="guide-section" id="s1" aria-labelledby="s1-h">
+      <h2 id="s1-h">1. このコードがすること</h2>
+      <p>このファイルには、次の 2 つがあります。</p>
+      <ul>
+        <li><code>AbKind</code>・<code>AbNode</code>: <a href="cs-minimax.html#s2">第 12 回</a>の <code>MmKind</code>・<code>MmNode</code>と、まったく同じ形の列挙型・クラスです（名前の頭文字が Mm から Ab に変わっただけ）。</li>
+        <li><code>AlphaBeta.Evaluate(n, alpha, beta)</code>: α-β 法つきの Min-Max。返す値は、枝刈りをしない<a href="cs-minimax.html">第 12 回</a>の <code>Minimax.Evaluate</code> とまったく同じです。違うのは、答えに関係ない枝を読まずに済ませる点だけです。</li>
+      </ul>
+      <p>
+        <code>AbNode</code> のフィールド・プロパティ・コンストラクタの説明は<a href="cs-minimax.html#s2">第 12 回</a>と同じなので、ここでは繰り返しません。
+        考え方そのものは<a href="guide-alpha-beta.html">くわしい解説</a>で図を使って説明しているので、ここではコードとの対応に絞って説明します。
+      </p>
+    </section>
+
+    <!-- 2 -->
+    <section class="guide-section" id="s2" aria-labelledby="s2-h">
+      <h2 id="s2-h">2. 新しく出てくる C# の文法</h2>
+      <p>
+        新しい文法はほとんどありません。<code>enum</code>・<code>int?</code>・取得専用プロパティ・再帰・<code>int.MinValue</code> は
+        <a href="cs-minimax.html#s2">第 12 回</a>のとおりです。ここでは、コードの形として少しだけ目にとまる 2 点を説明します。
+      </p>
+
+      <div class="cs-syntax">
+        <h3>2.1 <code>if</code> に付いていない <code>{ }</code> だけのブロック</h3>
+        <pre class="code-block cs-excerpt"><code>if (n.Kind == AbKind.Max)
+{
+    int v = int.MinValue;
+    foreach (var child in n.Children)
+    {
+        v = Math.Max(v, Evaluate(child, alpha, beta));
+        if (v &gt;= beta)
+            return v; // β カット
+        alpha = Math.Max(alpha, v);
+    }
+    return v;
+}
+
+// Min
+{
+    int v = int.MaxValue;
+    foreach (var child in n.Children)
+    {
+        v = Math.Min(v, Evaluate(child, alpha, beta));
+        if (v &lt;= alpha)
+            return v; // α カット
+        beta = Math.Min(beta, v);
+    }
+    return v;
+}</code></pre>
+        <p>
+          最初の <code>{ }</code> は <code>if (n.Kind == AbKind.Max)</code> に付いたブロックです。ここまでは第 1 回からずっと出てきた、普通の <code>if</code> のブロックです。
+          その次の <code>// Min</code> というコメントの下にある <code>{ }</code> には、<code>if</code> も <code>for</code> も付いていません。
+          C にも、<code>if</code> や <code>for</code> なしでいきなり <code>{ }</code> を書く書き方があり、ただの「区切り（スコープ）」として使えます。C# でも同じです。
+        </p>
+        <p>
+          <code>Evaluate</code> は <code>AbKind.Max</code> なら前半のブロックの中で必ず <code>return</code> するので、<code>AbKind.Min</code>（それ以外）のときだけ、
+          後半の <code>{ }</code> まで実行が進みます。<code>if ... else { ... }</code> と書かずに、<code>if</code> ブロックの中の <code>return</code> で
+          「もし Max ならここで終わり」を表し、残りの <code>{ }</code> を「そうでなければ」の代わりに使っている形です。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.2 ループの途中の <code>return</code></h3>
+        <pre class="code-block cs-excerpt"><code>if (v &gt;= beta)
+    return v; // β カット</code></pre>
+        <p>
+          <code>foreach</code> の中で <code>return</code> すると、そのループだけでなく、<code>Evaluate</code> メソッドそのものがすぐに終わります。
+          これは C の <code>for</code> ループの中で <code>return</code> するのと同じ動きです。<code>break</code> だとループだけ抜けてメソッドの続きが実行されますが、
+          <code>return</code> はメソッドごと抜けるので、まだ読んでいない残りの子（<code>n.Children</code> の続き）は、そもそも <code>foreach</code> が回らず、評価されません。
+          これが、答えに関係ない枝を読まずに済ませる仕組みの土台です。
+        </p>
+      </div>
+
+      <p class="cs-known">
+        これまでに出たもの: <code>enum</code>・<code>int?</code> と <code>??</code>・取得専用プロパティ・再帰・<code>int.MinValue</code>（<a href="cs-minimax.html#s2">第 12 回</a>）、
+        <code>class</code>・フィールド・メソッド（<a href="cs-game-loop.html#s2">第 1 回</a>）、<code>List&lt;T&gt;</code>・<code>foreach</code>・<code>var</code>（<a href="cs-sfx-events.html#s2">第 9 回</a>）。
+        C と同じもの: <code>if</code>、<code>&gt;=</code>・<code>&lt;=</code>、<code>{ }</code> だけのブロック、ループ内の <code>return</code>。
+      </p>
+    </section>
+
+    <!-- 3 -->
+    <section class="guide-section" id="s3" aria-labelledby="s3-h">
+      <h2 id="s3-h">3. 計算式とアルゴリズムのポイント</h2>
+
+      <h3>3.1 α と β の更新、カットの条件</h3>
+      <pre class="code-block cs-excerpt"><code>v = Math.Max(v, Evaluate(child, alpha, beta));
+if (v &gt;= beta)
+    return v; // β カット
+alpha = Math.Max(alpha, v);</code></pre>
+      <pre class="code-block cs-excerpt"><code>v = Math.Min(v, Evaluate(child, alpha, beta));
+if (v &lt;= alpha)
+    return v; // α カット
+beta = Math.Min(beta, v);</code></pre>
+      <p>
+        MAX の節点では、子を 1 つ評価するたびに <code>v</code> をこれまでの最大に更新し、<strong>v が β 以上になったら、その場で v を返して打ち切ります</strong>（β カット）。
+        打ち切らずに済んだ場合は、<code>alpha</code> を <code>v</code> でさらに大きくしてから次の子へ進みます。MIN の節点はこの逆で、
+        <strong>v が α 以下になったら打ち切り</strong>（α カット）、そうでなければ <code>beta</code> を更新します。
+        α・β の意味そのもの（自分の下限・相手の上限）は<a href="guide-alpha-beta.html#s3">くわしい解説の 3 節</a>で説明しています。
+      </p>
+      <p>
+        <code>Evaluate</code> の中の <code>alpha</code>・<code>beta</code> 引数は、C の <code>double *p</code> のような参照渡しではなく、普通の <code>int</code> の値渡しです。
+        <code>alpha = Math.Max(alpha, v);</code> で書き換えても、変わるのはこの呼び出し（この節点）の中だけで、呼び出し元の <code>alpha</code>・<code>beta</code> は変わりません。
+        親から子へは、更新した後の値をそのまま引数として渡します（<code>Evaluate(child, alpha, beta)</code>）。
+      </p>
+
+      <h3>3.2 根の呼び出し方</h3>
+      <pre class="code-block cs-excerpt"><code>/// 根: Evaluate(root, int.MinValue, int.MaxValue)</code></pre>
+      <p>
+        くわしい解説でのα＝−∞、β＝+∞という開始値は、このコードでは <code>int.MinValue</code>・<code>int.MaxValue</code>（<a href="cs-minimax.html#s2">第 12 回</a>）にあたります。
+        「まだ何も分かっていない」ことを、その型で表せるいちばん外側の値で表しています。
+        α-β 法は、枝刈りをしてもしなくても、根から返る値は必ず同じです。<a href="cs-minimax.html#s3">第 12 回</a>の <code>Minimax.Evaluate</code> と見比べると、
+        <code>if</code>・<code>return</code> の位置が増えただけで、MAX は最大・MIN は最小という規則そのものは変わっていないことが分かります。
+      </p>
+    </section>
+
+    <!-- 4 -->
+    <section class="guide-section" id="s4" aria-labelledby="s4-h">
+      <h2 id="s4-h">4. 呼び出してみる（Main と出力）</h2>
+      <p>
+        <a href="cs-minimax.html#s4">第 12 回</a>で組み立てたのと同じ、デモの既定の木（<code>js/maps/alpha-beta-tree.js</code>、葉 12 枚）を
+        <code>AbNode</code> で組み立てて呼び出します。
+      </p>
+      <pre class="code-block"><code>using System;
+
+public static class Program
+{
+    public static void Main()
+    {
+        AbNode l1a = new AbNode("L1a", "葉L1a", AbKind.Leaf, 5);
+        AbNode l1b = new AbNode("L1b", "葉L1b", AbKind.Leaf, 3);
+        AbNode l1 = new AbNode("L1", "応手L1", AbKind.Max);
+        l1.Children.Add(l1a);
+        l1.Children.Add(l1b);
+
+        AbNode l2a = new AbNode("L2a", "葉L2a", AbKind.Leaf, 7);
+        AbNode l2b = new AbNode("L2b", "葉L2b", AbKind.Leaf, 9);
+        AbNode l2 = new AbNode("L2", "応手L2", AbKind.Max);
+        l2.Children.Add(l2a);
+        l2.Children.Add(l2b);
+
+        AbNode l = new AbNode("L", "手L", AbKind.Min);
+        l.Children.Add(l1);
+        l.Children.Add(l2);
+
+        AbNode m1a = new AbNode("M1a", "葉M1a", AbKind.Leaf, 4);
+        AbNode m1b = new AbNode("M1b", "葉M1b", AbKind.Leaf, 2);
+        AbNode m1 = new AbNode("M1", "応手M1", AbKind.Max);
+        m1.Children.Add(m1a);
+        m1.Children.Add(m1b);
+
+        AbNode m2a = new AbNode("M2a", "葉M2a", AbKind.Leaf, 1);
+        AbNode m2b = new AbNode("M2b", "葉M2b", AbKind.Leaf, 3);
+        AbNode m2 = new AbNode("M2", "応手M2", AbKind.Max);
+        m2.Children.Add(m2a);
+        m2.Children.Add(m2b);
+
+        AbNode m = new AbNode("M", "手M", AbKind.Min);
+        m.Children.Add(m1);
+        m.Children.Add(m2);
+
+        AbNode r1a = new AbNode("R1a", "葉R1a", AbKind.Leaf, 6);
+        AbNode r1b = new AbNode("R1b", "葉R1b", AbKind.Leaf, 8);
+        AbNode r1 = new AbNode("R1", "応手R1", AbKind.Max);
+        r1.Children.Add(r1a);
+        r1.Children.Add(r1b);
+
+        AbNode r2a = new AbNode("R2a", "葉R2a", AbKind.Leaf, 7);
+        AbNode r2b = new AbNode("R2b", "葉R2b", AbKind.Leaf, 4);
+        AbNode r2 = new AbNode("R2", "応手R2", AbKind.Max);
+        r2.Children.Add(r2a);
+        r2.Children.Add(r2b);
+
+        AbNode r = new AbNode("R", "手R", AbKind.Min);
+        r.Children.Add(r1);
+        r.Children.Add(r2);
+
+        AbNode root = new AbNode("root", "自分の手番", AbKind.Max);
+        root.Children.Add(l);
+        root.Children.Add(m);
+        root.Children.Add(r);
+
+        int value = AlphaBeta.Evaluate(root, int.MinValue, int.MaxValue);
+        Console.WriteLine("Evaluate(root, int.MinValue, int.MaxValue) = " + value);
+    }
+}</code></pre>
+      <p>実行結果:</p>
+      <pre class="code-block"><code>Evaluate(root, int.MinValue, int.MaxValue) = 7</code></pre>
+      <p>
+        <a href="cs-minimax.html#s4">第 12 回</a>の <code>Minimax.Evaluate(root)</code> と同じ <code>7</code> です。
+        木の形と葉の値は同じでも、こちらは途中で枝刈りをしながら計算しています。
+      </p>
+    </section>
+
+    <!-- まとめ -->
+    <section class="guide-section guide-try" id="s5" aria-labelledby="s5-h">
+      <h2 id="s5-h">5. まとめと、やってみよう</h2>
+      <p>この回で出てきた C# の文法です。後の回では、ここへのリンクだけを置きます。</p>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead><tr><th>文法</th><th>ひとことで</th><th>C では</th></tr></thead>
+          <tbody>
+            <tr><td><a href="#s2"><code>{ }</code> だけのブロック</a></td><td><code>if</code>・<code>for</code> なしの区切り。前の <code>if</code> が必ず return するので、実質「そうでなければ」になる</td><td>C と同じ書き方ができる</td></tr>
+            <tr><td>ループ内の <code>return</code></td><td>ループだけでなく、メソッドごとすぐに抜ける</td><td>C と同じ</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>やってみよう</h3>
+      <ol>
+        <li>MAX 側の <code>if (v &gt;= beta)</code> と、その次の <code>return v; // β カット</code> の 2 行をまとめてコメントアウトして実行し（1 行だけだと <code>return</code> が必ず実行されてしまうので注意）、根の値が変わらないこと（枝刈りをやめても答えは同じこと）を確かめる。</li>
+        <li><code>Evaluate</code> を <a href="cs-minimax.html#s4">第 12 回</a>で作った木以外（自分で値を変えた木）にも適用し、<code>Minimax.Evaluate</code> と同じ値になることを確かめる。</li>
+      </ol>
+      <div class="guide-check">
+        <h3>確かめよう</h3>
+        <details>
+          <summary>問 1. <code>// Min</code> の下の <code>{ }</code> には、<code>if</code> や <code>for</code> が付いていない。なぜここだけ実行される？</summary>
+          <p>その前の <code>if (n.Kind == AbKind.Max)</code> のブロックが、Max のときは必ず <code>return</code> して関数を終えるからです。ここまで実行が進むのは、Max でなかった（Min だった）ときだけです。</p>
+        </details>
+        <details>
+          <summary>問 2. <code>foreach</code> の中で <code>return v;</code> すると、何が起こる？</summary>
+          <p>ループだけでなく <code>Evaluate</code> メソッドそのものが終わります。まだ読んでいない残りの子は評価されません。</p>
+        </details>
+        <details>
+          <summary>問 3. <code>Evaluate(root, int.MinValue, int.MaxValue)</code> と、枝刈りをしない <code>Minimax.Evaluate(root)</code> の返り値を比べるとどうなる？</summary>
+          <p>同じ値になります。α-β 法は、枝刈りをしてもしなくても、根から返る答えを変えません。</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- 全体 -->
+    <section class="guide-section" id="s6" aria-labelledby="s6-h">
+      <h2 id="s6-h">6. 全体のコード</h2>
+      <p><code>samples/AlphaBetaExample.cs</code> の全体です（デモのページに出ているものと同じファイル）。</p>
+      <pre class="code-block" data-sample="../samples/AlphaBetaExample.cs"><code>// 読み込み中…</code></pre>
+    </section>
+
+    <nav class="guide-pager" aria-label="ページ送り">
+      <a class="btn btn-ghost" href="cs-minimax.html">← 前: C# 解説 12 Min-Max 探索</a>
+      <a class="btn btn-primary" href="../algorithms/alpha-beta.html?course=intro">デモを開く</a>
+      <a class="btn btn-ghost" href="cs-tic-tac-toe.html">次: C# 解説 14 三目並べ →</a>
+    </nav>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="入門コース · C# 解説 13 α-β 法"></footer>
+  <script type="module" src="../js/courses/guide.js"></script>
+</body>
+</html>

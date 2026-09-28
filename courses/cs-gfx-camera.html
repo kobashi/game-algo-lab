@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="C# 解説 7（C 言語の経験者向け）。カメラのサンプルコードを読む。新しい文法はほとんど無く、else if の連鎖・名前付きタプル・式形式メンバーの復習が中心。ワールド座標からスクリーン座標への変換、デッドゾーン、追従係数の計算を説明する。" />
+  <title>C# 解説 7 カメラ — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="course" data-active="intro"></header>
+
+  <main class="container topic-main guide-main cs-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="intro.html">入門コース</a> / C# 解説 7</p>
+      <h1>カメラ — C# 解説 7</h1>
+      <p class="page-header-lead">
+        <code>samples/GfxCameraExample.cs</code> を読みながら、C# の書き方と、コードの中の計算を説明します。
+        第 6 回までを読んでいることを前提にします。
+        カメラの考え方そのものは<a href="guide-gfx-camera.html">カメラのくわしい解説</a>に図で説明しています。
+        <a href="../algorithms/gfx-camera.html?course=intro">カメラのデモ</a>でも、同じコードを見られます。
+      </p>
+      <nav class="guide-toc" aria-label="目次">
+        <strong>目次</strong>
+        <ol>
+          <li><a href="#s1">このコードがすること</a></li>
+          <li><a href="#s2">新しく出てくる C# の文法</a></li>
+          <li><a href="#s3">計算式とアルゴリズムのポイント</a></li>
+          <li><a href="#s4">呼び出してみる（Main と出力）</a></li>
+          <li><a href="#s5">まとめと、やってみよう</a></li>
+          <li><a href="#s6">全体のコード</a></li>
+        </ol>
+      </nav>
+    </div>
+
+    <!-- 1 -->
+    <section class="guide-section" id="s1" aria-labelledby="s1-h">
+      <h2 id="s1-h">1. このコードがすること</h2>
+      <p><code>FollowCamera2D</code> クラスは、プレイヤーを追いかける横スクロールのカメラです。</p>
+      <ul>
+        <li><code>X</code>: カメラの位置（ワールド座標）。</li>
+        <li><code>Follow</code>: 追従係数（0〜1）。既定値 0.08。</li>
+        <li><code>DeadZone</code>: デッドゾーンの半幅（px）。既定値 40。</li>
+        <li><code>Update(playerX, viewW)</code>: プレイヤーの位置と画面幅から、1 歩ぶんカメラを動かす。</li>
+        <li><code>WorldToScreen(wx, wy)</code>: ワールド座標をスクリーン座標に変換する。</li>
+      </ul>
+      <p>画面への実際の描画は入っていません。カメラの位置を計算する部分だけを取り出したコードです。</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="guide-section" id="s2" aria-labelledby="s2-h">
+      <h2 id="s2-h">2. 新しく出てくる C# の文法</h2>
+      <p>この回で新しく説明する文法はほとんどありません。ここまでに出てきた書き方の組み合わせで読めます。</p>
+
+      <div class="cs-syntax">
+        <h3>2.1 <code>else if</code> の連鎖</h3>
+        <pre class="code-block cs-excerpt"><code>if (screenX &lt; mid - DeadZone) desired = playerX - (mid - DeadZone);
+else if (screenX &gt; mid + DeadZone) desired = playerX - (mid + DeadZone);</code></pre>
+        <p>
+          <code>if</code>・<code>else if</code> を並べて、条件を上から順に試す書き方です。C の <code>else if</code> とまったく同じです。
+          どちらの条件にも当てはまらなければ、直前に代入された <code>desired = X;</code>（変化なし）のままになります。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.2 名前付きタプルの戻り値 ＋ 式形式メンバー（すでに出てきたものの組み合わせ）</h3>
+        <pre class="code-block cs-excerpt"><code>public (float sx, float sy) WorldToScreen(float wx, float wy) =&gt;
+    (wx - X, wy);</code></pre>
+        <p>
+          名前付きタプルを返す書き方は<a href="cs-game-loop.html#s3">第 1 回</a>、<code>=&gt;</code> で 1 行にまとめる式形式メンバーは
+          <a href="cs-velocity-motion.html#s2">第 3 回</a>で説明しました。ここでは、その 2 つを組み合わせて
+          「<code>(sx, sy)</code> を返す関数を、<code>{ return … }</code> を書かずに 1 行で書く」形になっています。
+        </p>
+      </div>
+
+      <p class="cs-known">
+        これまでに出たもの: <code>public float</code> フィールドと初期値、<code>class</code>（<a href="cs-game-loop.html#s3">第 1 回</a>）、
+        名前付きタプル（<a href="cs-game-loop.html#s3">第 1 回</a>）、式形式メンバー <code>=&gt;</code>（<a href="cs-velocity-motion.html#s2">第 3 回</a>）、
+        <code>float</code> と <code>f</code> サフィックス（<a href="cs-accel-gravity.html#s2">第 4 回</a>）。
+        C と同じもの: <code>if</code>・<code>else if</code>、<code>*</code>・<code>+</code>・<code>-</code>、比較演算子、<code>+=</code>。
+      </p>
+    </section>
+
+    <!-- 3 -->
+    <section class="guide-section" id="s3" aria-labelledby="s3-h">
+      <h2 id="s3-h">3. 計算式とアルゴリズムのポイント</h2>
+
+      <h3>3.1 デッドゾーンの判定</h3>
+      <pre class="code-block cs-excerpt"><code>float screenX = playerX - X;
+float mid = viewW * 0.5f;
+float desired = X;
+if (screenX &lt; mid - DeadZone) desired = playerX - (mid - DeadZone);
+else if (screenX &gt; mid + DeadZone) desired = playerX - (mid + DeadZone);</code></pre>
+      <p>
+        まず今のカメラでプレイヤーが画面のどこに映るか（<code>screenX</code>）を求めます。画面の中心 <code>mid</code> から
+        <code>DeadZone</code> だけ離れた範囲（<a href="guide-gfx-camera.html#s3">くわしい解説の図 3</a>の黄色い帯）の外に出たときだけ、
+        「プレイヤーが帯のふちに来る」ようなカメラの目標値 <code>desired</code> を計算します。帯の中にいるあいだは
+        <code>desired = X</code>（今の位置のまま）で、目標は変わりません。
+      </p>
+
+      <h3>3.2 目標へ少しずつ近づく（追従）</h3>
+      <pre class="code-block cs-excerpt"><code>X += (desired - X) * Follow;</code></pre>
+      <p>
+        <code>desired - X</code> は、今のカメラと目標との差です。この差に <code>Follow</code>（0〜1 の割合）を掛けた分だけ、
+        1 回の <code>Update</code> でカメラを動かします。<code>Follow</code> が大きいほど早く追い付き、小さいほどゆっくり近づきます
+        （<a href="guide-gfx-camera.html#s4">くわしい解説の 4 節</a>）。
+      </p>
+
+      <h3>3.3 ワールド座標からスクリーン座標へ</h3>
+      <pre class="code-block cs-excerpt"><code>public (float sx, float sy) WorldToScreen(float wx, float wy) =&gt;
+    (wx - X, wy);</code></pre>
+      <p>
+        スクリーン x 座標は、ワールド x 座標からカメラの位置を引くだけです（<a href="guide-gfx-camera.html#s1">くわしい解説の式</a>と同じ）。
+        y 座標はカメラで動かしていないので、そのまま返します。
+      </p>
+
+      <h3>3.4 落とし穴: <code>Follow</code> を 1 より大きくすると</h3>
+      <p>
+        <code>Follow</code> は「1 歩で差の何割を詰めるか」という割合のつもりの数です。1 を超える値を入れるとどうなるか試しました。
+        <code>Follow = 1.2</code> にして、画面幅 720、プレイヤーが世界座標 360 → 500（そのまま静止）で動かした結果です。
+      </p>
+      <pre class="code-block"><code>frame 1: X=0
+frame 2: X=120
+frame 3: X=120
+frame 4: X=120
+frame 5: X=120</code></pre>
+      <p>
+        2 フレーム目で、差 100 に対して 1.2 倍の 120 だけ動いてしまい、目標の 100 を追い越して止まっています（オーバーシュート）。
+        たまたま追い越した先がデッドゾーンの中だったので、そのあとは動かなくなりました。<code>Follow</code> は 1 未満で使うものです。
+      </p>
+    </section>
+
+    <!-- 4 -->
+    <section class="guide-section" id="s4" aria-labelledby="s4-h">
+      <h2 id="s4-h">4. 呼び出してみる（Main と出力）</h2>
+      <p>
+        サンプルには実行の入口がないので、次のようなファイルを足して動かします。画面幅 720 で、プレイヤーを
+        世界座標 360（1 フレーム目）から 500（2〜5 フレーム目は静止）まで動かします。
+      </p>
+      <pre class="code-block"><code>using System;
+
+public static class Program
+{
+    public static void Main()
+    {
+        FollowCamera2D camera = new FollowCamera2D();
+        float viewW = 720f;
+        float[] playerXs = { 360f, 500f, 500f, 500f, 500f };
+
+        for (int frame = 1; frame &lt;= playerXs.Length; frame++)
+        {
+            camera.Update(playerXs[frame - 1], viewW);
+            (float sx, float sy) = camera.WorldToScreen(playerXs[frame - 1], 0f);
+            Console.WriteLine("frame " + frame + ": X=" + Math.Round(camera.X, 2) + ", screenX=" + Math.Round(sx, 2));
+        }
+    }
+}</code></pre>
+      <p>実行結果:</p>
+      <pre class="code-block"><code>frame 1: X=0, screenX=360
+frame 2: X=8, screenX=492
+frame 3: X=15.36, screenX=484.64
+frame 4: X=22.13, screenX=477.87
+frame 5: X=28.36, screenX=471.64</code></pre>
+      <ul>
+        <li>1 フレーム目は、プレイヤーがちょうど画面中央（デッドゾーンの中）にいるので、カメラは動きません。</li>
+        <li>2 フレーム目でプレイヤーが 500 に進むと、デッドゾーンの外に出るのでカメラが動き始めます。</li>
+        <li>プレイヤーが静止したあとも、カメラは目標（デッドゾーンのふち）に向けて少しずつ近づき続けます。</li>
+        <li><code>Math.Round(camera.X, 2)</code> の <code>camera.X</code> は <code>float</code> ですが、<code>Math.Round(double, int)</code> に渡すため <code>double</code> へ暗黙に変換されています（広がる変換、第 6 回）。</li>
+      </ul>
+    </section>
+
+    <!-- まとめ -->
+    <section class="guide-section guide-try" id="s5" aria-labelledby="s5-h">
+      <h2 id="s5-h">5. まとめと、やってみよう</h2>
+      <p>この回で出てきた文法です。ほとんどが復習なので、リンク先を確認してください。</p>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead><tr><th>文法</th><th>ひとことで</th><th>C では</th></tr></thead>
+          <tbody>
+            <tr><td><a href="#s2"><code>else if</code></a></td><td>条件を上から順に試す</td><td>同じ</td></tr>
+            <tr><td>タプル戻り値 ＋ <code>=&gt;</code></td><td>第 1 回・第 3 回の組み合わせ</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>やってみよう</h3>
+      <ol>
+        <li><code>Follow</code> を <code>0.02f</code> に変えて 4 節のコードを動かし、カメラが目標に近づく速さがどう変わるかを確かめる。</li>
+        <li><code>Follow</code> を <code>1.2f</code> に変えて 3.4 節のオーバーシュートを自分の手元でも再現する。</li>
+      </ol>
+      <div class="guide-check">
+        <h3>確かめよう</h3>
+        <details>
+          <summary>問 1. <code>screenX</code> が <code>mid - DeadZone</code> と <code>mid + DeadZone</code> の間にあるとき、<code>desired</code> はどうなる？</summary>
+          <p><code>desired = X;</code> のまま変わらないので、カメラは動きません（デッドゾーンの中）。</p>
+        </details>
+        <details>
+          <summary>問 2. <code>WorldToScreen</code> の戻り値の型は？ なぜ 2 つの値をまとめて返す必要がある？</summary>
+          <p><code>(float sx, float sy)</code> という名前付きタプルです。スクリーン座標は x と y の組なので、2 つの値を 1 回の呼び出しでまとめて返しています。</p>
+        </details>
+        <details>
+          <summary>問 3. <code>Follow = 1.2f</code> のとき、差が 100 だった場合、1 回の <code>Update</code> でカメラはどれだけ動く？</summary>
+          <p>100 × 1.2 ＝ 120 動きます。目標との差（100）より大きく動いてしまうので、目標を追い越します。</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- 全体 -->
+    <section class="guide-section" id="s6" aria-labelledby="s6-h">
+      <h2 id="s6-h">6. 全体のコード</h2>
+      <p><code>samples/GfxCameraExample.cs</code> の全体です（デモのページに出ているものと同じファイル）。</p>
+      <pre class="code-block" data-sample="../samples/GfxCameraExample.cs"><code>// 読み込み中…</code></pre>
+    </section>
+
+    <nav class="guide-pager" aria-label="ページ送り">
+      <a class="btn btn-ghost" href="cs-coyote-time.html">← 前: C# 解説 6 コヨーテタイム</a>
+      <a class="btn btn-primary" href="../algorithms/gfx-camera.html?course=intro">デモを開く</a>
+      <a class="btn btn-ghost" href="cs-gfx-ui-canvas.html">次: C# 解説 8 UI の配置 →</a>
+    </nav>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="入門コース · C# 解説 7 カメラ"></footer>
+  <script type="module" src="../js/courses/guide.js"></script>
+</body>
+</html>

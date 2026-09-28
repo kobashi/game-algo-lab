@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="C# 解説 11（C 言語の経験者向け）。乱数とシードのサンプルコードで、interface・uint/ulong と 16 進リテラル・符号なしの &gt;&gt; とオーバーフロー・既定値付き引数・throw と nameof と、LCG・XorShift・Mulberry32 の計算を説明する。" />
+  <title>C# 解説 11 乱数とシード — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="course" data-active="intro"></header>
+
+  <main class="container topic-main guide-main cs-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="intro.html">入門コース</a> / C# 解説 11</p>
+      <h1>乱数とシード — C# 解説 11</h1>
+      <p class="page-header-lead">
+        <code>samples/RngSeedExample.cs</code> を読みながら、C# の書き方と、コードの中の計算を説明します。
+        第 10 回までを読んでいることを前提にします。
+        疑似乱数・シード・LCG・XorShift の考え方そのものは<a href="guide-rng-seed.html">乱数とシードのくわしい解説</a>に図と手計算で説明しています。
+        <a href="../algorithms/rng-seed.html?course=intro">乱数とシードのデモ</a>でも、同じ考え方のコードを見られます。
+      </p>
+      <nav class="guide-toc" aria-label="目次">
+        <strong>目次</strong>
+        <ol>
+          <li><a href="#s1">このコードがすること</a></li>
+          <li><a href="#s2">新しく出てくる C# の文法</a></li>
+          <li><a href="#s3">計算式とアルゴリズムのポイント</a></li>
+          <li><a href="#s4">呼び出してみる（Main と出力）</a></li>
+          <li><a href="#s5">まとめと、やってみよう</a></li>
+          <li><a href="#s6">全体のコード</a></li>
+        </ol>
+      </nav>
+    </div>
+
+    <!-- 1 -->
+    <section class="guide-section" id="s1" aria-labelledby="s1-h">
+      <h2 id="s1-h">1. このコードがすること</h2>
+      <p>
+        このファイルには、同じ「次の 1 個の乱数を返す」という役目を、3 通りのやり方で実装したクラスがあります。
+      </p>
+      <ul>
+        <li><code>IUnitRng</code>: 「<code>NextDouble()</code> を持つ」という約束（インターフェース）。</li>
+        <li><code>Mulberry32</code>: サイトのデモが標準で使っている PRNG。</li>
+        <li><code>XorShift32</code>: ビットシフトと XOR だけで作る PRNG。</li>
+        <li><code>Lcg</code>: 線形合同法。教材用に、周期（同じ状態に戻るまでの長さ）を測る <code>MeasurePeriod</code> も持っています。</li>
+      </ul>
+      <p>
+        3 つのクラスはどれも <code>IUnitRng</code> を実装しているので、呼び出す側は中身のアルゴリズムを気にせず、同じ <code>NextDouble()</code> で使えます。
+        PRNG・シード・周期そのものの考え方は<a href="guide-rng-seed.html">くわしい解説</a>にあります。ここでは、コードとの対応に集中します。
+      </p>
+    </section>
+
+    <!-- 2 -->
+    <section class="guide-section" id="s2" aria-labelledby="s2-h">
+      <h2 id="s2-h">2. 新しく出てくる C# の文法</h2>
+
+      <div class="cs-syntax">
+        <h3>2.1 <code>interface</code> と実装（<code>: IUnitRng</code>）</h3>
+        <pre class="code-block cs-excerpt"><code>public interface IUnitRng
+{
+    /// &lt;summary&gt;[0, 1) の次の値&lt;/summary&gt;
+    double NextDouble();
+}</code></pre>
+        <p>
+          <code>interface</code> は、中身を持たない「約束」だけの型です。ここでは「<code>NextDouble()</code> という、引数無しで <code>double</code> を返すメソッドを持つ」という約束をしています。
+        </p>
+        <pre class="code-block cs-excerpt"><code>public sealed class Mulberry32 : IUnitRng</code></pre>
+        <p>
+          <code>class Mulberry32 : IUnitRng</code> は「<code>Mulberry32</code> は <code>IUnitRng</code> の約束を守ります」という宣言です。
+          約束したメソッド（<code>NextDouble</code>）を書き忘れると、コンパイルエラーになります。
+          <code>XorShift32</code>・<code>Lcg</code> も同じ約束を実装しているので、3 つとも <code>IUnitRng</code> 型の変数に代入できます。
+        </p>
+        <div class="cs-pair">
+          <div>
+            <p class="cs-pair-label">C（関数ポインタで約束を表す）</p>
+            <pre class="code-block"><code>/* 「1 つの関数を持つ」という約束を、関数ポインタの型で表す */
+typedef double (*NextDoubleFn)(void *self);</code></pre>
+          </div>
+          <div>
+            <p class="cs-pair-label">C#（<code>interface</code> で約束を表す）</p>
+            <pre class="code-block cs-excerpt"><code>public interface IUnitRng
+{
+    /// &lt;summary&gt;[0, 1) の次の値&lt;/summary&gt;
+    double NextDouble();
+}</code></pre>
+          </div>
+        </div>
+        <p>
+          C では、関数ポインタを構造体に持たせて、実装ごとに違う関数を差し込む、という書き方で近いことをします。
+          C# の <code>interface</code> は、この「差し込み口」を型として言語がチェックしてくれるものです。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.2 <code>uint</code>・<code>ulong</code> と <code>u</code> サフィックス、16 進リテラル</h3>
+        <pre class="code-block cs-excerpt"><code>uint a = _state;
+a += 0x6D2B79F5u;</code></pre>
+        <p>
+          <code>uint</code> は符号なし 32 ビット整数、<code>ulong</code>（<code>Lcg</code> クラスで使用）は符号なし 64 ビット整数です。
+          <code>0x6D2B79F5u</code> のような 16 進リテラルと <code>u</code> サフィックスの書き方自体は C と同じです。
+        </p>
+        <div class="cs-pair">
+          <div>
+            <p class="cs-pair-label">C</p>
+            <pre class="code-block"><code>unsigned int a = state;   /* 大きさは環境しだい */
+a += 0x6D2B79F5u;</code></pre>
+          </div>
+          <div>
+            <p class="cs-pair-label">C#</p>
+            <pre class="code-block cs-excerpt"><code>uint a = _state;
+a += 0x6D2B79F5u;</code></pre>
+          </div>
+        </div>
+        <p>
+          C との違いは大きさの決まり方です。C の <code>unsigned int</code>・<code>unsigned long</code> は、何ビットになるかが処理系によって変わります。
+          C# の <code>uint</code> は必ず 32 ビット、<code>ulong</code> は必ず 64 ビットと決まっています。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.3 符号なしの <code>&gt;&gt;</code> とオーバーフローの折り返し</h3>
+        <pre class="code-block cs-excerpt"><code>uint t = (a ^ (a &gt;&gt; 15)) * (1u | a);</code></pre>
+        <p>
+          <code>uint</code> のような符号なしの型を右へ <code>&gt;&gt;</code> すると、空いた上位ビットには必ず 0 が入ります（論理シフト）。これは C の符号なし整数と同じです。
+        </p>
+        <p>
+          2.2 の <code>a += 0x6D2B79F5u;</code> は、<code>_state</code> の値によっては <code>uint</code> の最大値（約 42 億）を超えます。
+          C# はこれをエラーにせず、32 ビットに収まるように黙って折り返します（既定の設定が <code>unchecked</code> と呼ばれる動作です）。
+          実際に <code>uint x = uint.MaxValue; x += 1;</code> とすると、<code>x</code> は <code>0</code> になります（ただし <code>uint.MaxValue + 1</code> のように定数どうしで計算すると、コンパイル時にあふれが分かるのでエラーになります）。
+          C でも符号なし整数の足し算は同じように折り返しますが、C の符号あり整数（<code>int</code> など）の桁あふれは未定義動作です。
+          C# では <code>int</code> のような符号あり型でも、既定では例外を出さずに折り返します。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.4 条件演算子 <code>?:</code></h3>
+        <pre class="code-block cs-excerpt"><code>public Mulberry32(uint seed) =&gt; _state = seed == 0 ? 1u : seed;</code></pre>
+        <p>
+          <code>条件 ? A : B</code> は C と同じ書き方です（条件が真なら A、偽なら B）。ここでは「シードが 0 なら 1 に置き換え、そうでなければそのまま使う」という初期化を、
+          式形式コンストラクタ（<code>=&gt;</code>、<a href="cs-velocity-motion.html#s2">第 3 回</a>）1 行で書いています。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.5 既定値付き引数</h3>
+        <pre class="code-block cs-excerpt"><code>public XorShift32(uint seed, int a = 13, int b = 17, int c = 5)</code></pre>
+        <p>
+          引数に <code>= 13</code> のように既定値を書いておくと、呼び出すときにその引数を省略でき、省略すると既定値が使われます。
+        </p>
+        <div class="cs-pair">
+          <div>
+            <p class="cs-pair-label">C（既定値が無いので、別の関数を用意する）</p>
+            <pre class="code-block"><code>XorShift32 xorshift32_new_full(unsigned seed, int a, int b, int c);
+XorShift32 xorshift32_new(unsigned seed) {
+    return xorshift32_new_full(seed, 13, 17, 5);
+}</code></pre>
+          </div>
+          <div>
+            <p class="cs-pair-label">C#（1 つのコンストラクタで両方できる）</p>
+            <pre class="code-block"><code>new XorShift32(seed);              // a=13, b=17, c=5
+new XorShift32(seed, 6, 21, 7);    // 3 つとも指定</code></pre>
+          </div>
+        </div>
+        <p>
+          C には既定値付き引数が無いので、引数の少ないバージョンがほしければ、別の関数を書くか、呼ぶ側で毎回すべての値を渡す必要があります。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.6 <code>throw</code> と例外・<code>nameof</code></h3>
+        <pre class="code-block cs-excerpt"><code>if (m &lt; 2) throw new ArgumentOutOfRangeException(nameof(m));</code></pre>
+        <p>
+          条件がおかしいとき、C ではエラーコードを返したり <code>exit</code> で止めたりしますが、C# では <code>throw</code> で<strong>例外</strong>を投げます。
+          例外を投げると、そこで関数の実行が止まり、呼び出し元へ「異常があった」ことが伝わります（受け止める <code>catch</code> の書き方は入門コースでは扱いません）。
+        </p>
+        <p>
+          <code>nameof(m)</code> は、引数 <code>m</code> という<strong>名前そのもの</strong>を文字列 <code>"m"</code> に変えるものです。
+          <code>"m"</code> と直接書くのと違い、引数名を変更したときにコンパイラがいっしょに直してくれます（綴りのずれが起きません）。
+        </p>
+        <div class="guide-note">
+          <strong>確かめた例:</strong> <code>new Lcg(0, 1, 1, 1)</code>（<code>m = 1 &lt; 2</code>）を実行すると、次のように止まります。
+          <pre class="code-block"><code>Unhandled exception. System.ArgumentOutOfRangeException: Specified argument was out of the range of valid values. (Parameter 'm')
+   at Lcg..ctor(UInt64 seed, UInt64 a, UInt64 c, UInt64 m)</code></pre>
+          <code>(Parameter 'm')</code> の <code>'m'</code> が、まさに <code>nameof(m)</code> で渡した文字列です。
+        </div>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>2.7 <code>(double)</code> キャストと完全修飾名</h3>
+        <pre class="code-block cs-excerpt"><code>return _x / (double)_m;</code></pre>
+        <p>
+          <code>(double)</code> は C と同じ明示的なキャストです。<code>_x</code>・<code>_m</code> はどちらも <code>ulong</code>（整数）なので、
+          先に <code>(double)</code> を付けないと <code>_x / _m</code> は整数の割り算になり、小数部分が消えてしまいます。
+        </p>
+        <pre class="code-block cs-excerpt"><code>var seen = new System.Collections.Generic.Dictionary&lt;ulong, int&gt;();</code></pre>
+        <p>
+          <code>Dictionary&lt;TKey, TValue&gt;</code> 自体は<a href="cs-sfx-events.html#s2">第 9 回</a>で出てきましたが、このファイルの先頭には
+          <code>using System;</code> しかありません。<code>using System.Collections.Generic;</code> を足す代わりに、名前空間を全部つなげた
+          <code>System.Collections.Generic.Dictionary</code>（完全修飾名）をそのまま書くこともできます。
+        </p>
+      </div>
+
+      <p class="cs-known">
+        これまでに出たもの: 式形式メンバー <code>=&gt;</code>（<a href="cs-velocity-motion.html#s2">第 3 回</a>）、
+        <code>var</code>・<code>readonly</code>・<code>Dictionary&lt;TKey, TValue&gt;</code>（<a href="cs-sfx-events.html#s2">第 9 回</a>）、
+        <code>TryGetValue</code> と <code>out</code>（<a href="cs-fsm.html#s2">第 10 回</a>。<code>out int first</code> のように型を書いても同じ意味です）。
+      </p>
+      <p class="cs-known">
+        C と同じもの: 16 進リテラルと <code>u</code> サフィックス、<code>?:</code>、<code>(double)</code> キャスト、符号なしの <code>&gt;&gt;</code>・<code>^</code>（XOR）・<code>&lt;&lt;</code>、<code>for</code>。
+      </p>
+    </section>
+
+    <!-- 3 -->
+    <section class="guide-section" id="s3" aria-labelledby="s3-h">
+      <h2 id="s3-h">3. 計算式とアルゴリズムのポイント</h2>
+      <p>
+        PRNG・シード・周期の考え方そのものは<a href="guide-rng-seed.html">くわしい解説</a>にあります。ここでは、その式がコードのどこに対応するかを見ます。
+      </p>
+
+      <h3>3.1 LCG（線形合同法）</h3>
+      <pre class="code-block cs-excerpt"><code>_x = (_a * _x + _c) % _m;
+return _x / (double)_m;</code></pre>
+      <p>
+        式で書くと <strong>X' = (a·X + c) mod m</strong>、そのあと <strong>u = X' / m</strong> です。
+        <code>%</code> が「mod（割った余り）」、<code>_x / (double)_m</code> が [0, 1) への変換にあたります。
+        コンストラクタの <code>_x = seed % m;</code> で、シードもあらかじめ 0〜m−1 の範囲に収めています。
+      </p>
+
+      <h3>3.2 XorShift32</h3>
+      <pre class="code-block cs-excerpt"><code>x ^= x &lt;&lt; _a;
+x ^= x &gt;&gt; _b;
+x ^= x &lt;&lt; _c;
+_x = x;
+return x / 4294967296.0;</code></pre>
+      <p>
+        シフトの向きと量（既定は 13・17・5）を変えながら、シフトした値と元の値を XOR することを 3 回繰り返します。
+        最後に <code>4294967296.0</code>（2<sup>32</sup>）で割って [0, 1) にします。<code>uint</code> の最大値より少しだけ大きい数で割ることで、割り算の結果が 1 になることはありません。
+      </p>
+      <p>
+        コンストラクタの <code>_x = seed == 0 ? 0x9E3779B9u : seed;</code> にも注目してください。シード 0 は「0 と 0 を XOR しても 0 のまま」という退化した状態なので、
+        あらかじめ別の値にずらしています。
+      </p>
+
+      <h3>3.3 Mulberry32</h3>
+      <pre class="code-block cs-excerpt"><code>uint a = _state;
+a += 0x6D2B79F5u;
+_state = a;
+uint t = (a ^ (a &gt;&gt; 15)) * (1u | a);
+t = (t + ((t ^ (t &gt;&gt; 7)) * (61u | t))) ^ t;
+return (t ^ (t &gt;&gt; 14)) / 4294967296.0;</code></pre>
+      <p>
+        状態 <code>_state</code> に決まった定数を足してから、シフトと XOR、掛け算を組み合わせて値を混ぜ（スクランブルし）ます。
+        最後にやはり <code>4294967296.0</code> で割って [0, 1) にします。式の意味そのものより、「毎回 <code>_state</code> を進めてから混ぜて返す」という流れをコードで追えれば十分です。
+      </p>
+
+      <h3>3.4 周期の測り方（<code>MeasurePeriod</code>）</h3>
+      <pre class="code-block cs-excerpt"><code>var seen = new System.Collections.Generic.Dictionary&lt;ulong, int&gt;();
+seen[x] = 0;
+for (int i = 1; i &lt;= maxScan; i++)
+{
+    x = (a * x + c) % m;
+    if (seen.TryGetValue(x, out int first))
+        return i - first;
+    seen[x] = i;
+}
+return -1;</code></pre>
+      <p>
+        「何回目にその状態が出たか」を <code>Dictionary&lt;ulong, int&gt;</code> に記録しながら、LCG の式を <code>maxScan</code> 回まで進めます。
+        以前に見た状態ともう一度出会ったら、そのときの回数の差が周期です。<code>maxScan</code> 回進めても出会わなければ <code>-1</code> を返します
+        （m がとても大きいと現実的な回数では出会えないので、教材用の小さな m でだけ使う関数です）。
+      </p>
+      <div class="guide-note">
+        <strong>落とし穴:</strong> <code>_x / (double)_m</code> のように、割り算の<strong>前</strong>にキャストする必要があります。
+        <code>(double)(_x / _m)</code> のように割り算の<strong>後</strong>にキャストすると、<code>_x / _m</code> が先に整数の割り算として計算されてしまい、
+        小数部分が失われます。実際に <code>x=7, m=5</code> で試すと、<code>x / (double)m</code> は <code>1.4</code> ですが、<code>(double)(x / m)</code> は <code>1</code> になります。
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="guide-section" id="s4" aria-labelledby="s4-h">
+      <h2 id="s4-h">4. 呼び出してみる（Main と出力）</h2>
+      <pre class="code-block"><code>using System;
+
+public static class Program
+{
+    public static void Main()
+    {
+        IUnitRng rng = new Mulberry32(42);
+        for (int i = 0; i &lt; 4; i++)
+        {
+            Console.WriteLine(Math.Round(rng.NextDouble(), 4));
+        }
+
+        var withDefaults = new XorShift32(123456789);
+        var withCustom = new XorShift32(123456789, 6, 21, 7);
+        Console.WriteLine("XorShift32 既定(13,17,5): " + Math.Round(withDefaults.NextDouble(), 4));
+        Console.WriteLine("XorShift32 変更(6,21,7): " + Math.Round(withCustom.NextDouble(), 4));
+    }
+}</code></pre>
+      <p>実行結果:</p>
+      <pre class="code-block"><code>0.6011
+0.4483
+0.8525
+0.6697
+XorShift32 既定(13,17,5): 0.6321
+XorShift32 変更(6,21,7): 0.0232</code></pre>
+      <ul>
+        <li><code>IUnitRng rng = new Mulberry32(42);</code> のように、変数の型を <code>interface</code> にして、実際の中身に <code>Mulberry32</code> を入れています。デモの標準 PRNG（Mulberry32、シード 42）と同じ、0.6011, 0.4483, 0.8525, 0.6697 … という列になります。</li>
+        <li>同じシード 123456789 でも、<code>XorShift32</code> のシフト量（<code>a</code>・<code>b</code>・<code>c</code>）を既定の 13・17・5 から 6・21・7 に変えると、まったく違う値になります。既定値付き引数のおかげで、両方とも同じコンストラクタで作れています。</li>
+      </ul>
+    </section>
+
+    <!-- まとめ -->
+    <section class="guide-section guide-try" id="s5" aria-labelledby="s5-h">
+      <h2 id="s5-h">5. まとめと、やってみよう</h2>
+      <p>この回で出てきた C# の文法です。後の回では、ここへのリンクだけを置きます。</p>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead><tr><th>文法</th><th>ひとことで</th><th>C では</th></tr></thead>
+          <tbody>
+            <tr><td><a href="#s2"><code>interface</code></a></td><td>「このメソッドを持つ」という約束の型</td><td>関数ポインタで代用</td></tr>
+            <tr><td><code>uint</code>・<code>ulong</code></td><td>大きさが必ず 32/64 ビットの符号なし整数</td><td>大きさは処理系しだい</td></tr>
+            <tr><td>符号なしの <code>&gt;&gt;</code>・オーバーフロー</td><td>右シフトは 0 埋め。桁あふれは既定で折り返す（<code>unchecked</code>）</td><td>符号なしは同じ。符号ありの桁あふれは未定義動作</td></tr>
+            <tr><td><code>?:</code></td><td>条件演算子</td><td>同じ</td></tr>
+            <tr><td>既定値付き引数</td><td><code>int a = 13</code> のように省略時の値を書く</td><td>無い（別関数を書く）</td></tr>
+            <tr><td><code>throw</code>・<code>nameof</code></td><td>例外を投げる／引数名を文字列にする</td><td>戻り値やコード、<code>exit</code> で代用</td></tr>
+            <tr><td>完全修飾名</td><td><code>using</code> の代わりに名前空間をすべて書く</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>やってみよう</h3>
+      <ol>
+        <li>4 節の <code>Mulberry32(42)</code> のシードを 43 に変えて、出てくる 4 個の値が変わることを確かめる。</li>
+        <li><code>XorShift32</code> のシフト量を、既定の <code>(13, 17, 5)</code> のまま 2 個作って、同じシードなら同じ値になることを確かめる。</li>
+      </ol>
+      <div class="guide-check">
+        <h3>確かめよう</h3>
+        <details>
+          <summary>問 1. <code>Mulberry32</code>・<code>XorShift32</code>・<code>Lcg</code> の 3 つが同じ <code>IUnitRng</code> 型の変数に代入できるのはなぜ？</summary>
+          <p>3 つとも <code>interface IUnitRng</code> を実装している（<code>: IUnitRng</code> と書き、<code>NextDouble()</code> を持っている）からです。</p>
+        </details>
+        <details>
+          <summary>問 2. <code>new XorShift32(seed)</code> のように 1 個だけ引数を渡すと、<code>a</code>・<code>b</code>・<code>c</code> はどうなる？</summary>
+          <p>既定値の 13・17・5 になります。既定値付き引数なので、省略した分は宣言に書かれた値が使われます。</p>
+        </details>
+        <details>
+          <summary>問 3. <code>_x / _m</code> を先に計算してから <code>(double)</code> でキャストすると、なぜまずい？</summary>
+          <p><code>_x</code>・<code>_m</code> がどちらも整数（<code>ulong</code>）なので、キャストする前に整数の割り算が行われ、小数部分が失われてしまうからです。</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- 全体 -->
+    <section class="guide-section" id="s6" aria-labelledby="s6-h">
+      <h2 id="s6-h">6. 全体のコード</h2>
+      <p><code>samples/RngSeedExample.cs</code> の全体です（デモのページに出ているものと同じファイル）。</p>
+      <pre class="code-block" data-sample="../samples/RngSeedExample.cs"><code>// 読み込み中…</code></pre>
+    </section>
+
+    <nav class="guide-pager" aria-label="ページ送り">
+      <a class="btn btn-ghost" href="cs-fsm.html">← 前: C# 解説 10 ステートマシン</a>
+      <a class="btn btn-primary" href="../algorithms/rng-seed.html?course=intro">デモを開く</a>
+      <a class="btn btn-ghost" href="cs-minimax.html">次: C# 解説 12 Min-Max 探索 →</a>
+    </nav>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="入門コース · C# 解説 11 乱数とシード"></footer>
+  <script type="module" src="../js/courses/guide.js"></script>
+</body>
+</html>
