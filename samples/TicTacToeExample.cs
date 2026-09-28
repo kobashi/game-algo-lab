@@ -4,10 +4,10 @@
 // 盤面は 9 文字の string（'.' 空き / 'X' / 'O'）。手番は X と O の個数差で決まる
 // （X が先手なので、個数が同じなら X の番、X が1つ多ければ O の番）。
 //
-// 期待される出力（デモの js/tic-tac-toe.js と同じ結果になることを検証済み）:
-//   Solve("........."): 0        // 空盤は引き分け（学習目標1）
-//   到達可能な合法局面: 5478 局面
-//   対称性除去後の代表局面: 765 局面
+// 期待される出力（Main を実行したとき。デモの js/tic-tac-toe.js と同じ結果）:
+//   Solve(empty) = 0 (0=引き分け)   // 空盤は引き分け（学習目標1）
+// 参考（デモの表示。このファイルでは数えない）:
+//   到達可能な合法局面: 5478 局面 / 対称性除去後の代表局面: 765 局面
 
 using System;
 using System.Collections.Generic;
@@ -93,7 +93,7 @@ public static class TicTacToe
 
     public sealed record SolveOptions(bool AlphaBeta, bool Memo, bool Symmetry);
 
-    private sealed record MemoEntry(int Value, char Flag); // 'e'=exact, 'l'=lower, 'u'=upper
+    public sealed record MemoEntry(int Value, char Flag); // 'e'=exact, 'l'=lower, 'u'=upper
 
     /// <summary>
     /// negamax 本体。メモ化は α-β と正しく組み合わせるため exact/lower/upper の

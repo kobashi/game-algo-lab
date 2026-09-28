@@ -8,6 +8,7 @@ import { TOPICS, createCard } from "./main.js";
 import { STAGES } from "./courses/intro-stages.js";
 import { INTRO_QUIZ } from "./courses/intro-quiz.js";
 import { GUIDES } from "./courses/intro-guides.js";
+import { CS_GUIDES } from "./courses/intro-csharp.js";
 
 mountTopicShellFromDataset();
 
@@ -164,6 +165,21 @@ function renderStages() {
         if (k) p.append(" ・ ");
         const a = document.createElement("a");
         // GUIDES.href はサイトルート基準。courses/ からはファイル名だけでよい
+        a.href = g.href.replace(/^courses\//, "");
+        a.textContent = `${g.number}. ${g.title}`;
+        p.appendChild(a);
+      });
+      section.appendChild(p);
+    }
+    // C# 解説（C 言語の既修得者向け）も同じように並べる
+    const cs = stage.ids.filter((id) => CS_GUIDES[id]).map((id) => CS_GUIDES[id]);
+    if (cs.length) {
+      const p = document.createElement("p");
+      p.className = "course-guides";
+      p.append("C# コードの解説（C 言語の経験者向け）: ");
+      cs.forEach((g, k) => {
+        if (k) p.append(" ・ ");
+        const a = document.createElement("a");
         a.href = g.href.replace(/^courses\//, "");
         a.textContent = `${g.number}. ${g.title}`;
         p.appendChild(a);

@@ -31,6 +31,7 @@ import { INTRO_QUIZ } from "../js/courses/intro-quiz.js";
 import { GLOSSARY } from "../js/platform/glossary-terms.js";
 import { ASSIGNMENTS } from "../js/courses/intro-assignments.js";
 import { GUIDES } from "../js/courses/intro-guides.js";
+import { CS_GUIDES } from "../js/courses/intro-csharp.js";
 import { buildSubmissionText, checkSubmissionUrl, parseDigit } from "../js/platform/submission.js";
 
 // --- rng ---
@@ -859,6 +860,49 @@ function mockControl(kind, value, extra = {}) {
       }
     }
   }
+}
+
+// --- 入門コースの C# 解説（courses/cs-*.html）: ファイル・サンプル・リンク先があり、抜き出したコードがサンプルと一致する ---
+{
+  const root = fileURLToPath(new URL("..", import.meta.url));
+  const order = getCourseOrder();
+  const unescape = (t) =>
+    t.replace(/<[^>]+>/g, "").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, "&");
+  const entries = Object.entries(CS_GUIDES).sort((a, b) => a[1].number - b[1].number);
+  entries.forEach(([id, g], k) => {
+    assert.ok(order.includes(id), `cs ${id}: 入門コースのトピック`);
+    assert.equal(g.number, k + 1, `cs ${id}: 番号が 1 から連続`);
+    const file = `${root}/${g.href}`;
+    assert.ok(fs.existsSync(file), `cs ${id}: ${g.href} がある`);
+    assert.ok(fs.existsSync(`${root}/${g.sample}`), `cs ${id}: ${g.sample} がある`);
+    const html = fs.readFileSync(file, "utf8");
+    assert.ok(html.includes(`data-sample="../${g.sample}"`), `cs ${id}: 全体のコードとして ${g.sample} を読み込む`);
+    assert.ok(html.includes(`../algorithms/${id}.html`), `cs ${id}: デモへのリンクがある`);
+    for (const m of html.matchAll(/href="([^"#]+)(#[^"]*)?"/g)) {
+      const href = m[1].replace(/&amp;/g, "&");
+      if (/^(https?:|mailto:)/.test(href)) continue;
+      const path = href.split("?")[0];
+      assert.ok(fs.existsSync(`${root}/courses/${path}`), `cs ${id}: リンク先 ${path} がある`);
+    }
+    // 前後のページ送り
+    const prev = entries[k - 1]?.[1].href.replace(/^courses\//, "");
+    const next = entries[k + 1]?.[1].href.replace(/^courses\//, "");
+    const pager = html.match(/<nav class="guide-pager"[\s\S]*?<\/nav>/)?.[0] ?? "";
+    if (prev) assert.ok(pager.includes(`href="${prev}"`), `cs ${id}: 前へ ${prev}`);
+    if (next) assert.ok(pager.includes(`href="${next}"`), `cs ${id}: 次へ ${next}`);
+    // 抜き出したコード（pre.cs-excerpt）の各行が、サンプルに同じ順で出てくる（「…」の行は省略の印）
+    const sampleLines = fs.readFileSync(`${root}/${g.sample}`, "utf8").split("\n").map((l) => l.trim());
+    for (const m of html.matchAll(/<pre class="code-block cs-excerpt"[^>]*>([\s\S]*?)<\/pre>/g)) {
+      let from = 0;
+      for (const raw of unescape(m[1]).split("\n")) {
+        const line = raw.trim();
+        if (!line || /^(\/\/\s*)?…/.test(line)) continue;
+        const at = sampleLines.indexOf(line, from);
+        assert.ok(at >= 0, `cs ${id}: 抜き出したコードの行がサンプルにない（または順番が違う）: ${line}`);
+        from = at + 1;
+      }
+    }
+  });
 }
 
 console.log("smoke-platform.mjs: all assertions passed");

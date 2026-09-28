@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="C# 解説 1（C 言語の経験者向け）。ゲームループのサンプルコードで、using・クラス・参照型・タプル・ref 引数と、可変／固定 timestep の計算を説明する。" />
+  <title>C# 解説 1 ゲームループ — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="course" data-active="intro"></header>
+
+  <main class="container topic-main guide-main cs-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="intro.html">入門コース</a> / C# 解説 1</p>
+      <h1>ゲームループ — C# 解説 1</h1>
+      <p class="page-header-lead">
+        <code>samples/GameLoopExample.cs</code> を読みながら、C# の書き方と、コードの中の計算を説明します。
+        C 言語を一通り学んだ人向けです。C と同じところは短く、C# で新しく出てくるところをくわしく書きます。
+        ゲームループの考え方そのものは<a href="guide-game-loop.html">ゲームループのくわしい解説</a>に図で説明しています。
+        <a href="../algorithms/game-loop.html?course=intro">ゲームループのデモ</a>でも、同じコードを見られます。
+      </p>
+      <nav class="guide-toc" aria-label="目次">
+        <strong>目次</strong>
+        <ol>
+          <li><a href="#s1">この解説シリーズの読み方</a></li>
+          <li><a href="#s2">このコードがすること</a></li>
+          <li><a href="#s3">新しく出てくる C# の文法</a></li>
+          <li><a href="#s4">計算式とアルゴリズムのポイント</a></li>
+          <li><a href="#s5">呼び出してみる（Main と出力）</a></li>
+          <li><a href="#s6">まとめと、やってみよう</a></li>
+          <li><a href="#s7">全体のコード</a></li>
+        </ol>
+      </nav>
+    </div>
+
+    <!-- 1 -->
+    <section class="guide-section" id="s1" aria-labelledby="s1-h">
+      <h2 id="s1-h">1. この解説シリーズの読み方</h2>
+      <p>
+        入門コースの 14 本のトピックには、それぞれ C# のサンプルコードがあります。この解説は 1 から 14 まで順に読む前提で書いています。
+        C# の文法は、<strong>初めて出てきた回でだけ説明</strong>します。2 回目からは「第 1 回」のようにリンクだけを置くので、忘れたときはそこへ戻ってください。
+      </p>
+      <p>
+        C# は、C と同じく <code>if</code>・<code>for</code>・<code>while</code>・<code>+=</code>・<code>++</code>・<code>&amp;&amp;</code> などを使います。
+        文の終わりの <code>;</code>、ブロックの <code>{ }</code>、<code>//</code> のコメントも同じです。
+        大きく違うのは、<strong>データと関数を「クラス」にまとめて書く</strong>ことと、<strong>メモリを自分で解放しなくてよい</strong>ことです（使われなくなったものは、実行環境が自動で片付けます）。
+      </p>
+      <div class="guide-note">
+        <strong>自分のパソコンで動かすには:</strong>
+        .NET SDK を入れて <code>dotnet new console</code> でプロジェクトを作り、サンプルのファイルを入れて <code>dotnet run</code> します。
+        入門コースのサンプルの多くは「部品」だけで、実行の入口（<code>Main</code>）がありません。5 節のように、呼び出す側のコードを足して動かします。
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="guide-section" id="s2" aria-labelledby="s2-h">
+      <h2 id="s2-h">2. このコードがすること</h2>
+      <p>このファイルには、次の 3 つがあります。</p>
+      <ul>
+        <li><code>BallWorld</code>: 床で跳ねるボール。<code>Update(dt)</code> で、時間 dt 秒ぶん動かします。</li>
+        <li><code>GameLoopExample.VariableStep</code>: 可変 timestep。そのフレームにかかった時間で 1 回だけ更新します。</li>
+        <li><code>GameLoopExample.FixedStep</code>: 固定 timestep。たまった時間（アキュムレータ）から、決まった長さずつ何回か更新します。</li>
+      </ul>
+      <p>
+        描画やボタンなどの画面の部分は入っていません。ゲームの「中身の計算」だけを取り出したコードです。
+      </p>
+    </section>
+
+    <!-- 3 -->
+    <section class="guide-section" id="s3" aria-labelledby="s3-h">
+      <h2 id="s3-h">3. 新しく出てくる C# の文法</h2>
+
+      <div class="cs-syntax">
+        <h3>3.1 <code>using System;</code> と <code>Math</code></h3>
+        <pre class="code-block cs-excerpt"><code>using System;</code></pre>
+        <p>
+          C の <code>#include &lt;math.h&gt;</code> に似ていますが、ファイルを取り込むのではありません。
+          C# の部品は「名前空間」という名前のグループに入っていて、<code>using System;</code> と書くと、<code>System</code> グループの名前を短く書けるようになります。
+          書かないと、<code>Math.Min</code> を <code>System.Math.Min</code> と書く必要があります。
+        </p>
+        <pre class="code-block cs-excerpt"><code>double dt = Math.Min(realDtSeconds, 0.1);</code></pre>
+        <p>
+          <code>Math</code> は数学の関数をまとめたクラスで、<code>Math.Min</code>（小さいほう）、<code>Math.Abs</code>（絶対値）などを「クラス名.関数名」の形で呼びます。
+          C の <code>fmin</code>・<code>fabs</code> のように型ごとに名前を変える必要はなく、<code>int</code> でも <code>double</code> でも同じ <code>Math.Min</code> が使えます。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>3.2 クラス: データと関数をまとめる</h3>
+        <p>C では、構造体と、それを受け取る関数を別々に書きます。C# では、データ（フィールド）と関数（メソッド）を 1 つの <code>class</code> の中に書きます。</p>
+        <div class="cs-pair">
+          <div>
+            <p class="cs-pair-label">C で書くと</p>
+            <pre class="code-block"><code>struct BallWorld {
+    double y, v;
+    double gravity;
+};
+
+void ball_update(struct BallWorld *w, double dt)
+{
+    w-&gt;v += w-&gt;gravity * dt;
+    w-&gt;y += w-&gt;v * dt;
+}</code></pre>
+          </div>
+          <div>
+            <p class="cs-pair-label">C# のサンプル（抜き出し）</p>
+            <pre class="code-block cs-excerpt"><code>public sealed class BallWorld
+{
+    public double Y;      // 上=0、下へ正
+    public double V;
+    …
+    public void Update(double dtSeconds)
+    {
+        V += Gravity * dtSeconds;
+        Y += V * dtSeconds;</code></pre>
+          </div>
+        </div>
+        <p>
+          C# の <code>Update</code> の中では、<code>w-&gt;V</code> のような書き方をせず、フィールド名 <code>V</code> をそのまま書きます。
+          「今この関数を呼び出されているボール自身」のフィールドを指します（C# ではこのボール自身を <code>this</code> と呼び、<code>this.V</code> とも書けます）。
+          呼び出す側は <code>world.Update(0.016);</code> のように「変数.メソッド名(引数)」と書きます。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>3.3 フィールドの初期値</h3>
+        <pre class="code-block cs-excerpt"><code>public double Gravity = 8;  // 座標は 0..1.15 に正規化（床 = 1.0）
+public double Floor = 1.0;
+public double Restitution = 0.72;</code></pre>
+        <p>
+          C の構造体のメンバーには、宣言のところで初期値を書けません。C# のクラスでは、フィールドに <code>= 8</code> のように初期値を書けます。
+          初期値を書かなかったフィールド（<code>Y</code>・<code>V</code>）は、自動で 0 になります。C のように「初期化し忘れてゴミの値が入っている」ことはありません。
+          C# では、関数の中のローカル変数も、値を入れる前に読むとコンパイルエラーになります。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>3.4 <code>public</code>・<code>sealed</code>・<code>static class</code></h3>
+        <ul>
+          <li><code>public</code>: クラスの外から使ってよい、という印です。フィールドやメソッドに付けないと、そのクラスの中からしか使えません（くわしくは第 6 回）。</li>
+          <li><code>sealed</code>: このクラスをもとにした別のクラス（派生クラス）を作らせない、という印です。入門コースの範囲では「付いていても気にしなくてよい」ものです。</li>
+          <li><code>static class</code>: 関数だけを入れる入れ物です。<code>GameLoopExample</code> はデータを持たないので、C の「ただの関数の集まり」に近いものです。呼ぶときは <code>GameLoopExample.VariableStep(...)</code> のようにクラス名を前に付けます。</li>
+        </ul>
+        <pre class="code-block cs-excerpt"><code>public static class GameLoopExample
+{
+    …
+    public static void VariableStep(BallWorld world, double realDtSeconds)</code></pre>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>3.5 クラスの変数は「参照」— C のポインタに近い</h3>
+        <pre class="code-block cs-excerpt"><code>public static void VariableStep(BallWorld world, double realDtSeconds)
+{
+    …
+    world.Update(dt);
+}</code></pre>
+        <p>
+          ここは C と大きく違うので注意してください。<code>BallWorld</code> のようなクラスの変数には、ボールそのものではなく、ボールの<strong>場所（参照）</strong>が入っています。
+          引数で <code>world</code> を渡すと、場所がコピーされるだけで、ボールは 1 つのままです。だから <code>VariableStep</code> の中で <code>world.Update</code> すると、呼び出した側のボールが動きます。
+          C で言えば <code>struct BallWorld *world</code> を渡したのと同じ動きですが、<code>*</code> や <code>-&gt;</code> は書きません。
+        </p>
+        <p>
+          クラスのオブジェクトは <code>new</code> で作ります（<code>BallWorld world = new BallWorld();</code>）。C の <code>malloc</code> に似ていますが、<code>free</code> はいりません。
+          値がそのままコピーされる型（C の構造体に近いもの）は第 3 回で出てきます。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>3.6 <code>///</code> のコメント</h3>
+        <pre class="code-block cs-excerpt"><code>/// &lt;summary&gt;可変 timestep: そのフレームの realDt で 1 回だけ更新。&lt;/summary&gt;</code></pre>
+        <p>
+          <code>///</code> で始まるコメントは「ドキュメントコメント」です。<code>&lt;summary&gt;</code> の中にメソッドの説明を書くと、開発環境でそのメソッドにマウスを乗せたときに説明が出ます。
+          プログラムの動きには関係しません。ふつうのコメントとして読んでかまいません。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>3.7 タプル: 2 つの値をまとめて返す</h3>
+        <pre class="code-block cs-excerpt"><code>public static (double accumulator, int steps) FixedStep(
+…
+    return (accumulator, steps);</code></pre>
+        <p>
+          C の関数は値を 1 つしか返せないので、2 つ返したいときは構造体を作るか、ポインタ引数に書き込みます。
+          C# では <code>(double accumulator, int steps)</code> のように、<strong>値の組（タプル）</strong>を戻り値の型にできます。
+          <code>return (accumulator, steps);</code> で 2 つの値をまとめて返します。
+        </p>
+        <p>
+          受け取る側は、<code>(double left, int steps) = GameLoopExample.FixedStep(...);</code> のように、かっこの中に変数を並べて一度に受け取れます（5 節で使います）。
+          まとめたまま受け取って <code>r.steps</code> のように名前で取り出すこともできます。
+        </p>
+      </div>
+
+      <div class="cs-syntax">
+        <h3>3.8 <code>ref</code> 引数: 呼び出し元の変数を書き換える</h3>
+        <pre class="code-block cs-excerpt"><code>ref double accumulator,
+…
+accumulator += Math.Min(realDtSeconds, 0.25);</code></pre>
+        <p>
+          <code>double</code> や <code>int</code> の引数は、C と同じく値がコピーされて渡されます。関数の中で書き換えても、呼び出し元の変数は変わりません。
+          <code>ref</code> を付けると、呼び出し元の変数そのものを書き換えられます。C の <code>double *accumulator</code> と <code>*accumulator += ...</code> に当たります。
+        </p>
+        <div class="cs-pair">
+          <div>
+            <p class="cs-pair-label">C</p>
+            <pre class="code-block"><code>fixed_step(&amp;world, dt, fixed, &amp;acc, 5);</code></pre>
+          </div>
+          <div>
+            <p class="cs-pair-label">C#（呼ぶ側にも ref を書く）</p>
+            <pre class="code-block"><code>GameLoopExample.FixedStep(world, dt, fixedDt, ref acc, 5);</code></pre>
+          </div>
+        </div>
+        <p>
+          呼ぶ側にも <code>ref</code> と書くので、「この呼び出しで <code>acc</code> が書き換わる」ことが見ただけで分かります。
+          なお <code>world</code> はクラス（3.5 の参照）なので、<code>ref</code> を付けなくても中身は書き換わります。
+        </p>
+      </div>
+
+      <p class="cs-known">
+        C と同じもの: <code>double</code>・<code>int</code>、<code>while</code>・<code>if</code>、<code>+=</code>・<code>-=</code>・<code>++</code>、<code>&gt;=</code>・<code>&lt;</code>・<code>&amp;&amp;</code>、単項の <code>-</code>。
+      </p>
+    </section>
+
+    <!-- 4 -->
+    <section class="guide-section" id="s4" aria-labelledby="s4-h">
+      <h2 id="s4-h">4. 計算式とアルゴリズムのポイント</h2>
+
+      <h3>4.1 1 回の更新（<code>Update</code>）</h3>
+      <pre class="code-block cs-excerpt"><code>V += Gravity * dtSeconds;
+Y += V * dtSeconds;
+if (Y + Radius &gt; Floor)
+{
+    Y = Floor - Radius;
+    V = -Math.Abs(V) * Restitution;
+}</code></pre>
+      <ul>
+        <li>式で書くと <strong>v ← v + g·Δt</strong>、そのあと <strong>y ← y + v·Δt</strong> です。先に速さを変え、変えたあとの速さで進みます。この順番のせいで、Δt が大きいと結果が変わります（<a href="guide-game-loop.html#s4">くわしい解説の 4 節</a>）。</li>
+        <li>y は下向きが正です。ボールの下の端 <code>Y + Radius</code> が床 <code>Floor</code> を越えたら、床の上に置き直します（めり込みの修正）。</li>
+        <li>速さは <code>-Math.Abs(V) * Restitution</code> にします。<code>Abs</code> で向きに関係なく大きさを取り、マイナスを付けて必ず上向きにしてから、反発係数 0.72 を掛けて小さくします。<code>-V * Restitution</code> と書くと、すでに上向きだったときに下向きに戻ってしまいます。</li>
+      </ul>
+
+      <h3>4.2 可変 timestep（<code>VariableStep</code>）</h3>
+      <pre class="code-block cs-excerpt"><code>double dt = Math.Min(realDtSeconds, 0.1);
+world.Update(dt);</code></pre>
+      <p>
+        かかった時間 realDt で 1 回だけ更新します。<code>Math.Min(…, 0.1)</code> で 0.1 秒より長い時間は 0.1 秒に切り詰めます。
+        別のタブから戻ったときなど、何秒もたってから 1 フレームが来ると、ボールが一気に床を突き抜けてしまうからです。
+      </p>
+
+      <h3>4.3 固定 timestep（<code>FixedStep</code>）</h3>
+      <pre class="code-block cs-excerpt"><code>accumulator += Math.Min(realDtSeconds, 0.25);
+int steps = 0;
+while (accumulator &gt;= fixedDtSeconds &amp;&amp; steps &lt; maxSteps)
+{
+    world.Update(fixedDtSeconds);
+    accumulator -= fixedDtSeconds;
+    steps++;
+}</code></pre>
+      <ol>
+        <li>かかった時間をアキュムレータ（貯金箱）に足します。ここでも 0.25 秒で切り詰めます。</li>
+        <li>貯金が <code>fixedDtSeconds</code> 以上ある間、その長さで 1 回更新し、貯金から引きます。1 回の更新の長さはいつも同じです。</li>
+        <li><code>steps &lt; maxSteps</code> で、1 フレームの更新回数に上限を付けます。更新が重いときに、回数が増え続ける（スパイラル・オブ・デス）のを防ぎます。</li>
+        <li>残った貯金（<code>fixedDtSeconds</code> 未満）は、次のフレームに持ち越します。</li>
+      </ol>
+      <div class="guide-note">
+        <strong>戻り値と ref の関係:</strong>
+        <code>accumulator</code> は <code>ref</code> なので、呼び出し元の変数はすでに書き換わっています。戻り値のタプルに入っている <code>accumulator</code> も同じ値です。
+        説明のために両方で返していますが、実際のゲームではどちらか一方にするのがふつうです。
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="guide-section" id="s5" aria-labelledby="s5-h">
+      <h2 id="s5-h">5. 呼び出してみる（Main と出力）</h2>
+      <p>
+        サンプルには実行の入口がないので、次のようなファイルを足して動かします。1 フレームに 41.7 ms かかる状態を 3 フレームぶん、固定 timestep（1 回 1/60 秒、上限 5 回）で進めます。
+      </p>
+      <pre class="code-block"><code>using System;
+
+public static class Program
+{
+    public static void Main()
+    {
+        BallWorld world = new BallWorld();   // Y と V は 0 から始まる
+        double acc = 0;
+
+        for (int frame = 1; frame &lt;= 3; frame++)
+        {
+            (double left, int steps) = GameLoopExample.FixedStep(world, 0.0417, 1.0 / 60, ref acc, 5);
+            Console.WriteLine("frame " + frame + ": steps=" + steps + ", acc=" + Math.Round(left, 4));
+        }
+    }
+}</code></pre>
+      <p>実行結果:</p>
+      <pre class="code-block"><code>frame 1: steps=2, acc=0.0084
+frame 2: steps=3, acc=0.0001
+frame 3: steps=2, acc=0.0084</code></pre>
+      <ul>
+        <li><code>static void Main()</code> が実行の入口です（C の <code>int main(void)</code>）。どれか 1 つのクラスの中に書きます。</li>
+        <li><code>Console.WriteLine</code> は 1 行を表示して改行します（C の <code>printf</code> ＋ <code>\n</code>）。</li>
+        <li>文字列と数を <code>+</code> でつなぐと、数が文字列に変わってつながります。C の <code>%d</code> のような書式指定はいりません。</li>
+        <li><code>Math.Round(left, 4)</code> は小数第 4 位までに丸めます。</li>
+        <li><code>1.0 / 60</code> は C と同じく小数の割り算です。<code>1 / 60</code> と書くと整数の割り算で 0 になるのも C と同じです。</li>
+      </ul>
+      <p>
+        更新の回数が 2 → 3 → 2 と変わり、貯金の残りが次のフレームへ持ち越されているのが分かります。
+        <a href="guide-game-loop.html">くわしい解説</a>の「貯金箱」の図と同じ動きです。
+      </p>
+    </section>
+
+    <!-- まとめ -->
+    <section class="guide-section guide-try" id="s6" aria-labelledby="s6-h">
+      <h2 id="s6-h">6. まとめと、やってみよう</h2>
+      <p>この回で出てきた C# の文法です。後の回では、ここへのリンクだけを置きます。</p>
+      <div class="guide-table-wrap">
+        <table class="guide-table">
+          <thead><tr><th>文法</th><th>ひとことで</th><th>C では</th></tr></thead>
+          <tbody>
+            <tr><td><a href="#s3"><code>using System;</code></a></td><td>名前空間の名前を短く書けるようにする</td><td>（<code>#include</code> に近いが、取り込みではない）</td></tr>
+            <tr><td><code>Math.Min</code> など</td><td>クラス名.関数名 で呼ぶ数学の関数</td><td><code>fmin</code>・<code>fabs</code></td></tr>
+            <tr><td><code>class</code>・フィールド・メソッド</td><td>データと関数を 1 つにまとめる</td><td>構造体 ＋ 構造体を受け取る関数</td></tr>
+            <tr><td>フィールドの初期値</td><td><code>= 8</code> と書ける。書かなければ 0</td><td>書けない</td></tr>
+            <tr><td><code>public</code>・<code>sealed</code>・<code>static class</code></td><td>外から使える／派生させない／関数だけの入れ物</td><td>—</td></tr>
+            <tr><td>クラスは参照</td><td>渡しても中身は 1 つ。<code>new</code> で作り、解放はいらない</td><td>構造体へのポインタ、<code>malloc</code></td></tr>
+            <tr><td><code>///</code></td><td>ドキュメントコメント</td><td>—</td></tr>
+            <tr><td>タプル <code>(double a, int b)</code></td><td>複数の値をまとめて返す・受け取る</td><td>構造体やポインタ引数</td></tr>
+            <tr><td><code>ref</code> 引数</td><td>呼び出し元の変数を書き換える。呼ぶ側にも書く</td><td><code>double *p</code> と <code>&amp;x</code></td></tr>
+            <tr><td><code>static void Main()</code>・<code>Console.WriteLine</code></td><td>実行の入口・1 行表示。文字列は <code>+</code> でつなぐ</td><td><code>main</code>・<code>printf</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>やってみよう</h3>
+      <ol>
+        <li>5 節の <code>0.0417</code> を <code>1.0 / 60</code> にすると、各フレームの <code>steps</code> はいくつになるか予想してから確かめる。</li>
+        <li><code>V = -Math.Abs(V) * Restitution;</code> を <code>V = -V * Restitution;</code> に変えたとき、どんな場合に困るかを考える。</li>
+      </ol>
+      <div class="guide-check">
+        <h3>確かめよう</h3>
+        <details>
+          <summary>問 1. <code>FixedStep</code> の中で <code>accumulator</code> を書き換えると、呼び出し元の <code>acc</code> も変わるのはなぜ？</summary>
+          <p><code>ref</code> 引数だからです。<code>ref</code> を付けると、値のコピーではなく、呼び出し元の変数そのものが渡されます。</p>
+        </details>
+        <details>
+          <summary>問 2. <code>VariableStep</code> に <code>world</code> を渡すと、呼び出し元のボールが動くのはなぜ？ <code>ref</code> は付いていないのに。</summary>
+          <p><code>BallWorld</code> はクラスで、変数に入っているのはボールの場所（参照）だからです。場所がコピーされても、指しているボールは同じ 1 つです。</p>
+        </details>
+        <details>
+          <summary>問 3. <code>public double V;</code> に初期値を書いていないとき、最初の値は？</summary>
+          <p>0 です。クラスのフィールドは、初期値を書かなければ自動で 0 になります。</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- 全体 -->
+    <section class="guide-section" id="s7" aria-labelledby="s7-h">
+      <h2 id="s7-h">7. 全体のコード</h2>
+      <p><code>samples/GameLoopExample.cs</code> の全体です（デモのページに出ているものと同じファイル）。</p>
+      <pre class="code-block" data-sample="../samples/GameLoopExample.cs"><code>// 読み込み中…</code></pre>
+    </section>
+
+    <nav class="guide-pager" aria-label="ページ送り">
+      <a class="btn btn-ghost" href="intro.html">← 入門コースへ</a>
+      <a class="btn btn-primary" href="../algorithms/game-loop.html?course=intro">デモを開く</a>
+      <a class="btn btn-ghost" href="cs-input-basics.html">次: C# 解説 2 入力の基礎 →</a>
+    </nav>
+  </main>
+
+  <footer class="site-footer" id="site-footer" data-note="入門コース · C# 解説 1 ゲームループ"></footer>
+  <script type="module" src="../js/courses/guide.js"></script>
+</body>
+</html>
