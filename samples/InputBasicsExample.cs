@@ -1,5 +1,6 @@
 // Game Algo Lab — 入力の基礎（held / down / up / 長押し）
 // デモ: algorithms/input-basics.html
+// Fire は held のあいだ毎フレーム +1、離したフレーム（Up）で 0 に戻す。
 
 using System;
 using System.Collections.Generic;
@@ -49,5 +50,17 @@ public static class InputBasicsExample
         if (state.HoldTime < longPressThresholdSeconds) return false;
         state.LongPressFired = true;
         return true;
+    }
+
+    /// <summary>
+    /// Fire: 押しているあいだは毎フレーム +1。離したフレーム（Up）で 0 に戻す。
+    /// </summary>
+    public static int ApplyFire(ActionState state, int fireCount)
+    {
+        if (state.Held)
+            fireCount += 1;
+        if (state.Up)
+            fireCount = 0;
+        return fireCount;
     }
 }

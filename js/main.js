@@ -158,7 +158,7 @@ export const TOPICS = [
     id: "input-basics",
     title: "入力の基礎",
     description:
-      "held / down / up エッジと長押し。ジャンプは edge、連射は held の対比。",
+      "held / down / up エッジと長押し。Jump は down、Fire は held で連射し up で 0。",
     href: "algorithms/input-basics.html",
     badge: "基礎実行",
     category: "基礎実行モデル",

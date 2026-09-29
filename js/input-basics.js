@@ -85,6 +85,8 @@ const JUMP_SEC = 0.48;
 const JUMP_PX = 96;
 let jumpCount = 0;
 let fireCount = 0;
+/** Z を離したあと、結果欄に残す文。次に Fire を押し始めたら消す */
+let fireResetNote = "";
 let chargeCount = 0;
 let frameIndex = 0;
 /** @type {string[]} */
@@ -161,7 +163,11 @@ function pollActions(dtSec) {
       bands.push({ id: def.id, t0: simMs, t1: null, long: false });
     }
     if (st.up) {
-      edges.push(`${def.label} UP`);
+      edges.push(
+        def.id === "fire"
+          ? `${def.label} UP（${fireCount} → 0）`
+          : `${def.label} UP`
+      );
       for (let i = bands.length - 1; i >= 0; i--) {
         if (bands[i].id === def.id && bands[i].t1 == null) {
           bands[i].t1 = simMs;
@@ -196,8 +202,13 @@ function pollActions(dtSec) {
     else jumpQueued += 1;
   }
 
-  // Fire: held every frame (bad example)
+  // Fire: held のあいだ毎フレーム +1。離したフレーム（up）で 0 に戻す
+  if (actions.fire.down) fireResetNote = "";
   if (actions.fire.held) fireCount += 1;
+  if (actions.fire.up) {
+    fireResetNote = `離す前は ${fireCount} 回でした。Z の up で 0 に戻しています。`;
+    fireCount = 0;
+  }
 
   // Move: held
   if (actions.move.held) {
@@ -246,10 +257,10 @@ function tick(realDtMs, bandMs = realDtMs) {
 
   if (f.held && f.holdTime > 0.15 && !j.down) {
     resultPanel.show(`
-      <p class="result-verdict">Fire は held 連射中</p>
+      <p class="result-verdict">Fire は held 連射中（今 ${fireCount}）</p>
       <p class="result-note">
-        Z を押し続けると毎フレーム Fire が +1 されます（ジャンプに使うと困るパターン）。
-        Jump（Space）は down エッジなので押し続けても 1 回だけです。
+        Z を押し続けると毎フレーム Fire が +1 されます。離したフレーム（up）で 0 に戻ります。
+        Jump（Space）は down なので、押し続けても 1 回だけです。
       </p>
     `);
   } else if (actions.charge.held && !actions.charge.longPressFired) {
@@ -258,6 +269,11 @@ function tick(realDtMs, bandMs = realDtMs) {
     resultPanel.show(`
       <p class="result-verdict">チャージ中 ${pct.toFixed(0)}%</p>
       <p class="result-note">X を ${thr} ms 以上押し続けると LONG が 1 回だけ発火します。</p>
+    `);
+  } else if (fireResetNote) {
+    resultPanel.show(`
+      <p class="result-verdict">Fire を 0 に戻した</p>
+      <p class="result-note">${fireResetNote}</p>
     `);
   } else {
     resultPanel.hide();
@@ -495,6 +511,7 @@ function resetAll() {
   jumpQueued = 0;
   jumpCount = 0;
   fireCount = 0;
+  fireResetNote = "";
   chargeCount = 0;
   frameIndex = 0;
   eventLog = [];

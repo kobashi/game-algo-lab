@@ -74,7 +74,7 @@ export const ASSIGNMENTS = {
     observe:
       "イベントログの行（Charge が出たとき・出なかったとき）と、押していた長さ。結果はキー操作なので URL には入らない。ログをコピーして貼る。",
     discuss: [
-      "Jump・Fire・Charge が、それぞれ held・down・up のどれを使っているか",
+      "Jump・Fire・Charge が、それぞれ held・down・up のどれを使っているか。Z を離したとき、Fire の回数はどうなるか",
       "閾値が短すぎる・長すぎると、プレイヤーはどう感じるか",
       "判定がフレーム単位（約 16.7 ms 刻み）になる影響",
     ],

@@ -146,6 +146,7 @@
       <p>
         60 FPS なら、1 秒押し続けると held は約 60 フレームぶん「はい」になります。
         デモの Fire は、わざと held で判定している「悪い例」です。1 秒ほど押すと、数十回も撃ってしまいます。
+        Z を離したフレーム（up）では、その回数を 0 に戻します。増えていくのは押しているあいだだけで、離すと弾の表示も消えます。
       </p>
     </section>
 
@@ -191,7 +192,7 @@
       <ul>
         <li>ゲームは、フレームごとにキーの状態を見に行く（ポーリング）。分かるのはフレームの区切りだけ</li>
         <li>held は押しているあいだ毎フレーム、down は押した瞬間の 1 フレーム、up は離した瞬間の 1 フレーム</li>
-        <li>ジャンプは down、移動は held。held で撃つと連射になる</li>
+        <li>ジャンプは down、移動は held。held で撃つと連射になる。離す（up）と Fire の回数は 0 に戻る</li>
         <li>長押しは、held の時間が閾値を超えたフレームで 1 回だけ起こす</li>
       </ul>
     </section>
@@ -199,7 +200,7 @@
     <section class="guide-try" aria-labelledby="try-h">
       <h2 id="try-h">やってみよう</h2>
       <ol>
-        <li><a href="../algorithms/input-basics.html?course=intro">デモ</a>を開き、キャンバスをクリックしてから、Space（Jump）・Z（Fire）・X（Charge）を 1 秒ほど押し続ける。Jump が 1 回で、Fire が増え続けることを確かめる。</li>
+        <li><a href="../algorithms/input-basics.html?course=intro">デモ</a>を開き、キャンバスをクリックしてから、Space（Jump）・Z（Fire）・X（Charge）を 1 秒ほど押し続ける。Jump は 1 回のまま残る。Fire は押しているあいだ増え、離すと 0 に戻る。</li>
         <li><a href="../algorithms/input-basics.html?course=intro&amp;longms=1000">長押しの閾値を 1000 ms に</a>して、X を 1 秒より短く・長く押し比べる。イベントログに長押し（LONG）が出るかを見る。</li>
       </ol>
       <div class="guide-check">

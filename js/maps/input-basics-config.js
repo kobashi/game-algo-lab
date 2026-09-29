@@ -24,7 +24,7 @@ export const INPUT_ACTIONS = [
     id: "fire",
     label: "Fire",
     keys: ["KeyZ", "z", "Z"],
-    hint: "Z — held の間毎フレーム連射（悪い例・対比用）",
+    hint: "Z — 押しているあいだ毎フレーム +1。離す（up）と 0 に戻す",
   },
   {
     id: "charge",
