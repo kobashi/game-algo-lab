@@ -89,8 +89,8 @@ export const TOPIC_META = {
   },
   "accel-gravity": {
     maturity: "revised",
-    revisions: 6,
-    updated: "2026-09-28",
+    revisions: 7,
+    updated: "2026-09-29",
   },
   "input-buffer": {
     maturity: "oneshot",

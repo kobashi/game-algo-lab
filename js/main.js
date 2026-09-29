@@ -422,7 +422,7 @@ export const TOPICS = [
     id: "accel-gravity",
     title: "加速度と重力",
     description:
-      "v ← v + g·dt のあと p ← p + v·dt。放物線軌跡と床バウンス。",
+      "v ← v + g·dt のあと p ← p + v·dt。放物線軌跡と床バウンス。最高点の2回目以降に前回比。",
     href: "algorithms/accel-gravity.html",
     badge: "物理・判定",
     category: "物理・判定",

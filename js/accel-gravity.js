@@ -92,17 +92,28 @@ function floorY() {
   return canvas.height - R - 8;
 }
 
+/** 画面に出している整数の高さどうしの比。2番目以降に前回比を付ける。 */
+function formatPeaks(list) {
+  if (!list.length) return "—";
+  const shown = list.map((h) => Number(h.toFixed(0)));
+  return shown
+    .map((h, i) => {
+      if (i === 0) return String(h);
+      const prev = shown[i - 1];
+      const ratio = prev > 0 ? (h / prev).toFixed(2) : "—";
+      return `${h}（前回比 ${ratio}）`;
+    })
+    .join(" → ");
+}
+
 function sync() {
   if (gVal) gVal.textContent = String(readG());
   if (vxVal) vxVal.textContent = String(readVx());
   if (restVal) restVal.textContent = readRest().toFixed(2);
   if (speedVal) speedVal.textContent = readSpeedScale(speedEl).toFixed(1);
   if (thickVal) thickVal.textContent = String(Math.round(readThick()));
-  const peakStr = peaks.length
-    ? peaks.map((h) => h.toFixed(0)).join(" → ")
-    : "—";
   if (readoutEl) {
-    readoutEl.textContent = `跳ね返り ${bounceCount} 回  /  最高到達点(床からpx) ${peakStr}`;
+    readoutEl.textContent = `跳ね返り ${bounceCount} 回  /  最高到達点(床からpx) ${formatPeaks(peaks)}`;
   }
 }
 
