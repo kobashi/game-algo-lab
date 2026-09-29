@@ -13,6 +13,10 @@
  * `<details>` で既定は畳む（§8 決定2: 先に自分で予想させてから開く）。
  *
  * 手順中の URL は同じページを別パラメータで開くリンクにする。
+ * クエリ付き（パラメータ設定）のリンクは、href の末尾に `#sim` を付ける。
+ * 開いたページはシミュレーションを固定ヘッダーの直下へ出す。
+ * カードに見える文面は原稿の URL のまま（`#sim` も course も足さない）。
+ * クエリの無いリンクはページの先頭で開く。
  * `?course=intro` で開かれているときは、そのリンクにも course=intro を付ける
  * （§8「実装時に固定すること」— コース内ナビが途切れないように）。
  *
@@ -48,6 +52,30 @@ function appendCourseParam(href, suffix) {
   return href.includes("?") ? `${href}&${suffix}` : `${href}?${suffix}`;
 }
 
+/** パラメータ設定リンクが付与するフラグメント。対応する id は置かない（ブラウザの素のジャンプを使わない）。 */
+const SIM_HASH = "#sim";
+
+/**
+ * シミュレーション枠。入門 14 本は次のいずれか。
+ * 先頭に来るのはこの枠で、ページ題や演習カードではない。
+ */
+const SIM_SELECTOR = ".gl-layout, .demo-workspace, .fsm-layout";
+
+/**
+ * クエリ付き URL だけ `#sim` を href に足す。既にフラグメントがあればそれを残す。
+ * course はフラグメントより前に付ける。
+ * @param {string} raw カード原稿の URL（表示文面）
+ * @param {string} courseSuffix
+ */
+function exerciseHref(raw, courseSuffix) {
+  const hashAt = raw.indexOf("#");
+  const beforeHash = hashAt >= 0 ? raw.slice(0, hashAt) : raw;
+  const existingHash = hashAt >= 0 ? raw.slice(hashAt) : "";
+  const withCourse = appendCourseParam(beforeHash, courseSuffix);
+  if (!beforeHash.includes("?")) return withCourse + existingHash;
+  return withCourse + (existingHash || SIM_HASH);
+}
+
 /**
  * 軽量 Markdown → HTML。
  * `` `xxx.html...` `` は同じページを開くリンクに、それ以外の `` `...` `` は `<code>` に、
@@ -58,8 +86,8 @@ function appendCourseParam(href, suffix) {
 function renderInline(text, courseSuffix) {
   if (text == null) return "";
   let out = String(text).replace(/`([^`]+)`/g, (_, raw) => {
-    if (/\.html(\?|$)/.test(raw)) {
-      const href = appendCourseParam(raw, courseSuffix);
+    if (/\.html(\?|#|$)/.test(raw)) {
+      const href = exerciseHref(raw, courseSuffix);
       return `<a href="${escapeHtml(href)}" class="exercise-url">${escapeHtml(raw)}</a>`;
     }
     return `<code>${escapeHtml(raw)}</code>`;
@@ -132,8 +160,43 @@ export function exerciseSectionHtml(
 }
 
 /**
+ * `#sim` で開かれたとき、シミュレーション枠の上端を固定ヘッダーの直下へ合わせる。
+ * ヘッダーの高さは幅で変わるので、描画後に測る。
+ * html の scroll-behavior は smooth なので、着地は instant で一気に行う。
+ * @param {Document} doc
+ */
+function scrollSimulationIntoView(doc) {
+  const win = doc.defaultView;
+  if (!win || win.location?.hash !== SIM_HASH) return;
+  const sim = doc.querySelector(SIM_SELECTOR);
+  if (!sim) return;
+  if (win.history && "scrollRestoration" in win.history) {
+    win.history.scrollRestoration = "manual";
+  }
+
+  const align = () => {
+    const header = doc.querySelector(".site-header");
+    const headerH = header ? header.getBoundingClientRect().height : 0;
+    const top = sim.getBoundingClientRect().top + win.scrollY - headerH - 8;
+    win.scrollTo({ top: Math.max(0, top), left: win.scrollX, behavior: "instant" });
+  };
+
+  // コース内ナビや詳説リンクは、この関数の呼び出し元より後に挿入される。
+  // 次のフレームで測れば、それらの高さも含めた位置になる。
+  if (typeof win.requestAnimationFrame === "function") {
+    win.requestAnimationFrame(() => {
+      align();
+      win.requestAnimationFrame(align);
+    });
+  } else {
+    align();
+  }
+}
+
+/**
  * `.lesson-details` の直後、無ければ `.code-section` の直前に演習節を挿入する。
  * card が無い（該当トピックが入門コース対象外）場合は何もしない。
+ * `#sim` のときは、カードの有無にかかわらずシミュレーションへ頭出しする。
  *
  * @param {ExerciseCard | undefined} card
  * @param {string} [activeId] 現状は未使用（将来のログ・分析用に残す）
@@ -144,20 +207,18 @@ export function mountExercises(
   activeId = "",
   doc = typeof document !== "undefined" ? document : null
 ) {
-  if (!doc || !card) return;
-  // 既にこのページで描画済みなら二重に足さない（republish 等の再実行対策）
-  if (doc.getElementById("exercise-heading")) return;
+  if (!doc) return;
+  if (card && !doc.getElementById("exercise-heading")) {
+    const html = exerciseSectionHtml(card);
 
-  const html = exerciseSectionHtml(card);
-
-  const lessonDetails = doc.querySelector(".lesson-details");
-  if (lessonDetails) {
-    lessonDetails.insertAdjacentHTML("afterend", html);
-    return;
+    const lessonDetails = doc.querySelector(".lesson-details");
+    if (lessonDetails) {
+      lessonDetails.insertAdjacentHTML("afterend", html);
+    } else {
+      const codeSection = doc.querySelector(".code-section");
+      if (codeSection) codeSection.insertAdjacentHTML("beforebegin", html);
+    }
   }
 
-  const codeSection = doc.querySelector(".code-section");
-  if (codeSection) {
-    codeSection.insertAdjacentHTML("beforebegin", html);
-  }
+  scrollSimulationIntoView(doc);
 }

@@ -33,6 +33,7 @@ import { ASSIGNMENTS } from "../js/courses/intro-assignments.js";
 import { GUIDES } from "../js/courses/intro-guides.js";
 import { CS_GUIDES } from "../js/courses/intro-csharp.js";
 import { buildSubmissionText, checkSubmissionUrl, parseDigit } from "../js/platform/submission.js";
+import { exerciseSectionHtml } from "../js/platform/exercises.js";
 
 // --- rng ---
 const r1 = mulberry32(42);
@@ -709,6 +710,28 @@ function mockControl(kind, value, extra = {}) {
         assert.ok(
           specKeys.has(key),
           `${id}: URL param "${key}" (in \`${url}\`) must exist in js/${id}.js URL spec`
+        );
+      }
+    }
+
+    // クエリ付きリンクの href だけ #sim。見える文面は原稿の URL のまま。
+    for (const suffix of ["", "course=intro"]) {
+      const html = exerciseSectionHtml(card, suffix);
+      for (const url of urls) {
+        const withCourse = !suffix
+          ? url
+          : url.includes("?")
+            ? `${url}&${suffix}`
+            : `${url}?${suffix}`;
+        const href = url.includes("?") ? `${withCourse}#sim` : withCourse;
+        const esc = (s) => s.replace(/&/g, "&amp;");
+        assert.ok(
+          html.includes(`href="${esc(href)}"`),
+          `${id}: expected href ${href}`
+        );
+        assert.ok(
+          html.includes(`>${esc(url)}</a>`),
+          `${id}: visible text stays ${url}`
         );
       }
     }

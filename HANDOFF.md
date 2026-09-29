@@ -5,6 +5,8 @@
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.20.0
 
+**2026-09-29 演習のパラメータリンクはシミュレーションへ（Grok）**: 入門コースの演習カードで、クエリ付きの設定リンクを開くと、シミュレーションの上端が固定ヘッダーの直下に来る。対象は `.gl-layout`・`.demo-workspace`・`.fsm-layout`。カードに見える URL の文面はそのままで、href にだけ `#sim` を付ける。クエリの無いリンク（α-β の `alpha-beta.html`）と、メニューから開いたページは先頭で止まる。修正回数は増やさない。リリースは切らない。
+
 **2026-09-29 input-basics の開き位置（Grok）**: ページを開くとポーリング開始でキャンバスにフォーカスし、ブラウザがそこまでスクロールしていた。`focus({ preventScroll: true })` にして、TOP と入門コースのどちらから開いても先頭で止まる。修正回数は増やさない。
 
 **2026-09-29 input-basics の Charge（Grok）**: X の長押しが閾値を超えたフレームでチャージを 1 回消費する。頭上のゲージは空になり、金色の弾が右へ 1 発出る。押したままでは 2 発目は出ない。離してから押し直すと、また溜められる。ログは `Charge LONG (≥…ms) 弾+1`（`Charge LONG (≥1000ms)` は部分一致のまま）。C# に `ConsumeCharge`、解説 2 の 3.5。修正 9→10。リリースは切らない。

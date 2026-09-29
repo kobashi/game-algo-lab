@@ -18,7 +18,7 @@
 | `url-params.js` | URL クエリで初期コントロールを指定 / 共有 URL コピー（`applyParamsToControls` / `mountShareLink`）。`course` パラメータは共有 URL にそのまま残す |
 | `observe.js` | 軌跡点・再生速度スケール（0.1〜1.0×）・円と矩形の重なり／すり抜け／反射 |
 | `course-nav.js` | 入門コースの「n/14・前後のトピック」ナビ（`?course=intro` のときだけ）。段の順序は `js/courses/intro-stages.js` |
-| `exercises.js` | 演習節（課題カード）の描画（`mountExercises`）。文言は `js/courses/intro-exercises.js` が正 |
+| `exercises.js` | 演習節（課題カード）の描画（`mountExercises`）。文言は `js/courses/intro-exercises.js` が正。クエリ付きリンクは `#sim` でシミュレーションをヘッダー直下へ頭出しする |
 | `submission.js` | 提出票（`mountSubmission`）。`?course=intro` のとき演習節の下に出す。課題文の正本は `js/courses/intro-assignments.js`。URL は `url-params.js` の `currentShareUrl()`。書いた内容は localStorage に下書き保存するだけで、外には送らない |
 | `glossary.js` / `glossary-terms.js` | 用語注（`mountGlossary`・`termHtml`）。HTML で `<span class="term" data-term="キー">語</span>` と書くと、ホバー・フォーカス・タップで説明が出る。説明文は全トピック共通の辞書 `glossary-terms.js`。辞書に無いキーは smoke で落ちる |
 | `index.js` | 上記の一括 export |

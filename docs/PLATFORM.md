@@ -129,6 +129,9 @@ http://localhost:8080/algorithms/rng-seed.html?algo=lcg&a=13&c=5&m=24&seed=0&n=6
 `mountTopicShellFromDataset()` がコース内ナビ（n/14・前後）を自動で出す（`js/platform/course-nav.js`）。
 課題カードの文言は `js/courses/intro-exercises.js` が正で、同じく `mountTopicShellFromDataset()` から
 `js/platform/exercises.js` の `mountExercises` が全14トピックに自動描画する（HTML への直書きはしない）。
+クエリ付きの設定リンク（`` `xxx.html?…` ``）は、表示する文面はそのまま、href に `#sim` を付ける。
+開いたページはシミュレーション（`.gl-layout` / `.demo-workspace` / `.fsm-layout`）の上端が固定ヘッダーの直下に来る。
+クエリの無いリンクはページの先頭で開く。
 
 ### 移行状況（段階的）
 
@@ -292,6 +295,7 @@ python3 scripts/smoke-platform.py
 
 | 日付 | 内容 |
 |------|------|
+| 2026-09-29 | 演習カードのクエリ付きリンクは href に `#sim` を付け、シミュレーションを固定ヘッダーの直下へ頭出しする。表示する URL の文面は変えない |
 | 2026-09-27 | 入門14本のヘッダーは `NAV_GROUPS.intro`（その14本だけ、コース順）。フッターとリードも前後の入門トピックだけ。コース外へのリンクは置かない |
 | 2026-09-27 | 入門14本のリードとフッターの「前段 / 次」を、`intro-stages.js` の順に繋ぎ直した（`?course=intro`）。コース外の隣は「前段 / 次」から外し、関連として残す |
 | 2026-09-28 | 入門コースの詳説ページ（中学生向け）を新設: `courses/guide-*.html` 4 本（game-loop・input-basics・velocity-motion・accel-gravity）、共通スクリプト `js/courses/guide.js`、一覧 `js/courses/intro-guides.js`。smoke でリンク先とデモ URL のキーを検査 |
