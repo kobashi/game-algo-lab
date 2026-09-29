@@ -5,6 +5,8 @@
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.20.0
 
+**2026-09-29 詳説のパラメータリンクはシミュレーションへ（Grok）**: 入門コースのくわしい解説（`courses/guide-*.html`）で、`course` 以外のクエリが付いたデモリンクを開くと、シミュレーションの上端が固定ヘッダーの直下に来る。href の末尾に `#sim` を付けた。`?course=intro` だけのリンク（リードと「デモを開く」）は先頭で止まる。修正回数は増やさない。リリースは切らない。
+
 **2026-09-29 演習のパラメータリンクはシミュレーションへ（Grok）**: 入門コースの演習カードで、クエリ付きの設定リンクを開くと、シミュレーションの上端が固定ヘッダーの直下に来る。対象は `.gl-layout`・`.demo-workspace`・`.fsm-layout`。カードに見える URL の文面はそのままで、href にだけ `#sim` を付ける。クエリの無いリンク（α-β の `alpha-beta.html`）と、メニューから開いたページは先頭で止まる。修正回数は増やさない。リリースは切らない。
 
 **2026-09-29 input-basics の開き位置（Grok）**: ページを開くとポーリング開始でキャンバスにフォーカスし、ブラウザがそこまでスクロールしていた。`focus({ preventScroll: true })` にして、TOP と入門コースのどちらから開いても先頭で止まる。修正回数は増やさない。

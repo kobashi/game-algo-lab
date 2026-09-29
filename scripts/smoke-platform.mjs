@@ -876,10 +876,20 @@ function mockControl(kind, value, extra = {}) {
       const demo = path.match(/^\.\.\/algorithms\/([\w-]+)\.html$/);
       if (demo && query) {
         const keys = specKeys(demo[1]);
+        const params = [];
         for (const k of new URLSearchParams(query).keys()) {
           if (k === "course") continue;
+          params.push(k);
           assert.ok(keys.has(k), `guide ${id}: デモ URL のキー "${k}" が js/${demo[1]}.js の URL spec にある`);
         }
+        // course 以外のクエリがあるリンクはシミュレーションへ頭出しする。
+        // course だけのリンクはページ先頭のまま。
+        const hash = m[2] || "";
+        assert.equal(
+          hash,
+          params.length ? "#sim" : "",
+          `guide ${id}: ${params.length ? "パラメータ付き" : "course だけ"}のデモリンク (${href})`
+        );
       }
     }
   }
