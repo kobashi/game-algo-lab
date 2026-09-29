@@ -57,8 +57,9 @@ const csharpSample = document.getElementById("csharp-sample");
 const setStatus = createStatus(document.getElementById("status"));
 
 const R = 12;
+const START_Y = 40;
 let x = 60;
-let y = 40;
+let y = START_Y;
 let vx = C.defaultVx;
 let vy = 0;
 let trail = /** @type {{x:number,y:number}[]} */ ([]);
@@ -70,7 +71,7 @@ let lastTs = 0;
 let bounceCount = 0;
 /** @type {number[]} 床からの高さ px */
 let peaks = [];
-let apexY = 40;
+let apexY = START_Y;
 let goingUp = false;
 let tunnelFlash = 0;
 let stopped = false;
@@ -92,16 +93,22 @@ function floorY() {
   return canvas.height - R - 8;
 }
 
-/** 画面に出している整数の高さどうしの比。2番目以降に前回比を付ける。 */
+/**
+ * 落下開始の高さを 100 とした小数第2位。
+ * 最初の最高点は落下開始比、2回目以降は直前の整数高さとの前回比。
+ */
 function formatPeaks(list) {
   if (!list.length) return "—";
+  const base = floorY() - START_Y;
+  if (!(base > 0)) return "—";
   const shown = list.map((h) => Number(h.toFixed(0)));
   return shown
     .map((h, i) => {
-      if (i === 0) return String(h);
+      const norm = ((h / base) * 100).toFixed(2);
+      if (i === 0) return `${norm}（落下開始比 ${(h / base).toFixed(2)}）`;
       const prev = shown[i - 1];
       const ratio = prev > 0 ? (h / prev).toFixed(2) : "—";
-      return `${h}（前回比 ${ratio}）`;
+      return `${norm}（前回比 ${ratio}）`;
     })
     .join(" → ");
 }
@@ -113,7 +120,7 @@ function sync() {
   if (speedVal) speedVal.textContent = readSpeedScale(speedEl).toFixed(1);
   if (thickVal) thickVal.textContent = String(Math.round(readThick()));
   if (readoutEl) {
-    readoutEl.textContent = `跳ね返り ${bounceCount} 回  /  最高到達点(床からpx) ${formatPeaks(peaks)}`;
+    readoutEl.textContent = `跳ね返り ${bounceCount} 回  /  最高到達点(落下開始=100) ${formatPeaks(peaks)}`;
   }
 }
 
@@ -121,13 +128,13 @@ function resetBody(clearGhost) {
   if (ghostEl?.checked && trail.length) ghostTrail = trail.slice();
   else if (clearGhost) ghostTrail = [];
   x = 60;
-  y = 40;
+  y = START_Y;
   vx = readVx();
   vy = 0;
   trail = [];
   bounceCount = 0;
   peaks = [];
-  apexY = 40;
+  apexY = START_Y;
   goingUp = false;
   tunnelFlash = 0;
   stopped = false;

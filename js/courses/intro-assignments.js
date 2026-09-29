@@ -104,19 +104,18 @@ export const ASSIGNMENTS = {
     number: 4,
     title: "狙った高さの比を作る",
     question: "跳ねるたびに高さが決まった割合になるよう、反発係数を選べるか。",
-    // 小数第2位で丸めると、0.05 刻みの反発係数の2乗と一致しない末尾がある。
-    // 第4位まで出せば、どの末尾も目盛りのどれか1つの2乗と一致する。
+    // 目標は小数第2位。画面の比は刻みが粗いので、目標と一致しないことがある。
     personal: (d) => {
       const hundredths = 90 - 5 * d;
-      const sq = hundredths * hundredths;
-      const r = `${Math.floor(sq / 10000)}.${String(sq % 10000).padStart(4, "0")}`;
+      const cents = Math.round((hundredths * hundredths) / 100);
+      const r = `${Math.floor(cents / 100)}.${String(cents % 100).padStart(2, "0")}`;
       return `目標の高さの比 R = ${r}（障害物は消す: \`obs=0\`）`;
     },
     urls: [
       { id: "A", label: "予想した反発係数" },
       { id: "B", label: "A と同じ反発係数で、重力 g だけを変えたもの" },
     ],
-    observe: "A と B の最高点の列（A → B → C …）と、隣どうしの比。",
+    observe: "A と B の最高点の列（落下開始を 100 とした値）と、最初の落下開始比、その後の前回比。",
     discuss: [
       "比が反発係数の 2 乗になる理由",
       "g を変えても比が変わらない理由",
