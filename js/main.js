@@ -1381,7 +1381,7 @@ function renderMaturityLegend() {
   const note = document.createElement("p");
   note.className = "maturity-legend-note";
   note.innerHTML =
-    "上の「修正 合計」は、その区分のトピックの修正回数を足した数です。各カードには、そのトピックの修正回数と更新日を表示します（定義: <code>docs/topics/MATURITY.md</code>）。";
+    "「修正 合計」は、修正がある区分のトピックの修正回数を足した数です。一発未調整のラベルは区分名と件数だけです。各カードは更新日を出し、修正があるトピックは回数も出します（定義: <code>docs/topics/MATURITY.md</code>）。";
 
   root.replaceChildren(title, list, note);
 }

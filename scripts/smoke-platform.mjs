@@ -25,6 +25,7 @@ import {
   countByMaturity,
   sumRevisionsByMaturity,
   resolveTopicMeta,
+  formatMaturityDetail,
 } from "../js/platform/index.js";
 import { parseMap } from "../js/map-format.js";
 import { TOPICS } from "../js/main.js";
@@ -584,6 +585,31 @@ function mockControl(kind, value, extra = {}) {
   const mainSrc = fs.readFileSync(new URL("../js/main.js", import.meta.url), "utf8");
   assert.match(mainSrc, /sumRevisionsByMaturity\(TOPICS\)/);
   assert.match(mainSrc, /summary:\s*true/);
+  assert.equal(sums.oneshot, 0, "oneshot revision total is 0");
+  assert.equal(
+    formatMaturityDetail(
+      { maturity: "oneshot", revisions: 0, updated: "2026-07-22" },
+      { summary: true },
+    ),
+    "",
+    "oneshot legend omits a zero revision total",
+  );
+  assert.equal(
+    formatMaturityDetail({ maturity: "oneshot", revisions: 0, updated: "2026-07-22" }),
+    "更新 2026-07-22",
+    "oneshot card keeps the date and omits 修正 0回",
+  );
+  assert.equal(
+    formatMaturityDetail({ maturity: "revised", revisions: 2, updated: "2026-07-17" }),
+    "修正 2回 · 更新 2026-07-17",
+  );
+  assert.equal(
+    formatMaturityDetail(
+      { maturity: "revised", revisions: 112, updated: "" },
+      { summary: true },
+    ),
+    "修正 合計 112回",
+  );
 }
 
 // --- 入門コース: STAGES の全 id が TOPICS に存在し ready (入門コース改善計画 W2+W3) ---

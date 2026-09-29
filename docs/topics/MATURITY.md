@@ -76,8 +76,8 @@
 
 | 画面 | 表示 |
 |------|------|
-| トップ (`index.html`) | 凡例は区分ごとに **修正 合計 N回**（その区分の `revisions` の和）と件数。カードは **成熟度名** + **修正 N回 · 更新 YYYY-MM-DD**、左縁色 |
-| 各デモ (`algorithms/*.html`) | `.page-header` に同様（`mountTopicShellFromDataset` 経由） |
+| トップ (`index.html`) | 凡例は、修正がある区分に **修正 合計 N回**（その区分の `revisions` の和）と件数。一発未調整で合計が 0 のときは区分名と件数だけ。カードは **成熟度名** + 更新日。修正があるトピックは **修正 N回** も付ける。左縁色 |
+| 各デモ (`algorithms/*.html`) | `.page-header` にカードと同じ表示（`mountTopicShellFromDataset` 経由） |
 
 ---
 

@@ -566,13 +566,17 @@ export function maturityHint(code) {
 /**
  * バッジ用の「修正 N回 · 更新 YYYY-MM-DD」。
  * summary のときは「修正 合計 N回」だけで、更新日は付けない。
+ * 一発未調整で回数が 0 のときは回数を出さない。更新日は残す。
  * @param {TopicMaturityMeta | null | undefined} meta
  * @param {{ summary?: boolean }} [opts]
  */
 export function formatMaturityDetail(meta, opts = {}) {
   if (!meta) return "";
   const parts = [];
-  parts.push(opts.summary ? `修正 合計 ${meta.revisions}回` : `修正 ${meta.revisions}回`);
+  const showRevisions = !(meta.maturity === "oneshot" && meta.revisions === 0);
+  if (showRevisions) {
+    parts.push(opts.summary ? `修正 合計 ${meta.revisions}回` : `修正 ${meta.revisions}回`);
+  }
   if (!opts.summary && meta.updated) parts.push(`更新 ${meta.updated}`);
   return parts.join(" · ");
 }
