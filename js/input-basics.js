@@ -537,7 +537,8 @@ function startLoop() {
   running = true;
   lastTs = 0;
   if (btnPlay) btnPlay.textContent = "一時停止";
-  canvas?.focus();
+  // ページを開いたとき先頭のままにする。フォーカスでキャンバスまでスクロールさせない。
+  canvas?.focus({ preventScroll: true });
   scheduleNext();
 }
 
@@ -609,7 +610,7 @@ canvas?.addEventListener("blur", () => {
   if (focusHint) focusHint.textContent = "クリックしてフォーカスを当て、キーを押してください";
   draw();
 });
-canvas?.addEventListener("click", () => canvas.focus());
+canvas?.addEventListener("click", () => canvas.focus({ preventScroll: true }));
 
 btnPlay?.addEventListener("click", () => {
   if (running) {

@@ -5,6 +5,8 @@
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.20.0
 
+**2026-09-29 input-basics の開き位置（Grok）**: ページを開くとポーリング開始でキャンバスにフォーカスし、ブラウザがそこまでスクロールしていた。`focus({ preventScroll: true })` にして、TOP と入門コースのどちらから開いても先頭で止まる。修正回数は増やさない。
+
 **2026-09-29 input-basics の Charge（Grok）**: X の長押しが閾値を超えたフレームでチャージを 1 回消費する。頭上のゲージは空になり、金色の弾が右へ 1 発出る。押したままでは 2 発目は出ない。離してから押し直すと、また溜められる。ログは `Charge LONG (≥…ms) 弾+1`（`Charge LONG (≥1000ms)` は部分一致のまま）。C# に `ConsumeCharge`、解説 2 の 3.5。修正 9→10。リリースは切らない。
 
 **2026-09-29 input-basics の Fire（Grok）**: Z を押しているあいだは毎フレーム Fire が +1（連射の対比はそのまま）。Z を離したフレーム（up）で回数を 0 に戻す。弾の表示も消える。イベントログは `Fire UP（n → 0）`。離したあとの結果欄に、戻す前の回数を残す。C# サンプルに `ApplyFire` を足し、解説 2 の 3.4 で同じ規則を書いた。演習カードの観察は、離すと 0 に戻ることに合わせた。クイズの正解（押しているあいだは増え続ける）は変えていない。修正 8→9。リリースは切らない。
