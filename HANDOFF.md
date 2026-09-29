@@ -1,9 +1,11 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-09-28（ready **110** · Release **v0.20.0**）  
+最終更新: 2026-09-29（ready **110** · Release **v0.20.0**）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.20.0
+
+**2026-09-29 重力の個人条件の比（Grok）**: 課題 4 の目標の比を、小数第 4 位まで出す。0.05 刻みの反発係数の 2 乗と、印刷した数が一致する。小数第 2 位だけだと、目盛りの 2 乗と一致しない末尾がある。画面の最高点は整数のままなので、測った比と目標のずれは考察に残る。シミュレーションと公開済みの最高点の列は変えていない。修正回数は増やさない。リリースは切らない。
 
 **2026-09-29 詳説のパラメータリンクはシミュレーションへ（Grok）**: 入門コースのくわしい解説（`courses/guide-*.html`）で、`course` 以外のクエリが付いたデモリンクを開くと、シミュレーションの上端が固定ヘッダーの直下に来る。href の末尾に `#sim` を付けた。`?course=intro` だけのリンク（リードと「デモを開く」）は先頭で止まる。修正回数は増やさない。リリースは切らない。
 

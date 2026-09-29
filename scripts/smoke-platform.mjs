@@ -825,6 +825,26 @@ function mockControl(kind, value, extra = {}) {
     if (a.personal) {
       for (let d = 0; d <= 9; d++) assert.ok(typeof a.personal(d) === "string" && a.personal(d).length > 0, `assignment ${id}: d=${d} の個人条件`);
     }
+    if (id === "accel-gravity") {
+      const ticks = new Set();
+      for (let d = 0; d <= 9; d++) {
+        const m = a.personal(d).match(/R = (\d+\.\d{4})/);
+        assert.ok(m, `assignment accel-gravity: d=${d} の R は小数第4位`);
+        const [whole, frac] = m[1].split(".");
+        const scaled = Number(whole) * 10000 + Number(frac);
+        assert.equal(scaled % 25, 0, `assignment accel-gravity: d=${d} の R は 0.05 刻みの2乗`);
+        const k2 = scaled / 25;
+        const k = Math.round(Math.sqrt(k2));
+        assert.equal(k * k, k2, `assignment accel-gravity: d=${d} の R は目盛り1つの2乗`);
+        assert.ok(k >= 0 && k <= 20, `assignment accel-gravity: d=${d} の目盛りが 0〜1`);
+        assert.ok(!ticks.has(k), `assignment accel-gravity: d=${d} の目盛りが他の末尾と重ならない`);
+        ticks.add(k);
+        const hundredths = 90 - 5 * d;
+        const sq = hundredths * hundredths;
+        const expect = `${Math.floor(sq / 10000)}.${String(sq % 10000).padStart(4, "0")}`;
+        assert.equal(m[1], expect, `assignment accel-gravity: d=${d} の R`);
+      }
+    }
     // 課題文中の `key=value` と URL の例のキーが、そのトピックの URL spec にある
     const keys = specKeys(id);
     const text = [a.example, a.condition, ...a.urls.map((u) => u.label), a.personal ? a.personal(0) : ""].join("\n");

@@ -104,9 +104,13 @@ export const ASSIGNMENTS = {
     number: 4,
     title: "狙った高さの比を作る",
     question: "跳ねるたびに高さが決まった割合になるよう、反発係数を選べるか。",
+    // 小数第2位で丸めると、0.05 刻みの反発係数の2乗と一致しない末尾がある。
+    // 第4位まで出せば、どの末尾も目盛りのどれか1つの2乗と一致する。
     personal: (d) => {
-      const e = 0.9 - 0.05 * d;
-      return `目標の高さの比 R = ${(e * e).toFixed(2)}（障害物は消す: \`obs=0\`）`;
+      const hundredths = 90 - 5 * d;
+      const sq = hundredths * hundredths;
+      const r = `${Math.floor(sq / 10000)}.${String(sq % 10000).padStart(4, "0")}`;
+      return `目標の高さの比 R = ${r}（障害物は消す: \`obs=0\`）`;
     },
     urls: [
       { id: "A", label: "予想した反発係数" },
