@@ -277,6 +277,7 @@ export const FOOTER_RELATED = {
   "circle-collision": [
     { href: "accel-gravity.html?course=intro", label: "加速度と重力（前段）" },
     { href: "coyote-time.html?course=intro", label: "次: コヨーテタイム" },
+    { href: "collision.html", label: "関連: AABB" },
   ],
   "momentum-1d": [
     { href: "friction-bounce.html", label: "摩擦・反発（前段）" },

@@ -466,7 +466,7 @@ export const TOPICS = [
     id: "circle-collision",
     title: "円同士・円と AABB",
     description:
-      "中心距離と Clamp 最近点。円–円 / 円–箱のライブ判定。",
+      "中心距離と Clamp 最近点。円Aと円B、それぞれの箱への最近点を表示。",
     href: "algorithms/circle-collision.html",
     badge: "物理・判定",
     category: "物理・判定",

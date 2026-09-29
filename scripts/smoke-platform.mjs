@@ -612,7 +612,10 @@ function mockControl(kind, value, extra = {}) {
       ...order.map((topicId) => `${fileOf(topicId)}?course=intro`),
       "../courses/intro.html",
     ]);
+    // 円と AABB だけ、箱どうしの判定（コース外の collision）を関連として案内する。
+    const allowedOutside = id === "circle-collision" ? new Set(["collision.html"]) : new Set();
     for (const link of links) {
+      if (allowedOutside.has(link.href)) continue;
       assert.ok(
         courseHrefs.has(link.href),
         `${id} footer stays inside the intro course: ${link.href}`
@@ -624,6 +627,7 @@ function mockControl(kind, value, extra = {}) {
       .filter((href) => !href.endsWith("/index.html") && !href.endsWith("intro.html") && href.includes(".html"))
       .filter((href) => {
         const file = href.split("/").pop().split("?")[0];
+        if (id === "circle-collision" && file === "collision.html") return false;
         return !order.some((topicId) => fileOf(topicId) === file) && file !== "intro.html" && file !== "index.html";
       });
     assert.deepEqual(outside, [], `${id} has no link to a topic outside the intro course`);

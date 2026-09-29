@@ -80,13 +80,6 @@ export function circleAabbOverlap(cx, cy, r, b) {
   return { hit: dx * dx + dy * dy <= r * r, nx, ny, dist: Math.hypot(dx, dy) };
 }
 
-function nearestOnBox(cx, cy, b) {
-  return {
-    x: Math.min(Math.max(cx, b.x), b.x + b.w),
-    y: Math.min(Math.max(cy, b.y), b.y + b.h),
-  };
-}
-
 function evaluate() {
   const cc = circlesOverlap(
     circleA.x,
@@ -120,19 +113,23 @@ function draw() {
   ctx.font = "12px sans-serif";
   ctx.fillText("AABB", box.x + 8, box.y + 18);
 
-  // nearest point lines for A
-  const na = nearestOnBox(circleA.x, circleA.y, box);
-  ctx.strokeStyle = "rgba(242, 204, 143, 0.7)";
-  ctx.setLineDash([4, 4]);
-  ctx.beginPath();
-  ctx.moveTo(circleA.x, circleA.y);
-  ctx.lineTo(na.x, na.y);
-  ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.fillStyle = "#f2cc8f";
-  ctx.beginPath();
-  ctx.arc(na.x, na.y, 4, 0, Math.PI * 2);
-  ctx.fill();
+  // 円Aは黄、円Bは青。どちらも箱への最近点。
+  const na = { x: ev.ca.nx, y: ev.ca.ny };
+  const nb = { x: ev.cb.nx, y: ev.cb.ny };
+  const gold = "#f2cc8f";
+  const blue = "#8ecae6";
+  const dashTo = (x0, y0, x1, y1, color) => {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x1, y1);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  };
+  dashTo(circleA.x, circleA.y, na.x, na.y, "rgba(242, 204, 143, 0.85)");
+  dashTo(circleB.x, circleB.y, nb.x, nb.y, "rgba(142, 202, 230, 0.9)");
 
   // circles
   const graze = Math.abs(ev.distAB - (circleA.r + circleB.r)) <= 1.5;
@@ -167,9 +164,36 @@ function draw() {
   ctx.lineTo(circleB.x, circleB.y);
   ctx.stroke();
 
+  const coincide = Math.hypot(na.x - nb.x, na.y - nb.y) < 0.75;
+  const mark = (pt, color, ring) => {
+    ctx.beginPath();
+    ctx.arc(pt.x, pt.y, ring ? 7 : 4, 0, Math.PI * 2);
+    if (ring) {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    } else {
+      ctx.fillStyle = color;
+      ctx.fill();
+    }
+  };
+  mark(na, gold, false);
+  mark(nb, blue, coincide);
+  const tag = (pt, text, color, dy) => {
+    ctx.font = "12px sans-serif";
+    ctx.fillStyle = color;
+    const lx = pt.x > box.x + box.w / 2 ? pt.x + 8 : pt.x - 14;
+    let ly = pt.y + dy;
+    if (ly < 12) ly = 12;
+    if (ly > H - 22) ly = H - 22;
+    ctx.fillText(text, Math.max(4, Math.min(W - 14, lx)), ly);
+  };
+  tag(na, "A", gold, -8);
+  tag(nb, "B", blue, coincide ? 16 : 14);
+
   ctx.fillStyle = "#9aabbf";
   ctx.font = "12px sans-serif";
-  ctx.fillText("ドラッグで移動 · 黄点 = AABB への最近点", 12, H - 12);
+  ctx.fillText("ドラッグで移動 · 黄 = 円Aの最近点 · 青 = 円Bの最近点", 12, H - 12);
 
   renderPanel(ev);
 }
@@ -183,7 +207,9 @@ function renderPanel(ev) {
         <tr><td>rA+rB</td><td>${sumR.toFixed(1)}</td></tr>
         <tr><td>円同士</td><td class="${ev.cc ? "ok" : ""}">${ev.cc ? "HIT" : "miss"}</td></tr>
         <tr><td>円A–AABB</td><td>${ev.ca.hit ? "HIT" : "miss"} (d=${ev.ca.dist.toFixed(1)})</td></tr>
+        <tr><td>円A の最近点</td><td>(${ev.ca.nx.toFixed(1)}, ${ev.ca.ny.toFixed(1)})</td></tr>
         <tr><td>円B–AABB</td><td>${ev.cb.hit ? "HIT" : "miss"} (d=${ev.cb.dist.toFixed(1)})</td></tr>
+        <tr><td>円B の最近点</td><td>(${ev.cb.nx.toFixed(1)}, ${ev.cb.ny.toFixed(1)})</td></tr>
       </table>`;
   }
   if (formulaEl) {

@@ -15,6 +15,7 @@
       <p class="page-header-lead">
         円同士は<strong>中心距離</strong>、円と箱は<strong><span class="term" data-term="closest-point">最近点</span>（<span class="term" data-term="clamp">Clamp</span>）</strong>で判定。
         前段: <a href="accel-gravity.html?course=intro">加速度と重力</a>。次: <a href="coyote-time.html?course=intro">コヨーテタイム</a>。
+        関連: <a href="collision.html">AABB 衝突判定</a>。
       </p>
     </div>
     <details class="lesson-details" open>
@@ -23,7 +24,7 @@
         <ul>
           <li>円A–円B: <span class="term" data-term="squared-distance">dx²+dy² ≤ (r1+r2)²</span></li>
           <li>円–<span class="term" data-term="aabb">AABB</span>: 中心を箱に <span class="term" data-term="clamp">Clamp</span> した点への距離 ≤ r</li>
-          <li>黄の破線と点が「<span class="term" data-term="closest-point">最近点</span>」</li>
+          <li>黄の破線と点は円A、青の破線と点は円Bの「<span class="term" data-term="closest-point">最近点</span>」</li>
         </ul>
       </div>
     </details>

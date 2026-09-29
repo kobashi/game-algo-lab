@@ -133,7 +133,7 @@ export const ASSIGNMENTS = {
       { id: "A", label: "円 A が箱の角に接触（円A–AABB が HIT）" },
       { id: "B", label: "A から 1 px 離して miss" },
     ],
-    observe: "A と B の、円A–AABB の判定と円と箱の距離。最近点（黄の点）が角に来ていること。",
+    observe: "A と B の、円A–AABB の判定と円と箱の距離。円Aの最近点（黄の点）が角に来ていること。",
     discuss: [
       "Clamp で最近点が角になる理由",
       "辺で触れるときとの違い",

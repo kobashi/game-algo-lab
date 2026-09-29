@@ -111,7 +111,7 @@
 | `friction-bounce` | 摩擦・反発 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/friction-bounce.html` | [SPEC](./friction-bounce/SPEC.md) | 床バウンス e · 接地摩擦 |
 | `verlet-integration` | Verlet 積分 · 距離拘束 | ✅ | **一発** | 0 | 2026-07-29 | `algorithms/verlet-integration.html` | [SPEC](./verlet-integration/SPEC.md) | 位置履歴積分 · ロープ拘束 |
 | `collision` | AABB 衝突判定 | ✅ | **調整** | 2 | 2026-07-17 | `algorithms/collision.html` | [SPEC](./collision/SPEC.md) | 非マップ説明UI。重なり/分離の二重実装と比較 |
-| `circle-collision` | 円同士・円と AABB | ✅ | **調整** | 5 | 2026-09-28 | `algorithms/circle-collision.html` | [SPEC](./circle-collision/SPEC.md) | 中心距離・Clamp 最近点。**改訂2**: 調整課題のための観測性改善（速度・軌跡・障害物など）。**改訂3**: 演習カード（予想→操作→確認）を追加（入門コース改善計画 P0-1）。**改訂4**: 用語注を追加（5 語。点線の語にホバー・フォーカス・タップで説明）。**改訂5**: 提出課題と提出票を追加（`?course=intro` のとき。入門コース 提出課題の計画書） |
+| `circle-collision` | 円同士・円と AABB | ✅ | **調整** | 6 | 2026-09-29 | `algorithms/circle-collision.html` | [SPEC](./circle-collision/SPEC.md) | 中心距離・Clamp 最近点。**改訂2**: 調整課題のための観測性改善（速度・軌跡・障害物など）。**改訂3**: 演習カード（予想→操作→確認）を追加（入門コース改善計画 P0-1）。**改訂4**: 用語注を追加（5 語。点線の語にホバー・フォーカス・タップで説明）。**改訂5**: 提出課題と提出票を追加（`?course=intro` のとき。入門コース 提出課題の計画書）。**改訂6**: 円Bの箱への最近点も表示（黄=円A、青=円B）。関連として AABB 衝突判定へ案内 |
 | `momentum-1d` | 質量と運動量（1D） | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/momentum-1d.html` | [SPEC](./momentum-1d/SPEC.md) | 弾性/非弾性 · Σp/KE |
 | `raycast-shapes` | 線分・レイキャスト | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/raycast-shapes.html` | [SPEC](./raycast-shapes/SPEC.md) | 円・AABB への最近 t |
 | `collision-response` | 衝突応答 | ✅ | **一発** | 0 | 2026-07-27 | `algorithms/collision-response.html` | [SPEC](./collision-response/SPEC.md) | 分離 + 法線インパルス |

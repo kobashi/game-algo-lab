@@ -129,8 +129,8 @@ export const TOPIC_META = {
   },
   "circle-collision": {
     maturity: "revised",
-    revisions: 5,
-    updated: "2026-09-28",
+    revisions: 6,
+    updated: "2026-09-29",
   },
   "momentum-1d": {
     maturity: "oneshot",
