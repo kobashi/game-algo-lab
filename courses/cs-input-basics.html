@@ -36,12 +36,13 @@
     <!-- 1 -->
     <section class="guide-section" id="s1" aria-labelledby="s1-h">
       <h2 id="s1-h">1. このコードがすること</h2>
-      <p>このファイルには、次の 4 つがあります。</p>
+      <p>このファイルには、次の 5 つがあります。</p>
       <ul>
         <li><code>ActionState</code>: 1 つのボタン（キー）の状態を持つクラス。<code>Held</code>・<code>Down</code>・<code>Up</code>・<code>HoldTime</code>・<code>LongPressFired</code> を持ちます。</li>
         <li><code>InputBasicsExample.Poll</code>: 毎フレーム呼ぶ関数。前フレームの <code>Held</code> と、今フレームの生の <code>isDownNow</code>（実際にキーが押されているか）から、<code>Down</code>・<code>Up</code>・<code>HoldTime</code> を更新します。</li>
         <li><code>InputBasicsExample.ConsumeLongPress</code>: <code>HoldTime</code> が閾値を超えたフレームで、1 回だけ <code>true</code> を返します。</li>
         <li><code>InputBasicsExample.ApplyFire</code>: デモの Fire（Z）。押しているあいだは回数を毎フレーム 1 足し、離したフレーム（<code>Up</code>）で 0 に戻します。</li>
+        <li><code>InputBasicsExample.ConsumeCharge</code>: 長押しが成立したフレームだけ弾を 1 発足します。デモでは、このときゲージを空にして金色の弾を出します。</li>
       </ul>
       <p>
         キーボードやマウスを実際に読む部分（<code>isDownNow</code> を作るところ）は入っていません。<code>held</code>・<code>down</code>・<code>up</code>・長押しの考え方は
@@ -185,6 +186,15 @@ if (state.Up)
       <p>
         デモの Z（Fire）は、押しているあいだ毎フレーム回数を 1 足します。離したフレームでは <code>Held</code> が false、<code>Up</code> が true なので、足さずに 0 へ戻します。
         Jump の回数は押した瞬間に増えたあと残りますが、Fire の回数はキーを離すと消えます。
+      </p>
+
+      <h3>3.5 チャージは 1 回消費して弾を 1 発</h3>
+      <pre class="code-block cs-excerpt"><code>if (ConsumeLongPress(state, longPressThresholdSeconds))
+    shots += 1;</code></pre>
+      <p>
+        <code>ConsumeLongPress</code> が <code>true</code> のフレームだけで、弾を 1 発足します。
+        デモでは、そのフレームで頭上のゲージを空にし、金色の弾を右へ出します。
+        押し続けても <code>ConsumeLongPress</code> は <code>false</code> なので、2 発目は出ません。離してから押し直すと、また溜められます。
       </p>
     </section>
 

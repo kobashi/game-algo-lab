@@ -30,7 +30,7 @@ export const INPUT_ACTIONS = [
     id: "charge",
     label: "Charge",
     keys: ["KeyX", "x", "X"],
-    hint: "X — 長押し閾値でチャージ完了 1 回",
+    hint: "X — 閾値で 1 回消費し、金色の弾。押し続けても 2 発目は出ない",
   },
   {
     id: "move",

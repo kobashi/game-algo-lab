@@ -30,7 +30,7 @@
           <li><strong><span class="term" data-term="held">held</span></strong>: 今<span class="term" data-term="frame">フレーム</span>でキーが下がっている</li>
           <li><strong><span class="term" data-term="key-down">down</span></strong>: 今フレームで押し始めた（立ち上がり）。押し続けても 1 回だけ true</li>
           <li><strong><span class="term" data-term="key-up">up</span></strong>: 今フレームで離した（立ち下がり）</li>
-          <li><strong><span class="term" data-term="long-press">長押し</span></strong>: held の累積時間が<span class="term" data-term="threshold">閾値</span>を超えたら 1 回トリガー</li>
+          <li><strong><span class="term" data-term="long-press">長押し</span></strong>: held の累積時間が<span class="term" data-term="threshold">閾値</span>を超えたフレームでチャージを 1 回消費し、金色の弾が出る。押し続けても 2 発目は出ない</li>
           <li>対比: Jump は down のときだけ箱が 1 回跳ねる。押し続けても着地したあとは跳ねない。Fire は押しているあいだ毎フレーム増え、離す（up）と 0 に戻る</li>
           <li>ページを開くと<span class="term" data-term="polling">ポーリング</span>は既に動いている。毎フレーム、キーの状態を自分から見に行く。ボタンで止めたり、もう一度押して再開したりできる</li>
         </ul>
@@ -46,7 +46,7 @@
           <span><i class="swatch" style="background:#6bcb8f"></i>プレイヤー</span>
           <span><i class="swatch" style="background:#5b9fd4"></i>ジャンプ回数</span>
           <span><i class="swatch" style="background:#e07a5f"></i>連射</span>
-          <span><i class="swatch" style="background:#f2cc8f"></i>チャージ</span>
+          <span><i class="swatch" style="background:#f2cc8f"></i>溜め弾</span>
         </div>
         <div id="action-panels" class="ib-action-grid"></div>
         <canvas id="ib-timeline" class="ib-timeline" width="640" height="140" aria-label="入力の時間軸"></canvas>
@@ -80,7 +80,7 @@
           <div class="ib-key-help">
             <p><kbd>Space</kbd> Jump（edge）</p>
             <p><kbd>Z</kbd> Fire（押しているあいだ連射、離すと 0）</p>
-            <p><kbd>X</kbd> Charge（長押し）</p>
+            <p><kbd>X</kbd> Charge（溜めて 1 発。消費するとゲージは空）</p>
             <p><kbd>←</kbd><kbd>→</kbd> Move（held）</p>
           </div>
         </div>

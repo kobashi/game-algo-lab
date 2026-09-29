@@ -1,6 +1,7 @@
 // Game Algo Lab — 入力の基礎（held / down / up / 長押し）
 // デモ: algorithms/input-basics.html
 // Fire は held のあいだ毎フレーム +1、離したフレーム（Up）で 0 に戻す。
+// Charge は長押しが成立したフレームで 1 回だけ消費し、弾を 1 発足す。
 
 using System;
 using System.Collections.Generic;
@@ -50,6 +51,20 @@ public static class InputBasicsExample
         if (state.HoldTime < longPressThresholdSeconds) return false;
         state.LongPressFired = true;
         return true;
+    }
+
+    /// <summary>
+    /// 長押しが成立したフレームだけチャージを消費し、弾を 1 発足す。
+    /// 押し続けても 2 発目は出ない。
+    /// </summary>
+    public static int ConsumeCharge(
+        ActionState state,
+        double longPressThresholdSeconds,
+        int shots)
+    {
+        if (ConsumeLongPress(state, longPressThresholdSeconds))
+            shots += 1;
+        return shots;
     }
 
     /// <summary>

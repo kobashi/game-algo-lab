@@ -88,6 +88,12 @@ let fireCount = 0;
 /** Z を離したあと、結果欄に残す文。次に Fire を押し始めたら消す */
 let fireResetNote = "";
 let chargeCount = 0;
+/** 消費したあと、結果欄に残す文。次に Charge を押し始めたら消す */
+let chargeNote = "";
+/** @type {{ x: number, y: number, life: number }[]} */
+let chargeShots = [];
+const CHARGE_SHOT_SEC = 0.65;
+const CHARGE_SHOT_SPEED = 360;
 let frameIndex = 0;
 /** @type {string[]} */
 let eventLog = [];
@@ -185,7 +191,9 @@ function pollActions(dtSec) {
     ) {
       st.longPressFired = true;
       chargeCount += 1;
-      edges.push(`${def.label} LONG (≥${readLongMs()}ms)`);
+      spawnChargeShot();
+      chargeNote = "閾値でチャージを 1 回消費し、金色の弾を出しました。押し続けても 2 発目は出ません。";
+      edges.push(`${def.label} LONG (≥${readLongMs()}ms) 弾+1`);
       for (let i = bands.length - 1; i >= 0; i--) {
         if (bands[i].id === def.id && bands[i].t1 == null) {
           bands[i].long = true;
@@ -194,6 +202,8 @@ function pollActions(dtSec) {
       }
     }
   }
+
+  if (actions.charge.down) chargeNote = "";
 
   // Jump: down only。押し続け（held）では始めない
   if (actions.jump.down) {
@@ -242,6 +252,7 @@ function tick(realDtMs, bandMs = realDtMs) {
   frameIndex += 1;
   pollActions(dt);
   advanceJump(dt);
+  advanceChargeShots(dt);
   draw();
   drawTimeline();
   renderPanels();
@@ -268,7 +279,12 @@ function tick(realDtMs, bandMs = realDtMs) {
     const pct = Math.min(100, (actions.charge.holdTime * 1000 * 100) / thr);
     resultPanel.show(`
       <p class="result-verdict">チャージ中 ${pct.toFixed(0)}%</p>
-      <p class="result-note">X を ${thr} ms 以上押し続けると LONG が 1 回だけ発火します。</p>
+      <p class="result-note">X を ${thr} ms 以上押し続けると、チャージを 1 回消費して金色の弾が出ます。</p>
+    `);
+  } else if (chargeNote) {
+    resultPanel.show(`
+      <p class="result-verdict">チャージを消費した</p>
+      <p class="result-note">${chargeNote} 離してから押し直すと、また溜められます。</p>
     `);
   } else if (fireResetNote) {
     resultPanel.show(`
@@ -287,9 +303,29 @@ function jumpLiftPx() {
   return 4 * JUMP_PX * u * (1 - u);
 }
 
+function spawnChargeShot() {
+  if (!canvas) return;
+  const gy = canvas.height * 0.72;
+  const footY = gy - jumpLiftPx();
+  chargeShots.push({
+    x: playerX * canvas.width + 18,
+    y: footY - 20,
+    life: CHARGE_SHOT_SEC,
+  });
+}
+
 /**
  * @param {number} dtSec
  */
+function advanceChargeShots(dtSec) {
+  const limit = (canvas?.width ?? 640) + 16;
+  for (const s of chargeShots) {
+    s.x += CHARGE_SHOT_SPEED * dtSec;
+    s.life -= dtSec;
+  }
+  chargeShots = chargeShots.filter((s) => s.life > 0 && s.x < limit);
+}
+
 function advanceJump(dtSec) {
   if (jumpLeft <= 0) return;
   jumpLeft = Math.max(0, jumpLeft - dtSec);
@@ -331,11 +367,20 @@ function draw() {
   // charge bar
   const thr = readLongMs() / 1000;
   if (actions.charge.held) {
-    const w = Math.min(1, actions.charge.holdTime / thr) * 80;
+    const w = actions.charge.longPressFired
+      ? 0
+      : Math.min(1, actions.charge.holdTime / thr) * 80;
     ctx.fillStyle = "#f2cc8f";
     ctx.fillRect(px - 40, py - 50, w, 6);
     ctx.strokeStyle = "#a08050";
     ctx.strokeRect(px - 40, py - 50, 80, 6);
+  }
+
+  for (const s of chargeShots) {
+    ctx.fillStyle = "#f2cc8f";
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, 8, 0, Math.PI * 2);
+    ctx.fill();
   }
 
   // bullets for fire
@@ -425,11 +470,13 @@ function renderPanels() {
     const st = actions[def.id];
     const thr = readLongMs() / 1000;
     const holdPct =
-      def.id === "charge" && st.held
+      def.id === "charge" && st.held && !st.longPressFired
         ? Math.min(100, (st.holdTime / thr) * 100)
-        : st.held
-          ? 100
-          : 0;
+        : def.id === "charge"
+          ? 0
+          : st.held
+            ? 100
+            : 0;
     return `<div class="ib-action-card${st.held ? " is-held" : ""}${st.down ? " is-down" : ""}">
       <div class="ib-action-title">${def.label}</div>
       <div class="ib-flags">
@@ -513,6 +560,8 @@ function resetAll() {
   fireCount = 0;
   fireResetNote = "";
   chargeCount = 0;
+  chargeNote = "";
+  chargeShots = [];
   frameIndex = 0;
   eventLog = [];
   simMs = 0;

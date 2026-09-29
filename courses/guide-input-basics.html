@@ -179,6 +179,7 @@
       <p>
         ここでも、判定はフレームごとです。60 FPS のとき、閾値 400 ms なら、押し始めから 400 ms を超えた最初のフレームで起きるので、
         実際には 400〜417 ms くらいのところで起きます。
+        デモでは、そのフレームでチャージを消費します。頭上のゲージは空になり、金色の弾が右へ 1 発出ます。押したままにしても 2 発目は出ません。離してから押し直すと、また溜められます。
       </p>
       <div class="guide-note">
         <strong>考えてみよう:</strong> 閾値が短すぎると、ふつうに押しただけで溜め攻撃が出てしまいます。
@@ -193,7 +194,7 @@
         <li>ゲームは、フレームごとにキーの状態を見に行く（ポーリング）。分かるのはフレームの区切りだけ</li>
         <li>held は押しているあいだ毎フレーム、down は押した瞬間の 1 フレーム、up は離した瞬間の 1 フレーム</li>
         <li>ジャンプは down、移動は held。held で撃つと連射になる。離す（up）と Fire の回数は 0 に戻る</li>
-        <li>長押しは、held の時間が閾値を超えたフレームで 1 回だけ起こす</li>
+        <li>長押しは、held の時間が閾値を超えたフレームで 1 回だけ起こす。デモでは、その 1 回で金色の弾が出て、ゲージは空になる</li>
       </ul>
     </section>
 
@@ -201,7 +202,7 @@
       <h2 id="try-h">やってみよう</h2>
       <ol>
         <li><a href="../algorithms/input-basics.html?course=intro">デモ</a>を開き、キャンバスをクリックしてから、Space（Jump）・Z（Fire）・X（Charge）を 1 秒ほど押し続ける。Jump は 1 回のまま残る。Fire は押しているあいだ増え、離すと 0 に戻る。</li>
-        <li><a href="../algorithms/input-basics.html?course=intro&amp;longms=1000">長押しの閾値を 1000 ms に</a>して、X を 1 秒より短く・長く押し比べる。イベントログに長押し（LONG）が出るかを見る。</li>
+        <li><a href="../algorithms/input-basics.html?course=intro&amp;longms=1000">長押しの閾値を 1000 ms に</a>して、X を 1 秒より短く・長く押し比べる。イベントログの長押し（LONG）と、金色の弾が 1 発だけ出るかを見る。</li>
       </ol>
       <div class="guide-check">
         <p><strong>確かめよう</strong></p>
