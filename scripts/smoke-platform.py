@@ -77,6 +77,7 @@ def check_exports() -> None:
         "TOPIC_META",
         "TOPIC_MATURITY",
         "formatMaturityDetail",
+        "sumRevisionsByMaturity",
         "parsePaintMode",
         "applyParamsToControls",
         "buildShareUrl",

@@ -22,6 +22,9 @@ import {
   resolveCircleAabbReflect,
   readSpeedScale,
   delayFromSpeedScale,
+  countByMaturity,
+  sumRevisionsByMaturity,
+  resolveTopicMeta,
 } from "../js/platform/index.js";
 import { parseMap } from "../js/map-format.js";
 import { TOPICS } from "../js/main.js";
@@ -549,6 +552,38 @@ function mockControl(kind, value, extra = {}) {
   const d = delayFromSpeedScale(200);
   assert.equal(d(1), 200);
   assert.equal(d(0.1), 2000);
+}
+
+// --- ホームの修正状況: 区分ラベルは TOPIC_META の修正回数の合計 ---
+{
+  const sums = sumRevisionsByMaturity(TOPICS);
+  const counts = countByMaturity(TOPICS);
+  const manual = { oneshot: 0, revised: 0, stable: 0 };
+  const manualCount = { oneshot: 0, revised: 0, stable: 0 };
+  for (const topic of TOPICS) {
+    const meta = resolveTopicMeta(topic.id);
+    assert.ok(meta, `TOPIC_META has ${topic.id}`);
+    assert.equal(meta.maturity, topic.maturity, `${topic.id} maturity matches TOPIC_META`);
+    manual[meta.maturity] += meta.revisions;
+    manualCount[meta.maturity] += 1;
+  }
+  assert.deepEqual(sums, manual, "legend sums are TOPIC_META revisions");
+  assert.deepEqual(counts, manualCount, "legend counts are topic counts");
+  assert.ok(sums.revised > 0, "revised stage has a revision total");
+  assert.equal(
+    counts.oneshot + counts.revised + counts.stable,
+    TOPICS.length,
+    "every topic is in one maturity stage",
+  );
+  // コード文字列だけだと回数は 0。凡例は id 付きの TOPICS を渡す。
+  assert.deepEqual(sumRevisionsByMaturity(["oneshot", "revised", "stable"]), {
+    oneshot: 0,
+    revised: 0,
+    stable: 0,
+  });
+  const mainSrc = fs.readFileSync(new URL("../js/main.js", import.meta.url), "utf8");
+  assert.match(mainSrc, /sumRevisionsByMaturity\(TOPICS\)/);
+  assert.match(mainSrc, /summary:\s*true/);
 }
 
 // --- 入門コース: STAGES の全 id が TOPICS に存在し ready (入門コース改善計画 W2+W3) ---

@@ -12,6 +12,7 @@ import {
   TOPIC_META,
   resolveTopicMeta,
   countByMaturity,
+  sumRevisionsByMaturity,
   createMaturityBadge,
 } from "./platform/maturity.js";
 import { CURRICULUM_OUTLINE } from "./curriculum-outline.js";
@@ -1343,6 +1344,7 @@ function renderMaturityLegend() {
   if (!root) return;
 
   const counts = countByMaturity(TOPICS);
+  const revisionSums = sumRevisionsByMaturity(TOPICS);
 
   const title = document.createElement("p");
   title.className = "maturity-legend-title";
@@ -1356,7 +1358,10 @@ function renderMaturityLegend() {
     const li = document.createElement("li");
     li.className = "maturity-legend-item";
 
-    const badge = createMaturityBadge(code, { className: "card-maturity-lg" });
+    const badge = createMaturityBadge(
+      { maturity: code, revisions: revisionSums[code], updated: "" },
+      { className: "card-maturity-lg", summary: true },
+    );
     const meta = document.createElement("div");
     meta.className = "maturity-legend-meta";
 
@@ -1376,7 +1381,7 @@ function renderMaturityLegend() {
   const note = document.createElement("p");
   note.className = "maturity-legend-note";
   note.innerHTML =
-    "各カードには成熟度に加え <strong>修正回数</strong> と <strong>更新日</strong> を表示します（定義: <code>docs/topics/MATURITY.md</code>）。";
+    "上の「修正 合計」は、その区分のトピックの修正回数を足した数です。各カードには、そのトピックの修正回数と更新日を表示します（定義: <code>docs/topics/MATURITY.md</code>）。";
 
   root.replaceChildren(title, list, note);
 }

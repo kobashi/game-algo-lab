@@ -87,6 +87,7 @@ export {
   maturityHint,
   formatMaturityDetail,
   countByMaturity,
+  sumRevisionsByMaturity,
   createMaturityBadge,
   mountPageMaturity,
 } from "./maturity.js";

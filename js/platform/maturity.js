@@ -564,16 +564,34 @@ export function maturityHint(code) {
 }
 
 /**
- * バッジ用の「修正 N回 · 更新 YYYY-MM-DD」
+ * バッジ用の「修正 N回 · 更新 YYYY-MM-DD」。
+ * summary のときは「修正 合計 N回」だけで、更新日は付けない。
  * @param {TopicMaturityMeta | null | undefined} meta
- * @returns {string}
+ * @param {{ summary?: boolean }} [opts]
  */
-export function formatMaturityDetail(meta) {
+export function formatMaturityDetail(meta, opts = {}) {
   if (!meta) return "";
   const parts = [];
-  parts.push(`修正 ${meta.revisions}回`);
-  if (meta.updated) parts.push(`更新 ${meta.updated}`);
+  parts.push(opts.summary ? `修正 合計 ${meta.revisions}回` : `修正 ${meta.revisions}回`);
+  if (!opts.summary && meta.updated) parts.push(`更新 ${meta.updated}`);
   return parts.join(" · ");
+}
+
+/**
+ * 件数・修正回数の集計に使うメタ。
+ * id があるときは TOPIC_META を正にする（TOPICS 側には回数がない）。
+ * @param {unknown} item
+ * @returns {TopicMaturityMeta | null}
+ */
+function metaForSummary(item) {
+  if (item && typeof item === "object" && "id" in item) {
+    const id = /** @type {{ id?: unknown }} */ (item).id;
+    if (typeof id === "string") {
+      const resolved = resolveTopicMeta(id);
+      if (resolved) return resolved;
+    }
+  }
+  return normalizeMaturityMeta(item);
 }
 
 /**
@@ -584,25 +602,31 @@ export function countByMaturity(items) {
   /** @type {Record<Maturity, number>} */
   const counts = { oneshot: 0, revised: 0, stable: 0 };
   for (const item of items) {
-    const meta = normalizeMaturityMeta(
-      typeof item === "object" && item && "maturity" in item
-        ? item
-        : item,
-    );
-    const code =
-      meta?.maturity ??
-      (typeof item === "string" ? item : null);
-    if (code === "oneshot" || code === "revised" || code === "stable") {
-      counts[code] += 1;
-    }
+    const meta = metaForSummary(item);
+    if (meta) counts[meta.maturity] += 1;
   }
   return counts;
 }
 
 /**
+ * 区分ごとの修正回数の合計。ホームの分類ラベル用。
+ * @param {Iterable<unknown>} items
+ * @returns {Record<Maturity, number>}
+ */
+export function sumRevisionsByMaturity(items) {
+  /** @type {Record<Maturity, number>} */
+  const sums = { oneshot: 0, revised: 0, stable: 0 };
+  for (const item of items) {
+    const meta = metaForSummary(item);
+    if (meta) sums[meta.maturity] += meta.revisions;
+  }
+  return sums;
+}
+
+/**
  * バッジ用要素を生成（ラベル + 修正回数 + 更新日）
  * @param {Maturity | string | TopicMaturityMeta | null | undefined} codeOrMeta
- * @param {{ className?: string, compact?: boolean }} [opts]
+ * @param {{ className?: string, compact?: boolean, summary?: boolean }} [opts]
  * @returns {HTMLSpanElement | null}
  */
 export function createMaturityBadge(codeOrMeta, opts = {}) {
@@ -620,7 +644,7 @@ export function createMaturityBadge(codeOrMeta, opts = {}) {
   name.className = "card-maturity-name";
   name.textContent = maturityLabel(meta.maturity);
 
-  const detailText = formatMaturityDetail(meta);
+  const detailText = formatMaturityDetail(meta, { summary: opts.summary });
   const titleParts = [maturityHint(meta.maturity) || maturityLabel(meta.maturity)];
   if (detailText) titleParts.push(detailText);
   span.title = titleParts.join(" — ");
