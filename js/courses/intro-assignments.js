@@ -139,6 +139,7 @@ export const ASSIGNMENTS = {
       "辺で触れるときとの違い",
       "平方根を使わずに比べる方法",
     ],
+    example: "`circle-collision.html?ax=…&ay=…&ar=…&bx=…&by=…&boxx=…&boxy=…`",
   },
 
   "coyote-time": {

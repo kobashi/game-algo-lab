@@ -98,7 +98,7 @@ docs/templates/            # SPEC / スキャフォールド
 | キーが無い | ページの既定値を保つ |
 | 不正値 | **clamp しない**。却下して `#status` に日本語警告。`number`/`range` は min〜max 外に加え、`step` に合わない値も却下（属性が数値のときのみ。`"any"`・未指定は検査しない） |
 | 適用順 | spec のキー順。preset 系 select は個別パラメータより前に並べる |
-| 共有 | `#btn-copy-url`（「この設定のURLをコピー」）。既定値と同じキーは付けない |
+| 共有 | `#btn-copy-url`（「この設定のURLをコピー」）。既定値と同じキーは付けない。例外: `circle-collision` の位置 `ax,ay,bx,by,boxx,boxy` は既定と同じでも残す（配置が課題の答えになる） |
 | checkbox のオフ | 既定がオンでも `?coyote=0` は残す（既定と異なるため） |
 | `course` | トピック固有の spec には含めない。コースから開かれた URL（`?course=intro`）は `buildShareUrl` がそのまま残す。コース外から開いた URL には付けない |
 

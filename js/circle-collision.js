@@ -8,6 +8,7 @@ import {
   loadTextSample,
   mountTopicShellFromDataset,
   applyParamsToControls,
+  captureParamDefaults,
   mountShareLink,
   mountGlossary,
 } from "./platform/index.js";
@@ -281,16 +282,24 @@ canvas?.addEventListener("pointermove", (e) => {
     box.x = drag.ox + dx;
     box.y = drag.oy + dy;
   }
+  commitPositions();
   draw();
 });
 
 canvas?.addEventListener("pointerup", () => {
   drag = null;
-  syncControlsFromState();
+  commitPositions();
+  draw();
 });
 canvas?.addEventListener("pointercancel", () => {
   drag = null;
-  syncControlsFromState();
+  commitPositions();
+  draw();
+});
+canvas?.addEventListener("lostpointercapture", () => {
+  drag = null;
+  commitPositions();
+  draw();
 });
 
 window.addEventListener("keydown", (e) => {
@@ -314,12 +323,36 @@ window.addEventListener("keydown", (e) => {
     box.x += dx;
     box.y += dy;
   }
-  syncControlsFromState();
+  commitPositions();
   draw();
 });
 
 function roundPos(n) {
   return Math.round(Number(n) || 0);
+}
+
+/**
+ * 位置を入力欄の範囲の整数に揃え、URL に載せる値と画面を同じにする。
+ * @param {number} n
+ * @param {HTMLInputElement | null | undefined} el
+ */
+function clampAxis(n, el) {
+  const rounded = roundPos(n);
+  const min = Number(el?.min);
+  const max = Number(el?.max);
+  const lo = Number.isFinite(min) ? min : rounded;
+  const hi = Number.isFinite(max) ? max : rounded;
+  return Math.min(hi, Math.max(lo, rounded));
+}
+
+function commitPositions() {
+  circleA.x = clampAxis(circleA.x, axEl);
+  circleA.y = clampAxis(circleA.y, ayEl);
+  circleB.x = clampAxis(circleB.x, bxEl);
+  circleB.y = clampAxis(circleB.y, byEl);
+  box.x = clampAxis(box.x, boxxEl);
+  box.y = clampAxis(box.y, boxyEl);
+  syncControlsFromState();
 }
 
 function syncControlsFromState() {
@@ -396,11 +429,27 @@ const urlSpec = {
   boxh: { el: boxhEl, kind: "range" },
 };
 syncControlsFromState();
+// 位置は既定と同じでも共有 URL に残す。配置が課題の答えになるため。
+const shareDefaults = captureParamDefaults(urlSpec);
+for (const key of ["ax", "ay", "bx", "by", "boxx", "boxy"]) {
+  delete shareDefaults[key];
+}
 mountShareLink({
   spec: urlSpec,
   button: document.getElementById("btn-copy-url"),
   statusEl: document.getElementById("status"),
+  defaults: shareDefaults,
 });
+document.addEventListener(
+  "click",
+  (e) => {
+    const t = /** @type {Element | null} */ (e.target instanceof Element ? e.target : null);
+    if (!t?.closest("#btn-copy-url, .submission-take")) return;
+    commitPositions();
+    draw();
+  },
+  true,
+);
 const urlResult = applyParamsToControls(urlSpec);
 applyControlsToState();
 draw();

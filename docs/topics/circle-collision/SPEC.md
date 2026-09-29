@@ -6,9 +6,9 @@
 | カテゴリ | physics |
 | UI 型 | explain |
 | 状態 | implemented |
-| 成熟度 | revised（修正6・更新 2026-09-29） |
+| 成熟度 | revised（修正7・更新 2026-09-29） |
 | 作成日 | 2026-07-27 |
-| 最終改訂 | 2026-09-29: 円Bの箱への最近点も表示（黄=円A、青=円B）。関連として AABB 衝突判定へ案内。2026-09-28: 提出課題と提出票を追加（js/platform/submission.js）。2026-09-27: 用語注を追加（js/platform/glossary.js）。2026-09-03 |
+| 最終改訂 | 2026-09-29: 共有 URL に円と箱の位置を常に入れる。ドラッグ中も整数位置へ揃え、開いたときに同じ配置になる。2026-09-29: 円Bの箱への最近点も表示（黄=円A、青=円B）。関連として AABB 衝突判定へ案内。2026-09-28: 提出課題と提出票を追加（js/platform/submission.js）。2026-09-27: 用語注を追加（js/platform/glossary.js）。2026-09-03 |
 | 依存 | collision (AABB) |
 
 ## 学習目標
@@ -30,4 +30,4 @@
 | ぎりぎり | \|d − (rA+rB)\| ≤ 1.5 で色とステータスが変わる |
 | 円の半径・箱の幅高さ | range（半径 8〜160 step 1、箱 16〜280 step 1） |
 | リセット | config の既定配置に戻す |
-| URL | `ax,ay,ar` / `bx,by,br` / `boxx,boxy,boxw,boxh`。位置は hidden number（キャンバス内 step 1） |
+| URL | `ax,ay,ar` / `bx,by,br` / `boxx,boxy,boxw,boxh`。位置は hidden number（step 1、x は -240〜880、y は -240〜600）。位置の 6 キーは既定と同じでも共有 URL に残る。画面の位置はこの整数に揃う |
