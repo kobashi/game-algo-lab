@@ -76,7 +76,7 @@ export const TOPIC_META = {
     updated: "2026-07-27",
   },
   "object-pool": { maturity: "oneshot", revisions: 0, updated: "2026-07-27" },
-  "coyote-time": { maturity: "revised", revisions: 9, updated: "2026-10-13" },
+  "coyote-time": { maturity: "revised", revisions: 10, updated: "2026-10-13" },
   "grid-pseudo-physics": {
     maturity: "oneshot",
     revisions: 0,

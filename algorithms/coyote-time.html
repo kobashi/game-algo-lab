@@ -25,6 +25,7 @@
           <li>空中ではタイマー減少。残っている間はジャンプ可（ON 時）</li>
           <li>OFF だと厳密接地のみ — 崖を少し踏み外すと失敗しやすい</li>
           <li><strong>見方</strong>: 足場の外の黄色い帯 = <span class="term" data-term="grace-period">猶予</span>のあいだに歩いて進める範囲（移動速度 × 猶予）。ジャンプを押した位置に印が付く（緑 = 接地、黄 = 猶予で成功、× = 失敗）。点線は足場を離れた位置</li>
+          <li>足場 1・2・3 はドラッグで動かせる。床はそのまま。コピーした URL には足場の座標が入る。猶予を変えると、その長さも入る。リセットで最初の配置に戻る</li>
           <li>猶予は 120 ms（約 7 <span class="term" data-term="frame">フレーム</span>）と短い。<strong>再生速度</strong>を下げると、帯とタイマーの減り方を目で追える（猶予の ms は変わらない）</li>
         </ul>
       </div>
@@ -56,7 +57,13 @@
         <div class="controls-group-paint gl-params url-share-row">
           <button type="button" id="btn-copy-url" class="btn btn-ghost">この設定のURLをコピー</button>
         </div>
-        <p class="footer-muted"><kbd>←</kbd><kbd>→</kbd> 移動 · <kbd>Space</kbd> ジャンプ</p>
+        <input type="number" id="x1" hidden min="-66" max="616" step="1" value="180" />
+        <input type="number" id="y1" hidden min="48" max="246" step="1" value="190" />
+        <input type="number" id="x2" hidden min="-66" max="616" step="1" value="380" />
+        <input type="number" id="y2" hidden min="48" max="246" step="1" value="140" />
+        <input type="number" id="x3" hidden min="-66" max="616" step="1" value="520" />
+        <input type="number" id="y3" hidden min="48" max="246" step="1" value="200" />
+        <p class="footer-muted"><kbd>←</kbd><kbd>→</kbd> 移動 · <kbd>Space</kbd> ジャンプ · <kbd>R</kbd> で足場 1 に戻る。足場 1・2・3 はドラッグで動かせる。コピーした URL には足場の座標が入る。猶予を変えると、その長さも入る。</p>
       </aside>
     </div>
     <section class="code-section">

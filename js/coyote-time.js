@@ -14,6 +14,7 @@ import {
   mountGlossary,
   formatTenths,
   isFieldKeyTarget,
+  captureParamDefaults,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -37,12 +38,22 @@ const btnPlay = document.getElementById("btn-play");
 const btnReset = document.getElementById("btn-reset");
 const csharpSample = document.getElementById("csharp-sample");
 const setStatus = createStatus(document.getElementById("status"));
+const blockXEls = [1, 2, 3].map((i) =>
+  /** @type {HTMLInputElement | null} */ (document.getElementById(`x${i}`))
+);
+const blockYEls = [1, 2, 3].map((i) =>
+  /** @type {HTMLInputElement | null} */ (document.getElementById(`y${i}`))
+);
+
+/** 床（index 0）は固定。足場 1〜3 だけドラッグで動かす */
+const platforms = C.platforms.map((p) => ({ ...p }));
+const MOVABLE = [1, 2, 3];
+const startDx = C.startX - C.platforms[C.startPlatform].x;
 
 /** @type {Set<string>} */
 const keys = new Set();
-const START = { x: C.startX, y: C.platforms[C.startPlatform].y - C.playerH };
-let px = START.x;
-let py = START.y;
+let px = 0;
+let py = 0;
 let vx = 0;
 let vy = 0;
 let grounded = true;
@@ -61,6 +72,21 @@ const STEP_SEC = 1 / 60;
 let leavePoint = /** @type {{ x: number, y: number } | null} */ (null);
 /** ジャンプを押した位置と結果（接地 / 猶予 / 失敗）。直近 12 回 */
 let jumpMarks = /** @type {{ x: number, y: number, kind: "ground" | "coyote" | "fail" }[]} */ ([]);
+/**
+ * ドラッグ中の足場。立っている足場なら、動かした整数分だけキャラも運ぶ。
+ * @type {{
+ *   index: number,
+ *   ox: number,
+ *   oy: number,
+ *   mx: number,
+ *   my: number,
+ *   carry: boolean,
+ *   playerOx: number,
+ *   playerOy: number,
+ *   pointerId: number,
+ * } | null}
+ */
+let drag = null;
 
 function readCoyoteSec() {
   // 0 は 0 のまま扱う（`Number(v) || 既定` だと猶予 0ms が既定の
@@ -78,7 +104,7 @@ function rectsOverlap(ax, ay, aw, ah, bx, by, bw, bh) {
 
 function resolvePlatforms() {
   grounded = false;
-  for (const p of C.platforms) {
+  for (const p of platforms) {
     if (!rectsOverlap(px, py, C.playerW, C.playerH, p.x, p.y, p.w, p.h)) {
       continue;
     }
@@ -130,6 +156,12 @@ function markJump(kind) {
 }
 
 function step(dt) {
+  if (drag) {
+    jumpEdge = false;
+    draw();
+    renderStats();
+    return;
+  }
   const wasGrounded = grounded;
   // horizontal
   vx = 0;
@@ -174,7 +206,7 @@ function draw() {
   const reach = coyoteOnEl?.checked ? C.moveSpeed * readCoyoteSec() : 0;
   if (reach > 0) {
     ctx.fillStyle = "rgba(242, 204, 143, 0.28)";
-    for (const p of C.platforms) {
+    for (const p of platforms) {
       // プレイヤーは体の半分が出るまで接地しているので、帯は端から半身ぶん外側から始まる（印はプレイヤーの中心）
       if (p.x > 0) ctx.fillRect(p.x - C.playerW / 2 - reach, p.y, reach, p.h);
       if (p.x + p.w < W) ctx.fillRect(p.x + p.w + C.playerW / 2, p.y, reach, p.h);
@@ -182,9 +214,19 @@ function draw() {
   }
 
   ctx.fillStyle = "#3d4f66";
-  for (const p of C.platforms) {
+  for (const p of platforms) {
     ctx.fillRect(p.x, p.y, p.w, p.h);
   }
+  ctx.font = "11px sans-serif";
+  ctx.fillStyle = "#dce2eb";
+  for (const i of MOVABLE) {
+    const p = platforms[i];
+    ctx.strokeStyle = drag?.index === i ? "#e8eef6" : "#8aa0b8";
+    ctx.lineWidth = drag?.index === i ? 2 : 1;
+    ctx.strokeRect(p.x + 0.5, p.y + 0.5, p.w - 1, p.h - 1);
+    ctx.fillText(String(i), p.x + 4, p.y + 11);
+  }
+  ctx.lineWidth = 1;
 
   // 足場を離れた位置（縦の点線）とジャンプを押した位置
   if (leavePoint) {
@@ -259,6 +301,10 @@ function renderStats() {
       <tr><td>ジャンプ成功（接地）</td><td>${jumpGroundCount}</td></tr>
       <tr><td>ジャンプ成功（猶予で救われた）</td><td>${jumpCoyoteCount}</td></tr>
       <tr><td>ジャンプ失敗</td><td>${jumpFailCount}</td></tr>
+      ${MOVABLE.map((i) => {
+        const p = platforms[i];
+        return `<tr><td>足場${i}</td><td>${p.x}, ${p.y}</td></tr>`;
+      }).join("")}
     </table>`;
 }
 
@@ -287,28 +333,129 @@ function stop() {
   if (btnPlay) btnPlay.textContent = "再生";
 }
 
-/** 足場の上に戻る。統計とジャンプの印は残す（何回も崖から落ちて試すため） */
-function backToStart() {
-  px = START.x;
-  py = START.y;
+/**
+ * @param {Array<HTMLInputElement | null>} els
+ * @param {number} index 足場番号（1〜3）
+ */
+function blockInput(els, index) {
+  return els[index - 1] ?? null;
+}
+
+/**
+ * 入力欄の範囲の整数に揃える。URL に載る値と画面を同じにする。
+ * @param {number} n
+ * @param {HTMLInputElement | null} el
+ */
+function clampBlock(n, el) {
+  const rounded = Math.round(Number(n) || 0);
+  const min = Number(el?.min);
+  const max = Number(el?.max);
+  const lo = Number.isFinite(min) ? min : rounded;
+  const hi = Number.isFinite(max) ? max : rounded;
+  return Math.min(hi, Math.max(lo, rounded));
+}
+
+function writeBlockInputs() {
+  for (const i of MOVABLE) {
+    const p = platforms[i];
+    const xEl = blockInput(blockXEls, i);
+    const yEl = blockInput(blockYEls, i);
+    if (xEl) xEl.value = String(Math.round(p.x));
+    if (yEl) yEl.value = String(Math.round(p.y));
+  }
+}
+
+function readBlockInputs() {
+  for (const i of MOVABLE) {
+    const p = platforms[i];
+    const xEl = blockInput(blockXEls, i);
+    const yEl = blockInput(blockYEls, i);
+    if (xEl) p.x = Number(xEl.value);
+    if (yEl) p.y = Number(yEl.value);
+  }
+}
+
+function commitBlocks() {
+  for (const i of MOVABLE) {
+    const p = platforms[i];
+    p.x = clampBlock(p.x, blockInput(blockXEls, i));
+    p.y = clampBlock(p.y, blockInput(blockYEls, i));
+  }
+  writeBlockInputs();
+}
+
+function restoreBlocks() {
+  for (const i of MOVABLE) {
+    platforms[i].x = C.platforms[i].x;
+    platforms[i].y = C.platforms[i].y;
+  }
+  writeBlockInputs();
+}
+
+/** 今の足場 1 の上へ。最初の足場左端からのずれを保つ */
+function placeOnStart() {
+  const p = platforms[C.startPlatform];
+  const room = p.w - C.playerW;
+  const dx = room > 0 ? Math.min(room, Math.max(0, startDx)) : 0;
+  px = p.x + dx;
+  py = p.y - C.playerH;
   vx = 0;
   vy = 0;
   grounded = true;
   coyoteLeft = readCoyoteSec();
+}
+
+/**
+ * @param {PointerEvent | MouseEvent} e
+ */
+function pointerPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const sx = canvas.width / rect.width;
+  const sy = canvas.height / rect.height;
+  return {
+    x: (e.clientX - rect.left) * sx,
+    y: (e.clientY - rect.top) * sy,
+  };
+}
+
+function hitBlock(mx, my) {
+  if (mx >= px && mx < px + C.playerW && my >= py && my < py + C.playerH) return null;
+  for (let i = platforms.length - 1; i >= 1; i--) {
+    const p = platforms[i];
+    if (mx >= p.x && mx < p.x + p.w && my >= p.y && my < p.y + p.h) return i;
+  }
+  return null;
+}
+
+function standingOn(index) {
+  const p = platforms[index];
+  if (Math.abs(py + C.playerH - p.y) > 0.51) return false;
+  return px < p.x + p.w && px + C.playerW > p.x;
+}
+
+function finishDrag() {
+  if (!drag) return;
+  drag = null;
+  commitBlocks();
+  draw();
+  renderStats();
+}
+
+/** 今の足場 1 の上に戻る。配置・統計・ジャンプの印は残す */
+function backToStart() {
+  placeOnStart();
   leavePoint = null;
   draw();
   renderStats();
-  setStatus("足場に戻った（R）— 統計はそのまま");
+  setStatus("足場 1 に戻った（R）。配置と統計はそのまま");
 }
 
 function reset() {
   stop();
-  px = START.x;
-  py = START.y;
-  vx = 0;
-  vy = 0;
-  grounded = true;
-  coyoteLeft = readCoyoteSec();
+  drag = null;
+  canvas.style.cursor = "";
+  restoreBlocks();
+  placeOnStart();
   jumpGroundCount = 0;
   jumpCoyoteCount = 0;
   jumpFailCount = 0;
@@ -318,7 +465,7 @@ function reset() {
   stepAcc = 0;
   draw();
   renderStats();
-  setStatus("リセット — 足場の端から歩いて落ち、落ちながら Space を試す。R で足場に戻る");
+  setStatus("リセット — 足場を最初の配置に戻した。端から歩いて落ち、落ちながら Space を試す。R で足場 1 に戻る");
 }
 
 // 操作キーのあいだはページを動かさない。smooth 指定だと preventDefault のあとでも
@@ -385,6 +532,64 @@ btnPlay?.addEventListener("click", () => {
   rafId = requestAnimationFrame(loop);
 });
 btnReset?.addEventListener("click", reset);
+canvas.addEventListener("pointerdown", (e) => {
+  if (e.button !== 0) return;
+  const pos = pointerPos(e);
+  const index = hitBlock(pos.x, pos.y);
+  if (index == null) return;
+  e.preventDefault();
+  const p = platforms[index];
+  drag = {
+    index,
+    ox: p.x,
+    oy: p.y,
+    mx: pos.x,
+    my: pos.y,
+    carry: standingOn(index),
+    playerOx: px,
+    playerOy: py,
+    pointerId: e.pointerId,
+  };
+  try {
+    canvas.setPointerCapture(e.pointerId);
+  } catch {
+    // 信頼されていないイベントでは capture できない
+  }
+  canvas.focus({ preventScroll: true });
+  canvas.style.cursor = "grabbing";
+  draw();
+});
+canvas.addEventListener("pointermove", (e) => {
+  const pos = pointerPos(e);
+  if (!drag) {
+    canvas.style.cursor = hitBlock(pos.x, pos.y) != null ? "grab" : "";
+    return;
+  }
+  const p = platforms[drag.index];
+  const nx = clampBlock(drag.ox + (pos.x - drag.mx), blockInput(blockXEls, drag.index));
+  const ny = clampBlock(drag.oy + (pos.y - drag.my), blockInput(blockYEls, drag.index));
+  p.x = nx;
+  p.y = ny;
+  if (drag.carry) {
+    px = drag.playerOx + (nx - drag.ox);
+    py = drag.playerOy + (ny - drag.oy);
+  }
+  writeBlockInputs();
+  draw();
+  renderStats();
+});
+canvas.addEventListener("pointerup", (e) => {
+  finishDrag();
+  const pos = pointerPos(e);
+  canvas.style.cursor = hitBlock(pos.x, pos.y) != null ? "grab" : "";
+});
+canvas.addEventListener("pointercancel", () => {
+  finishDrag();
+  canvas.style.cursor = "";
+});
+canvas.addEventListener("lostpointercapture", () => {
+  finishDrag();
+});
 coyoteMsEl?.addEventListener("input", () => readCoyoteSec());
 coyoteOnEl?.addEventListener("change", () => {
   setStatus(coyoteOnEl.checked ? "コヨーテ ON" : "コヨーテ OFF（接地のみ）");
@@ -402,12 +607,40 @@ const urlSpec = {
   coyote: { el: coyoteOnEl, kind: "checkbox" },
   ms: { el: coyoteMsEl, kind: "range" },
   speed: { el: speedEl, kind: "range" },
+  x1: { el: blockXEls[0], kind: "number" },
+  y1: { el: blockYEls[0], kind: "number" },
+  x2: { el: blockXEls[1], kind: "number" },
+  y2: { el: blockYEls[1], kind: "number" },
+  x3: { el: blockXEls[2], kind: "number" },
+  y3: { el: blockYEls[2], kind: "number" },
 };
+writeBlockInputs();
+// 足場の座標は既定と同じでも共有 URL に残す。配置が課題の答えになるため。
+const shareDefaults = captureParamDefaults(urlSpec);
+for (const key of ["x1", "y1", "x2", "y2", "x3", "y3"]) {
+  delete shareDefaults[key];
+}
 mountShareLink({
   spec: urlSpec,
   button: document.getElementById("btn-copy-url"),
   statusEl: document.getElementById("status"),
+  defaults: shareDefaults,
 });
+document.addEventListener(
+  "click",
+  (e) => {
+    const t = /** @type {Element | null} */ (e.target instanceof Element ? e.target : null);
+    if (!t?.closest("#btn-copy-url, .submission-take")) return;
+    commitBlocks();
+    draw();
+    renderStats();
+  },
+  true,
+);
 const urlResult = applyParamsToControls(urlSpec);
-reset();
+readBlockInputs();
+placeOnStart();
+draw();
+renderStats();
+setStatus("足場 1・2・3 はドラッグで動かせます。端から歩いて落ち、落ちながら Space を試す。R で足場 1 に戻る");
 if (urlResult.warning) setStatus(urlResult.warning);
