@@ -321,18 +321,57 @@ function reset() {
   setStatus("リセット — 足場の端から歩いて落ち、落ちながら Space を試す。R で足場に戻る");
 }
 
-window.addEventListener("keydown", (e) => {
-  if (isFieldKeyTarget(e)) return;
-  if (["ArrowLeft", "ArrowRight", "Space", "KeyA", "KeyD"].includes(e.code)) {
-    e.preventDefault();
+// 操作キーのあいだはページを動かさない。smooth 指定だと preventDefault のあとでも
+// 矢印キーでスクロールするブラウザがあるので、位置も固定する。
+const scrollBlockKeys = new Set();
+let lockedScrollY = null;
+
+function blocksPageScroll(event) {
+  if (isFieldKeyTarget(event) || event.metaKey || event.ctrlKey || event.altKey) return false;
+  if (event.code === "ArrowUp" || event.code === "ArrowDown") {
+    return document.activeElement === canvas;
   }
+  return ["ArrowLeft", "ArrowRight", "Space", "KeyA", "KeyD"].includes(event.code);
+}
+
+function lockPageScroll(code) {
+  scrollBlockKeys.add(code);
+  if (lockedScrollY == null) lockedScrollY = window.scrollY;
+  document.documentElement.style.scrollBehavior = "auto";
+  if (window.scrollY !== lockedScrollY) window.scrollTo(0, lockedScrollY);
+}
+
+function unlockPageScroll(code) {
+  scrollBlockKeys.delete(code);
+  if (scrollBlockKeys.size > 0) return;
+  lockedScrollY = null;
+  document.documentElement.style.scrollBehavior = "";
+}
+
+document.addEventListener("keydown", (e) => {
+  if (blocksPageScroll(e)) {
+    e.preventDefault();
+    lockPageScroll(e.code);
+  }
+  if (isFieldKeyTarget(e)) return;
   if (!keys.has(e.code) && e.code === "Space") jumpEdge = true;
   if (!keys.has(e.code) && e.code === "KeyR") backToStart();
   keys.add(e.code);
-});
-window.addEventListener("keyup", (e) => {
+}, true);
+document.addEventListener("keyup", (e) => {
   keys.delete(e.code);
+  unlockPageScroll(e.code);
+}, true);
+window.addEventListener("blur", () => {
+  keys.clear();
+  scrollBlockKeys.clear();
+  lockedScrollY = null;
+  document.documentElement.style.scrollBehavior = "";
 });
+window.addEventListener("scroll", () => {
+  if (lockedScrollY == null || window.scrollY === lockedScrollY) return;
+  window.scrollTo(0, lockedScrollY);
+}, { passive: true });
 
 btnPlay?.addEventListener("click", () => {
   if (running) {
