@@ -17,6 +17,7 @@ import {
   readSpeedScale,
   bindSpeedScaleControl,
   mountGlossary,
+  formatTenths,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -117,7 +118,7 @@ function readLongMs() {
 }
 
 function syncLabels() {
-  if (longMsVal) longMsVal.textContent = String(readLongMs());
+  if (longMsVal) longMsVal.textContent = formatTenths(readLongMs());
   if (speedVal) speedVal.textContent = readSpeedScale(speedEl).toFixed(1);
 }
 

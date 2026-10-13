@@ -12,6 +12,8 @@ import {
   bindSpeedScaleControl,
   drawTrailDots,
   mountGlossary,
+  formatTenths,
+  isFieldKeyTarget,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -105,7 +107,7 @@ function readDead() {
 
 function sync() {
   if (followVal) followVal.textContent = readFollow().toFixed(2);
-  if (deadVal) deadVal.textContent = String(Math.floor(readDead()));
+  if (deadVal) deadVal.textContent = formatTenths(readDead());
   if (speedVal) speedVal.textContent = readSpeedScale(speedEl).toFixed(1);
 }
 
@@ -188,7 +190,7 @@ function draw() {
         <tr><td>Player world</td><td>${playerX.toFixed(0)}, ${playerY.toFixed(0)}</td></tr>
         <tr><td>Player screen</td><td>${p.sx.toFixed(0)}, ${p.sy.toFixed(0)}</td></tr>
         <tr><td>Camera X</td><td>${camX.toFixed(0)}</td></tr>
-        <tr><td>Dead zone</td><td>±${dead.toFixed(0)} px</td></tr>
+        <tr><td>Dead zone</td><td>±${formatTenths(dead)} px</td></tr>
         <tr><td>遅れ (P−cam中心)</td><td>${(p.sx - W / 2).toFixed(0)} px</td></tr>
       </table>`;
   }
@@ -258,6 +260,7 @@ function reset() {
 }
 
 window.addEventListener("keydown", (e) => {
+  if (isFieldKeyTarget(e)) return;
   if (["ArrowLeft", "ArrowRight", "KeyA", "KeyD"].includes(e.code)) {
     e.preventDefault();
     keys.add(e.code);

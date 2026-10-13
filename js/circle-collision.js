@@ -11,6 +11,8 @@ import {
   captureParamDefaults,
   mountShareLink,
   mountGlossary,
+  formatTenths,
+  isFieldKeyTarget,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -303,6 +305,7 @@ canvas?.addEventListener("lostpointercapture", () => {
 });
 
 window.addEventListener("keydown", (e) => {
+  if (isFieldKeyTarget(e)) return;
   if (!selected) return;
   const step = 1;
   let dx = 0;
@@ -356,14 +359,14 @@ function commitPositions() {
 }
 
 function syncControlsFromState() {
-  if (arEl) arEl.value = String(circleA.r);
-  if (brEl) brEl.value = String(circleB.r);
-  if (boxwEl) boxwEl.value = String(box.w);
-  if (boxhEl) boxhEl.value = String(box.h);
-  if (arVal) arVal.textContent = String(circleA.r);
-  if (brVal) brVal.textContent = String(circleB.r);
-  if (boxwVal) boxwVal.textContent = String(box.w);
-  if (boxhVal) boxhVal.textContent = String(box.h);
+  if (arEl) arEl.value = formatTenths(circleA.r);
+  if (brEl) brEl.value = formatTenths(circleB.r);
+  if (boxwEl) boxwEl.value = formatTenths(box.w);
+  if (boxhEl) boxhEl.value = formatTenths(box.h);
+  if (arVal) arVal.textContent = formatTenths(circleA.r);
+  if (brVal) brVal.textContent = formatTenths(circleB.r);
+  if (boxwVal) boxwVal.textContent = formatTenths(box.w);
+  if (boxhVal) boxhVal.textContent = formatTenths(box.h);
   if (axEl) axEl.value = String(roundPos(circleA.x));
   if (ayEl) ayEl.value = String(roundPos(circleA.y));
   if (bxEl) bxEl.value = String(roundPos(circleB.x));

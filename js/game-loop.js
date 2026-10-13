@@ -15,6 +15,7 @@ import {
   bindSpeedScaleControl,
   mountGlossary,
   termHtml,
+  formatTenths,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -190,9 +191,9 @@ function drawLoadOn() {
 
 function syncLabels() {
   if (fixedDtVal) fixedDtVal.textContent = readFixedDtMs().toFixed(1);
-  if (lagVal) lagVal.textContent = String(readLagMs());
-  if (maxStepsVal) maxStepsVal.textContent = String(readMaxSteps());
-  if (ballsVal) ballsVal.textContent = String(readBalls());
+  if (lagVal) lagVal.textContent = formatTenths(readLagMs());
+  if (maxStepsVal) maxStepsVal.textContent = formatTenths(Number(maxStepsEl.value));
+  if (ballsVal) ballsVal.textContent = formatTenths(Number(ballsEl?.value));
 }
 
 function setPhase(phase) {
@@ -833,7 +834,7 @@ for (const el of [fixedDtEl, lagEl, maxStepsEl, modeEl, lagModeEl]) {
   el?.addEventListener("change", () => {
     syncLabels();
     setStatus(
-      `設定: モード ${modeLabel()}  FIXED_DT ${readFixedDtMs().toFixed(1)} ms  人工遅延 ${readLagMs()} ms${spikeOn() ? `（${C.spikeEvery} フレームに 1 回）` : ""}  MAX_STEPS ${readMaxSteps()}`
+      `設定: モード ${modeLabel()}  FIXED_DT ${readFixedDtMs().toFixed(1)} ms  人工遅延 ${formatTenths(readLagMs())} ms${spikeOn() ? `（${C.spikeEvery} フレームに 1 回）` : ""}  MAX_STEPS ${readMaxSteps()}`
     );
   });
 }

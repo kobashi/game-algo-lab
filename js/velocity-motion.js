@@ -15,6 +15,7 @@ import {
   circleAabbTunneled,
   centerObstacleBox,
   mountGlossary,
+  formatTenths,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -93,14 +94,14 @@ function currentBox() {
 }
 
 function sync() {
-  if (vxVal) vxVal.textContent = String(readVx());
-  if (vyVal) vyVal.textContent = String(readVy());
+  if (vxVal) vxVal.textContent = formatTenths(readVx());
+  if (vyVal) vyVal.textContent = formatTenths(readVy());
   if (dtVal) dtVal.textContent = (readDtSec() * 1000).toFixed(1);
   if (speedVal) speedVal.textContent = readSpeedScale(speedEl).toFixed(1);
-  if (thickVal) thickVal.textContent = String(Math.round(readThick()));
+  if (thickVal) thickVal.textContent = formatTenths(readThick());
   const step = Math.hypot(readVx() * readDtSec(), readVy() * readDtSec());
   if (readoutEl) {
-    readoutEl.textContent = `1フレームの移動 |v|·dt = ${step.toFixed(1)} px  /  障害物の厚み = ${readThick()} px（ボールの直径 ${2 * R} px）`;
+    readoutEl.textContent = `1フレームの移動 |v|·dt = ${step.toFixed(1)} px  /  障害物の厚み = ${formatTenths(readThick())} px（ボールの直径 ${2 * R} px）`;
   }
 }
 

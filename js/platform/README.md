@@ -14,6 +14,7 @@
 | `grid-paint.js` | 経路探索マップの塗り（`bindMapPaint` 等） |
 | `pathfinding-grid.js` | グリッド幾何・下地描画（`drawPathfindingGrid`） |
 | `topic-shell.js` | 共通ヘッダー／フッター（`mountTopicShellFromDataset`）。`NAV_GROUPS.intro` は入門14本をその順だけ。フッターの前段・次も同じ順で、コース外のトピックへはリンクしない。`NAV_GROUPS.course` は `courses/` 入口用。同じ呼び出しで演習節とコース内ナビも描画する |
+| `range-fine.js` | 入門14本のスライダー。目盛りが 0.1 より粗いものは step を 0.1 にし、矢印キーで 0.1 ずつ動く。もともと細かい目盛りはそのまま。説明を 1 行出す（`mountIntroRangeFineTune`） |
 | `maturity.js` | 成熟度・修正回数・更新日（`TOPIC_META`）・バッジ |
 | `url-params.js` | URL クエリで初期コントロールを指定 / 共有 URL コピー（`applyParamsToControls` / `mountShareLink`）。`course` パラメータは共有 URL にそのまま残す |
 | `observe.js` | 軌跡点・再生速度スケール（0.1〜1.0×）・円と矩形の重なり／すり抜け／反射 |

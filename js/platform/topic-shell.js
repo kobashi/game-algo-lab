@@ -18,6 +18,7 @@ import { ASSIGNMENTS } from "../courses/intro-assignments.js";
 import { GUIDES } from "../courses/intro-guides.js";
 import { CS_GUIDES } from "../courses/intro-csharp.js";
 import { mountSubmission } from "./submission.js";
+import { mountIntroRangeFineTune } from "./range-fine.js";
 
 /**
  * @typedef {{ id: string, label: string, href: string }} NavLink
@@ -787,6 +788,9 @@ export function mountTopicShellFromDataset() {
 
   // `?course=intro` で開かれたときだけ、コース内ナビ（n/14・前後）を表示
   mountCourseNav(TOPICS, active);
+
+  // 入門 14 本のスライダーを、矢印キーで 0.1 ずつ動かせるようにする（URL 適用より前）
+  mountIntroRangeFineTune(active);
 }
 
 /**

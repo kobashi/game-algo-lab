@@ -65,6 +65,15 @@ export {
   mountTopicShellFromDataset,
 } from "./topic-shell.js";
 export {
+  RANGE_FINE_STEP,
+  parseRangeStep,
+  fineStepAttribute,
+  rangeFineHint,
+  formatTenths,
+  isFieldKeyTarget,
+  mountIntroRangeFineTune,
+} from "./range-fine.js";
+export {
   COURSE_ID,
   readCourseParam,
   computeCourseNav,

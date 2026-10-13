@@ -12,6 +12,8 @@ import {
   readSpeedScale,
   bindSpeedScaleControl,
   mountGlossary,
+  formatTenths,
+  isFieldKeyTarget,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -66,7 +68,7 @@ function readCoyoteSec() {
   const raw = Number(coyoteMsEl?.value);
   const n = Number.isFinite(raw) ? raw : C.defaultCoyoteMs;
   const ms = Math.min(C.maxCoyoteMs, Math.max(C.minCoyoteMs, n));
-  if (coyoteMsVal) coyoteMsVal.textContent = String(ms);
+  if (coyoteMsVal) coyoteMsVal.textContent = formatTenths(ms);
   return ms / 1000;
 }
 
@@ -320,6 +322,7 @@ function reset() {
 }
 
 window.addEventListener("keydown", (e) => {
+  if (isFieldKeyTarget(e)) return;
   if (["ArrowLeft", "ArrowRight", "Space", "KeyA", "KeyD"].includes(e.code)) {
     e.preventDefault();
   }

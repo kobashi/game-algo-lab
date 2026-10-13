@@ -40,6 +40,7 @@ def check_platform_files() -> None:
         "js/platform/grid-paint.js",
         "js/platform/pathfinding-grid.js",
         "js/platform/topic-shell.js",
+        "js/platform/range-fine.js",
         "js/platform/maturity.js",
         "js/platform/url-params.js",
         "js/platform/observe.js",
@@ -87,12 +88,35 @@ def check_exports() -> None:
         "mountCourseNav",
         "computeCourseNav",
         "mountExercises",
+        "formatTenths",
+        "mountIntroRangeFineTune",
+        "isFieldKeyTarget",
     ]
     for name in needed:
         if name in text:
             ok(f"export mentions {name}")
         else:
             fail(f"export missing {name}")
+
+
+def check_range_fine() -> None:
+    print("入門スライダーの 0.1 微調整")
+    shell = (ROOT / "js/platform/topic-shell.js").read_text(encoding="utf-8")
+    if "mountIntroRangeFineTune" not in shell:
+        fail("topic-shell does not mount range fine tune")
+    else:
+        ok("topic-shell mounts range fine tune")
+    for name in ("coyote-time.js", "gfx-camera.js", "circle-collision.js"):
+        t = (ROOT / "js" / name).read_text(encoding="utf-8")
+        if "isFieldKeyTarget" not in t:
+            fail(f"{name} still steals arrows from fields")
+        else:
+            ok(f"{name} ignores field arrow keys")
+    fine = (ROOT / "js/platform/range-fine.js").read_text(encoding="utf-8")
+    if "previousElementSibling" not in fine:
+        fail("hint is dropped when the slider is outside a param group")
+    else:
+        ok("hint is placed beside a loose slider")
 
 
 def check_algorithms() -> None:
@@ -444,6 +468,8 @@ def main() -> int:
     check_platform_files()
     print()
     check_exports()
+    print()
+    check_range_fine()
     print()
     check_algorithms()
     print()

@@ -26,6 +26,9 @@ import {
   sumRevisionsByMaturity,
   resolveTopicMeta,
   formatMaturityDetail,
+  fineStepAttribute,
+  rangeFineHint,
+  formatTenths,
 } from "../js/platform/index.js";
 import { parseMap } from "../js/map-format.js";
 import { TOPICS } from "../js/main.js";
@@ -1015,5 +1018,19 @@ function mockControl(kind, value, extra = {}) {
     }
   });
 }
+
+assert.equal(fineStepAttribute(5), "0.1");
+assert.equal(fineStepAttribute(1), "0.1");
+assert.equal(fineStepAttribute(0.1), null);
+assert.equal(fineStepAttribute(0.05), null);
+assert.equal(fineStepAttribute(0.01), null);
+assert.equal(fineStepAttribute(null), null);
+assert.equal(formatTenths(24), "24");
+assert.equal(formatTenths(24.1), "24.1");
+assert.equal(formatTenths(0), "0");
+assert.equal(formatTenths(-39.9), "-39.9");
+assert.ok(rangeFineHint(false).includes("0.1"));
+assert.equal(rangeFineHint(false).includes("細かい"), false);
+assert.ok(rangeFineHint(true).includes("0.1 より細かい目盛り"));
 
 console.log("smoke-platform.mjs: all assertions passed");

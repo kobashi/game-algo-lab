@@ -16,6 +16,7 @@ import {
   circleAabbTunneled,
   centerObstacleBox,
   mountGlossary,
+  formatTenths,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -114,11 +115,11 @@ function formatPeaks(list) {
 }
 
 function sync() {
-  if (gVal) gVal.textContent = String(readG());
-  if (vxVal) vxVal.textContent = String(readVx());
+  if (gVal) gVal.textContent = formatTenths(readG());
+  if (vxVal) vxVal.textContent = formatTenths(readVx());
   if (restVal) restVal.textContent = readRest().toFixed(2);
   if (speedVal) speedVal.textContent = readSpeedScale(speedEl).toFixed(1);
-  if (thickVal) thickVal.textContent = String(Math.round(readThick()));
+  if (thickVal) thickVal.textContent = formatTenths(readThick());
   if (readoutEl) {
     readoutEl.textContent = `跳ね返り ${bounceCount} 回  /  最高到達点(落下開始=100) ${formatPeaks(peaks)}`;
   }

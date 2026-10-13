@@ -9,6 +9,7 @@ import {
   applyParamsToControls,
   mountShareLink,
   mountGlossary,
+  formatTenths,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -82,7 +83,7 @@ function slidersToOverride() {
 }
 
 function syncSfxLabels() {
-  if (freqVal) freqVal.textContent = String(Math.round(Number(freqEl?.value) || 0));
+  if (freqVal) freqVal.textContent = formatTenths(Number(freqEl?.value) || 0);
   if (durVal) durVal.textContent = Number(durEl?.value || 0).toFixed(2);
   if (gainVal) gainVal.textContent = Number(gainEl?.value || 0).toFixed(2);
 }

@@ -9,6 +9,7 @@ import {
   applyParamsToControls,
   mountShareLink,
   mountGlossary,
+  formatTenths,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -102,7 +103,7 @@ function applyCanvasSize() {
   const h = Math.round((w * 360) / 640);
   canvas.width = w;
   canvas.height = h;
-  if (viewwVal) viewwVal.textContent = String(Math.round(w));
+  if (viewwVal) viewwVal.textContent = formatTenths(w);
   draw();
 }
 

@@ -18,6 +18,7 @@ import {
   applyParamsToControls,
   mountShareLink,
   mountGlossary,
+  formatTenths,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -421,7 +422,7 @@ function applyXsPreset(presetId, opts = {}) {
 }
 
 function syncLabels() {
-  if (countVal) countVal.textContent = String(readN());
+  if (countVal) countVal.textContent = formatTenths(Number(countEl?.value));
 }
 
 /**

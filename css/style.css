@@ -4807,6 +4807,24 @@ details.ds-block:not([open]) > .ds-title::before {
   flex-wrap: wrap;
 }
 
+.range-fine-hint {
+  flex: 1 0 100%;
+  width: 100%;
+  max-width: 100%;
+  margin: 0.1rem 0 0.35rem;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+  white-space: normal;
+}
+
+.range-fine-val {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.875rem;
+  color: var(--text);
+  white-space: nowrap;
+}
+
 .gl-frame-log {
   overflow-x: auto;
   margin-top: 0.5rem;
