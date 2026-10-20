@@ -68,12 +68,23 @@ let rafId = null;
 let lastTs = 0;
 let wallHits = 0;
 let tunnelFlash = 0;
+/** スライダーで決めた速度。壁や障害物の反転では更新しない。 */
+let baseVx = C.defaultVx;
+let baseVy = C.defaultVy;
 
 function readVx() {
   return Number(vxEl?.value) || 0;
 }
 function readVy() {
   return Number(vyEl?.value) || 0;
+}
+function rememberVelocity() {
+  baseVx = readVx();
+  baseVy = readVy();
+}
+function restoreVelocity() {
+  if (vxEl) vxEl.value = String(baseVx);
+  if (vyEl) vyEl.value = String(baseVy);
 }
 function readDtSec() {
   return (Number(dtEl?.value) || C.defaultDtMs) / 1000;
@@ -124,6 +135,7 @@ function resetBody(clearGhost) {
   trail = [];
   wallHits = 0;
   tunnelFlash = 0;
+  restoreVelocity();
 }
 
 function step(dt) {
@@ -293,11 +305,12 @@ btnReset?.addEventListener("click", () => {
   resetBody(true);
   draw();
   sync();
-  setStatus("リセット");
+  setStatus("リセット — 速度を、跳ね返る前の値に戻した");
 });
 bindSpeedScaleControl(speedEl, speedVal);
 for (const el of [vxEl, vyEl, dtEl, speedEl, thickEl]) {
   el?.addEventListener("input", () => {
+    if (el === vxEl || el === vyEl) rememberVelocity();
     sync();
     draw();
   });
@@ -317,6 +330,7 @@ loadTextSample(
 if (vxEl) vxEl.value = String(C.defaultVx);
 if (vyEl) vyEl.value = String(C.defaultVy);
 if (dtEl) dtEl.value = String(C.defaultDtMs);
+rememberVelocity();
 sync();
 draw();
 
@@ -338,6 +352,7 @@ mountShareLink({
   statusEl: document.getElementById("status"),
 });
 const urlResult = applyParamsToControls(urlSpec);
+rememberVelocity();
 sync();
 draw();
 if (urlResult.warning) {

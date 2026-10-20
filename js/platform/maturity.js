@@ -67,7 +67,7 @@ export const TOPIC_META = {
   },
   "velocity-motion": {
     maturity: "revised",
-    revisions: 9,
+    revisions: 10,
     updated: "2026-10-20",
   },
   "event-system": {
