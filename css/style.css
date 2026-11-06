@@ -5845,6 +5845,10 @@ details.ds-block:not([open]) > .ds-title::before {
   white-space: normal;
 }
 
+.submission-hint .exercise-line + .exercise-line {
+  margin-top: 0.45rem;
+}
+
 /* ===== 入門コースの詳説ページ（courses/guide-*.html） ===== */
 .guide-main {
   max-width: 820px;

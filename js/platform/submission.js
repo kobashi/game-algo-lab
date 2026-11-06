@@ -123,6 +123,14 @@ function sectionHtml(a, topicId) {
       <p class="section-lead section-lead-compact exercise-title">課題 ${a.number}. ${escapeHtml(a.title)}</p>
       <div class="exercise-card">
         <p class="exercise-line"><strong>問い:</strong> ${inline(a.question)}</p>
+        ${
+          a.hint?.length
+            ? `<div class="guide-note submission-hint">
+          <p class="exercise-line"><strong>ヒント（ゲームをあまり遊ばない人へ）</strong></p>
+          ${a.hint.map((t) => `<p class="exercise-line">${inline(t)}</p>`).join("\n          ")}
+        </div>`
+            : ""
+        }
         ${a.condition ? `<p class="exercise-line"><strong>条件:</strong> ${inline(a.condition)}</p>` : ""}
         ${
           a.personal

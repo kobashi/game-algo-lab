@@ -319,8 +319,8 @@ export const TOPIC_META = {
   },
   "gfx-camera": {
     maturity: "revised",
-    revisions: 8,
-    updated: "2026-10-13",
+    revisions: 9,
+    updated: "2026-11-06",
   },
   "net-prediction": {
     maturity: "oneshot",
