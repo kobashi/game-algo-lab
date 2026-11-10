@@ -233,7 +233,7 @@ function draw() {
         <tr><td>Pivot</td><td>${px.toFixed(2)}, ${py.toFixed(2)}</td></tr>
         <tr><td>Offset</td><td>${offX.toFixed(0)}, ${offY.toFixed(0)}</td></tr>
         <tr><td>Widget TL</td><td>${L.x.toFixed(0)}, ${L.y.toFixed(0)}</td></tr>
-        <tr><td>右端から左上</td><td>${(W - L.x).toFixed(0)} px</td></tr>
+        <tr><td>画面右からボタン左上</td><td>${(W - L.x).toFixed(0)} px</td></tr>
       </table>`;
   }
   setStatus(`anchor=(${ax},${ay}) pivot=(${px.toFixed(2)},${py.toFixed(2)})`);
