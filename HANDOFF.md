@@ -1,9 +1,11 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-11-06（ready **110** · Release **v0.20.0**）  
+最終更新: 2026-11-10（ready **110** · Release **v0.20.0**）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.20.0
+
+**2026-11-10 カメラにアクションと探索の場面（Grok）**: 場面で、計測の平面・アクションの横スクロール・探索の美術館を切り替える。アクションはトゲとノコ、探索は絵。カメラの計算と歩く速さは変えない。計測の平面はこれまでと同じ。修正 9→10。リリースは切らない。
 
 **2026-11-06 カメラの課題に、ゲームをあまり遊ばない人向けのヒント（Grok）**: 課題 7 とくわしい解説に、アクションと探索のカメラのヒントを出した。アクションは追従を大きくデッドゾーンを狭く、探索はその逆。数値の答えは書いていない。修正 8→9。リリースは切らない。
 

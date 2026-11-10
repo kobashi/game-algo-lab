@@ -26,6 +26,7 @@
           <li><span class="term" data-term="dead-zone">デッドゾーン</span>内ではカメラが動かない</li>
           <li><span class="term" data-term="follow-factor">follow 係数</span>で、カメラがすぐ追い付くか、遅れて付いてくるかを調整</li>
           <li>follow 係数は「1 歩（1/60 秒）で差の何割を詰めるか」。1 歩の長さは固定なので、再生速度を下げても遅れ（px）は同じ</li>
+          <li>「場面」で、計測の平面・アクションのコース・探索の美術館を切り替える。あとの 2 つは横に長く、カメラが横へスクロールする。追従の計算はどの場面でも同じ</li>
         </ul>
       </div>
     </details>
@@ -40,7 +41,14 @@
           <button type="button" id="btn-play" class="btn btn-primary">再生</button>
           <button type="button" id="btn-reset" class="btn btn-ghost">リセット</button>
         </div>
-        <p class="footer-muted">← → / A D で移動</p>
+        <p class="footer-muted">← → / A D で移動。アクションではスペースでジャンプ</p>
+        <label class="controls-label" for="scene">場面</label>
+        <select id="scene" class="bandit-select">
+          <option value="measure" selected>計測（平面）</option>
+          <option value="action">アクション</option>
+          <option value="explore">探索</option>
+        </select>
+        <p id="scene-note" class="scene-note"></p>
         <label class="controls-label" for="follow"><span class="term" data-term="follow-factor">追従係数</span> <span id="follow-val">0.08</span></label>
         <input type="range" id="follow" class="ttt-range" min="0.02" max="0.5" value="0.08" step="0.01" />
         <label class="controls-label" for="dead"><span class="term" data-term="dead-zone">デッドゾーン</span> px <span id="dead-val">40</span></label>

@@ -4772,6 +4772,18 @@ details.ds-block:not([open]) > .ds-title::before {
   background: var(--bg-card);
 }
 
+.gl-side select#scene {
+  width: 100%;
+  margin-top: 0.15rem;
+}
+
+.scene-note {
+  margin: 0.35rem 0 0.65rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
 .gl-block-title {
   margin: 0 0 0.5rem;
   font-size: 1rem;

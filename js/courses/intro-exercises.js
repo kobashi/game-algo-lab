@@ -127,7 +127,7 @@ export const EXERCISES = {
     title: "カメラの追従",
     goal: "ワールド座標とカメラ座標が独立していること、デッドゾーンと追従係数の役割を説明できる。",
     guess: "追従係数を大きくすると、画面の動きはどう変わるか。",
-    stepsIntro: "右矢印で歩きながら、次の 3 つを見比べる。",
+    stepsIntro: "場面は「計測（平面）」のままにする。右矢印で歩きながら、次の 3 つを見比べる。",
     steps: [
       "`gfx-camera.html?follow=0.5&dead=5&trail=1`",
       "`gfx-camera.html?follow=0.02&dead=5&trail=1`",
