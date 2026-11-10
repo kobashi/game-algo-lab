@@ -42,6 +42,8 @@ const statsEl = document.getElementById("ui-stats");
 const frameNote = document.getElementById("ui-frame-note");
 const csharpSample = document.getElementById("csharp-sample");
 const setStatus = createStatus(document.getElementById("status"));
+let lastStatus = "";
+let pinnedStatus = "";
 const offXEl = /** @type {HTMLInputElement | null} */ (document.getElementById("off-x"));
 const offYEl = /** @type {HTMLInputElement | null} */ (document.getElementById("off-y"));
 
@@ -228,6 +230,7 @@ function otherRects(W, H, exceptId) {
 /**
  * 画面の外に出て残っている部分が小さいときのつまみ。
  * ほかの表示に重なるときは、空いている角へずらす。
+ * 下は仮のステージの地面なので、先に空の上の角を使う。
  * @returns {{ x: number, y: number, w: number, h: number } | null}
  */
 function buttonGrab(L, ww, wh, W, H, obstacles) {
@@ -242,11 +245,11 @@ function buttonGrab(L, ww, wh, W, H, obstacles) {
   const blocks = obstacles || [];
   if (!blocks.some((o) => overlaps(base, o))) return base;
   const spots = [
-    { x: 8, y: H - GRAB_H - 8 },
-    { x: W - GRAB_W - 8, y: H - GRAB_H - 8 },
-    { x: (W - GRAB_W) / 2, y: H - GRAB_H - 8 },
     { x: W - GRAB_W - 8, y: 8 },
     { x: 8, y: 8 },
+    { x: (W - GRAB_W) / 2, y: 8 },
+    { x: 8, y: H - GRAB_H - 8 },
+    { x: W - GRAB_W - 8, y: H - GRAB_H - 8 },
   ];
   for (const s of spots) {
     const rect = { x: s.x, y: s.y, w: GRAB_W, h: GRAB_H };
@@ -356,6 +359,169 @@ function drawGrab(grab) {
   ctx.restore();
 }
 
+/** 0→1→0 を返す。行きと帰りで速さが一定。 */
+function pingpong(t, period) {
+  const u = ((t % period) + period) % period / period;
+  return u < 0.5 ? u * 2 : 2 - u * 2;
+}
+
+const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
+const stageT0 = performance.now();
+
+function stageTime() {
+  return reduceMotion ? 1.6 : (performance.now() - stageT0) / 1000;
+}
+
+/**
+ * 仮のゲーム。UI をどこに置くかの参考で、操作はできない。
+ * 位置は仮想画面の割合なので、幅が変わってもプレイの関係は残る。
+ */
+function drawStage(W, H, t) {
+  if (!ctx) return;
+  const s = H / 360;
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, "#101820");
+  sky.addColorStop(0.72, "#1a3344");
+  sky.addColorStop(1, "#142830");
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.fillStyle = "rgba(186, 206, 220, 0.16)";
+  const clouds = [
+    { x: pingpong(t, 18), y: 0.1, w: 0.16 },
+    { x: pingpong(t + 7, 24), y: 0.18, w: 0.1 },
+  ];
+  for (const c of clouds) {
+    const cx = c.x * W;
+    const cy = c.y * H;
+    const cw = c.w * W;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, cw * 0.5, 10 * s, 0, 0, Math.PI * 2);
+    ctx.ellipse(cx + cw * 0.28, cy + 3 * s, cw * 0.32, 8 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.fillStyle = "#163044";
+  ctx.beginPath();
+  ctx.moveTo(0, H * 0.74);
+  ctx.quadraticCurveTo(W * 0.2, H * 0.5, W * 0.46, H * 0.7);
+  ctx.quadraticCurveTo(W * 0.72, H * 0.88, W, H * 0.6);
+  ctx.lineTo(W, H);
+  ctx.lineTo(0, H);
+  ctx.fill();
+  ctx.fillStyle = "#1c4250";
+  ctx.beginPath();
+  ctx.moveTo(0, H * 0.82);
+  ctx.quadraticCurveTo(W * 0.28, H * 0.66, W * 0.58, H * 0.8);
+  ctx.quadraticCurveTo(W * 0.8, H * 0.9, W, H * 0.74);
+  ctx.lineTo(W, H);
+  ctx.lineTo(0, H);
+  ctx.fill();
+
+  const groundY = H * 0.78;
+  ctx.fillStyle = "#1b382c";
+  ctx.fillRect(0, groundY, W, H - groundY);
+  ctx.fillStyle = "#3f6e52";
+  ctx.fillRect(0, groundY, W, Math.max(3, H * 0.014));
+
+  const plats = [
+    { x: 0.08, y: 0.6, w: 0.24 },
+    { x: 0.56, y: 0.48, w: 0.26 },
+  ];
+  const ph = Math.max(8, H * 0.032);
+  for (const p of plats) {
+    const x = p.x * W;
+    const y = p.y * H;
+    ctx.fillStyle = "#355844";
+    ctx.fillRect(x, y, p.w * W, ph);
+    ctx.fillStyle = "#8fd0a4";
+    ctx.fillRect(x, y, p.w * W, Math.max(2, ph * 0.22));
+  }
+
+  const coinX = (0.08 + 0.12) * W;
+  const coinY = 0.6 * H - 26 * s + Math.sin(t * 3) * 5 * s;
+  ctx.fillStyle = "#f2cc8f";
+  ctx.beginPath();
+  ctx.arc(coinX, coinY, 8 * s, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#fff6df";
+  ctx.beginPath();
+  ctx.arc(coinX - 2 * s, coinY - 2 * s, 3 * s, 0, Math.PI * 2);
+  ctx.fill();
+
+  const rp = plats[1];
+  const ew = 20 * s;
+  const eh = 16 * s;
+  const ex = rp.x * W + 8 * s + pingpong(t, 3.4) * (rp.w * W - ew - 16 * s);
+  const ey = rp.y * H - eh;
+  ctx.fillStyle = "#8e6bb8";
+  ctx.beginPath();
+  ctx.moveTo(ex, ey + eh);
+  ctx.lineTo(ex + ew / 2, ey);
+  ctx.lineTo(ex + ew, ey + eh);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = "#f4f1de";
+  ctx.fillRect(ex + ew * 0.38, ey + eh * 0.55, Math.max(2, 3 * s), Math.max(2, 3 * s));
+
+  const rw = 18 * s;
+  const rh = 28 * s;
+  const travel = pingpong(t, 5.2);
+  const rx = W * 0.05 + travel * (W * 0.86 - rw);
+  let hop = 0;
+  if (travel > 0.38 && travel < 0.58) {
+    hop = Math.sin(((travel - 0.38) / 0.2) * Math.PI) * 46 * s;
+  }
+  const ry = groundY - rh - hop;
+  const dir = ((t % 5.2) + 5.2) % 5.2 < 2.6 ? 1 : -1;
+  ctx.fillStyle = "#8ecae6";
+  ctx.fillRect(rx, ry, rw, rh);
+  ctx.fillStyle = "#102026";
+  ctx.fillRect(dir > 0 ? rx + rw * 0.62 : rx + rw * 0.18, ry + rh * 0.28, Math.max(2, 3 * s), Math.max(2, 3 * s));
+  ctx.strokeStyle = "#8ecae6";
+  ctx.lineWidth = Math.max(2, 2.2 * s);
+  const swing = Math.sin(t * 12) * 5 * s;
+  ctx.beginPath();
+  ctx.moveTo(rx + rw * 0.35, ry + rh);
+  ctx.lineTo(rx + rw * 0.35 + swing, groundY);
+  ctx.moveTo(rx + rw * 0.65, ry + rh);
+  ctx.lineTo(rx + rw * 0.65 - swing, groundY);
+  ctx.stroke();
+
+  const bx = W * 0.16 + pingpong(t, 7) * W * 0.58;
+  const by = H * 0.22 + Math.sin(t * 2.2) * H * 0.025;
+  const bdir = ((t % 7) + 7) % 7 < 3.5 ? 1 : -1;
+  ctx.strokeStyle = "#d5e4ee";
+  ctx.lineWidth = Math.max(1.5, 1.8 * s);
+  ctx.beginPath();
+  ctx.moveTo(bx - 11 * s, by);
+  ctx.quadraticCurveTo(bx - 4 * s, by - 8 * s * Math.sin(t * 8), bx, by);
+  ctx.quadraticCurveTo(bx + 4 * s, by - 8 * s * Math.sin(t * 8 + 1), bx + 11 * s, by);
+  ctx.stroke();
+  ctx.fillStyle = "#d5e4ee";
+  ctx.beginPath();
+  ctx.arc(bx + bdir * 3 * s, by, 2.4 * s, 0, Math.PI * 2);
+  ctx.fill();
+
+  const fx = W * 0.93;
+  ctx.strokeStyle = "#d7e3ea";
+  ctx.lineWidth = Math.max(2, 2 * s);
+  ctx.beginPath();
+  ctx.moveTo(fx, groundY);
+  ctx.lineTo(fx, groundY - 40 * s);
+  ctx.stroke();
+  ctx.fillStyle = "#e7f6ef";
+  ctx.beginPath();
+  ctx.moveTo(fx, groundY - 40 * s);
+  ctx.lineTo(fx + 18 * s, groundY - 32 * s);
+  ctx.lineTo(fx, groundY - 24 * s);
+  ctx.fill();
+
+  ctx.textAlign = "left";
+  ctx.textBaseline = "alphabetic";
+  ctx.lineWidth = 1;
+}
+
 function applyCanvasSize() {
   const { w, h, raw } = bufferSize();
   if (canvas.width !== w) canvas.width = w;
@@ -374,21 +540,10 @@ function draw() {
   const current = laid.find((row) => row.part.id === active.id) || laid[0];
   const grab = buttonGrab(current.L, current.part.w, current.part.h, W, H, otherRects(W, H, current.part.id));
 
-  ctx.fillStyle = "#0a0e14";
-  ctx.fillRect(0, 0, W, H);
+  drawStage(W, H, stageTime());
   ctx.strokeStyle = "#3d4f66";
   ctx.lineWidth = 1;
   ctx.strokeRect(1, 1, W - 2, H - 2);
-
-  ctx.strokeStyle = "rgba(90,106,128,0.25)";
-  for (let i = 1; i < 4; i++) {
-    ctx.beginPath();
-    ctx.moveTo((W * i) / 4, 0);
-    ctx.lineTo((W * i) / 4, H);
-    ctx.moveTo(0, (H * i) / 4);
-    ctx.lineTo(W, (H * i) / 4);
-    ctx.stroke();
-  }
 
   for (const row of laid) {
     if (row.part.id === active.id) continue;
@@ -425,8 +580,7 @@ function draw() {
   drawGrab(grab);
 
   const a = anchorOf(current.part.anchor);
-  if (statsEl) {
-    statsEl.innerHTML = `
+  const statsHtml = `
       <table class="coord-table">
         <tr><td>表示</td><td>${current.part.name}</td></tr>
         <tr><td>解像度</td><td>${W} × ${H}</td></tr>
@@ -436,10 +590,15 @@ function draw() {
         <tr><td>Widget TL</td><td>${current.L.x.toFixed(0)}, ${current.L.y.toFixed(0)}</td></tr>
         <tr><td>画面右から左上</td><td>${(W - current.L.x).toFixed(0)} px</td></tr>
       </table>`;
+  if (statsEl && statsEl.dataset.key !== statsHtml) {
+    statsEl.dataset.key = statsHtml;
+    statsEl.innerHTML = statsHtml;
   }
-  setStatus(
-    `${current.part.name} anchor=(${a.ax},${a.ay}) pivot=(${current.part.px.toFixed(2)},${current.part.py.toFixed(2)})`
-  );
+  const statusLine = `${current.part.name} anchor=(${a.ax},${a.ay}) pivot=(${current.part.px.toFixed(2)},${current.part.py.toFixed(2)})`;
+  if (!pinnedStatus && statusLine !== lastStatus) {
+    lastStatus = statusLine;
+    setStatus(statusLine);
+  }
 }
 
 function pointerPos(e) {
@@ -564,7 +723,17 @@ const urlResult = applyParamsToControls(urlSpec);
 for (const part of parts) readHidden(part);
 loadVisible();
 applyCanvasSize();
-if (urlResult.warning) setStatus(urlResult.warning);
+if (urlResult.warning) {
+  pinnedStatus = urlResult.warning;
+  lastStatus = urlResult.warning;
+  setStatus(urlResult.warning);
+}
+function onUserEdit() {
+  pinnedStatus = "";
+}
+for (const el of [anchorEl, pivotXEl, pivotYEl, offXEl, offYEl, partEl, resEl, viewwEl]) {
+  el?.addEventListener("input", onUserEdit);
+}
 partEl?.addEventListener("change", () => {
   storeVisible();
   editingId = partEl.value;
@@ -575,3 +744,8 @@ if (canvas.parentElement && typeof ResizeObserver !== "undefined") {
   const frameObserver = new ResizeObserver(() => fitFrame());
   frameObserver.observe(canvas.parentElement);
 }
+function stageFrame() {
+  if (!document.hidden) draw();
+  requestAnimationFrame(stageFrame);
+}
+requestAnimationFrame(stageFrame);
