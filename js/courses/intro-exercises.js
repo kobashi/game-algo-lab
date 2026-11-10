@@ -146,10 +146,10 @@ export const EXERCISES = {
     goal: "絶対座標の UI が解像度で崩れ、Anchor と Pivot で崩れなくなることを説明できる。",
     guess: "画面幅が変わると、右上に置いた UI はどこに行くか。",
     steps: [
-      "`gfx-ui-canvas.html?anchor=top-right&vieww=640` から、幅を 480 と 960 に変える。次に `gfx-ui-canvas.html?anchor=top-left&vieww=640` で同じことをする。",
+      "`gfx-ui-canvas.html?anchor=top-right&vieww=640` から、仮想解像度は 640×360 のまま、幅を 480 と 960 に変える。数表の Widget TL と「右端から左上」を見る。次に `gfx-ui-canvas.html?anchor=top-left&vieww=640` で同じことをする。",
     ],
     observations: [
-      "右上 Anchor では、幅 480 / 640 / 960 のボタン左上 x が **400 / 560 / 880**。右端から左上までの距離はどれも **80 px** で変わらない。左上 Anchor では左上が常に **(-80, -44)** なので、右端からの位置は幅とともに変わる。",
+      "右上 Anchor では、幅 480 / 640 / 960 の Widget TL の x が **400 / 560 / 880**。右端から左上までの距離はどれも **80 px** で変わらない。左上 Anchor では Widget TL が常に **(-80, -44)** なので、右端からの位置は幅とともに変わる。",
     ],
     extension: "画面下いっぱいに伸ばす UI（`bottom-stretch`）はどう作るか。",
   },

@@ -38,6 +38,7 @@ const viewwEl = /** @type {HTMLInputElement} */ (
 );
 const viewwVal = document.getElementById("vieww-val");
 const statsEl = document.getElementById("ui-stats");
+const frameNote = document.getElementById("ui-frame-note");
 const csharpSample = document.getElementById("csharp-sample");
 const setStatus = createStatus(document.getElementById("status"));
 
@@ -98,12 +99,56 @@ function syncLabels() {
   if (pivotYVal) pivotYVal.textContent = readPivot(pivotYEl).toFixed(2);
 }
 
+/** 幅スライダーは、選んでいる仮想解像度の縦横比を保った整数 px にする。 */
+function bufferSize() {
+  const res = readRes();
+  const raw = Number(viewwEl?.value);
+  const w = Math.round(Number.isFinite(raw) && raw > 0 ? raw : res.w);
+  const h = Math.max(1, Math.round((w * res.h) / res.w));
+  return { w, h, raw };
+}
+
+/**
+ * 枠はバッファと同じ px（1 px は正方形）。欄がバッファより狭いときだけ、
+ * 縦横を同じ割合で整数 px に縮める。max-width と高さの同時指定はしない。
+ */
+function fitFrame() {
+  const bufW = canvas.width;
+  const bufH = canvas.height;
+  const parent = canvas.parentElement;
+  let avail = bufW;
+  if (parent) {
+    const style = getComputedStyle(parent);
+    const pad =
+      (parseFloat(style.paddingLeft) || 0) + (parseFloat(style.paddingRight) || 0);
+    avail = parent.clientWidth - pad;
+  }
+  let cssW = bufW;
+  let cssH = bufH;
+  let scaled = false;
+  if (bufW > 0 && avail >= 1 && avail < bufW) {
+    scaled = true;
+    cssW = Math.max(1, Math.floor(avail));
+    cssH = Math.max(1, Math.round((bufH * cssW) / bufW));
+  }
+  const wPx = `${cssW}px`;
+  const hPx = `${cssH}px`;
+  if (canvas.style.width !== wPx) canvas.style.width = wPx;
+  if (canvas.style.height !== hPx) canvas.style.height = hPx;
+  if (frameNote) {
+    const base = `仮想画面は ${bufW}×${bufH} px。1 px は正方形です。`;
+    frameNote.textContent = scaled
+      ? `${base}欄が狭いので、縦横を同じ割合で縮めて表示しています。数表の座標は、縮める前の px です。`
+      : `${base}枠もこの大きさです。`;
+  }
+}
+
 function applyCanvasSize() {
-  const w = Number(viewwEl?.value) || readRes().w;
-  const h = Math.round((w * 360) / 640);
-  canvas.width = w;
-  canvas.height = h;
-  if (viewwVal) viewwVal.textContent = formatTenths(w);
+  const { w, h, raw } = bufferSize();
+  if (canvas.width !== w) canvas.width = w;
+  if (canvas.height !== h) canvas.height = h;
+  if (viewwVal) viewwVal.textContent = formatTenths(Number.isFinite(raw) ? raw : w);
+  fitFrame();
   draw();
 }
 
@@ -188,6 +233,7 @@ function draw() {
         <tr><td>Pivot</td><td>${px.toFixed(2)}, ${py.toFixed(2)}</td></tr>
         <tr><td>Offset</td><td>${offX.toFixed(0)}, ${offY.toFixed(0)}</td></tr>
         <tr><td>Widget TL</td><td>${L.x.toFixed(0)}, ${L.y.toFixed(0)}</td></tr>
+        <tr><td>右端から左上</td><td>${(W - L.x).toFixed(0)} px</td></tr>
       </table>`;
   }
   setStatus(`anchor=(${ax},${ay}) pivot=(${px.toFixed(2)},${py.toFixed(2)})`);
@@ -290,3 +336,7 @@ readOffsetInputs();
 syncLabels();
 applyCanvasSize();
 if (urlResult.warning) setStatus(urlResult.warning);
+if (canvas.parentElement && typeof ResizeObserver !== "undefined") {
+  const frameObserver = new ResizeObserver(() => fitFrame());
+  frameObserver.observe(canvas.parentElement);
+}

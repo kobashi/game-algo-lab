@@ -196,7 +196,7 @@ export const ASSIGNMENTS = {
       { id: "C", label: "幅（連続）960（`vieww=960`）" },
     ],
     condition: "3 本とも Anchor・Pivot・Offset（`ox`・`oy`）は同じにする。幅だけを変える。",
-    observe: "3 つの幅での、ボタンの左上の座標と、端からの距離。",
+    observe: "3 つの幅での、ボタンの左上の座標（数表の Widget TL）と、端からの距離（右端から左上）。仮想解像度は 640×360 のまま、幅だけを変える。",
     discuss: [
       "Anchor と Pivot をどう選んだか、その理由",
       "左上 Anchor のままだとどうなるか",

@@ -4797,6 +4797,20 @@ details.ds-block:not([open]) > .ds-title::before {
   background: #0a0e14;
 }
 
+/* UI の仮想画面だけ、欄幅への引き伸ばしをやめる。大きさは JS がバッファ px で決める。 */
+#ui-canvas.gl-canvas {
+  width: auto;
+  height: auto;
+  max-width: none;
+}
+
+.ui-frame-note {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
 #ct-canvas {
   touch-action: none;
 }

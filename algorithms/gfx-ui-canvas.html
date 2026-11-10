@@ -25,12 +25,14 @@
           <li><span class="term" data-term="anchor">Anchor</span> = 親の<span class="term" data-term="normalized-coords">正規化座標</span>（0〜1）</li>
           <li><span class="term" data-term="pivot">Pivot</span> = 自分のどの点を Anchor+<span class="term" data-term="offset">Offset</span> に合わせるか</li>
           <li><span class="term" data-term="resolution">解像度</span>変更で絶対 px 固定 UI は破綻しやすい</li>
+          <li>仮想画面の枠は、選んだ解像度のピクセル数。1 px は正方形。幅のスライダーはその縦横比のまま。欄が狭いときだけ、同じ割合で縮む</li>
         </ul>
       </div>
     </details>
     <div class="gl-layout">
       <section class="gl-main">
         <canvas id="ui-canvas" class="gl-canvas" width="640" height="360" tabindex="0"></canvas>
+        <p id="ui-frame-note" class="ui-frame-note">仮想画面は 640×360 px。1 px は正方形です。枠もこの大きさです。</p>
         <div id="ui-stats" class="coord-readout"></div>
         <div id="status" class="status-log" role="status">準備完了</div>
       </section>
@@ -44,6 +46,7 @@
         </select>
         <label class="controls-label" for="vieww">幅（連続） <span id="vieww-val">640</span> px</label>
         <input type="range" id="vieww" class="ttt-range" min="320" max="960" value="640" step="10" />
+        <p class="ui-frame-note">幅を変えても、選んだ仮想解像度の縦横比のままです。</p>
         <label class="controls-label" for="anchor"><span class="term" data-term="anchor">Anchor</span> プリセット</label>
         <select id="anchor" class="bandit-select">
           <option value="top-left">左上</option>
