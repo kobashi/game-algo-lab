@@ -1072,7 +1072,7 @@ export const TOPICS = [
     id: "gfx-ui-canvas",
     title: "UI 描画（Anchor・Pivot）",
     description:
-      "親の Anchor と要素 Pivot で UI を配置。仮想画面は選んだ解像度の正方形ピクセル。",
+      "スコア、ステータス、メッセージを、それぞれの Anchor と Pivot で置く。仮想画面は選んだ解像度の正方形ピクセル。",
     href: "algorithms/gfx-ui-canvas.html",
     badge: "ゲーム CG",
     category: "ゲーム CG",

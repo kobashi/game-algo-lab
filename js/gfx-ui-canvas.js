@@ -2,7 +2,6 @@
  * UI Canvas — Anchor / Pivot / 解像度
  */
 import { GFX_UI_CANVAS_CONFIG as C } from "./maps/gfx-ui-canvas-config.js";
-import { uiAssignmentTarget } from "./courses/intro-assignments.js";
 import {
   createStatus,
   loadTextSample,
@@ -11,7 +10,6 @@ import {
   mountShareLink,
   mountGlossary,
   formatTenths,
-  parseDigit,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -39,29 +37,85 @@ const viewwEl = /** @type {HTMLInputElement} */ (
   document.getElementById("vieww")
 );
 const viewwVal = document.getElementById("vieww-val");
+const partEl = /** @type {HTMLSelectElement} */ (document.getElementById("part"));
 const statsEl = document.getElementById("ui-stats");
 const frameNote = document.getElementById("ui-frame-note");
-const targetNote = document.getElementById("ui-target-note");
 const csharpSample = document.getElementById("csharp-sample");
 const setStatus = createStatus(document.getElementById("status"));
-
-/** offset from anchor point in parent space */
-let offX = -20;
-let offY = -20;
 const offXEl = /** @type {HTMLInputElement | null} */ (document.getElementById("off-x"));
 const offYEl = /** @type {HTMLInputElement | null} */ (document.getElementById("off-y"));
-/** Offset の入力欄 → 変数（URL の ox・oy もこの欄を通る） */
-function readOffsetInputs() {
-  const x = Number(offXEl?.value);
-  const y = Number(offYEl?.value);
-  if (Number.isFinite(x)) offX = Math.round(x);
-  if (Number.isFinite(y)) offY = Math.round(y);
+
+/**
+ * 画面上の 3 つの表示。スコアの大きさは 120×48 のまま（演習の 80 px を保つ）。
+ * URL の anchor・px・py・ox・oy はスコア。ステータスとメッセージは別のキー。
+ */
+const parts = [
+  {
+    id: "score",
+    name: "スコア",
+    w: C.widgetW,
+    h: C.widgetH,
+    anchor: "bottom-right",
+    px: 0.5,
+    py: 0.5,
+    ox: -20,
+    oy: -20,
+    fill: "rgba(91,159,212,0.92)",
+    stroke: "#e8eef7",
+    ink: "#e8eef7",
+  },
+  {
+    id: "status",
+    name: "ステータス",
+    w: 150,
+    h: 36,
+    anchor: "top-left",
+    px: 0,
+    py: 0,
+    ox: 16,
+    oy: 16,
+    fill: "rgba(126,184,122,0.92)",
+    stroke: "#d5f0cf",
+    ink: "#10210f",
+  },
+  {
+    id: "message",
+    name: "イベントメッセージ",
+    w: 220,
+    h: 40,
+    anchor: "center",
+    px: 0.5,
+    py: 0.5,
+    ox: 0,
+    oy: 0,
+    fill: "rgba(242,204,143,0.94)",
+    stroke: "#f2cc8f",
+    ink: "#2a2116",
+  },
+];
+
+/** @type {Record<string, { anchor: HTMLSelectElement, px: HTMLInputElement, py: HTMLInputElement, ox: HTMLInputElement, oy: HTMLInputElement }>} */
+const hidden = {
+  score: fields("score"),
+  status: fields("status"),
+  message: fields("message"),
+};
+
+/**
+ * @param {string} id
+ */
+function fields(id) {
+  return {
+    anchor: /** @type {HTMLSelectElement} */ (document.getElementById(`${id}-anchor`)),
+    px: /** @type {HTMLInputElement} */ (document.getElementById(`${id}-px`)),
+    py: /** @type {HTMLInputElement} */ (document.getElementById(`${id}-py`)),
+    ox: /** @type {HTMLInputElement} */ (document.getElementById(`${id}-ox`)),
+    oy: /** @type {HTMLInputElement} */ (document.getElementById(`${id}-oy`)),
+  };
 }
-/** 変数 → Offset の入力欄（ドラッグ中に呼ぶ） */
-function writeOffsetInputs() {
-  if (offXEl) offXEl.value = String(Math.round(offX));
-  if (offYEl) offYEl.value = String(Math.round(offY));
-}
+
+/** 表示中の編集対象。表示の切り替え前に、今の欄をこちらへ書き戻す */
+let editingId = "score";
 let dragging = false;
 let dragStart = { x: 0, y: 0, ox: 0, oy: 0 };
 /** 画面内にこれより狭い辺があると、ボタン本体ではつかみにくい */
@@ -81,9 +135,12 @@ export function layoutWidget(parentW, parentH, ax, ay, px, py, ox, oy, ww, wh) {
   return { x, y, ax: anchorX, ay: anchorY };
 }
 
-function readAnchor() {
-  const key = anchorEl?.value || "bottom-right";
+function anchorOf(key) {
   return C.presets[key] || C.presets["bottom-right"];
+}
+
+function activePart() {
+  return parts.find((p) => p.id === editingId) || parts[0];
 }
 
 function readRes() {
@@ -155,76 +212,129 @@ function fitFrame() {
  * 画面内に十分残っているときは出さない（既定の右下はそのまま）。
  * @returns {{ x: number, y: number, w: number, h: number } | null}
  */
-function buttonGrab(L, W, H) {
+function overlaps(a, b) {
+  return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+}
+
+function otherRects(W, H, exceptId) {
+  return parts
+    .filter((p) => p.id !== exceptId)
+    .map((p) => {
+      const L = placeOf(p, W, H);
+      return { x: L.x, y: L.y, w: p.w, h: p.h };
+    });
+}
+
+/**
+ * 画面の外に出て残っている部分が小さいときのつまみ。
+ * ほかの表示に重なるときは、空いている角へずらす。
+ * @returns {{ x: number, y: number, w: number, h: number } | null}
+ */
+function buttonGrab(L, ww, wh, W, H, obstacles) {
   const x0 = Math.max(L.x, 0);
   const y0 = Math.max(L.y, 0);
-  const x1 = Math.min(L.x + C.widgetW, W);
-  const y1 = Math.min(L.y + C.widgetH, H);
+  const x1 = Math.min(L.x + ww, W);
+  const y1 = Math.min(L.y + wh, H);
   if (x1 - x0 >= GRAB_MIN && y1 - y0 >= GRAB_MIN) return null;
-  const cx = Math.min(Math.max(L.x + C.widgetW / 2, GRAB_W / 2 + 4), W - GRAB_W / 2 - 4);
-  const cy = Math.min(Math.max(L.y + C.widgetH / 2, GRAB_H / 2 + 4), H - GRAB_H / 2 - 4);
-  return { x: cx - GRAB_W / 2, y: cy - GRAB_H / 2, w: GRAB_W, h: GRAB_H };
+  const cx = Math.min(Math.max(L.x + ww / 2, GRAB_W / 2 + 4), W - GRAB_W / 2 - 4);
+  const cy = Math.min(Math.max(L.y + wh / 2, GRAB_H / 2 + 4), H - GRAB_H / 2 - 4);
+  const base = { x: cx - GRAB_W / 2, y: cy - GRAB_H / 2, w: GRAB_W, h: GRAB_H };
+  const blocks = obstacles || [];
+  if (!blocks.some((o) => overlaps(base, o))) return base;
+  const spots = [
+    { x: 8, y: H - GRAB_H - 8 },
+    { x: W - GRAB_W - 8, y: H - GRAB_H - 8 },
+    { x: (W - GRAB_W) / 2, y: H - GRAB_H - 8 },
+    { x: W - GRAB_W - 8, y: 8 },
+    { x: 8, y: 8 },
+  ];
+  for (const s of spots) {
+    const rect = { x: s.x, y: s.y, w: GRAB_W, h: GRAB_H };
+    if (!blocks.some((o) => overlaps(rect, o))) return rect;
+  }
+  return base;
+}
+
+function placeOf(part, W, H) {
+  const a = anchorOf(part.anchor);
+  return layoutWidget(W, H, a.ax, a.ay, part.px, part.py, part.ox, part.oy, part.w, part.h);
+}
+
+function storeVisible() {
+  const part = parts.find((p) => p.id === editingId);
+  if (!part || !anchorEl) return;
+  part.anchor = anchorEl.value || part.anchor;
+  part.px = readPivot(pivotXEl);
+  part.py = readPivot(pivotYEl);
+  const ox = Number(offXEl?.value);
+  const oy = Number(offYEl?.value);
+  if (Number.isFinite(ox)) part.ox = Math.round(ox);
+  if (Number.isFinite(oy)) part.oy = Math.round(oy);
+  const h = hidden[part.id];
+  h.anchor.value = part.anchor;
+  h.px.value = String(part.px);
+  h.py.value = String(part.py);
+  h.ox.value = String(part.ox);
+  h.oy.value = String(part.oy);
+}
+
+function readHidden(part) {
+  const h = hidden[part.id];
+  if (h.anchor.value && C.presets[h.anchor.value]) part.anchor = h.anchor.value;
+  part.px = readPivot(h.px);
+  part.py = readPivot(h.py);
+  const ox = Number(h.ox.value);
+  const oy = Number(h.oy.value);
+  if (Number.isFinite(ox)) part.ox = Math.round(ox);
+  if (Number.isFinite(oy)) part.oy = Math.round(oy);
+}
+
+function loadVisible() {
+  const part = parts.find((p) => p.id === partEl?.value) || parts[0];
+  editingId = part.id;
+  if (anchorEl) anchorEl.value = part.anchor;
+  if (pivotXEl) pivotXEl.value = String(part.px);
+  if (pivotYEl) pivotYEl.value = String(part.py);
+  if (offXEl) offXEl.value = String(part.ox);
+  if (offYEl) offYEl.value = String(part.oy);
+  syncLabels();
 }
 
 function insideRect(px, py, x, y, w, h) {
   return px >= x && px <= x + w && py >= y && py <= y + h;
 }
 
-/** 学籍番号の末尾があるときだけ、公開ルールの目標枠。Offset の答えは描かない。 */
-function readTarget(W, H) {
-  const d = parseDigit(document.getElementById("submit-d")?.value);
-  if (d == null) return null;
-  return uiAssignmentTarget(d, W, H, C.widgetW, C.widgetH);
-}
-
-function syncTargetNote(target) {
-  if (!targetNote) return;
-  const course = new URLSearchParams(location.search).get("course") === "intro";
-  if (!course) {
-    targetNote.hidden = true;
-    return;
+function drawPart(part, L, selected) {
+  if (!ctx) return;
+  ctx.fillStyle = part.fill;
+  ctx.fillRect(L.x, L.y, part.w, part.h);
+  ctx.lineWidth = selected ? 3 : 1;
+  ctx.strokeStyle = selected ? "#ffffff" : part.stroke;
+  ctx.strokeRect(L.x, L.y, part.w, part.h);
+  ctx.fillStyle = part.ink;
+  ctx.textAlign = "left";
+  ctx.textBaseline = "alphabetic";
+  if (part.id === "score") {
+    ctx.font = "12px sans-serif";
+    ctx.fillText("SCORE", L.x + 10, L.y + 18);
+    ctx.font = "bold 16px sans-serif";
+    ctx.fillText("1200", L.x + 10, L.y + 38);
+  } else if (part.id === "status") {
+    ctx.font = "bold 13px sans-serif";
+    ctx.fillText("HP 80", L.x + 8, L.y + 16);
+    const barX = L.x + 8;
+    const barY = L.y + part.h - 12;
+    const barW = part.w - 16;
+    ctx.fillStyle = "rgba(0,0,0,0.35)";
+    ctx.fillRect(barX, barY, barW, 6);
+    ctx.fillStyle = "#e7ffe4";
+    ctx.fillRect(barX, barY, barW * 0.8, 6);
+  } else {
+    ctx.font = "bold 14px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("コインを入手", L.x + part.w / 2, L.y + 25);
+    ctx.textAlign = "left";
   }
-  targetNote.hidden = false;
-  targetNote.textContent = target
-    ? `緑の破線は、あなたの目標（${target.name}）です。青いボタンを、この枠に重ねます。`
-    : "学籍番号の末尾を入れると、仮想画面に緑の破線で、あなたの目標の枠が出ます。";
-}
-
-function drawTargetFill(target) {
-  if (!ctx || !target) return;
-  ctx.save();
-  ctx.fillStyle = "rgba(107, 203, 143, 0.14)";
-  ctx.fillRect(target.x, target.y, target.w, target.h);
-  ctx.restore();
-}
-
-function drawTargetFrame(target, W, H) {
-  if (!ctx || !target) return;
-  ctx.save();
-  ctx.strokeStyle = "#6bcb8f";
-  ctx.lineWidth = 2;
-  ctx.setLineDash([6, 4]);
-  ctx.strokeRect(target.x + 1, target.y + 1, target.w - 2, target.h - 2);
-  ctx.setLineDash([]);
-  ctx.fillStyle = "#6bcb8f";
-  ctx.font = "12px sans-serif";
-  const text = `目標: ${target.name}`;
-  const tw = ctx.measureText(text).width;
-  let lx = target.x;
-  let ly = target.y - 8;
-  if (ly < 12) {
-    if (target.x + target.w + 8 + tw <= W - 4) {
-      lx = target.x + target.w + 8;
-      ly = Math.min(H - 6, target.y + 16);
-    } else if (target.y + target.h + 16 <= H) {
-      ly = target.y + target.h + 16;
-    } else {
-      lx = target.x + 6;
-      ly = target.y + target.h - 8;
-    }
-  }
-  ctx.fillText(text, lx, ly);
-  ctx.restore();
 }
 
 function drawGrab(grab) {
@@ -259,22 +369,17 @@ function draw() {
   if (!ctx) return;
   const W = canvas.width;
   const H = canvas.height;
-  const { ax, ay } = readAnchor();
-  const px = readPivot(pivotXEl);
-  const py = readPivot(pivotYEl);
-  const ww = C.widgetW;
-  const wh = C.widgetH;
-  const L = layoutWidget(W, H, ax, ay, px, py, offX, offY, ww, wh);
-  const target = readTarget(W, H);
-  const grab = buttonGrab(L, W, H);
+  const active = activePart();
+  const laid = parts.map((part) => ({ part, L: placeOf(part, W, H) }));
+  const current = laid.find((row) => row.part.id === active.id) || laid[0];
+  const grab = buttonGrab(current.L, current.part.w, current.part.h, W, H, otherRects(W, H, current.part.id));
 
-  // parent (screen)
   ctx.fillStyle = "#0a0e14";
   ctx.fillRect(0, 0, W, H);
   ctx.strokeStyle = "#3d4f66";
+  ctx.lineWidth = 1;
   ctx.strokeRect(1, 1, W - 2, H - 2);
 
-  // safe area grid
   ctx.strokeStyle = "rgba(90,106,128,0.25)";
   for (let i = 1; i < 4; i++) {
     ctx.beginPath();
@@ -285,69 +390,56 @@ function draw() {
     ctx.stroke();
   }
 
-  drawTargetFill(target);
+  for (const row of laid) {
+    if (row.part.id === active.id) continue;
+    drawPart(row.part, row.L, false);
+  }
+  drawPart(current.part, current.L, true);
 
-  // anchor point
   ctx.fillStyle = "#6bcb8f";
   ctx.beginPath();
-  ctx.arc(L.ax, L.ay, 6, 0, Math.PI * 2);
+  ctx.arc(current.L.ax, current.L.ay, 6, 0, Math.PI * 2);
   ctx.fill();
   ctx.fillStyle = "#9aabbf";
   ctx.font = "11px sans-serif";
-  ctx.fillText("Anchor", L.ax + 8, L.ay - 8);
+  ctx.textAlign = "left";
+  ctx.textBaseline = "alphabetic";
+  ctx.fillText("Anchor", current.L.ax + 8, current.L.ay - 8);
 
-  // offset line
+  const pivX = current.L.x + current.part.px * current.part.w;
+  const pivY = current.L.y + current.part.py * current.part.h;
   ctx.strokeStyle = "rgba(242,204,143,0.6)";
   ctx.setLineDash([4, 3]);
   ctx.beginPath();
-  ctx.moveTo(L.ax, L.ay);
-  ctx.lineTo(L.x + px * ww, L.y + py * wh);
+  ctx.moveTo(current.L.ax, current.L.ay);
+  ctx.lineTo(pivX, pivY);
   ctx.stroke();
   ctx.setLineDash([]);
 
-  // widget
-  ctx.fillStyle = "rgba(91,159,212,0.85)";
-  ctx.fillRect(L.x, L.y, ww, wh);
-  ctx.strokeStyle = "#e8eef7";
-  ctx.strokeRect(L.x, L.y, ww, wh);
-  ctx.fillStyle = "#e8eef7";
-  ctx.font = "13px sans-serif";
-  ctx.fillText("Button", L.x + 28, L.y + 28);
-
-  const L2 = layoutWidget(W, H, 0, 0, px, py, offX, offY, ww, wh);
-  ctx.fillStyle = "rgba(242,204,143,0.45)";
-  ctx.fillRect(L2.x, L2.y, ww, wh);
-  ctx.strokeStyle = "#f2cc8f";
-  ctx.strokeRect(L2.x, L2.y, ww, wh);
-  ctx.fillStyle = "#f2cc8f";
-  ctx.font = "11px sans-serif";
-  ctx.fillText("比較:左上", L2.x + 8, L2.y + 22);
-
-  // pivot
-  const pivX = L.x + px * ww;
-  const pivY = L.y + py * wh;
   ctx.fillStyle = "#e07a5f";
   ctx.beginPath();
   ctx.arc(pivX, pivY, 5, 0, Math.PI * 2);
   ctx.fill();
   ctx.fillText("Pivot", pivX + 8, pivY + 4);
 
-  drawTargetFrame(target, W, H);
   drawGrab(grab);
-  syncTargetNote(target);
 
+  const a = anchorOf(current.part.anchor);
   if (statsEl) {
     statsEl.innerHTML = `
       <table class="coord-table">
+        <tr><td>表示</td><td>${current.part.name}</td></tr>
         <tr><td>解像度</td><td>${W} × ${H}</td></tr>
-        <tr><td>Anchor</td><td>${ax.toFixed(2)}, ${ay.toFixed(2)}</td></tr>
-        <tr><td>Pivot</td><td>${px.toFixed(2)}, ${py.toFixed(2)}</td></tr>
-        <tr><td>Offset</td><td>${offX.toFixed(0)}, ${offY.toFixed(0)}</td></tr>
-        <tr><td>Widget TL</td><td>${L.x.toFixed(0)}, ${L.y.toFixed(0)}</td></tr>
-        <tr><td>画面右からボタン左上</td><td>${(W - L.x).toFixed(0)} px</td></tr>
+        <tr><td>Anchor</td><td>${a.ax.toFixed(2)}, ${a.ay.toFixed(2)}</td></tr>
+        <tr><td>Pivot</td><td>${current.part.px.toFixed(2)}, ${current.part.py.toFixed(2)}</td></tr>
+        <tr><td>Offset</td><td>${current.part.ox.toFixed(0)}, ${current.part.oy.toFixed(0)}</td></tr>
+        <tr><td>Widget TL</td><td>${current.L.x.toFixed(0)}, ${current.L.y.toFixed(0)}</td></tr>
+        <tr><td>画面右から左上</td><td>${(W - current.L.x).toFixed(0)} px</td></tr>
       </table>`;
   }
-  setStatus(`anchor=(${ax},${ay}) pivot=(${px.toFixed(2)},${py.toFixed(2)})`);
+  setStatus(
+    `${current.part.name} anchor=(${a.ax},${a.ay}) pivot=(${current.part.px.toFixed(2)},${current.part.py.toFixed(2)})`
+  );
 }
 
 function pointerPos(e) {
@@ -358,61 +450,66 @@ function pointerPos(e) {
   };
 }
 
-canvas.addEventListener("pointerdown", (e) => {
-  const { ax, ay } = readAnchor();
-  const px = readPivot(pivotXEl);
-  const py = readPivot(pivotYEl);
-  const L = layoutWidget(
-    canvas.width,
-    canvas.height,
-    ax,
-    ay,
-    px,
-    py,
-    offX,
-    offY,
-    C.widgetW,
-    C.widgetH
-  );
-  const p = pointerPos(e);
-  const onButton = insideRect(p.x, p.y, L.x, L.y, C.widgetW, C.widgetH);
-  const grab = buttonGrab(L, canvas.width, canvas.height);
-  const onGrab = grab != null && insideRect(p.x, p.y, grab.x, grab.y, grab.w, grab.h);
-  if (onButton || onGrab) {
-    dragging = true;
-    dragStart = { x: p.x, y: p.y, ox: offX, oy: offY };
-    canvas.setPointerCapture(e.pointerId);
+function beginDrag(part, p) {
+  if (part.id !== editingId) {
+    storeVisible();
+    if (partEl) partEl.value = part.id;
+    editingId = part.id;
+    loadVisible();
   }
+  dragging = true;
+  dragStart = { x: p.x, y: p.y, ox: part.ox, oy: part.oy };
+}
+
+canvas.addEventListener("pointerdown", (e) => {
+  const p = pointerPos(e);
+  const W = canvas.width;
+  const H = canvas.height;
+  const active = activePart();
+  const activeL = placeOf(active, W, H);
+  const grab = buttonGrab(activeL, active.w, active.h, W, H, otherRects(W, H, active.id));
+  if (grab && insideRect(p.x, p.y, grab.x, grab.y, grab.w, grab.h)) {
+    beginDrag(active, p);
+    canvas.setPointerCapture(e.pointerId);
+    return;
+  }
+  const hits = parts
+    .map((part) => ({ part, L: placeOf(part, W, H) }))
+    .filter((row) => insideRect(p.x, p.y, row.L.x, row.L.y, row.part.w, row.part.h));
+  const hit = hits.find((row) => row.part.id === editingId) || hits[hits.length - 1];
+  if (!hit) return;
+  beginDrag(hit.part, p);
+  canvas.setPointerCapture(e.pointerId);
 });
 canvas.addEventListener("pointermove", (e) => {
   if (!dragging) return;
   const p = pointerPos(e);
-  offX = Math.round(dragStart.ox + (p.x - dragStart.x));
-  offY = Math.round(dragStart.oy + (p.y - dragStart.y));
-  writeOffsetInputs();
+  const part = activePart();
+  part.ox = Math.round(dragStart.ox + (p.x - dragStart.x));
+  part.oy = Math.round(dragStart.oy + (p.y - dragStart.y));
+  if (offXEl) offXEl.value = String(part.ox);
+  if (offYEl) offYEl.value = String(part.oy);
+  const h = hidden[part.id];
+  h.ox.value = String(part.ox);
+  h.oy.value = String(part.oy);
   draw();
 });
 canvas.addEventListener("pointerup", () => {
   dragging = false;
 });
 
-for (const el of [offXEl, offYEl]) {
-  el?.addEventListener("input", () => {
-    readOffsetInputs();
-    draw();
-  });
-}
-for (const el of [anchorEl, pivotXEl, pivotYEl]) {
-  el?.addEventListener("input", () => {
-    syncLabels();
-    draw();
-  });
-}
-// select は環境によって input が出ない。change でも描き直す。
-anchorEl?.addEventListener("change", () => {
+function onEdit() {
+  storeVisible();
   syncLabels();
   draw();
-});
+}
+for (const el of [offXEl, offYEl]) {
+  el?.addEventListener("input", onEdit);
+}
+for (const el of [anchorEl, pivotXEl, pivotYEl]) {
+  el?.addEventListener("input", onEdit);
+}
+anchorEl?.addEventListener("change", onEdit);
 resEl?.addEventListener("change", () => {
   const { w } = readRes();
   if (viewwEl) viewwEl.value = String(w);
@@ -434,23 +531,44 @@ applyCanvasSize();
 const urlSpec = {
   res: { el: resEl, kind: "select" },
   vieww: { el: viewwEl, kind: "range" },
-  anchor: { el: anchorEl, kind: "select" },
-  px: { el: pivotXEl, kind: "range" },
-  py: { el: pivotYEl, kind: "range" },
-  ox: { el: offXEl, kind: "number" },
-  oy: { el: offYEl, kind: "number" },
+  anchor: { el: hidden.score.anchor, kind: "select" },
+  px: { el: hidden.score.px, kind: "number" },
+  py: { el: hidden.score.py, kind: "number" },
+  ox: { el: hidden.score.ox, kind: "number" },
+  oy: { el: hidden.score.oy, kind: "number" },
+  ha: { el: hidden.status.anchor, kind: "select" },
+  hpx: { el: hidden.status.px, kind: "number" },
+  hpy: { el: hidden.status.py, kind: "number" },
+  hox: { el: hidden.status.ox, kind: "number" },
+  hoy: { el: hidden.status.oy, kind: "number" },
+  ma: { el: hidden.message.anchor, kind: "select" },
+  mpx: { el: hidden.message.px, kind: "number" },
+  mpy: { el: hidden.message.py, kind: "number" },
+  mox: { el: hidden.message.ox, kind: "number" },
+  moy: { el: hidden.message.oy, kind: "number" },
+  part: { el: partEl, kind: "select" },
 };
+document.getElementById("btn-copy-url")?.addEventListener(
+  "click",
+  () => {
+    storeVisible();
+  },
+  true
+);
 mountShareLink({
   spec: urlSpec,
   button: document.getElementById("btn-copy-url"),
   statusEl: document.getElementById("status"),
 });
 const urlResult = applyParamsToControls(urlSpec);
-readOffsetInputs();
-syncLabels();
+for (const part of parts) readHidden(part);
+loadVisible();
 applyCanvasSize();
 if (urlResult.warning) setStatus(urlResult.warning);
-document.getElementById("submit-d")?.addEventListener("input", () => {
+partEl?.addEventListener("change", () => {
+  storeVisible();
+  editingId = partEl.value;
+  loadVisible();
   draw();
 });
 if (canvas.parentElement && typeof ResizeObserver !== "undefined") {

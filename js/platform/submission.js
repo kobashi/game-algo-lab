@@ -126,7 +126,7 @@ function sectionHtml(a, topicId) {
         ${
           a.hint?.length
             ? `<div class="guide-note submission-hint">
-          <p class="exercise-line"><strong>ヒント（ゲームをあまり遊ばない人へ）</strong></p>
+          <p class="exercise-line"><strong>${escapeHtml(a.hintTitle || "ヒント（ゲームをあまり遊ばない人へ）")}</strong></p>
           ${a.hint.map((t) => `<p class="exercise-line">${inline(t)}</p>`).join("\n          ")}
         </div>`
             : ""

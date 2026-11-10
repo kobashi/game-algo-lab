@@ -32,57 +32,9 @@
  *   discuss: string[],
  *   example?: string,
  *   hint?: string[],
+ *   hintTitle?: string,
  * }} Assignment
  */
-
-const UI_PLACES = [
-  "仮想画面の左上。画面の上の辺と左の辺から、ボタンの外側の辺まで 16 px",
-  "仮想画面の右上。画面の上の辺と右の辺から、ボタンの外側の辺まで 16 px",
-  "仮想画面の真ん中。ボタンの中心を、画面の真ん中に合わせる",
-  "仮想画面の右下。画面の下の辺と右の辺から、ボタンの外側の辺まで 16 px",
-  "仮想画面の下の真ん中。画面の下の辺からボタンの外側まで 16 px。左右は、ボタンの中心を画面の真ん中に合わせる",
-];
-
-/** UI_PLACES と同じ順。画面に出す短い名前 */
-const UI_PLACE_NAMES = ["左上", "右上", "真ん中", "右下", "下の真ん中"];
-/** UI_PLACES の文と同じ、画面の辺からボタンの外側までの空き */
-const UI_EDGE_PX = 16;
-
-/**
- * 課題 8 の公開ルールで、青いボタンが収まる矩形。
- * Anchor・Pivot・Offset の組は返さない。
- * @param {number} d 学籍番号の末尾 0〜9
- * @param {number} parentW
- * @param {number} parentH
- * @param {number} widgetW
- * @param {number} widgetH
- * @returns {{ x: number, y: number, w: number, h: number, name: string } | null}
- */
-export function uiAssignmentTarget(d, parentW, parentH, widgetW, widgetH) {
-  const n = Number(d);
-  if (!Number.isInteger(n) || n < 0 || n > 9) return null;
-  const place = (n + 2) % UI_PLACES.length;
-  const m = UI_EDGE_PX;
-  let x;
-  let y;
-  if (place === 0) {
-    x = m;
-    y = m;
-  } else if (place === 1) {
-    x = parentW - m - widgetW;
-    y = m;
-  } else if (place === 2) {
-    x = parentW / 2 - widgetW / 2;
-    y = parentH / 2 - widgetH / 2;
-  } else if (place === 3) {
-    x = parentW - m - widgetW;
-    y = parentH - m - widgetH;
-  } else {
-    x = parentW / 2 - widgetW / 2;
-    y = parentH - m - widgetH;
-  }
-  return { x, y, w: widgetW, h: widgetH, name: UI_PLACE_NAMES[place] };
-}
 
 /** @type {Record<string, Assignment>} */
 export const ASSIGNMENTS = {
@@ -228,19 +180,28 @@ export const ASSIGNMENTS = {
 
   "gfx-ui-canvas": {
     number: 8,
-    title: "どの幅でも崩れない HUD",
-    question: "画面の幅が変わっても、青いボタンを決めた場所に置き続けられるか。",
-    personal: (d) => `青いボタンを置く場所 = ${UI_PLACES[(d + 2) % 5]}`,
+    title: "どの幅でも読める HUD",
+    question: "画面の幅が変わっても、スコア、ステータス、イベントメッセージを、読める位置に置き続けられるか。",
+    hintTitle: "ヒント",
+    hint: [
+      "スコアは、幅が変わっても画面の中に残る辺へ寄せます。ステータスは、スコアと重ならない別の辺へ寄せます。",
+      "イベントメッセージは、画面の中央付近に置き、幅が変わっても大きくずれないようにします。",
+      "3 つの幅で、それぞれの表示の Anchor・Pivot・Offset は同じにします。変えるのは幅だけです。",
+    ],
+    personal: (d) =>
+      `くわしく理由を書く表示 = ${["スコア", "ステータス", "イベントメッセージ"][d % 3]}`,
     urls: [
       { id: "A", label: "幅（連続）480（`vieww=480`）" },
       { id: "B", label: "幅（連続）640（`vieww=640`）" },
       { id: "C", label: "幅（連続）960（`vieww=960`）" },
     ],
-    condition: "3 本とも Anchor・Pivot・Offset（`ox`・`oy`）は同じにし、幅だけを変える。Anchor は仮想画面のどの点か、Pivot はボタンのどの点か。置く場所の 16 px は、画面の辺からボタンの外側の辺までの空き。ボタンの左上（Widget TL）までの距離ではない。学籍番号の末尾を入れると、仮想画面に緑の破線で、その枠が出る。",
-    observe: "3 つの幅での、青いボタンの左上（数表の Widget TL）と、画面の辺からボタンの外側の辺までの空き。仮想解像度は 640×360 のまま、幅だけを変える。",
+    condition:
+      "3 本とも、スコア・ステータス・イベントメッセージの Anchor・Pivot・Offset は同じにし、幅だけを変える。仮想解像度は 640×360 のまま。Anchor は仮想画面のどの点か、Pivot はその表示のどの点か。",
+    observe:
+      "3 つの幅で、スコア・ステータス・イベントメッセージが、どの辺または中央に残ったか。くわしく理由を書く表示については、その Anchor・Pivot と、数表の Widget TL。",
     discuss: [
-      "Anchor と Pivot をどう選んだか、その理由",
-      "左上 Anchor のままだとどうなるか",
+      "くわしく理由を書く表示について、その Anchor と Pivot を選んだ理由",
+      "3 つとも左上 Anchor のままだとどうなるか",
     ],
   },
 

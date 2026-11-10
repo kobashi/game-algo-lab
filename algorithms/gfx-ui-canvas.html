@@ -25,6 +25,7 @@
           <li><span class="term" data-term="anchor">Anchor</span> = 親の<span class="term" data-term="normalized-coords">正規化座標</span>（0〜1）</li>
           <li><span class="term" data-term="pivot">Pivot</span> = 自分のどの点を Anchor+<span class="term" data-term="offset">Offset</span> に合わせるか</li>
           <li><span class="term" data-term="resolution">解像度</span>変更で絶対 px 固定 UI は破綻しやすい</li>
+          <li>スコア、ステータス、イベントメッセージは、それぞれ別の Anchor と Pivot で置く</li>
           <li>仮想画面の枠は、選んだ解像度のピクセル数。1 px は正方形。幅のスライダーはその縦横比のまま。欄が狭いときだけ、同じ割合で縮む</li>
         </ul>
       </div>
@@ -33,7 +34,7 @@
       <section class="gl-main">
         <canvas id="ui-canvas" class="gl-canvas" width="640" height="360" tabindex="0"></canvas>
         <p id="ui-frame-note" class="ui-frame-note">仮想画面は 640×360 px。1 px は正方形です。枠もこの大きさです。</p>
-        <p id="ui-target-note" class="ui-frame-note" hidden>学籍番号の末尾を入れると、仮想画面に緑の破線で、あなたの目標の枠が出ます。</p>
+        <p class="ui-frame-note">青い表示がスコア、緑がステータス、金がイベントメッセージです。右の「編集する表示」で、動かすものを選びます。</p>
         <div id="ui-stats" class="coord-readout"></div>
         <div id="status" class="status-log" role="status">準備完了</div>
       </section>
@@ -48,6 +49,12 @@
         <label class="controls-label" for="vieww">幅（連続） <span id="vieww-val">640</span> px</label>
         <input type="range" id="vieww" class="ttt-range" min="320" max="960" value="640" step="10" />
         <p class="ui-frame-note">幅を変えても、選んだ仮想解像度の縦横比のままです。</p>
+        <label class="controls-label" for="part">編集する表示</label>
+        <select id="part" class="bandit-select">
+          <option value="score" selected>スコア</option>
+          <option value="status">ステータス</option>
+          <option value="message">イベントメッセージ</option>
+        </select>
         <label class="controls-label" for="anchor"><span class="term" data-term="anchor">Anchor</span> プリセット</label>
         <select id="anchor" class="bandit-select">
           <option value="top-left">左上</option>
@@ -66,11 +73,46 @@
           <label class="controls-label" for="off-y"><span class="term" data-term="offset">Offset</span> Y（px）</label>
           <input type="number" id="off-y" class="mc-num" min="-1000" max="1000" step="1" value="-20" aria-label="Offset Y" />
         </div>
-        <p class="ui-frame-note">ボタンをドラッグしても、この数は変わります。</p>
+        <p class="ui-frame-note">選んでいる表示をドラッグしても、この数は変わります。</p>
+        <div hidden>
+          <select id="score-anchor">
+            <option value="top-left">左上</option>
+            <option value="top-right">右上</option>
+            <option value="center">中央</option>
+            <option value="bottom-right" selected>右下</option>
+            <option value="bottom-stretch">下中央</option>
+          </select>
+          <input id="score-px" type="number" min="0" max="1" step="0.05" value="0.5" />
+          <input id="score-py" type="number" min="0" max="1" step="0.05" value="0.5" />
+          <input id="score-ox" type="number" min="-1000" max="1000" step="1" value="-20" />
+          <input id="score-oy" type="number" min="-1000" max="1000" step="1" value="-20" />
+          <select id="status-anchor">
+            <option value="top-left" selected>左上</option>
+            <option value="top-right">右上</option>
+            <option value="center">中央</option>
+            <option value="bottom-right">右下</option>
+            <option value="bottom-stretch">下中央</option>
+          </select>
+          <input id="status-px" type="number" min="0" max="1" step="0.05" value="0" />
+          <input id="status-py" type="number" min="0" max="1" step="0.05" value="0" />
+          <input id="status-ox" type="number" min="-1000" max="1000" step="1" value="16" />
+          <input id="status-oy" type="number" min="-1000" max="1000" step="1" value="16" />
+          <select id="message-anchor">
+            <option value="top-left">左上</option>
+            <option value="top-right">右上</option>
+            <option value="center" selected>中央</option>
+            <option value="bottom-right">右下</option>
+            <option value="bottom-stretch">下中央</option>
+          </select>
+          <input id="message-px" type="number" min="0" max="1" step="0.05" value="0.5" />
+          <input id="message-py" type="number" min="0" max="1" step="0.05" value="0.5" />
+          <input id="message-ox" type="number" min="-1000" max="1000" step="1" value="0" />
+          <input id="message-oy" type="number" min="-1000" max="1000" step="1" value="0" />
+        </div>
         <div class="controls-group-paint gl-params url-share-row">
           <button type="button" id="btn-copy-url" class="btn btn-ghost">この設定のURLをコピー</button>
         </div>
-        <p class="footer-muted">青いボタンをドラッグして <span class="term" data-term="offset">Offset</span> を変える。ボタンが画面の外に出たときは、橙の「ドラッグ」を動かす。</p>
+        <p class="footer-muted">選んでいる表示をドラッグして <span class="term" data-term="offset">Offset</span> を変える。画面の外に出たときは、橙の「ドラッグ」を動かす。</p>
       </aside>
     </div>
     <section class="code-section">
