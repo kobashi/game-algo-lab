@@ -43,6 +43,47 @@ const UI_PLACES = [
   "仮想画面の下の真ん中。画面の下の辺からボタンの外側まで 16 px。左右は、ボタンの中心を画面の真ん中に合わせる",
 ];
 
+/** UI_PLACES と同じ順。画面に出す短い名前 */
+const UI_PLACE_NAMES = ["左上", "右上", "真ん中", "右下", "下の真ん中"];
+/** UI_PLACES の文と同じ、画面の辺からボタンの外側までの空き */
+const UI_EDGE_PX = 16;
+
+/**
+ * 課題 8 の公開ルールで、青いボタンが収まる矩形。
+ * Anchor・Pivot・Offset の組は返さない。
+ * @param {number} d 学籍番号の末尾 0〜9
+ * @param {number} parentW
+ * @param {number} parentH
+ * @param {number} widgetW
+ * @param {number} widgetH
+ * @returns {{ x: number, y: number, w: number, h: number, name: string } | null}
+ */
+export function uiAssignmentTarget(d, parentW, parentH, widgetW, widgetH) {
+  const n = Number(d);
+  if (!Number.isInteger(n) || n < 0 || n > 9) return null;
+  const place = (n + 2) % UI_PLACES.length;
+  const m = UI_EDGE_PX;
+  let x;
+  let y;
+  if (place === 0) {
+    x = m;
+    y = m;
+  } else if (place === 1) {
+    x = parentW - m - widgetW;
+    y = m;
+  } else if (place === 2) {
+    x = parentW / 2 - widgetW / 2;
+    y = parentH / 2 - widgetH / 2;
+  } else if (place === 3) {
+    x = parentW - m - widgetW;
+    y = parentH - m - widgetH;
+  } else {
+    x = parentW / 2 - widgetW / 2;
+    y = parentH - m - widgetH;
+  }
+  return { x, y, w: widgetW, h: widgetH, name: UI_PLACE_NAMES[place] };
+}
+
 /** @type {Record<string, Assignment>} */
 export const ASSIGNMENTS = {
   "game-loop": {
@@ -195,7 +236,7 @@ export const ASSIGNMENTS = {
       { id: "B", label: "幅（連続）640（`vieww=640`）" },
       { id: "C", label: "幅（連続）960（`vieww=960`）" },
     ],
-    condition: "3 本とも Anchor・Pivot・Offset（`ox`・`oy`）は同じにし、幅だけを変える。Anchor は仮想画面のどの点か、Pivot はボタンのどの点か。置く場所の 16 px は、画面の辺からボタンの外側の辺までの空き。ボタンの左上（Widget TL）までの距離ではない。",
+    condition: "3 本とも Anchor・Pivot・Offset（`ox`・`oy`）は同じにし、幅だけを変える。Anchor は仮想画面のどの点か、Pivot はボタンのどの点か。置く場所の 16 px は、画面の辺からボタンの外側の辺までの空き。ボタンの左上（Widget TL）までの距離ではない。学籍番号の末尾を入れると、仮想画面に緑の破線で、その枠が出る。",
     observe: "3 つの幅での、青いボタンの左上（数表の Widget TL）と、画面の辺からボタンの外側の辺までの空き。仮想解像度は 640×360 のまま、幅だけを変える。",
     discuss: [
       "Anchor と Pivot をどう選んだか、その理由",

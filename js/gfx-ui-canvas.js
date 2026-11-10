@@ -2,6 +2,7 @@
  * UI Canvas — Anchor / Pivot / 解像度
  */
 import { GFX_UI_CANVAS_CONFIG as C } from "./maps/gfx-ui-canvas-config.js";
+import { uiAssignmentTarget } from "./courses/intro-assignments.js";
 import {
   createStatus,
   loadTextSample,
@@ -10,6 +11,7 @@ import {
   mountShareLink,
   mountGlossary,
   formatTenths,
+  parseDigit,
 } from "./platform/index.js";
 
 mountTopicShellFromDataset();
@@ -39,6 +41,7 @@ const viewwEl = /** @type {HTMLInputElement} */ (
 const viewwVal = document.getElementById("vieww-val");
 const statsEl = document.getElementById("ui-stats");
 const frameNote = document.getElementById("ui-frame-note");
+const targetNote = document.getElementById("ui-target-note");
 const csharpSample = document.getElementById("csharp-sample");
 const setStatus = createStatus(document.getElementById("status"));
 
@@ -61,6 +64,10 @@ function writeOffsetInputs() {
 }
 let dragging = false;
 let dragStart = { x: 0, y: 0, ox: 0, oy: 0 };
+/** 画面内にこれより狭い辺があると、ボタン本体ではつかみにくい */
+const GRAB_MIN = 28;
+const GRAB_W = 84;
+const GRAB_H = 32;
 
 /**
  * Compute top-left of widget given parent size, anchor, pivot, offset, widget size.
@@ -143,6 +150,102 @@ function fitFrame() {
   }
 }
 
+/**
+ * ボタンが画面の外に出て、残っている部分が小さいときのつまみ。
+ * 画面内に十分残っているときは出さない（既定の右下はそのまま）。
+ * @returns {{ x: number, y: number, w: number, h: number } | null}
+ */
+function buttonGrab(L, W, H) {
+  const x0 = Math.max(L.x, 0);
+  const y0 = Math.max(L.y, 0);
+  const x1 = Math.min(L.x + C.widgetW, W);
+  const y1 = Math.min(L.y + C.widgetH, H);
+  if (x1 - x0 >= GRAB_MIN && y1 - y0 >= GRAB_MIN) return null;
+  const cx = Math.min(Math.max(L.x + C.widgetW / 2, GRAB_W / 2 + 4), W - GRAB_W / 2 - 4);
+  const cy = Math.min(Math.max(L.y + C.widgetH / 2, GRAB_H / 2 + 4), H - GRAB_H / 2 - 4);
+  return { x: cx - GRAB_W / 2, y: cy - GRAB_H / 2, w: GRAB_W, h: GRAB_H };
+}
+
+function insideRect(px, py, x, y, w, h) {
+  return px >= x && px <= x + w && py >= y && py <= y + h;
+}
+
+/** 学籍番号の末尾があるときだけ、公開ルールの目標枠。Offset の答えは描かない。 */
+function readTarget(W, H) {
+  const d = parseDigit(document.getElementById("submit-d")?.value);
+  if (d == null) return null;
+  return uiAssignmentTarget(d, W, H, C.widgetW, C.widgetH);
+}
+
+function syncTargetNote(target) {
+  if (!targetNote) return;
+  const course = new URLSearchParams(location.search).get("course") === "intro";
+  if (!course) {
+    targetNote.hidden = true;
+    return;
+  }
+  targetNote.hidden = false;
+  targetNote.textContent = target
+    ? `緑の破線は、あなたの目標（${target.name}）です。青いボタンを、この枠に重ねます。`
+    : "学籍番号の末尾を入れると、仮想画面に緑の破線で、あなたの目標の枠が出ます。";
+}
+
+function drawTargetFill(target) {
+  if (!ctx || !target) return;
+  ctx.save();
+  ctx.fillStyle = "rgba(107, 203, 143, 0.14)";
+  ctx.fillRect(target.x, target.y, target.w, target.h);
+  ctx.restore();
+}
+
+function drawTargetFrame(target, W, H) {
+  if (!ctx || !target) return;
+  ctx.save();
+  ctx.strokeStyle = "#6bcb8f";
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 4]);
+  ctx.strokeRect(target.x + 1, target.y + 1, target.w - 2, target.h - 2);
+  ctx.setLineDash([]);
+  ctx.fillStyle = "#6bcb8f";
+  ctx.font = "12px sans-serif";
+  const text = `目標: ${target.name}`;
+  const tw = ctx.measureText(text).width;
+  let lx = target.x;
+  let ly = target.y - 8;
+  if (ly < 12) {
+    if (target.x + target.w + 8 + tw <= W - 4) {
+      lx = target.x + target.w + 8;
+      ly = Math.min(H - 6, target.y + 16);
+    } else if (target.y + target.h + 16 <= H) {
+      ly = target.y + target.h + 16;
+    } else {
+      lx = target.x + 6;
+      ly = target.y + target.h - 8;
+    }
+  }
+  ctx.fillText(text, lx, ly);
+  ctx.restore();
+}
+
+function drawGrab(grab) {
+  if (!ctx || !grab) return;
+  ctx.save();
+  ctx.beginPath();
+  if (typeof ctx.roundRect === "function") ctx.roundRect(grab.x, grab.y, grab.w, grab.h, 8);
+  else ctx.rect(grab.x, grab.y, grab.w, grab.h);
+  ctx.fillStyle = "rgba(224, 122, 95, 0.95)";
+  ctx.fill();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "#fff7f2";
+  ctx.stroke();
+  ctx.fillStyle = "#fff7f2";
+  ctx.font = "bold 13px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("ドラッグ", grab.x + grab.w / 2, grab.y + grab.h / 2);
+  ctx.restore();
+}
+
 function applyCanvasSize() {
   const { w, h, raw } = bufferSize();
   if (canvas.width !== w) canvas.width = w;
@@ -162,6 +265,8 @@ function draw() {
   const ww = C.widgetW;
   const wh = C.widgetH;
   const L = layoutWidget(W, H, ax, ay, px, py, offX, offY, ww, wh);
+  const target = readTarget(W, H);
+  const grab = buttonGrab(L, W, H);
 
   // parent (screen)
   ctx.fillStyle = "#0a0e14";
@@ -179,6 +284,8 @@ function draw() {
     ctx.lineTo(W, (H * i) / 4);
     ctx.stroke();
   }
+
+  drawTargetFill(target);
 
   // anchor point
   ctx.fillStyle = "#6bcb8f";
@@ -225,6 +332,10 @@ function draw() {
   ctx.fill();
   ctx.fillText("Pivot", pivX + 8, pivY + 4);
 
+  drawTargetFrame(target, W, H);
+  drawGrab(grab);
+  syncTargetNote(target);
+
   if (statsEl) {
     statsEl.innerHTML = `
       <table class="coord-table">
@@ -264,12 +375,10 @@ canvas.addEventListener("pointerdown", (e) => {
     C.widgetH
   );
   const p = pointerPos(e);
-  if (
-    p.x >= L.x &&
-    p.x <= L.x + C.widgetW &&
-    p.y >= L.y &&
-    p.y <= L.y + C.widgetH
-  ) {
+  const onButton = insideRect(p.x, p.y, L.x, L.y, C.widgetW, C.widgetH);
+  const grab = buttonGrab(L, canvas.width, canvas.height);
+  const onGrab = grab != null && insideRect(p.x, p.y, grab.x, grab.y, grab.w, grab.h);
+  if (onButton || onGrab) {
     dragging = true;
     dragStart = { x: p.x, y: p.y, ox: offX, oy: offY };
     canvas.setPointerCapture(e.pointerId);
@@ -299,6 +408,11 @@ for (const el of [anchorEl, pivotXEl, pivotYEl]) {
     draw();
   });
 }
+// select は環境によって input が出ない。change でも描き直す。
+anchorEl?.addEventListener("change", () => {
+  syncLabels();
+  draw();
+});
 resEl?.addEventListener("change", () => {
   const { w } = readRes();
   if (viewwEl) viewwEl.value = String(w);
@@ -336,6 +450,9 @@ readOffsetInputs();
 syncLabels();
 applyCanvasSize();
 if (urlResult.warning) setStatus(urlResult.warning);
+document.getElementById("submit-d")?.addEventListener("input", () => {
+  draw();
+});
 if (canvas.parentElement && typeof ResizeObserver !== "undefined") {
   const frameObserver = new ResizeObserver(() => fitFrame());
   frameObserver.observe(canvas.parentElement);

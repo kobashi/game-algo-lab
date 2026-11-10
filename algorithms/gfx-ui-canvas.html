@@ -33,10 +33,11 @@
       <section class="gl-main">
         <canvas id="ui-canvas" class="gl-canvas" width="640" height="360" tabindex="0"></canvas>
         <p id="ui-frame-note" class="ui-frame-note">仮想画面は 640×360 px。1 px は正方形です。枠もこの大きさです。</p>
+        <p id="ui-target-note" class="ui-frame-note" hidden>学籍番号の末尾を入れると、仮想画面に緑の破線で、あなたの目標の枠が出ます。</p>
         <div id="ui-stats" class="coord-readout"></div>
         <div id="status" class="status-log" role="status">準備完了</div>
       </section>
-      <aside class="gl-side">
+      <aside class="gl-side ui-side">
         <label class="controls-label" for="res">仮想<span class="term" data-term="resolution">解像度</span></label>
         <select id="res" class="bandit-select">
           <option value="640x360">640×360</option>
@@ -59,15 +60,17 @@
         <input type="range" id="pivot-x" class="ttt-range" min="0" max="1" value="0.5" step="0.05" />
         <label class="controls-label" for="pivot-y">Pivot Y <span id="pivot-y-val">0.50</span></label>
         <input type="range" id="pivot-y" class="ttt-range" min="0" max="1" value="0.5" step="0.05" />
-        <label class="controls-label" for="off-x"><span class="term" data-term="offset">Offset</span> X / Y（px。ボタンのドラッグでも変わる）</label>
-        <div class="control-row">
+        <div class="ui-offset-fields">
+          <label class="controls-label" for="off-x"><span class="term" data-term="offset">Offset</span> X（px）</label>
           <input type="number" id="off-x" class="mc-num" min="-1000" max="1000" step="1" value="-20" aria-label="Offset X" />
+          <label class="controls-label" for="off-y"><span class="term" data-term="offset">Offset</span> Y（px）</label>
           <input type="number" id="off-y" class="mc-num" min="-1000" max="1000" step="1" value="-20" aria-label="Offset Y" />
         </div>
+        <p class="ui-frame-note">ボタンをドラッグしても、この数は変わります。</p>
         <div class="controls-group-paint gl-params url-share-row">
           <button type="button" id="btn-copy-url" class="btn btn-ghost">この設定のURLをコピー</button>
         </div>
-        <p class="footer-muted">ボタンをドラッグして <span class="term" data-term="offset">Offset</span> を変更。</p>
+        <p class="footer-muted">青いボタンをドラッグして <span class="term" data-term="offset">Offset</span> を変える。ボタンが画面の外に出たときは、橙の「ドラッグ」を動かす。</p>
       </aside>
     </div>
     <section class="code-section">
