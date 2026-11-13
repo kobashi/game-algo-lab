@@ -1,9 +1,11 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-11-10（ready **110** · Release **v0.20.0**）  
+最終更新: 2026-11-13（ready **110** · Release **v0.20.0**）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.20.0
+
+**2026-11-13 UI の初期配置を画面の中にする（Grok）**: ページを開いたとき、スコアは画面の右下からはみ出していた。右下のまま、画面の中に全部入る位置にした。ステータスとイベントメッセージの初期位置は変えていない。Anchor プリセット、ドラッグ、URL で開いた Offset は、これまでどおり。演習の 400 / 560 / 880 と右の辺から 80 px は、`ox=-20&oy=-20` を付けた URL で測る。左上を Pivot 0.5・Offset -20 の URL で開くと (-80, -44) のまま。修正 13→14。リリースは切らない。
 
 **2026-11-13 Anchor プリセットで画面の外に出ない（Grok）**: Anchor プリセットを変えると、その表示が画面の中に残るよう Offset だけを直す。Pivot は変えない。URL で開いた Offset と、ドラッグした位置は直さない。スコアを右上の URL で開いたときの 400 / 560 / 880 と、右の辺から 80 px は変えていない。修正 12→13。リリースは切らない。
 

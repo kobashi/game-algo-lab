@@ -48,7 +48,10 @@ const offXEl = /** @type {HTMLInputElement | null} */ (document.getElementById("
 const offYEl = /** @type {HTMLInputElement | null} */ (document.getElementById("off-y"));
 
 /**
- * 画面上の 3 つの表示。スコアの大きさは 120×48 のまま（演習の 80 px を保つ）。
+ * 画面上の 3 つの表示。スコアの大きさは 120×48 のまま。
+ * ページを開いたときのスコアは右下で、外側の辺が画面の辺から 16 px 内側
+ * （ステータスと同じ空き）。Pivot 0.5 なので ox = -(16+60)、oy = -(16+24)。
+ * 演習の 80 px は、URL に ox=-20・oy=-20 を付けたときの読み。
  * URL の anchor・px・py・ox・oy はスコア。ステータスとメッセージは別のキー。
  */
 const parts = [
@@ -60,8 +63,8 @@ const parts = [
     anchor: "bottom-right",
     px: 0.5,
     py: 0.5,
-    ox: -20,
-    oy: -20,
+    ox: -76,
+    oy: -40,
     fill: "rgba(91,159,212,0.92)",
     stroke: "#e8eef7",
     ink: "#e8eef7",
