@@ -49,9 +49,9 @@ const offYEl = /** @type {HTMLInputElement | null} */ (document.getElementById("
 
 /**
  * 画面上の 3 つの表示。スコアの大きさは 120×48 のまま。
- * ページを開いたときのスコアは右下で、外側の辺が画面の辺から 16 px 内側
- * （ステータスと同じ空き）。Pivot 0.5 なので ox = -(16+60)、oy = -(16+24)。
- * 演習の右上は ox=-76・oy=40。左上の x は 344 / 504 / 824、右の辺から 136 px。
+ * ページを開いたときは 3 つとも左上 Anchor・Pivot 0.5 で、左上あたりに重なる。
+ * 画面の中には入るが、辺や中央に置き終えた配置ではない。
+ * スコア ox=90・oy=70 で左上は (30, 46)。幅を変えても x は 30。
  * URL の anchor・px・py・ox・oy はスコア。ステータスとメッセージは別のキー。
  */
 const parts = [
@@ -60,11 +60,11 @@ const parts = [
     name: "スコア",
     w: C.widgetW,
     h: C.widgetH,
-    anchor: "bottom-right",
+    anchor: "top-left",
     px: 0.5,
     py: 0.5,
-    ox: -76,
-    oy: -40,
+    ox: 90,
+    oy: 70,
     fill: "rgba(91,159,212,0.92)",
     stroke: "#e8eef7",
     ink: "#e8eef7",
@@ -75,10 +75,10 @@ const parts = [
     w: 150,
     h: 36,
     anchor: "top-left",
-    px: 0,
-    py: 0,
-    ox: 16,
-    oy: 16,
+    px: 0.5,
+    py: 0.5,
+    ox: 110,
+    oy: 90,
     fill: "rgba(126,184,122,0.92)",
     stroke: "#d5f0cf",
     ink: "#10210f",
@@ -88,11 +88,11 @@ const parts = [
     name: "イベントメッセージ",
     w: 220,
     h: 40,
-    anchor: "center",
+    anchor: "top-left",
     px: 0.5,
     py: 0.5,
-    ox: 0,
-    oy: 0,
+    ox: 150,
+    oy: 100,
     fill: "rgba(242,204,143,0.94)",
     stroke: "#f2cc8f",
     ink: "#2a2116",
@@ -214,7 +214,7 @@ function fitFrame() {
 
 /**
  * ボタンが画面の外に出て、残っている部分が小さいときのつまみ。
- * 画面内に十分残っているときは出さない（既定の右下はそのまま）。
+ * 画面内に十分残っているときは出さない（ページを開いた重なりはそのまま）。
  * @returns {{ x: number, y: number, w: number, h: number } | null}
  */
 function overlaps(a, b) {
@@ -716,7 +716,7 @@ loadTextSample(
 );
 if (pivotXEl) pivotXEl.value = String(C.defaultPivotX);
 if (pivotYEl) pivotYEl.value = String(C.defaultPivotY);
-if (anchorEl) anchorEl.value = "bottom-right";
+if (anchorEl) anchorEl.value = "top-left";
 syncLabels();
 applyCanvasSize();
 
