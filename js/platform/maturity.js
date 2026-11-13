@@ -369,7 +369,7 @@ export const TOPIC_META = {
   },
   "gfx-ui-canvas": {
     maturity: "revised",
-    revisions: 14,
+    revisions: 15,
     updated: "2026-11-13",
   },
   "gfx-mesh-uv": {

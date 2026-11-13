@@ -51,7 +51,7 @@ const offYEl = /** @type {HTMLInputElement | null} */ (document.getElementById("
  * 画面上の 3 つの表示。スコアの大きさは 120×48 のまま。
  * ページを開いたときのスコアは右下で、外側の辺が画面の辺から 16 px 内側
  * （ステータスと同じ空き）。Pivot 0.5 なので ox = -(16+60)、oy = -(16+24)。
- * 演習の 80 px は、URL に ox=-20・oy=-20 を付けたときの読み。
+ * 演習の右上は ox=-76・oy=40。左上の x は 344 / 504 / 824、右の辺から 136 px。
  * URL の anchor・px・py・ox・oy はスコア。ステータスとメッセージは別のキー。
  */
 const parts = [
