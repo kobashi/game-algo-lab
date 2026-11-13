@@ -657,6 +657,31 @@ canvas.addEventListener("pointerup", () => {
   dragging = false;
 });
 
+/**
+ * Anchor プリセットを変えたとき、表示が画面の外に出ないよう Offset だけを直す。
+ * Pivot と、URL で開いたときの Offset は変えない。
+ */
+function pullActiveInside() {
+  const part = activePart();
+  const W = canvas.width;
+  const H = canvas.height;
+  if (W <= 0 || H <= 0) return;
+  const a = anchorOf(part.anchor);
+  const L = layoutWidget(W, H, a.ax, a.ay, part.px, part.py, part.ox, part.oy, part.w, part.h);
+  const maxX = Math.max(0, W - part.w);
+  const maxY = Math.max(0, H - part.h);
+  const x = Math.min(Math.max(L.x, 0), maxX);
+  const y = Math.min(Math.max(L.y, 0), maxY);
+  if (Math.abs(x - L.x) < 0.5 && Math.abs(y - L.y) < 0.5) return;
+  part.ox = Math.round(x - a.ax * W + part.px * part.w);
+  part.oy = Math.round(y - a.ay * H + part.py * part.h);
+  if (offXEl) offXEl.value = String(part.ox);
+  if (offYEl) offYEl.value = String(part.oy);
+  const h = hidden[part.id];
+  h.ox.value = String(part.ox);
+  h.oy.value = String(part.oy);
+}
+
 function onEdit() {
   storeVisible();
   syncLabels();
@@ -665,10 +690,15 @@ function onEdit() {
 for (const el of [offXEl, offYEl]) {
   el?.addEventListener("input", onEdit);
 }
-for (const el of [anchorEl, pivotXEl, pivotYEl]) {
+for (const el of [pivotXEl, pivotYEl]) {
   el?.addEventListener("input", onEdit);
 }
-anchorEl?.addEventListener("change", onEdit);
+anchorEl?.addEventListener("change", () => {
+  storeVisible();
+  pullActiveInside();
+  syncLabels();
+  draw();
+});
 resEl?.addEventListener("change", () => {
   const { w } = readRes();
   if (viewwEl) viewwEl.value = String(w);

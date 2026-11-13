@@ -1072,7 +1072,7 @@ export const TOPICS = [
     id: "gfx-ui-canvas",
     title: "UI 描画（Anchor・Pivot）",
     description:
-      "スコア、ステータス、メッセージを、それぞれの Anchor と Pivot で置く。奥の仮のステージは、置く場所の参考。仮想画面は選んだ解像度の正方形ピクセル。",
+      "スコア、ステータス、メッセージを、それぞれの Anchor と Pivot で置く。Anchor プリセットを変えても画面の中に残る。奥の仮のステージは、置く場所の参考。仮想画面は選んだ解像度の正方形ピクセル。",
     href: "algorithms/gfx-ui-canvas.html",
     badge: "ゲーム CG",
     category: "ゲーム CG",

@@ -26,6 +26,7 @@
           <li><span class="term" data-term="pivot">Pivot</span> = 自分のどの点を Anchor+<span class="term" data-term="offset">Offset</span> に合わせるか</li>
           <li><span class="term" data-term="resolution">解像度</span>変更で絶対 px 固定 UI は破綻しやすい</li>
           <li>スコア、ステータス、イベントメッセージは、それぞれ別の Anchor と Pivot で置く</li>
+          <li>Anchor プリセットを変えると、表示が画面の外に出ないよう Offset を合わせる</li>
           <li>奥の仮のステージは、UI が走る人や足場のどこに重なるかを見る参考。動くが、クリックしても操作できない。全員同じ絵で、URL には入らない</li>
           <li>仮想画面の枠は、選んだ解像度のピクセル数。1 px は正方形。幅のスライダーはその縦横比のまま。欄が狭いときだけ、同じ割合で縮む</li>
         </ul>
@@ -64,6 +65,7 @@
           <option value="bottom-right" selected>右下</option>
           <option value="bottom-stretch">下中央</option>
         </select>
+        <p class="ui-frame-note">プリセットを変えると、その表示が画面の外に出ないよう Offset を合わせます。ドラッグで動かした位置と、URL の Offset はそのままです。</p>
         <label class="controls-label" for="pivot-x"><span class="term" data-term="pivot">Pivot</span> X <span id="pivot-x-val">0.50</span></label>
         <input type="range" id="pivot-x" class="ttt-range" min="0" max="1" value="0.5" step="0.05" />
         <label class="controls-label" for="pivot-y">Pivot Y <span id="pivot-y-val">0.50</span></label>
