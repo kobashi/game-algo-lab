@@ -1,9 +1,11 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-11-13（ready **110** · Release **v0.20.0**）  
+最終更新: 2026-11-20（ready **110** · Release **v0.20.0**）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.20.0
+
+**2026-11-20 イベントと効果音に、BGM とバスと状況連動を足す（Grok）**: 同じページの購読側に、BGM（ループ、曲のクロスフェード、同期レイヤー）、OneShot の発音数、バスとコンプレッサー、体力・緊張・場面・ダッキング、イベントだけを出す実験プレイを足した。Jump / Land / Hit / Pickup の Emit、`?ev=Hit&freq=880` の 880 Hz、ミュート中の `Emit` と `SE (muted)` は残している。音源は合成。修正 7→8。リリースは切らない。
 
 **2026-11-13 初期配置を未完成にし、Pivot の効果を演習で読む（Grok）**: ページを開くと、スコア、ステータス、イベントメッセージは左上あたりで重なる。画面の中には入るが、辺や中央に置き終えた配置ではない。演習は Anchor と Offset を固定し、Pivot だけを変える。メッセージは中央で、Pivot (0, 0) と (0.5, 0.5) の左上を読む。スコアは右上で、Pivot (0, 0) だとほとんど画面の外、Pivot (1, 0) だと画面の中に入り、左上の x は 336 / 496 / 816、右の辺から 144 px。修正 15→16。リリースは切らない。
 

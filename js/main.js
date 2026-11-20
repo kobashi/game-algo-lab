@@ -874,7 +874,7 @@ export const TOPICS = [
     id: "sfx-events",
     title: "イベントと効果音",
     description:
-      "ゲームイベントを Emit して SE を再生。Web Audio トーン + ログ。",
+      "ゲームイベントを Emit し、購読側が効果音・BGM・バスを鳴らす。Web Audio。",
     href: "algorithms/sfx-events.html",
     badge: "サウンド",
     category: "サウンド",
