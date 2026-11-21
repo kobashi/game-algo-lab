@@ -5,6 +5,8 @@
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.20.0
 
+**2026-11-21 応用サウンド総合演習の試聴と保存を採点に合わせる（Grok）** — AUDIO-ADAPT-01 は、地面に触れる直前の垂直速度を着地の関数へ渡す。ジャンプの着地は 275。AUDIO-ADAPT-02 は、上限で選んだ発音をその場で止める。AUDIO-ADAPT-03 は、stepInterval が返す秒が経過するたびに足音を鳴らす。0.5 秒の関数を 1.1 秒歩くと足音は 2 回。AUDIO-TASK-01 は、JSON の保存時に今の関数と設計文を採点する。この保存は共通の学生課題欄で、総合演習以外の修正回数は変えない。audio-adaptive-lab は修正 0→1、成熟度は一発のまま。一発未調整の修正合計は 10。Motion Audio の観察は移動距離の説明のまま。入門の Emit Land もそのまま。リリースは切らない。再検証は Codex。[レビュー](docs/reviews/2026-11-21-audio-adaptive-lab-review.md)
+
 **2026-11-21 サウンドを入門と応用に分ける（Grok）**: 入門のイベントと効果音は、発行、購読、OneShot、周波数・長さ・音量、BGM の重ね、実験プレイの発行に限った。発音数、ランダム化、バスと圧縮、ループ時刻、等パワーの切替、材質、距離の警告は、元の URL の応用トピックへ寄せた。Motion Audio と Adaptive Game Audio を追加し、応用サウンドコースを `courses/audio.html` に置いた。評価は学生が書いた関数の動作テストで、総合演習は 100 点を JSON にする。画面確認では、Hit 880 Hz、Jump 440 Hz、ミュート中の Emit と SE (muted)、初期コードの不合格と書いた関数の合格、1280 と 390 で横にはみ出さないことを見た。ready 110→112。sfx-events は修正 8→9。一発未調整の修正合計は 9（応用サウンド 9 本が修正 1）。リリースは切らない。
 
 **2026-11-20 イベントと効果音に、BGM とバスと状況連動を足す（Grok）**: 同じページの購読側に、BGM（ループ、曲のクロスフェード、同期レイヤー）、OneShot の発音数、バスとコンプレッサー、体力・緊張・場面・ダッキング、イベントだけを出す実験プレイを足した。Jump / Land / Hit / Pickup の Emit、`?ev=Hit&freq=880` の 880 Hz、ミュート中の `Emit` と `SE (muted)` は残している。音源は合成。修正 7→8。リリースは切らない。

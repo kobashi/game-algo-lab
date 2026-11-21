@@ -226,7 +226,7 @@
 | `bgm-transition-compare` | BGM 切替方式の比較 | ✅ | **一発** | 1 | 2026-11-21 | `algorithms/bgm-transition-compare.html` | [SPEC](./bgm-transition-compare/SPEC.md) | 等パワーと、切替途中からの再切替 |
 | `bgm-interactive` | 拍同期・レイヤー型 BGM | ✅ | **一発** | 1 | 2026-11-21 | `algorithms/bgm-interactive.html` | [SPEC](./bgm-interactive/SPEC.md) | 通常・警戒・戦闘。学生の layerGains |
 | `audio-motion` | Motion Audio | ✅ | **一発** | 0 | 2026-11-21 | `algorithms/audio-motion.html` | [SPEC](./audio-motion/SPEC.md) | 足音と速度連動。曲線は共有モジュール |
-| `audio-adaptive-lab` | Adaptive Game Audio | ✅ | **一発** | 0 | 2026-11-21 | `algorithms/audio-adaptive-lab.html` | [SPEC](./audio-adaptive-lab/SPEC.md) | 総合 100 点。結果は JSON |
+| `audio-adaptive-lab` | Adaptive Game Audio | ✅ | **一発** | 1 | 2026-11-21 | `algorithms/audio-adaptive-lab.html` | [SPEC](./audio-adaptive-lab/SPEC.md) | 着地直前の速度、停止した発音、足音の秒、保存時の再採点 |
 
 ---
 

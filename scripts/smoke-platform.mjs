@@ -41,6 +41,7 @@ import { GUIDES } from "../js/courses/intro-guides.js";
 import { CS_GUIDES } from "../js/courses/intro-csharp.js";
 import { buildSubmissionText, checkSubmissionUrl, parseDigit } from "../js/platform/submission.js";
 import { exerciseSectionHtml } from "../js/platform/exercises.js";
+import { createGameSim } from "../js/audio/game-sim.js";
 
 // --- rng ---
 const r1 = mulberry32(42);
@@ -589,13 +590,14 @@ function mockControl(kind, value, extra = {}) {
   assert.match(mainSrc, /sumRevisionsByMaturity\(TOPICS\)/);
   assert.match(mainSrc, /summary:\s*true/);
   // oneshot の修正回数は通常 0（MATURITY.md）。成熟度を revised に上げず、
-  // 中身を足した応用サウンド 9 本だけが修正 1。合計はそれらの revisions の和。
+  // 中身を足した応用サウンド 9 本と、試聴を採点に合わせた総合演習が修正 1。
   const oneshotRevised = TOPICS.filter((topic) => {
     const meta = resolveTopicMeta(topic.id);
     return meta.maturity === "oneshot" && meta.revisions > 0;
   }).map((topic) => topic.id);
   oneshotRevised.sort();
   assert.deepEqual(oneshotRevised, [
+    "audio-adaptive-lab",
     "audio-bus-ducking",
     "bgm-interactive",
     "bgm-loop",
@@ -606,7 +608,7 @@ function mockControl(kind, value, extra = {}) {
     "sfx-spatial",
     "sfx-voice-limit",
   ]);
-  assert.equal(sums.oneshot, 9, "oneshot revision total is 9");
+  assert.equal(sums.oneshot, 10, "oneshot revision total is 10");
   assert.equal(
     formatMaturityDetail(
       { maturity: "oneshot", revisions: 0, updated: "2026-07-22" },
@@ -1050,5 +1052,49 @@ assert.equal(formatTenths(-39.9), "-39.9");
 assert.ok(rangeFineHint(false).includes("0.1"));
 assert.equal(rangeFineHint(false).includes("細かい"), false);
 assert.ok(rangeFineHint(true).includes("0.1 より細かい目盛り"));
+
+// --- 総合演習: 着地イベントは、速度を 0 にする前の垂直速度を渡す ---
+{
+  const canvas = {
+    width: 640,
+    height: 180,
+    getContext() {
+      return { fillStyle: "", font: "", fillRect() {}, fillText() {} };
+    },
+  };
+  /** @type {{ name: string, speed?: number }[]} */
+  const lands = [];
+  const sim = createGameSim(
+    /** @type {HTMLCanvasElement} */ (canvas),
+    (name, payload) => {
+      if (name === "Land") {
+        lands.push({
+          name,
+          speed: Number(payload && /** @type {{ speed?: number }} */ (payload).speed),
+        });
+      }
+    },
+    { health: () => 100, timeScale: () => 1, focused: () => true },
+  );
+  for (let i = 0; i < 8; i++) sim.tick(1 / 60);
+  assert.equal(lands.length, 0, "standing on the ground does not emit Land");
+  assert.equal(sim.state().landSpeed, 0);
+  sim.pressJump();
+  let impact = 0;
+  for (let i = 0; i < 240; i++) {
+    sim.tick(1 / 60);
+    const speed = sim.state().landSpeed;
+    if (speed > 0) {
+      impact = speed;
+      assert.equal(sim.state().vy, 0, "vertical speed is cleared after the landing sample");
+      break;
+    }
+  }
+  assert.ok(impact > 40, `landing keeps the speed from just before contact, got ${impact}`);
+  assert.equal(lands.length, 1);
+  assert.equal(lands[0].speed, impact);
+  sim.tick(1 / 60);
+  assert.equal(sim.state().landSpeed, 0, "the landing speed is only for that tick");
+}
 
 console.log("smoke-platform.mjs: all assertions passed");

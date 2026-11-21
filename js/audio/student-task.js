@@ -122,7 +122,7 @@ export function mountStudentTask(host, task) {
 
   runBtn.addEventListener("click", execute);
   saveBtn.addEventListener("click", () => {
-    if (!lastJson) execute();
+    execute();
     if (!lastJson) return;
     const blob = new Blob([JSON.stringify(lastJson, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
