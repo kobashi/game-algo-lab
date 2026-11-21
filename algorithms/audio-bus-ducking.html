@@ -14,17 +14,19 @@
       <p class="breadcrumb"><a href="../index.html">ホーム</a> / サウンド / バスとダッキング</p>
       <h1>サウンドバスとダッキング</h1>
       <p class="page-header-lead">
-        Master の下に <strong>BGM / SE</strong> バス。SE 再生中は BGM を一時減衰（ダック）。
-        前段: <a href="sfx-events.html">イベントと効果音</a>。
+        Master / BGM / SFX のゲイン、ミュート、ソロ。重要な効果音では BGM を時間包絡で下げ、多重発音ではコンプレッサーの入出力を見ます。
+        前提: <a href="sfx-randomize.html?course=audio">SE のランダム化</a>。
+        次: <a href="sfx-material.html?course=audio">材質と衝突</a>。
       </p>
     </div>
     <details class="lesson-details" open>
       <summary>このデモで学ぶこと</summary>
       <div class="lesson-box lesson-box-nested">
         <ul>
-          <li>バスごとにゲインを分けて制御する</li>
-          <li>重要な SE のとき BGM を attack→hold→release で下げる</li>
-          <li>Master × Bus の階層</li>
+          <li>Master、BGM、SFX にゲイン、ミュート、ソロがある</li>
+          <li>重要な効果音のとき、BGM はアタック、ホールド、リリースで下がって戻る</li>
+          <li>コンプレッサーは Threshold、Ratio、Knee、Attack、Release で山を下げる。発音数の上限とは別</li>
+          <li>Peak と RMS は別の読みです</li>
         </ul>
       </div>
     </details>
@@ -40,6 +42,7 @@
         <div class="control-row">
           <button type="button" id="btn-bgm" class="btn btn-primary">BGM 再生</button>
           <button type="button" id="btn-se" class="btn btn-ghost">SE 発火</button>
+          <button type="button" id="btn-sustain" class="btn btn-ghost">持続音</button>
         </div>
         <label class="controls-label" for="master-gain">Master <span id="master-val">0.90</span></label>
         <input type="range" id="master-gain" class="ttt-range" min="0" max="1" value="0.9" step="0.05" />
@@ -47,9 +50,31 @@
         <input type="range" id="bgm-gain" class="ttt-range" min="0" max="1" value="0.55" step="0.05" />
         <label class="controls-label" for="se-gain">SE バス <span id="se-val">0.80</span></label>
         <input type="range" id="se-gain" class="ttt-range" min="0" max="1" value="0.8" step="0.05" />
+        <label class="ttt-check"><input type="checkbox" id="comp-on" /> コンプレッサー</label>
+        <label class="controls-label" for="comp-thr">Threshold <span id="comp-thr-val">-24</span> dB</label>
+        <input type="range" id="comp-thr" class="ttt-range" min="-60" max="0" value="-24" step="1" />
+        <label class="controls-label" for="comp-ratio">Ratio <span id="comp-ratio-val">4</span></label>
+        <input type="range" id="comp-ratio" class="ttt-range" min="1" max="20" value="4" step="0.5" />
+        <label class="controls-label" for="comp-knee">Knee <span id="comp-knee-val">12</span> dB</label>
+        <input type="range" id="comp-knee" class="ttt-range" min="0" max="40" value="12" step="1" />
+        <label class="controls-label" for="comp-atk">Attack <span id="comp-atk-val">0.005</span> s</label>
+        <input type="range" id="comp-atk" class="ttt-range" min="0" max="0.2" value="0.005" step="0.001" />
+        <label class="controls-label" for="comp-rel">Release <span id="comp-rel-val">0.25</span> s</label>
+        <input type="range" id="comp-rel" class="ttt-range" min="0.01" max="1" value="0.25" step="0.01" />
+        <label class="ttt-check"><input type="checkbox" id="mute-bgm" /> BGM ミュート</label>
+        <label class="ttt-check"><input type="checkbox" id="mute-se" /> SFX ミュート</label>
+        <label class="controls-label" for="solo">ソロ</label>
+        <select id="solo" class="bandit-select">
+          <option value="none" selected>なし</option>
+          <option value="bgm">BGM だけ</option>
+          <option value="se">SFX だけ</option>
+        </select>
+        <p id="meter-readout" class="sfx-readout">Peak — / RMS — / GR —</p>
         <label class="ttt-check"><input type="checkbox" id="mute" /> ミュート（メーターのみ）</label>
       </aside>
     </div>
+    <section id="student-task"></section>
+
     <section class="code-section">
       <h2>C# 実装例</h2>
       <pre class="code-block" id="csharp-sample"><code>// …</code></pre>

@@ -179,6 +179,29 @@ export function levelFromTimeDomain(bytes) {
   };
 }
 
+/**
+ * AnalyserNode.getFloatTimeDomainData の結果。Peak と RMS は別々に返す。
+ * @param {ArrayLike<number>} samples
+ */
+export function levelsFromFloat(samples) {
+  let peak = 0;
+  let sum = 0;
+  const n = samples.length || 1;
+  for (let i = 0; i < samples.length; i++) {
+    const x = Number(samples[i]) || 0;
+    const a = Math.abs(x);
+    if (a > peak) peak = a;
+    sum += x * x;
+  }
+  const rms = Math.sqrt(sum / n);
+  return {
+    peak,
+    rms,
+    peakDb: gainToDb(peak),
+    rmsDb: gainToDb(rms),
+  };
+}
+
 /** dB を -60〜0 のパーセントにする。 */
 export function meterPercent(db) {
   const t = (clamp(db, -60, 0) + 60) / 60;

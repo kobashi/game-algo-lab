@@ -588,7 +588,25 @@ function mockControl(kind, value, extra = {}) {
   const mainSrc = fs.readFileSync(new URL("../js/main.js", import.meta.url), "utf8");
   assert.match(mainSrc, /sumRevisionsByMaturity\(TOPICS\)/);
   assert.match(mainSrc, /summary:\s*true/);
-  assert.equal(sums.oneshot, 0, "oneshot revision total is 0");
+  // oneshot の修正回数は通常 0（MATURITY.md）。成熟度を revised に上げず、
+  // 中身を足した応用サウンド 9 本だけが修正 1。合計はそれらの revisions の和。
+  const oneshotRevised = TOPICS.filter((topic) => {
+    const meta = resolveTopicMeta(topic.id);
+    return meta.maturity === "oneshot" && meta.revisions > 0;
+  }).map((topic) => topic.id);
+  oneshotRevised.sort();
+  assert.deepEqual(oneshotRevised, [
+    "audio-bus-ducking",
+    "bgm-interactive",
+    "bgm-loop",
+    "bgm-quantize",
+    "bgm-transition-compare",
+    "sfx-material",
+    "sfx-randomize",
+    "sfx-spatial",
+    "sfx-voice-limit",
+  ]);
+  assert.equal(sums.oneshot, 9, "oneshot revision total is 9");
   assert.equal(
     formatMaturityDetail(
       { maturity: "oneshot", revisions: 0, updated: "2026-07-22" },

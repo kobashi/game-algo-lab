@@ -7,6 +7,7 @@ import {
   loadTextSample,
   mountTopicShellFromDataset,
 } from "./platform/index.js";
+import { bindAudioLifecycle } from "./audio/audio-engine.js";
 
 mountTopicShellFromDataset();
 
@@ -36,10 +37,12 @@ let running = false;
 let loopCount = 0;
 /** @type {number | null} */
 let rafId = null;
-let lastTs = 0;
 /** @type {AudioContext | null} */
 let ac = null;
 let lastBeepRegion = "";
+let audioOrigin = 0;
+let playheadAtOrigin = 0;
+let usingAudio = false;
 
 function readIntro() {
   return Math.min(
@@ -152,28 +155,58 @@ function draw() {
   }
 }
 
+function readRate() {
+  const node = document.getElementById("play-rate");
+  const n = node instanceof HTMLInputElement ? Number(node.value) : 1;
+  return Number.isFinite(n) && n > 0 ? n : 1;
+}
+
+function ensureAc() {
+  if (!ac) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (AC) {
+      ac = new AC();
+      bindAudioLifecycle(ac);
+    }
+  }
+  if (ac?.state === "suspended") ac.resume();
+  return ac;
+}
+
+function rebaseClock() {
+  const ctx = ensureAc();
+  if (!ctx) return;
+  audioOrigin = ctx.currentTime;
+  playheadAtOrigin = playhead;
+  usingAudio = true;
+}
+
 function beepRegion(region) {
   if (muteEl?.checked) return;
   if (region === lastBeepRegion) return;
   lastBeepRegion = region;
-  if (!ac) {
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if (AC) ac = new AC();
-  }
-  if (!ac) return;
-  if (ac.state === "suspended") ac.resume();
-  const o = ac.createOscillator();
-  const g = ac.createGain();
+  const ctx = ensureAc();
+  if (!ctx) return;
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
   o.type = "sine";
   o.frequency.value = region === "intro" ? 330 : 494;
   g.gain.value = 0.04;
   o.connect(g);
-  g.connect(ac.destination);
-  const t0 = ac.currentTime;
+  g.connect(ctx.destination);
+  const t0 = ctx.currentTime;
   g.gain.setValueAtTime(0.04, t0);
   g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.06);
   o.start(t0);
   o.stop(t0 + 0.08);
+  o.onended = () => {
+    try {
+      o.disconnect();
+      g.disconnect();
+    } catch {
+      /* already */
+    }
+  };
 }
 
 function tick(dt) {
@@ -191,18 +224,21 @@ function tick(dt) {
   renderStats(r.region);
 }
 
-function loop(ts) {
+function loop() {
   if (!running) return;
-  if (!lastTs) lastTs = ts;
-  let dt = (ts - lastTs) / 1000;
-  lastTs = ts;
-  if (dt > 0.05) dt = 0.05;
-  tick(dt);
+  const ctx = ensureAc();
+  if (ctx) {
+    if (!usingAudio) rebaseClock();
+    const target = playheadAtOrigin + (ctx.currentTime - audioOrigin) * readRate();
+    const dt = Math.max(0, target - playhead);
+    tick(dt);
+  }
   rafId = requestAnimationFrame(loop);
 }
 
 function stop() {
   running = false;
+  usingAudio = false;
   if (rafId != null) cancelAnimationFrame(rafId);
   rafId = null;
   if (btnPlay) btnPlay.textContent = "再生";
@@ -225,10 +261,15 @@ btnPlay?.addEventListener("click", () => {
     return;
   }
   running = true;
-  lastTs = 0;
+  usingAudio = false;
   if (btnPlay) btnPlay.textContent = "一時停止";
-  if (ac?.state === "suspended") ac.resume();
+  rebaseClock();
   rafId = requestAnimationFrame(loop);
+});
+document.getElementById("play-rate")?.addEventListener("input", () => {
+  const label = document.getElementById("play-rate-val");
+  if (label) label.textContent = readRate().toFixed(1);
+  if (running) rebaseClock();
 });
 btnReset?.addEventListener("click", reset);
 for (const el of [introEl, loopEl]) {
@@ -250,3 +291,6 @@ loadTextSample(
 if (introEl) introEl.value = String(C.defaultIntroSec);
 if (loopEl) loopEl.value = String(C.defaultLoopSec);
 reset();
+
+import { mountTopicTask } from "./audio/topic-tasks.js";
+mountTopicTask("bgm-loop");

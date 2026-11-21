@@ -169,3 +169,6 @@ rng = mulberry32(readSeed());
 sync();
 renderBag();
 setStatus("再生でピッチ/バッグを観察");
+
+import { mountTopicTask } from "./audio/topic-tasks.js";
+mountTopicTask("sfx-randomize");

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adaptive Game Audio — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="audio-adaptive-lab"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / サウンド / Adaptive Game Audio</p>
+      <h1>Adaptive Game Audio</h1>
+      <p class="page-header-lead">
+        小さなゲームに、足音、着地、警告、発音数、動的な BGM を自分で割り当てます。
+        前提: <a href="bgm-interactive.html?course=audio">レイヤー型 BGM</a>。
+        関連: <a href="audio-motion.html?course=audio">Motion Audio</a> ·
+        <a href="sfx-spatial.html?course=audio">距離・パン</a> ·
+        <a href="sfx-voice-limit.html?course=audio">同時発音</a>。
+      </p>
+    </div>
+    <details class="lesson-details">
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>ゲームは位置と速度とイベントを出す。音の設計はオーディオ側に置く</li>
+          <li>足音、着地、敵の距離、同時発音、BGM の状態は、別の関数で決める</li>
+          <li>聞いて確かめる操作と、点数が付く実装は別です</li>
+          <li>結果と設計の文章は JSON で書き出せます</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout" id="sim">
+      <section class="gl-main">
+        <canvas id="sim-canvas" class="sfx-sim" width="640" height="180" tabindex="0" aria-label="総合演習のゲーム"></canvas>
+        <p id="lab-readout" class="sfx-readout">速度 — / 接地 — / 敵距離 —</p>
+        <div id="lab-log" class="es-log-panel" role="log"></div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="control-row">
+          <button type="button" id="btn-hear" class="btn btn-primary">この実装で聞く</button>
+          <button type="button" id="btn-sim-reset" class="btn btn-ghost">位置を戻す</button>
+        </div>
+        <label class="controls-label" for="music-state">BGM の状態</label>
+        <select id="music-state" class="bandit-select">
+          <option value="normal" selected>通常</option>
+          <option value="alert">警戒</option>
+          <option value="battle">戦闘</option>
+        </select>
+        <p class="footer-muted">聞くボタンは、下の関数をそのまま音にします。点数は動作テストが付けます。足音 25、着地 15、警告 20、発音数 15、BGM 15、設計 10。</p>
+      </aside>
+    </div>
+    <section id="student-task"></section>
+    <section class="code-section">
+      <h2>C# の対応</h2>
+      <pre class="code-block" id="csharp-sample"><code>// 読み込み中…</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Audio · 総合演習"></footer>
+  <script type="module" src="../js/audio-adaptive-lab.js"></script>
+</body>
+</html>

@@ -874,7 +874,7 @@ export const TOPICS = [
     id: "sfx-events",
     title: "イベントと効果音",
     description:
-      "ゲームイベントを Emit し、購読側が効果音・BGM・バスを鳴らす。Web Audio。",
+      "ゲームイベントを Emit し、購読側が周波数・長さ・音量で OneShot を鳴らす。BGM は重ねられる。",
     href: "algorithms/sfx-events.html",
     badge: "サウンド",
     category: "サウンド",
@@ -885,7 +885,7 @@ export const TOPICS = [
     id: "sfx-voice-limit",
     title: "同時発音・重複制御",
     description:
-      "ボイス数上限。steal / drop 方策と連打の飽和を観察。",
+      "上限、Reject / Oldest / Quietest、クールダウン、安全な発音数。",
     href: "algorithms/sfx-voice-limit.html",
     badge: "サウンド",
     category: "サウンド",
@@ -973,8 +973,30 @@ export const TOPICS = [
     id: "bgm-interactive",
     title: "拍同期・レイヤー型 BGM",
     description:
-      "ベース/ドラム/ボス層の合成。戦闘フラグを次小節頭で反映。",
+      "通常・警戒・戦闘でレイヤーを足し、次の小節で音楽を変える。",
     href: "algorithms/bgm-interactive.html",
+    badge: "サウンド",
+    category: "サウンド",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "audio-motion",
+    title: "Motion Audio",
+    description:
+      "速度と接地から足音を切り出し、速度は持続音へ連続で写す。",
+    href: "algorithms/audio-motion.html",
+    badge: "サウンド",
+    category: "サウンド",
+    ready: true,
+    maturity: "oneshot",
+  },
+  {
+    id: "audio-adaptive-lab",
+    title: "Adaptive Game Audio",
+    description:
+      "足音、着地、警告、発音数、動的 BGM を自分で設計し、動作テストで確認する。",
+    href: "algorithms/audio-adaptive-lab.html",
     badge: "サウンド",
     category: "サウンド",
     ready: true,
@@ -1381,7 +1403,7 @@ function renderMaturityLegend() {
   const note = document.createElement("p");
   note.className = "maturity-legend-note";
   note.innerHTML =
-    "「修正 合計」は、修正がある区分のトピックの修正回数を足した数です。一発未調整のラベルは区分名と件数だけです。各カードは更新日を出し、修正があるトピックは回数も出します（定義: <code>docs/topics/MATURITY.md</code>）。";
+    "「修正 合計」は、修正がある区分のトピックの修正回数を足した数です。一発未調整でも修正があるときは合計を出します。合計が 0 のときは区分名と件数だけです。各カードは更新日を出し、修正があるトピックは回数も出します（定義: <code>docs/topics/MATURITY.md</code>）。";
 
   root.replaceChildren(title, list, note);
 }
@@ -1410,7 +1432,17 @@ function renderTopics() {
       grid.appendChild(createCard(topic));
     }
 
-    section.append(heading, grid);
+    section.append(heading);
+    if (cat === "サウンド") {
+      const course = document.createElement("p");
+      course.className = "section-desc";
+      const link = document.createElement("a");
+      link.href = "courses/audio.html";
+      link.textContent = "応用サウンドコース";
+      course.append("発音、空間、音楽、総合演習の順は ", link, " にまとまっています。入門のイベントと効果音は、入門コース第4段階です。");
+      section.append(course);
+    }
+    section.append(grid);
     fragment.appendChild(section);
   }
 

@@ -13,8 +13,7 @@
       <p class="breadcrumb"><a href="../index.html">ホーム</a> / サウンド / イベントと効果音</p>
       <h1>イベントと効果音</h1>
       <p class="page-header-lead">
-        ゲーム<span class="term" data-term="event">イベント</span>を <span class="term" data-term="emit">Emit</span> → <span class="term" data-term="sfx">SFX</span> が<span class="term" data-term="subscribe">購読</span>してトーン再生。
-        同じページで、BGM・同時発音・音量の通り道・体力や緊張も試せます。
+        ゲーム<span class="term" data-term="event">イベント</span>を <span class="term" data-term="emit">Emit</span> し、<span class="term" data-term="sfx">SFX</span> が<span class="term" data-term="subscribe">購読</span>して一度だけ鳴らします。BGM はその下で一緒に鳴らせます。
         前段: <a href="gfx-ui-canvas.html?course=intro">UI 描画（Anchor・Pivot）</a>。次: <a href="fsm.html?course=intro">ステートマシン</a>。
       </p>
     </div>
@@ -23,446 +22,103 @@
       <summary>このデモで学ぶこと</summary>
       <div class="lesson-box lesson-box-nested">
         <ul>
-          <li>ゲームの処理は「<span class="term" data-term="event">イベント</span>を<strong><span class="term" data-term="emit">発行</span>（Emit）</strong>する」だけで、音を鳴らすかどうかは知らない</li>
-          <li>どんな<span class="term" data-term="sfx">効果音</span>を鳴らすかは<strong><span class="term" data-term="subscribe">購読</span>側（SFX）</strong>が決める。発行側のコードは変えなくてよい</li>
-          <li>同じイベントに、複数の購読者（音・演出など）を後から付け足せる</li>
-          <li>ミュートにしても、イベント自体は変わらず流れる（ログで確認できる）</li>
-          <li>BGM、同時に鳴る数、音量の圧縮、体力や緊張も、購読側が受けて音を変える</li>
+          <li>ゲームの処理は「<span class="term" data-term="event">イベント</span>を<strong><span class="term" data-term="emit">発行</span>（Emit）</strong>する」だけで、どの音を鳴らすかは知らない</li>
+          <li>周波数・音量・長さは<strong><span class="term" data-term="subscribe">購読</span>側</strong>が決める。発行側のコードは変えなくてよい</li>
+          <li>効果音はイベントのたびに一度だけ鳴る。BGM はループして、その上に重なる</li>
+          <li>ミュートにしても、イベント自体はログに残る</li>
+          <li>実験プレイは、ジャンプや接触をイベントとして出す。音の種類は選ばない</li>
         </ul>
+        <p>発音数の方針、ランダム化、バス、距離、音楽の切替は、応用サウンドの各トピックで扱います。</p>
       </div>
     </details>
-
-    <div class="sfx-tabs" role="tablist" aria-label="実験">
-      <button type="button" class="sfx-tab" data-tab="oneshot" aria-selected="true">効果音</button>
-      <button type="button" class="sfx-tab" data-tab="bgm" aria-selected="false">BGM</button>
-      <button type="button" class="sfx-tab" data-tab="mixer" aria-selected="false">ミキサー</button>
-      <button type="button" class="sfx-tab" data-tab="dynamic" aria-selected="false">状況</button>
-      <button type="button" class="sfx-tab" data-tab="sim" aria-selected="false">実験プレイ</button>
-    </div>
-    <select id="sfx-tab" class="sfx-tab-select" aria-label="実験タブ">
-      <option value="oneshot" selected>効果音</option>
-      <option value="bgm">BGM</option>
-      <option value="mixer">ミキサー</option>
-      <option value="dynamic">状況</option>
-      <option value="sim">実験プレイ</option>
-    </select>
 
     <div class="sfx-tools">
       <button type="button" id="btn-reset" class="btn btn-ghost">初期値に戻す</button>
-      <label class="sfx-inline" for="preset-pick">比較
-        <select id="preset-pick" class="bandit-select"></select>
-      </label>
-      <button type="button" id="btn-preset" class="btn btn-ghost">この比較を入れる</button>
       <button type="button" id="btn-copy-url" class="btn btn-ghost">この設定のURLをコピー</button>
-      <button type="button" id="btn-export" class="btn btn-ghost">JSONを書き出す</button>
-      <button type="button" id="btn-import" class="btn btn-ghost">JSONを読み込む</button>
     </div>
-    <details class="sfx-advanced">
-      <summary>設定JSON</summary>
-      <textarea id="json-text" class="sfx-json" rows="6" spellcheck="false" aria-label="設定JSON"></textarea>
-    </details>
 
     <div class="sfx-strip">
       <label class="ttt-check"><input type="checkbox" id="mute" /> ミュート（ログのみ）</label>
-      <p id="voice-count" class="sfx-readout">発音 0 / 32</p>
-      <p id="duck-readout" class="sfx-readout">ダック 0.0 dB</p>
-      <p id="state-readout" class="sfx-readout">場面 タイトル</p>
-      <div class="sfx-meters" aria-label="音量">
-        <div>
-          <div class="sfx-meter-label">BGM <span id="meter-bgm-db">— dBFS</span></div>
-          <div class="sfx-meter" id="meter-bgm"><span></span></div>
-        </div>
-        <div>
-          <div class="sfx-meter-label">SFX <span id="meter-sfx-db">— dBFS</span></div>
-          <div class="sfx-meter" id="meter-sfx"><span></span></div>
-        </div>
-        <div>
-          <div class="sfx-meter-label">出力 <span id="meter-master-db">— dBFS</span></div>
-          <div class="sfx-meter" id="meter-master"><span></span></div>
-        </div>
-      </div>
-      <p id="sfx-path" class="sfx-route">SFX はバイパス、Master はバイパス。そのあと保護リミッタ。発音数の上限とは別です。</p>
     </div>
 
-    <section class="sfx-panel" data-panel="oneshot">
-      <div class="gl-layout" id="sim">
-        <section class="gl-main">
-          <h2 class="gl-block-title">ゲーム風イベント</h2>
-          <div class="control-row">
-            <button type="button" id="btn-jump" class="btn btn-primary">Jump</button>
-            <button type="button" id="btn-land" class="btn btn-ghost">Land</button>
-            <button type="button" id="btn-hit" class="btn btn-ghost">Hit</button>
-            <button type="button" id="btn-pick" class="btn btn-ghost">Pickup</button>
-          </div>
-          <h2 class="gl-block-title">直接 <span class="term" data-term="emit">Emit</span></h2>
-          <div id="sfx-btns" class="control-row"></div>
-          <h2 class="gl-block-title">まとめて鳴らす</h2>
-          <div class="control-row">
-            <button type="button" id="btn-test-1" class="btn btn-ghost">1音</button>
-            <button type="button" id="btn-test-4" class="btn btn-ghost">4音</button>
-            <button type="button" id="btn-test-8" class="btn btn-ghost">8音</button>
-            <button type="button" id="btn-test-16" class="btn btn-ghost">16音</button>
-            <button type="button" id="btn-mash" class="btn btn-ghost">連打</button>
-            <button type="button" id="btn-stop-voices" class="btn btn-ghost">すべて停止</button>
-          </div>
-          <h2 class="gl-block-title">ログ</h2>
-          <div id="sfx-log" class="es-log-panel" role="log"></div>
-          <canvas id="sfx-wave" class="sfx-wave" width="640" height="88" aria-label="模式図。計算した波形と包絡線"></canvas>
-          <canvas id="sfx-scope" class="sfx-wave" width="640" height="88" aria-label="実測の波形"></canvas>
-          <h2 class="gl-block-title">発音中</h2>
-          <div id="voice-list" class="sfx-voices">発音中の音はありません</div>
-          <div id="status" class="status-log" role="status">準備完了</div>
-        </section>
-        <aside class="gl-side">
-          <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="sfx-ev">対象イベント</label>
-            <select id="sfx-ev" class="bandit-select"></select>
-          </div>
-          <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="sfx-freq">周波数 <span id="sfx-freq-val">440</span> Hz</label>
-            <input type="range" id="sfx-freq" class="ttt-range" min="80" max="1200" value="440" step="10" />
-          </div>
-          <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="sfx-dur">長さ <span id="sfx-dur-val">0.08</span> s</label>
-            <input type="range" id="sfx-dur" class="ttt-range" min="0.02" max="0.5" value="0.08" step="0.01" />
-          </div>
-          <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="sfx-gain">音量 <span id="sfx-gain-val">0.08</span></label>
-            <input type="range" id="sfx-gain" class="ttt-range" min="0" max="0.3" value="0.08" step="0.01" />
-          </div>
-          <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="sfx-type">波形</label>
-            <select id="sfx-type" class="bandit-select">
-              <option value="sine">Sine</option>
-              <option value="square" selected>Square</option>
-              <option value="sawtooth">Sawtooth</option>
-              <option value="triangle">Triangle</option>
-              <option value="noise">Noise</option>
-            </select>
-          </div>
-          <div class="controls-group-paint gl-params">
-            <button type="button" id="btn-replay" class="btn btn-ghost">直前の音をもう一度</button>
-          </div>
-          <p class="footer-muted">選択中のイベントを Emit すると、上の周波数・長さ・音量で鳴ります。config の値は既定です。</p>
-          <p class="footer-muted">初回クリックで <span class="term" data-term="audio-context">AudioContext</span> が起動します。無音環境はミュートでログ確認。</p>
-          <details class="sfx-advanced">
-            <summary>発音の詳細</summary>
-            <div class="controls-group-paint gl-params">
-              <label class="controls-label" for="sfx-atk">アタック <span id="sfx-atk-val">0.01</span> s</label>
-              <input type="range" id="sfx-atk" class="ttt-range" min="0" max="0.2" value="0.01" step="0.01" />
-            </div>
-            <div class="controls-group-paint gl-params">
-              <label class="controls-label" for="sfx-rel">リリース <span id="sfx-rel-val">0.05</span> s</label>
-              <input type="range" id="sfx-rel" class="ttt-range" min="0.01" max="0.5" value="0.05" step="0.01" />
-            </div>
-            <div class="controls-group-paint gl-params">
-              <label class="controls-label" for="sfx-pit">ピッチのばらつき <span id="sfx-pit-val">0.0</span></label>
-              <input type="range" id="sfx-pit" class="ttt-range" min="0" max="1" value="0" step="0.1" />
-            </div>
-            <div class="controls-group-paint gl-params">
-              <label class="controls-label" for="sfx-rate">再生速度 <span id="sfx-rate-val">1.0</span></label>
-              <input type="range" id="sfx-rate" class="ttt-range" min="0.5" max="2" value="1" step="0.1" />
-            </div>
-            <div class="controls-group-paint gl-params">
-              <label class="controls-label" for="sfx-vmax">同時発音の上限 <span id="sfx-vmax-val">16</span></label>
-              <input type="range" id="sfx-vmax" class="ttt-range" min="1" max="16" value="16" step="1" />
-            </div>
-            <div class="controls-group-paint gl-params">
-              <label class="controls-label" for="sfx-steal">上限を超えたとき</label>
-              <select id="sfx-steal" class="bandit-select">
-                <option value="unlimited" selected>制限なし（安全上限32）</option>
-                <option value="reject">新しい音を鳴らさない</option>
-                <option value="oldest">いちばん古い音を止める</option>
-                <option value="quietest">いちばん小さい音を止める</option>
-              </select>
-            </div>
-            <label class="ttt-check"><input type="checkbox" id="sfx-cool" /> 同じ音の連打を 50 ms 空ける</label>
-          </details>
-          <details class="lesson-details">
-            <summary>このタブで確かめること</summary>
-            <div class="sfx-lab">
-              <p>短い音を重ねたとき、鳴る数と、鳴らさない判断を聞き分けます。</p>
-              <ol>
-                <li>Jump、Land、Hit の周波数と長さを変えて、役割に合う音を作る。</li>
-                <li>1音、4音、8音、16音を押し、発音数とログを見る。</li>
-                <li>上限を 4 にして、「鳴らさない」「古い音を止める」「小さい音を止める」を聞き比べる。</li>
-              </ol>
-              <p>観察: 模式図は計算、下の波形は出力の実測。ミュートでも Emit は残る。</p>
-              <p>問い: 16音がうるさいとき、直すべきなのは発音数か、それともあとでかける音量か。</p>
-            </div>
-          </details>
-        </aside>
-      </div>
-    </section>
+    <div class="gl-layout" id="sim">
+      <section class="gl-main">
+        <h2 class="gl-block-title">ゲーム風イベント</h2>
+        <div class="control-row">
+          <button type="button" id="btn-jump" class="btn btn-primary">Jump</button>
+          <button type="button" id="btn-land" class="btn btn-ghost">Land</button>
+          <button type="button" id="btn-hit" class="btn btn-ghost">Hit</button>
+          <button type="button" id="btn-pick" class="btn btn-ghost">Pickup</button>
+        </div>
+        <h2 class="gl-block-title">直接 <span class="term" data-term="emit">Emit</span></h2>
+        <div id="sfx-btns" class="control-row"></div>
+        <h2 class="gl-block-title">ログ</h2>
+        <div id="sfx-log" class="es-log-panel" role="log"></div>
+        <canvas id="sfx-wave" class="sfx-wave" width="640" height="88" aria-label="模式図。計算した波形と包絡線"></canvas>
+        <canvas id="sfx-scope" class="sfx-wave" width="640" height="88" aria-label="実測の波形"></canvas>
+        <h2 class="gl-block-title">BGM と重ねる</h2>
+        <p class="sfx-lab">BGM はループします。効果音は、その上に一度だけ重なります。</p>
+        <div class="control-row">
+          <button type="button" id="btn-bgm-play" class="btn btn-primary">BGM 再生</button>
+          <button type="button" id="btn-bgm-pause" class="btn btn-ghost">一時停止</button>
+          <button type="button" id="btn-bgm-resume" class="btn btn-ghost">再開</button>
+          <button type="button" id="btn-bgm-stop" class="btn btn-ghost">停止</button>
+        </div>
+        <p id="bgm-pos" class="sfx-readout">停止</p>
+        <h2 class="gl-block-title">実験プレイ</h2>
+        <p class="sfx-lab">左右とスペースで動き、起きたことはイベントになります。この画面は音を選びません。</p>
+        <canvas id="sim-canvas" class="sfx-sim" width="640" height="180" tabindex="0" aria-label="実験プレイ。左右とジャンプ"></canvas>
+        <div class="control-row">
+          <button type="button" id="btn-sim-jump" class="btn btn-primary">ジャンプ</button>
+          <button type="button" id="btn-sim-reset" class="btn btn-ghost">位置を戻す</button>
+        </div>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="sfx-ev">対象イベント</label>
+          <select id="sfx-ev" class="bandit-select"></select>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="sfx-freq">周波数 <span id="sfx-freq-val">440</span> Hz</label>
+          <input type="range" id="sfx-freq" class="ttt-range" min="80" max="1200" value="440" step="10" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="sfx-dur">長さ <span id="sfx-dur-val">0.08</span> s</label>
+          <input type="range" id="sfx-dur" class="ttt-range" min="0.02" max="0.5" value="0.08" step="0.01" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="sfx-gain">音量 <span id="sfx-gain-val">0.08</span></label>
+          <input type="range" id="sfx-gain" class="ttt-range" min="0" max="0.3" value="0.08" step="0.01" />
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="sfx-type">波形</label>
+          <select id="sfx-type" class="bandit-select">
+            <option value="sine">Sine</option>
+            <option value="square" selected>Square</option>
+            <option value="sawtooth">Sawtooth</option>
+            <option value="triangle">Triangle</option>
+            <option value="noise">Noise</option>
+          </select>
+        </div>
+        <div class="controls-group-paint gl-params">
+          <label class="controls-label" for="bgm-vol">BGM 音量 <span id="bgm-vol-val">0.40</span></label>
+          <input type="range" id="bgm-vol" class="ttt-range" min="0" max="1" value="0.4" step="0.01" />
+        </div>
+        <label class="ttt-check"><input type="checkbox" id="bgm-loop" checked /> BGM をループする</label>
+        <p class="footer-muted">選択中のイベントを Emit すると、上の周波数・長さ・音量で鳴ります。</p>
+        <p class="footer-muted">初回クリックで <span class="term" data-term="audio-context">AudioContext</span> が起動します。無音環境はミュートでログを確認します。</p>
+      </aside>
+    </div>
 
-    <section class="sfx-panel" data-panel="bgm" hidden>
-      <div class="gl-layout">
-        <section class="gl-main">
-          <h2 class="gl-block-title">別の曲への切り替え</h2>
-          <p class="sfx-lab">曲Aと曲Bは別のループです。交差しているあいだは、両方の曲の音量が動きます。同じ曲の中の層とは別です。</p>
-          <div class="control-row">
-            <button type="button" id="btn-bgm-play" class="btn btn-primary">再生</button>
-            <button type="button" id="btn-bgm-pause" class="btn btn-ghost">一時停止</button>
-            <button type="button" id="btn-bgm-resume" class="btn btn-ghost">再開</button>
-            <button type="button" id="btn-bgm-stop" class="btn btn-ghost">停止</button>
-          </div>
-          <div class="control-row">
-            <button type="button" id="btn-xf-now" class="btn btn-ghost">すぐ切り替える</button>
-            <button type="button" id="btn-xf" class="btn btn-ghost">クロスフェード</button>
-            <button type="button" id="btn-fade-in" class="btn btn-ghost">フェードイン</button>
-            <button type="button" id="btn-fade-out" class="btn btn-ghost">フェードアウト</button>
-          </div>
-          <p id="bgm-pos" class="sfx-readout">停止</p>
-          <div class="sfx-meter" id="bgm-head"><span></span></div>
-          <p id="mix-readout" class="sfx-route">曲はまだ鳴っていません。</p>
-          <h2 class="gl-block-title">同じ曲のレイヤー</h2>
-          <p class="sfx-lab">Base、Tension、Battle は同じ 2 秒の位置から鳴ります。動かすのは音量の割合だけです。</p>
-          <label class="ttt-check"><input type="checkbox" id="layer-manual" /> レイヤーを手で混ぜる（緊張スライダーは使わない）</label>
-          <details class="lesson-details">
-            <summary>このタブで確かめること</summary>
-            <div class="sfx-lab">
-              <ol>
-                <li>再生して、ループの端でクリックがしないか聞く。</li>
-                <li>すぐ切り替える、と 2 秒のクロスフェードを聞き比べる。</li>
-                <li>手で混ぜるにチェックし、Tension だけを上げて、曲そのものは変わらないことを確かめる。</li>
-              </ol>
-              <p>問い: 場面が変わるとき、短い切り替えと長い交差のどちらが自然か。</p>
-            </div>
-          </details>
-        </section>
-        <aside class="gl-side">
-          <label class="ttt-check"><input type="checkbox" id="bgm-loop" checked /> ループ</label>
-          <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="bgm-song">曲</label>
-            <select id="bgm-song" class="bandit-select">
-              <option value="a" selected>曲A（通常）</option>
-              <option value="b">曲B（戦闘）</option>
-            </select>
-          </div>
-          <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="bgm-vol">BGM音量 <span id="bgm-vol-val">0.40</span></label>
-            <input type="range" id="bgm-vol" class="ttt-range" min="0" max="1" value="0.4" step="0.01" />
-          </div>
-          <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="bgm-xf">クロスフェード <span id="bgm-xf-val">1.0</span> 秒</label>
-            <input type="range" id="bgm-xf" class="ttt-range" min="0" max="5" value="1" step="0.1" />
-          </div>
-          <p class="footer-muted">0 でも、クリックを避けるため約 0.02 秒かけます。</p>
-          <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="layer-base">Base <span id="layer-base-val">100</span>%</label>
-            <input type="range" id="layer-base" class="ttt-range" min="0" max="100" value="100" step="1" disabled />
-          </div>
-          <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="layer-tension">Tension <span id="layer-tension-val">0</span>%</label>
-            <input type="range" id="layer-tension" class="ttt-range" min="0" max="100" value="0" step="1" disabled />
-          </div>
-          <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="layer-battle">Battle <span id="layer-battle-val">0</span>%</label>
-            <input type="range" id="layer-battle" class="ttt-range" min="0" max="100" value="0" step="1" disabled />
-          </div>
-          <button type="button" id="btn-bgm-scene" class="btn btn-ghost">場面のBGMに戻す</button>
-        </aside>
-      </div>
-    </section>
-
-    <section class="sfx-panel" data-panel="mixer" hidden>
-      <div class="gl-layout">
-        <section class="gl-main">
-          <h2 class="gl-block-title">音の通り道</h2>
-          <p class="sfx-lab">効果音は SFX バスへ、BGM は BGM バスへ入ります。コンプレッサーは音量の山を下げます。同時に鳴らせる数は変えません。</p>
-          <p id="mix-levels" class="sfx-readout">処理前 — / 処理後 —</p>
-          <div class="control-row">
-            <button type="button" id="btn-cmp-1" class="btn btn-ghost">1音で聞く</button>
-            <button type="button" id="btn-cmp-4" class="btn btn-ghost">4音で聞く</button>
-            <button type="button" id="btn-cmp-16" class="btn btn-ghost">16音で聞く</button>
-          </div>
-          <p id="gr-sfx" class="sfx-readout">SFX 圧縮: バイパス</p>
-          <p id="gr-master" class="sfx-readout">Master 圧縮: バイパス</p>
-          <p class="footer-muted">出力の直前に、教材とは別の保護リミッタが常に入っています。オンとオフの違いは、SFX の処理前と処理後で見てください。</p>
-          <details class="lesson-details">
-            <summary>このタブで確かめること</summary>
-            <div class="sfx-lab">
-              <ol>
-                <li>コンプレッサーを切ったまま 1音と 16音を鳴らし、処理前のレベルを見る。</li>
-                <li>オンにして同じことをし、圧縮量と処理後のレベルを見る。</li>
-                <li>閾値と比率を変えて、山の下がり方を聞く。</li>
-              </ol>
-              <p>問い: コンプレッサーを強くすると、鳴らなかった音は鳴るようになるか。</p>
-            </div>
-          </details>
-        </section>
-        <aside class="gl-side">
-          <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="sfx-vol">SFX音量 <span id="sfx-vol-val">0.55</span></label>
-            <input type="range" id="sfx-vol" class="ttt-range" min="0" max="1" value="0.55" step="0.01" />
-          </div>
-          <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="mast-vol">Master音量 <span id="mast-vol-val">0.45</span></label>
-            <input type="range" id="mast-vol" class="ttt-range" min="0" max="1" value="0.45" step="0.01" />
-          </div>
-          <label class="ttt-check"><input type="checkbox" id="bgm-mute" /> BGMをミュート</label>
-          <label class="ttt-check"><input type="checkbox" id="sfx-mute" /> SFXをミュート</label>
-          <label class="ttt-check"><input type="checkbox" id="bgm-solo" /> BGMだけ</label>
-          <label class="ttt-check"><input type="checkbox" id="sfx-solo" /> SFXだけ</label>
-          <label class="ttt-check"><input type="checkbox" id="sfx-comp" /> SFXコンプレッサー</label>
-          <label class="ttt-check"><input type="checkbox" id="mast-comp" /> Masterコンプレッサー</label>
-          <details class="sfx-advanced" open>
-            <summary>コンプレッサーの数値</summary>
-            <div class="controls-group-paint gl-params">
-              <label class="controls-label" for="comp-thr">閾値 <span id="comp-thr-val">-24</span> dB</label>
-              <input type="range" id="comp-thr" class="ttt-range" min="-40" max="0" value="-24" step="1" />
-            </div>
-            <div class="controls-group-paint gl-params">
-              <label class="controls-label" for="comp-ratio">比率 <span id="comp-ratio-val">4</span></label>
-              <input type="range" id="comp-ratio" class="ttt-range" min="1" max="20" value="4" step="0.1" />
-            </div>
-            <div class="controls-group-paint gl-params">
-              <label class="controls-label" for="comp-knee">ニー <span id="comp-knee-val">12</span> dB</label>
-              <input type="range" id="comp-knee" class="ttt-range" min="0" max="40" value="12" step="1" />
-            </div>
-            <div class="controls-group-paint gl-params">
-              <label class="controls-label" for="comp-atk">アタック <span id="comp-atk-val">0.005</span> s</label>
-              <input type="range" id="comp-atk" class="ttt-range" min="0.001" max="0.2" value="0.005" step="0.001" />
-            </div>
-            <div class="controls-group-paint gl-params">
-              <label class="controls-label" for="comp-rel">リリース <span id="comp-rel-val">0.15</span> s</label>
-              <input type="range" id="comp-rel" class="ttt-range" min="0.01" max="1" value="0.15" step="0.01" />
-            </div>
-          </details>
-        </aside>
-      </div>
-    </section>
-
-    <section class="sfx-panel" data-panel="dynamic" hidden>
-      <div class="gl-layout">
-        <section class="gl-main">
-          <h2 class="gl-block-title">状況と音</h2>
-          <p id="health-readout" class="sfx-readout">体力 100。フィルタ 18000 Hz。心拍なし。</p>
-          <p id="tension-readout" class="sfx-readout">緊張 0%。レイヤーは滑らかに追います。</p>
-          <div class="control-row">
-            <button type="button" id="btn-explosion" class="btn btn-ghost">Explosion</button>
-            <button type="button" id="btn-rare" class="btn btn-ghost">重要なPickup</button>
-            <button type="button" id="btn-duck" class="btn btn-ghost">ダックだけ</button>
-          </div>
-          <p class="sfx-lab">ダックは、イベントをきっかけに BGM の音量を下げる操作です。上のコンプレッサーとは別の欄に出ます。Hit でも下がります。</p>
-          <details class="lesson-details">
-            <summary>このタブで確かめること</summary>
-            <div class="sfx-lab">
-              <ol>
-                <li>BGM を鳴らしてから、緊張を 0、50、100 へ動かし、層が増えるか聞く。</li>
-                <li>体力を 40、それから 12 にして、フィルタと心拍の違いを聞く。</li>
-                <li>通常と戦闘を切り替え、成功にすると曲が下がって短い音が鳴ることを確かめる。</li>
-                <li>Hit を押し、アタック・ホールド・リリースで下がり方を変える。</li>
-              </ol>
-              <p>問い: 緊張を一気に動かしたとき、音量は段で切り替わるか、途中を通るか。</p>
-            </div>
-          </details>
-        </section>
-        <aside class="gl-side">
-          <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="dyn-health">体力 <span id="dyn-health-val">100</span></label>
-            <input type="range" id="dyn-health" class="ttt-range" min="0" max="100" value="100" step="1" />
-          </div>
-          <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="dyn-tension">緊張 <span id="dyn-tension-val">0</span></label>
-            <input type="range" id="dyn-tension" class="ttt-range" min="0" max="100" value="0" step="1" />
-          </div>
-          <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="dyn-enemies">周囲の敵 <span id="dyn-enemies-val">0</span></label>
-            <input type="range" id="dyn-enemies" class="ttt-range" min="0" max="10" value="0" step="1" />
-          </div>
-          <p class="footer-muted">この数だけでは曲は変わりません。敵の出現イベントで、通常やタイトルから戦闘になります。</p>
-          <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="dyn-state">場面</label>
-            <select id="dyn-state" class="bandit-select">
-              <option value="title" selected>タイトル</option>
-              <option value="normal">通常</option>
-              <option value="battle">戦闘</option>
-              <option value="success">成功</option>
-              <option value="fail">失敗</option>
-            </select>
-          </div>
-          <div class="controls-group-paint gl-params">
-            <label class="controls-label" for="dyn-scale">時間倍率 <span id="dyn-scale-val">1.0</span></label>
-            <input type="range" id="dyn-scale" class="ttt-range" min="0.2" max="2" value="1" step="0.1" />
-          </div>
-          <label class="ttt-check"><input type="checkbox" id="bgm-follow" /> BGMのテンポも時間倍率に追従（ピッチも変わる）</label>
-          <details class="sfx-advanced">
-            <summary>ダックの時間</summary>
-            <div class="controls-group-paint gl-params">
-              <label class="controls-label" for="duck-amt">下げる量 <span id="duck-amt-val">12</span> dB</label>
-              <input type="range" id="duck-amt" class="ttt-range" min="0" max="24" value="12" step="1" />
-            </div>
-            <div class="controls-group-paint gl-params">
-              <label class="controls-label" for="duck-atk">アタック <span id="duck-atk-val">40</span> ms</label>
-              <input type="range" id="duck-atk" class="ttt-range" min="0" max="300" value="40" step="10" />
-            </div>
-            <div class="controls-group-paint gl-params">
-              <label class="controls-label" for="duck-hold">ホールド <span id="duck-hold-val">120</span> ms</label>
-              <input type="range" id="duck-hold" class="ttt-range" min="0" max="1000" value="120" step="10" />
-            </div>
-            <div class="controls-group-paint gl-params">
-              <label class="controls-label" for="duck-rel">リリース <span id="duck-rel-val">400</span> ms</label>
-              <input type="range" id="duck-rel" class="ttt-range" min="50" max="3000" value="400" step="10" />
-            </div>
-          </details>
-        </aside>
-      </div>
-    </section>
-
-    <section class="sfx-panel" data-panel="sim" hidden>
-      <div class="gl-layout">
-        <section class="gl-main">
-          <h2 class="gl-block-title">イベントだけを出すプレイ</h2>
-          <p class="sfx-lab">ここはゲームの完成版ではありません。ジャンプ、着地、接触、取得が起きたら、イベントを出すだけです。音は購読側が決めます。</p>
-          <canvas id="sim-canvas" class="sfx-sim" width="640" height="180" tabindex="0" aria-label="実験プレイ。左右とジャンプ"></canvas>
-          <div class="control-row">
-            <button type="button" id="btn-left" class="btn btn-ghost">左</button>
-            <button type="button" id="btn-right" class="btn btn-ghost">右</button>
-            <button type="button" id="btn-sim-jump" class="btn btn-primary">ジャンプ</button>
-            <button type="button" id="btn-scenario" class="btn btn-ghost">自動の流れ</button>
-            <button type="button" id="btn-sim-reset" class="btn btn-ghost">位置を戻す</button>
-          </div>
-          <p class="footer-muted">キャンバスを選んでいるとき、矢印と Space ではページが動きません。自動の流れは、通常、敵、戦闘、被弾、低い体力、レア、成功の順です。</p>
-          <details class="lesson-details">
-            <summary>このタブで確かめること</summary>
-            <div class="sfx-lab">
-              <ol>
-                <li>自動の流れを押し、ログの Emit と、曲・心拍・最後の短い音を対応させる。</li>
-                <li>自分で動かし、Jump と Land と Hit が、ボタンと同じ購読者で鳴るか確かめる。</li>
-              </ol>
-              <p>問い: プレイ側のコードに、周波数を書く必要はあるか。</p>
-            </div>
-          </details>
-        </section>
-        <aside class="gl-side">
-          <p class="sfx-lab">敵は赤い四角、コインは黄、右端の紫がレアです。レアを取るとクリアのイベントが出ます。体力が 0 になると失敗です。</p>
-          <p class="sfx-lab">時間倍率は、この動きと効果音の再生速度にかかります。BGM は「テンポも追従」のときだけ変わり、ピッチも一緒に変わります。</p>
-        </aside>
-      </div>
-    </section>
-
-    <details class="lesson-details">
-      <summary>演習 A〜G</summary>
-      <div class="sfx-lab">
-        <ol>
-          <li>A. Jump、Land、Hit を、役割が聴き取れる音にする。変えた値をメモする。</li>
-          <li>B. 1、4、8、16 音と、上限の方式を変えて、欠けた音を比べる。</li>
-          <li>C. コンプレッサーのオンとオフ、閾値と比率を変える。発音数は変わらないことを確認する。</li>
-          <li>D. 曲Aと曲Bを、すぐ切り替えとクロスフェードで聞き比べる。</li>
-          <li>E. Hit のダックで、アタック、ホールド、リリースを聞き比べる。</li>
-          <li>F. 緊張に合わせて Tension の層が連続して変わるようにし、段での切り替えと比べる。</li>
-          <li>G. 自動の流れに対して、体力、戦闘、成功が音だけで伝わるか確かめる。</li>
-        </ol>
-      </div>
-    </details>
+    <section id="student-task"></section>
 
     <section class="code-section">
-      <h2>C# 実装例</h2>
-      <pre class="code-block" id="csharp-sample"><code>// …</code></pre>
+      <h2>C# の対応</h2>
+      <pre class="code-block" id="csharp-sample"><code>// 読み込み中…</code></pre>
     </section>
   </main>
-  <footer class="site-footer" id="site-footer" data-note="Audio · イベントと音"></footer>
+  <footer class="site-footer" id="site-footer" data-note="Audio · イベントと OneShot"></footer>
   <script type="module" src="../js/sfx-events.js"></script>
 </body>
 </html>

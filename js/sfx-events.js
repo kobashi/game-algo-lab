@@ -13,13 +13,14 @@ import {
   formatTenths,
   isFieldKeyTarget,
 } from "./platform/index.js";
-import { createAudioEngine, rampLinear, rampParam } from "./audio/audio-engine.js";
+import { bindAudioLifecycle, createAudioEngine, rampLinear, rampParam } from "./audio/audio-engine.js";
 import { createBgmManager, LOOP_SECONDS } from "./audio/bgm-manager.js";
 import { createSfxManager } from "./audio/sfx-manager.js";
 import { createDirector } from "./audio/audio-director.js";
 import { drawSchematic, drawScope, paintMeter, readLevel } from "./audio/audio-meter.js";
 import { AUDIO_PRESETS, PRESET_LABELS } from "./audio/audio-presets.js";
 import { createGameSim } from "./audio/game-sim.js";
+import { mountTopicTask } from "./audio/topic-tasks.js";
 import {
   clamp,
   gainToDb,
@@ -300,7 +301,7 @@ function beginAudio() {
         sfx,
         get: readDirector,
       });
-      window.addEventListener("pagehide", () => engine?.close(), { once: true });
+      bindAudioLifecycle(engine.ctx);
     }
     engine.resume();
     applyLive();
@@ -387,13 +388,13 @@ for (const e of C.events) {
   on(e.id, (payload) => {
     const p = paramsFor(e.id);
     playTone(p.freq, p.dur, p.gain, { eventId: e.id });
-    if (e.id === "Hit" && director) director.duck();
+    if (e.id === "Hit" && director && byId("duck-amt")) director.duck();
     if (e.id === "Hit") {
       const dmg = Number(payload && /** @type {{ damage?: number }} */ (payload).damage);
       if (Number.isFinite(dmg) && dmg > 0) setHealth(num("dyn-health", 100) - dmg);
     }
     if (e.id === "Pickup" && payload && /** @type {{ kind?: string }} */ (payload).kind === "rare") {
-      if (director) director.duck();
+      if (director && byId("duck-amt")) director.duck();
       setHealth(num("dyn-health", 100) + 35);
       playTone(880, 0.18, 0.07, {
         wave: "sine",
@@ -414,7 +415,7 @@ on("Explosion", () => {
     rate: 1,
     eventId: "Explosion",
   });
-  if (director) director.duck();
+  if (director && byId("duck-amt")) director.duck();
 });
 
 on("EnemySpawn", (payload) => {
@@ -763,7 +764,8 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 
-const urlSpec = {
+const urlSpec = Object.fromEntries(
+  Object.entries({
   ev: { el: evEl, kind: "select" },
   freq: { el: freqEl, kind: "range" },
   dur: { el: durEl, kind: "range" },
@@ -801,7 +803,8 @@ const urlSpec = {
   ducka: { el: byId("duck-atk"), kind: "range" },
   duckh: { el: byId("duck-hold"), kind: "range" },
   duckr: { el: byId("duck-rel"), kind: "range" },
-};
+  }).filter(([, entry]) => entry.el)
+);
 
 /** @type {Map<string, { check?: boolean, value?: string }>} */
 const factory = new Map();
@@ -997,4 +1000,5 @@ for (const entry of Object.values(urlSpec)) {
 if (urlResult.warning) setStatus(urlResult.warning);
 else setStatus("イベントボタンで Emit → SFX 購読者がトーン再生");
 pushLog("SfxService が Jump/Land/Hit/… を On");
+mountTopicTask("sfx-events");
 requestAnimationFrame(frame);

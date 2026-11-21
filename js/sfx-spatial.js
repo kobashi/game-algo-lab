@@ -189,3 +189,6 @@ renderStats(
   spatialParams(source.x, source.y, listener.x, listener.y, C.refDist, C.maxDist)
 );
 setStatus("音源をドラッグして再生");
+
+import { mountTopicTask } from "./audio/topic-tasks.js";
+mountTopicTask("sfx-spatial");

@@ -232,3 +232,26 @@ function setParam(param, value, now) {
   param.cancelScheduledValues(now);
   param.setValueAtTime(value, now);
 }
+
+/**
+ * タブが戻ったら再開する。隠しただけでは閉じない。ページを離れるときに閉じる。
+ * @param {AudioContext} ctx
+ */
+export function bindAudioLifecycle(ctx) {
+  if (!ctx || /** @type {AudioContext & { __galLife?: boolean }} */ (ctx).__galLife) return;
+  /** @type {AudioContext & { __galLife?: boolean }} */ (ctx).__galLife = true;
+  const onVis = () => {
+    if (document.visibilityState === "visible" && ctx.state === "suspended") {
+      ctx.resume();
+    }
+  };
+  document.addEventListener("visibilitychange", onVis);
+  window.addEventListener(
+    "pagehide",
+    () => {
+      document.removeEventListener("visibilitychange", onVis);
+      ctx.close();
+    },
+    { once: true }
+  );
+}

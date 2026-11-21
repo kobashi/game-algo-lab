@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Motion Audio — Game Algo Lab</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="topic-body">
+  <header class="site-header" id="site-header" data-nav="explain" data-active="audio-motion"></header>
+  <main class="container container-wide topic-main">
+    <div class="page-header page-header-compact">
+      <p class="breadcrumb"><a href="../index.html">ホーム</a> / サウンド / Motion Audio</p>
+      <h1>Motion Audio</h1>
+      <p class="page-header-lead">
+        速度と接地から足音を切り出し、速度そのものは持続音のパラメータへ連続で写します。
+        前提: <a href="sfx-material.html?course=audio">材質と衝突</a>。
+        次: <a href="sfx-spatial.html?course=audio">距離・パン</a>。
+        同じ段階: <a href="sfx-spatial.html?course=audio">距離・パン</a>。
+      </p>
+    </div>
+    <details class="lesson-details">
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>水平速度と垂直速度は別の読みです。足音は接地しているあいだの移動から作ります</li>
+          <li>移動距離が間隔に達すると、足音は 1 回鳴ります。空中では溜めません</li>
+          <li>速度に追従するループ音は、イベントではなく音量や高さを連続で動かします</li>
+          <li>Linear、Exponential、Smoothstep、Threshold は、同じ速度でも曲線が違います</li>
+          <li>急な速度変化は、平滑化してから音へ渡すと跳ねません</li>
+        </ul>
+      </div>
+    </details>
+    <div class="gl-layout" id="sim">
+      <section class="gl-main">
+        <canvas id="sim-canvas" class="sfx-sim" width="640" height="180" tabindex="0" aria-label="移動の実験。左右とジャンプ"></canvas>
+        <div class="control-row">
+          <button type="button" id="btn-sim-jump" class="btn btn-primary">ジャンプ</button>
+          <button type="button" id="btn-sim-reset" class="btn btn-ghost">位置を戻す</button>
+        </div>
+        <p id="motion-readout" class="sfx-readout">速度 — / 接地 —</p>
+        <canvas id="map-canvas" class="sfx-wave" width="640" height="120" aria-label="パラメータ曲線"></canvas>
+        <div id="status" class="status-log" role="status">準備完了</div>
+      </section>
+      <aside class="gl-side">
+        <label class="controls-label" for="curve">写像</label>
+        <select id="curve" class="bandit-select">
+          <option value="linear" selected>Linear</option>
+          <option value="exponential">Exponential</option>
+          <option value="smoothstep">Smoothstep</option>
+          <option value="threshold">Threshold</option>
+        </select>
+        <label class="controls-label" for="smooth">平滑化 <span id="smooth-val">0.12</span> s</label>
+        <input type="range" id="smooth" class="ttt-range" min="0.02" max="0.6" value="0.12" step="0.01" />
+        <p class="footer-muted">左右とスペースで動きます。上の曲線は観察用です。足音と持続音の式は、下の関数をテストします。</p>
+      </aside>
+    </div>
+    <section id="student-task"></section>
+    <section class="code-section">
+      <h2>C# の対応</h2>
+      <pre class="code-block" id="csharp-sample"><code>// 読み込み中…</code></pre>
+    </section>
+  </main>
+  <footer class="site-footer" id="site-footer" data-note="Audio · 速度と足音"></footer>
+  <script type="module" src="../js/audio-motion.js"></script>
+</body>
+</html>

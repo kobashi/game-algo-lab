@@ -209,17 +209,17 @@ export const ASSIGNMENTS = {
 
   "sfx-events": {
     number: 9,
-    title: "音で出来事を区別する",
-    question: "Hit と Pickup を、音だけで聞き分けられるようにできるか。",
+    title: "新しいイベントに音を割り当てる",
+    question: "新しいイベントを定義し、その出来事に効果音を割り当てられるか。",
     personal: null,
     urls: [
-      { id: "A", label: "Hit の音（`ev=Hit`）" },
-      { id: "B", label: "Pickup の音（`ev=Pickup`）" },
+      { id: "A", label: "新しいイベント名を文字列にしたあとの、その音の共有 URL" },
+      { id: "B", label: "同じ発行のまま、購読側の周波数だけを変えた URL" },
     ],
-    observe: "ログの周波数と長さ。ミュートにしたときのログ。",
+    observe: "新しいイベント名。ログの周波数と長さ。ミュートにしたときのログ。",
     discuss: [
       "音を変えるのに、イベントを出す側を変えなくてよい理由",
-      "購読者をもう 1 つ足すなら何に使うか",
+      "ページの動作テストが、スライダーではなく自分の関数を見ていること",
     ],
     example: "`sfx-events.html?ev=Hit&freq=…&dur=…&gain=…`",
   },

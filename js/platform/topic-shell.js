@@ -78,6 +78,8 @@ export const NAV_GROUPS = {
     { id: "bgm-quantize", label: "量子化", href: "bgm-quantize.html" },
     { id: "bgm-transition-compare", label: "BGM切替", href: "bgm-transition-compare.html" },
     { id: "bgm-interactive", label: "レイヤーBGM", href: "bgm-interactive.html" },
+    { id: "audio-motion", label: "Motion", href: "audio-motion.html" },
+    { id: "audio-adaptive-lab", label: "総合音", href: "audio-adaptive-lab.html" },
     { id: "gfx-gpu-concepts", label: "GPU", href: "gfx-gpu-concepts.html" },
     { id: "gfx-sprite-2d", label: "スプライト", href: "gfx-sprite-2d.html" },
     { id: "gfx-camera", label: "カメラ", href: "gfx-camera.html" },
@@ -201,6 +203,7 @@ export const NAV_GROUPS = {
   course: [
     { id: "home", label: "ホーム", href: "../index.html" },
     { id: "intro", label: "入門コース", href: "intro.html" },
+    { id: "audio", label: "応用サウンド", href: "audio.html" },
     { id: "topics", label: "全トピック", href: "../index.html#topics" },
   ],
 };
@@ -210,7 +213,7 @@ export const NAV_GROUPS = {
  * @type {Record<string, { href: string, label: string }[]>}
  */
 export const FOOTER_RELATED = {
-  intro: [{ href: "../index.html#topics", label: "全トピック（110本）" }],
+  intro: [{ href: "../index.html#topics", label: "全トピック（112本）" }],
   bfs: [{ href: "dfs.html", label: "DFS と比較" }],
   dfs: [
     { href: "bfs.html", label: "BFS と比較" },
@@ -334,18 +337,18 @@ export const FOOTER_RELATED = {
   ],
   "sfx-randomize": [
     { href: "sfx-voice-limit.html", label: "ボイス制限（前段）" },
-    { href: "sfx-spatial.html", label: "次: 距離・パン" },
+    { href: "audio-bus-ducking.html", label: "次: バスとダッキング" },
   ],
   "sfx-spatial": [
-    { href: "sfx-randomize.html", label: "SE ランダム（前段）" },
-    { href: "audio-bus-ducking.html", label: "次: バス/ダック" },
-  ],
-  "audio-bus-ducking": [
-    { href: "sfx-spatial.html", label: "空間 SE（前段）" },
+    { href: "audio-motion.html", label: "Motion Audio（前段）" },
     { href: "bgm-loop.html", label: "次: BGM ループ" },
   ],
+  "audio-bus-ducking": [
+    { href: "sfx-randomize.html", label: "ランダム化（前段）" },
+    { href: "sfx-material.html", label: "次: 材質と衝突" },
+  ],
   "bgm-loop": [
-    { href: "audio-bus-ducking.html", label: "バス（前段）" },
+    { href: "sfx-spatial.html", label: "距離・パン（前段）" },
     { href: "bgm-quantize.html", label: "次: 量子化" },
   ],
   "bgm-quantize": [
@@ -358,11 +361,19 @@ export const FOOTER_RELATED = {
   ],
   "bgm-interactive": [
     { href: "bgm-transition-compare.html", label: "切替比較（前段）" },
-    { href: "bgm-quantize.html", label: "量子化" },
+    { href: "audio-adaptive-lab.html", label: "次: 総合演習" },
+  ],
+  "audio-motion": [
+    { href: "sfx-material.html", label: "材質（前段）" },
+    { href: "sfx-spatial.html", label: "次: 距離・パン" },
+  ],
+  "audio-adaptive-lab": [
+    { href: "bgm-interactive.html", label: "レイヤー BGM（前段）" },
+    { href: "../courses/audio.html", label: "応用サウンド" },
   ],
   "sfx-material": [
-    { href: "sfx-events.html", label: "SFX イベント（前段）" },
-    { href: "sfx-randomize.html", label: "ランダム化" },
+    { href: "audio-bus-ducking.html", label: "バス（前段）" },
+    { href: "audio-motion.html", label: "次: Motion Audio" },
   ],
   "balance-sim": [
     { href: "weighted-random.html", label: "重み付き抽選" },
@@ -786,7 +797,7 @@ export function mountTopicShellFromDataset() {
   // `?course=intro` のときだけ、演習の下に提出課題と提出票（入門コース 提出課題の計画書 §2.1）
   mountSubmission(ASSIGNMENTS[active], active);
 
-  // `?course=intro` で開かれたときだけ、コース内ナビ（n/14・前後）を表示
+  // `?course=intro` または `?course=audio` のとき、コース内ナビを出す
   mountCourseNav(TOPICS, active);
 
   // 入門 14 本のスライダーを、矢印キーで 0.1 ずつ動かせるようにする（URL 適用より前）

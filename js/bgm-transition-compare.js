@@ -7,6 +7,7 @@ import {
   loadTextSample,
   mountTopicShellFromDataset,
 } from "./platform/index.js";
+import { bindAudioLifecycle } from "./audio/audio-engine.js";
 
 mountTopicShellFromDataset();
 
@@ -38,7 +39,7 @@ const setStatus = createStatus(document.getElementById("status"));
 let active = "A";
 let gainA = 1;
 let gainB = 0;
-/** @type {{ mode: string, t0: number, dur: number, from: string, to: string, startAt: number } | null} */
+/** @type {{ mode: string, t0: number, dur: number, from: string, to: string, startAt: number, startGa: number, startGb: number } | null} */
 let xfade = null;
 let clock = 0;
 let running = false;
@@ -66,6 +67,15 @@ export function crossfadeGains(u, fromIsA) {
   return { ga: t, gb: 1 - t };
 }
 
+/** 等パワー。from は出ていく曲、to は入ってくる曲。 */
+export function equalPowerGains(u) {
+  const t = Math.max(0, Math.min(1, u));
+  return {
+    from: Math.cos((t * Math.PI) / 2),
+    to: Math.sin((t * Math.PI) / 2),
+  };
+}
+
 /**
  * Next bar boundary after t.
  */
@@ -85,6 +95,7 @@ function ensureAudio() {
     const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return false;
     ac = new AC();
+    bindAudioLifecycle(ac);
     gA = ac.createGain();
     gB = ac.createGain();
     gA.gain.value = gainA * 0.05;
@@ -114,8 +125,8 @@ function applyAudioGains() {
 
 function startTransition() {
   const mode = modeEl?.value || "crossfade";
+  const to = xfade ? (xfade.to === "A" ? "B" : "A") : active === "A" ? "B" : "A";
   const from = active;
-  const to = active === "A" ? "B" : "A";
   const fade = Math.max(0.05, Number(fadeEl?.value) || C.defaultFadeSec);
   const bpm = Number(bpmEl?.value) || C.defaultBpm;
 
@@ -140,11 +151,15 @@ function startTransition() {
     from,
     to,
     startAt,
+    startGa: gainA,
+    startGb: gainB,
   };
   setStatus(
     mode === "beat"
       ? `拍同期: ${startAt.toFixed(2)}s から ${fade.toFixed(1)}s フェード → ${to}`
-      : `クロスフェード ${fade.toFixed(1)}s → ${to}`
+      : mode === "equal"
+        ? `等パワー ${fade.toFixed(1)}s → ${to}`
+        : `クロスフェード ${fade.toFixed(1)}s → ${to}`
   );
 }
 
@@ -152,19 +167,26 @@ function updateXfade() {
   if (!xfade) return;
   if (clock < xfade.startAt) return;
   const u = (clock - xfade.startAt) / xfade.dur;
-  const fromIsA = xfade.from === "A";
+  const targetA = xfade.to === "A" ? 1 : 0;
+  const targetB = xfade.to === "B" ? 1 : 0;
   if (u >= 1) {
-    gainA = xfade.to === "A" ? 1 : 0;
-    gainB = xfade.to === "B" ? 1 : 0;
+    gainA = targetA;
+    gainB = targetB;
     active = xfade.to;
     xfade = null;
     applyAudioGains();
     setStatus(`切替完了 → ${active}`);
     return;
   }
-  const g = crossfadeGains(u, fromIsA);
-  gainA = g.ga;
-  gainB = g.gb;
+  if (xfade.mode === "equal") {
+    const w = equalPowerGains(u);
+    gainA = xfade.startGa * w.from + targetA * w.to;
+    gainB = xfade.startGb * w.from + targetB * w.to;
+  } else {
+    const t = Math.max(0, Math.min(1, u));
+    gainA = xfade.startGa + (targetA - xfade.startGa) * t;
+    gainB = xfade.startGb + (targetB - xfade.startGb) * t;
+  }
   applyAudioGains();
 }
 
@@ -272,3 +294,6 @@ syncLabels();
 draw();
 renderMeters();
 setStatus("再生後、方式を選んで切替");
+
+import { mountTopicTask } from "./audio/topic-tasks.js";
+mountTopicTask("bgm-transition-compare");

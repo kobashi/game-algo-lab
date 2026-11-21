@@ -44,9 +44,14 @@
         <input type="range" id="intro-sec" class="ttt-range" min="0.5" max="6" value="2" step="0.1" />
         <label class="controls-label" for="loop-sec">ループ秒 <span id="loop-val">4.0</span></label>
         <input type="range" id="loop-sec" class="ttt-range" min="1" max="12" value="4" step="0.1" />
+        <label class="controls-label" for="play-rate">再生速度 <span id="play-rate-val">1.0</span></label>
+        <input type="range" id="play-rate" class="ttt-range" min="0.5" max="2" value="1" step="0.1" />
         <label class="ttt-check"><input type="checkbox" id="mute" /> 区間切替ビープをミュート</label>
+        <p class="footer-muted">再生位置は AudioContext の時刻から進みます。一時停止中は進みません。</p>
       </aside>
     </div>
+    <section id="student-task"></section>
+
     <section class="code-section">
       <h2>C# 実装例</h2>
       <pre class="code-block" id="csharp-sample"><code>// …</code></pre>

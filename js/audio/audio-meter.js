@@ -3,7 +3,7 @@
  * @see docs/topics/sfx-events/SPEC.md
  */
 
-import { levelFromTimeDomain, meterPercent } from "./audio-math.js";
+import { levelFromTimeDomain, levelsFromFloat, meterPercent } from "./audio-math.js";
 
 /**
  * @param {AnalyserNode} analyser
@@ -16,6 +16,18 @@ export function readLevel(analyser, scratch) {
       : new Uint8Array(analyser.fftSize);
   analyser.getByteTimeDomainData(buf);
   return levelFromTimeDomain(buf);
+}
+
+/**
+ * Float32 の時間波形から Peak と RMS を分ける。
+ * @param {AnalyserNode} analyser
+ * @param {Float32Array} scratch
+ */
+export function readLevelFloat(analyser, scratch) {
+  const buf =
+    scratch.length === analyser.fftSize ? scratch : new Float32Array(analyser.fftSize);
+  analyser.getFloatTimeDomainData(buf);
+  return levelsFromFloat(buf);
 }
 
 /**

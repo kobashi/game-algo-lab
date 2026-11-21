@@ -212,6 +212,16 @@ export function createGameSim(canvas, emit, read) {
       clearTimers();
       if (over === "script") over = "";
     },
+    state() {
+      return {
+        x: player.x,
+        y: player.y,
+        vx: player.vx,
+        vy: player.vy,
+        onGround: player.onGround,
+        enemies: enemies.map((enemy) => ({ x: enemy.x, y: enemy.y, alive: enemy.alive })),
+      };
+    },
     /**
      * @param {"left"|"right"|"jump"} key
      * @param {boolean} down

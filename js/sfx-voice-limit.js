@@ -7,6 +7,8 @@ import {
   loadTextSample,
   mountTopicShellFromDataset,
 } from "./platform/index.js";
+import { decideVoice, SAFETY_VOICE_CAP } from "./audio/audio-math.js";
+import { bindAudioLifecycle } from "./audio/audio-engine.js";
 
 mountTopicShellFromDataset();
 
@@ -25,6 +27,9 @@ const btnClear = document.getElementById("btn-clear");
 const muteEl = /** @type {HTMLInputElement} */ (
   document.getElementById("mute")
 );
+const coolEl = /** @type {HTMLInputElement | null} */ (
+  document.getElementById("cooldown")
+);
 const statsEl = document.getElementById("voice-stats");
 const csharpSample = document.getElementById("csharp-sample");
 const setStatus = createStatus(document.getElementById("status"));
@@ -40,19 +45,33 @@ let nextId = 1;
 let played = 0;
 let dropped = 0;
 let stolen = 0;
+let lastFire = 0;
 /** @type {string[]} */
 let logs = [];
 
 function readMax() {
   const n = Math.floor(Number(maxEl?.value) || C.defaultMaxVoices);
   if (maxVal) maxVal.textContent = String(n);
-  return Math.min(C.maxVoices, Math.max(C.minVoices, n));
+  return Math.min(SAFETY_VOICE_CAP, C.maxVoices, Math.max(C.minVoices, n));
+}
+
+/**
+ * @param {string} raw
+ */
+function policyName(raw) {
+  if (raw === "steal" || raw === "oldest") return "oldest";
+  if (raw === "drop" || raw === "reject") return "reject";
+  if (raw === "quietest") return "quietest";
+  return "oldest";
 }
 
 function ensureAc() {
   if (!ac) {
     const AC = window.AudioContext || window.webkitAudioContext;
-    if (AC) ac = new AC();
+    if (AC) {
+      ac = new AC();
+      bindAudioLifecycle(ac);
+    }
   }
   if (ac?.state === "suspended") ac.resume();
   return ac;
@@ -74,6 +93,16 @@ function stopVoice(v) {
   } catch {
     /* already */
   }
+  try {
+    v.osc.disconnect();
+  } catch {
+    /* fake or already */
+  }
+  try {
+    v.gain.disconnect();
+  } catch {
+    /* fake or already */
+  }
   voices = voices.filter((x) => x.id !== v.id);
 }
 
@@ -86,24 +115,40 @@ function pruneEnded() {
 }
 
 /**
- * @param {'steal' | 'drop'} policy
+ * @param {'steal' | 'drop' | 'oldest' | 'reject' | 'quietest'} policy
  */
 export function tryPlay(policy, maxVoices) {
   pruneEnded();
-  if (voices.length >= maxVoices) {
-    if (policy === "steal") {
-      // stop oldest
-      const oldest = voices.reduce((a, b) =>
-        a.started < b.started ? a : b
-      );
-      stopVoice(oldest);
+  const name = policyName(policy);
+  const cap = Math.min(SAFETY_VOICE_CAP, Math.max(1, maxVoices));
+  if (coolEl?.checked && voices.length && performance.now() - lastFire < 50) {
+    dropped += 1;
+    pushLog("cooldown: 同じ音を空ける");
+    render();
+    return false;
+  }
+  const decision = decideVoice(
+    voices.map((v) => ({ id: v.id, started: v.started, level: v.level ?? 0.06 })),
+    name,
+    cap,
+    SAFETY_VOICE_CAP
+  );
+  if (decision.action === "reject") {
+    dropped += 1;
+    pushLog("reject: 新しい音を鳴らさない");
+    render();
+    return false;
+  }
+  if (decision.action === "steal" && decision.victim) {
+    const victim = voices.find((v) => v.id === decision.victim.id);
+    if (victim) {
+      stopVoice(victim);
       stolen += 1;
-      pushLog(`steal: 最古 #${oldest.id} を停止`);
-    } else {
-      dropped += 1;
-      pushLog("drop: 新規を破棄");
-      render();
-      return false;
+      pushLog(
+        name === "quietest"
+          ? `quietest: 小さい #${victim.id} を停止`
+          : `oldest: 古い #${victim.id} を停止`
+      );
     }
   }
   if (muteEl?.checked) {
@@ -115,7 +160,9 @@ export function tryPlay(policy, maxVoices) {
       osc: /** @type {OscillatorNode} */ ({}),
       gain: /** @type {GainNode} */ ({}),
       started: performance.now(),
+      level: 0.06,
     };
+    lastFire = performance.now();
     voices.push(fake);
     setTimeout(() => {
       voices = voices.filter((x) => x.id !== id);
@@ -143,7 +190,8 @@ export function tryPlay(policy, maxVoices) {
   osc.start(t0);
   osc.stop(t0 + C.toneDur + 0.02);
   const id = nextId++;
-  const voice = { id, osc, gain, started: performance.now() };
+  const voice = { id, osc, gain, started: performance.now(), level: 0.06 };
+  lastFire = performance.now();
   voices.push(voice);
   played += 1;
   osc.onended = () => {
@@ -210,3 +258,6 @@ if (maxEl) maxEl.value = String(C.defaultMaxVoices);
 readMax();
 render();
 setStatus("連打 / バーストで上限超過を観察");
+
+import { mountTopicTask } from "./audio/topic-tasks.js";
+mountTopicTask("sfx-voice-limit");

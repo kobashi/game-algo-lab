@@ -5,7 +5,7 @@
 | id | `sfx-randomize` |
 | カテゴリ | audio |
 | 状態 | implemented |
-| 成熟度 | oneshot |
+| 成熟度 | oneshot（修正1・更新 2026-11-21） |
 | 作成日 | 2026-07-28 |
 | 依存 | sfx-events, rng-seed |
 

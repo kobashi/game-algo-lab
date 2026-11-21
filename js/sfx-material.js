@@ -153,3 +153,6 @@ loadTextSample(
 fillSelects();
 sync();
 setStatus("材質を選んで衝突");
+
+import { mountTopicTask } from "./audio/topic-tasks.js";
+mountTopicTask("sfx-material");

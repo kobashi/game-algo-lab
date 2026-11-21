@@ -2,7 +2,7 @@
 export const SFX_VOICE_LIMIT_CONFIG = {
   defaultMaxVoices: 4,
   minVoices: 1,
-  maxVoices: 12,
+  maxVoices: 32,
   toneFreq: 380,
   toneDur: 0.35,
 };

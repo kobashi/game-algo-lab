@@ -244,8 +244,8 @@ export const TOPIC_META = {
   },
   "sfx-events": {
     maturity: "revised",
-    revisions: 8,
-    updated: "2026-11-20",
+    revisions: 9,
+    updated: "2026-11-21",
   },
   "accessibility-basics": {
     maturity: "oneshot",
@@ -264,13 +264,13 @@ export const TOPIC_META = {
   },
   "sfx-voice-limit": {
     maturity: "oneshot",
-    revisions: 0,
-    updated: "2026-07-28",
+    revisions: 1,
+    updated: "2026-11-21",
   },
   "sfx-randomize": {
     maturity: "oneshot",
-    revisions: 0,
-    updated: "2026-07-28",
+    revisions: 1,
+    updated: "2026-11-21",
   },
   "balance-sim": {
     maturity: "oneshot",
@@ -289,18 +289,18 @@ export const TOPIC_META = {
   },
   "sfx-spatial": {
     maturity: "oneshot",
-    revisions: 0,
-    updated: "2026-07-28",
+    revisions: 1,
+    updated: "2026-11-21",
   },
   "audio-bus-ducking": {
     maturity: "oneshot",
-    revisions: 0,
-    updated: "2026-07-28",
+    revisions: 1,
+    updated: "2026-11-21",
   },
   "bgm-loop": {
     maturity: "oneshot",
-    revisions: 0,
-    updated: "2026-07-28",
+    revisions: 1,
+    updated: "2026-11-21",
   },
   "gfx-sprite-2d": {
     maturity: "oneshot",
@@ -309,13 +309,13 @@ export const TOPIC_META = {
   },
   "sfx-material": {
     maturity: "oneshot",
-    revisions: 0,
-    updated: "2026-07-28",
+    revisions: 1,
+    updated: "2026-11-21",
   },
   "bgm-quantize": {
     maturity: "oneshot",
-    revisions: 0,
-    updated: "2026-07-28",
+    revisions: 1,
+    updated: "2026-11-21",
   },
   "gfx-camera": {
     maturity: "revised",
@@ -329,8 +329,8 @@ export const TOPIC_META = {
   },
   "bgm-transition-compare": {
     maturity: "oneshot",
-    revisions: 0,
-    updated: "2026-07-28",
+    revisions: 1,
+    updated: "2026-11-21",
   },
   "gfx-animation-vfx": {
     maturity: "oneshot",
@@ -349,8 +349,18 @@ export const TOPIC_META = {
   },
   "bgm-interactive": {
     maturity: "oneshot",
+    revisions: 1,
+    updated: "2026-11-21",
+  },
+  "audio-motion": {
+    maturity: "oneshot",
     revisions: 0,
-    updated: "2026-07-28",
+    updated: "2026-11-21",
+  },
+  "audio-adaptive-lab": {
+    maturity: "oneshot",
+    revisions: 0,
+    updated: "2026-11-21",
   },
   "gfx-postprocess": {
     maturity: "oneshot",

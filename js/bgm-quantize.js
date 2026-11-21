@@ -242,3 +242,6 @@ if (bpmVal) bpmVal.textContent = String(C.defaultBpm);
 draw();
 renderStats();
 setStatus("再生してから即時 / 次拍 / 次小節で予約");
+
+import { mountTopicTask } from "./audio/topic-tasks.js";
+mountTopicTask("bgm-quantize");

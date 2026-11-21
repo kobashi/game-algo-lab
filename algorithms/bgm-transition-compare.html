@@ -24,8 +24,10 @@
       <div class="lesson-box lesson-box-nested">
         <ul>
           <li>即時切替は実装が簡単だが聴感が硬い</li>
-          <li>クロスフェードは両曲の gain を線形交差</li>
-          <li>拍同期は次小節頭からフェードを開始する</li>
+          <li>直線クロスフェードは両曲のゲインを直線で交差する</li>
+          <li>等パワーは、真ん中でも二乗和がほぼ 1 になるように交差する</li>
+          <li>拍同期は次の小節の頭からフェードを始める</li>
+          <li>フェードの途中でもう一度切り替えると、今の音量から反対の曲へ進む</li>
         </ul>
       </div>
     </details>
@@ -43,7 +45,8 @@
         <label class="controls-label" for="mode">方式</label>
         <select id="mode" class="bandit-select">
           <option value="immediate">即時切替</option>
-          <option value="crossfade" selected>クロスフェード</option>
+          <option value="crossfade" selected>直線クロスフェード</option>
+          <option value="equal">等パワーのクロスフェード</option>
           <option value="beat">拍同期フェード</option>
         </select>
         <label class="controls-label" for="fade-sec">フェード秒 <span id="fade-val">1.2</span></label>
@@ -53,6 +56,8 @@
         <label class="ttt-check"><input type="checkbox" id="mute" /> ミュート（メーターのみ）</label>
       </aside>
     </div>
+    <section id="student-task"></section>
+
     <section class="code-section">
       <h2>C# 実装例</h2>
       <pre class="code-block" id="csharp-sample"><code>// …</code></pre>

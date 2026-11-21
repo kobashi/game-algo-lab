@@ -13,10 +13,23 @@
       <p class="breadcrumb"><a href="../index.html">ホーム</a> / サウンド / 同時発音</p>
       <h1>同時発音・重複制御</h1>
       <p class="page-header-lead">
-        ボイス数に上限。超過時は<strong>steal</strong>（最古停止）か<strong>drop</strong>（新規破棄）。
-        前段: <a href="sfx-events.html">イベントと効果音</a>。
+        上限を超えたとき、新しい音を拒否するか、古い音を止めるか、小さい音を止めるかを比べます。
+        前提: <a href="sfx-events.html">イベントと効果音</a>。
+        次: <a href="sfx-randomize.html?course=audio">SE のランダム化</a>。
+        同じ段階: <a href="audio-bus-ducking.html?course=audio">バスとダッキング</a>。
       </p>
     </div>
+    <details class="lesson-details">
+      <summary>このデモで学ぶこと</summary>
+      <div class="lesson-box lesson-box-nested">
+        <ul>
+          <li>ボイスは割り当てて、鳴り終わったら解放する</li>
+          <li>Reject New は新しい音を始めない。Stop Oldest はいちばん古い音を止める。Quietest First はいちばん小さい音を止める</li>
+          <li>同じ音の連打は、短いクールダウンで間引ける</li>
+          <li>スライダーを上げても、安全な発音数の上限は超えない</li>
+        </ul>
+      </div>
+    </details>
     <div class="gl-layout">
       <section class="gl-main">
         <p>アクティブ: <span id="voice-active"></span></p>
@@ -31,15 +44,20 @@
           <button type="button" id="btn-clear" class="btn btn-ghost">全停止</button>
         </div>
         <label class="controls-label" for="max-voices">上限 <span id="max-val">4</span></label>
-        <input type="range" id="max-voices" class="ttt-range" min="1" max="12" value="4" />
+        <input type="range" id="max-voices" class="ttt-range" min="1" max="32" value="4" />
         <label class="controls-label" for="policy">超過時</label>
         <select id="policy" class="bandit-select">
-          <option value="steal">steal（最古を止める）</option>
-          <option value="drop">drop（新規を捨てる）</option>
+          <option value="reject">Reject New（新しい音を鳴らさない）</option>
+          <option value="oldest" selected>Stop Oldest（いちばん古い音を止める）</option>
+          <option value="quietest">Quietest First（いちばん小さい音を止める）</option>
         </select>
+        <label class="ttt-check"><input type="checkbox" id="cooldown" /> 同じ音を 50 ms 空ける</label>
         <label class="ttt-check"><input type="checkbox" id="mute" /> ミュート（仮想ボイスのみ）</label>
+        <p class="footer-muted">8 連は聞き比べです。止めるボイスの決定は、下の関数がテストされます。上限 4 で 8 音入ったとき、方針どおりの 1 本を選べるようにします。</p>
       </aside>
     </div>
+    <section id="student-task"></section>
+
     <section class="code-section">
       <h2>C# 実装例</h2>
       <pre class="code-block" id="csharp-sample"><code>// …</code></pre>

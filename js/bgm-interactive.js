@@ -253,3 +253,6 @@ if (bpmVal) bpmVal.textContent = String(C.defaultBpm);
 draw();
 renderMeters();
 setStatus("再生後、戦闘チェックでボス層を次小節から");
+
+import { mountTopicTask } from "./audio/topic-tasks.js";
+mountTopicTask("bgm-interactive");

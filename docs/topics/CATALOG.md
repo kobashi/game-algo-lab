@@ -215,16 +215,18 @@
 
 | id | タイトル | ready | 成熟度 | 修正 | 更新 | ページ | SPEC | 改訂メモ |
 |----|----------|-------|--------|------|------|--------|------|----------|
-| `sfx-events` | イベントと効果音 | ✅ | **調整** | 8 | 2026-11-20 | `algorithms/sfx-events.html` | [SPEC](./sfx-events/SPEC.md) | Emit → Web Audio。**改訂2**: 調整課題のための観測性改善（速度・軌跡・障害物など）。**改訂3**: 演習カード（予想→操作→確認）を追加（入門コース改善計画 P0-1）。**改訂4**: 「このデモで学ぶこと」節を追加し、「前段: イベントシステム」を補足（コース外）扱いに変更（入門コース改善計画 P1-4）。**改訂5**: 用語注を追加（5 語。点線の語にホバー・フォーカス・タップで説明）。**改訂6**: 提出課題と提出票を追加（`?course=intro` のとき。入門コース 提出課題の計画書）。**改訂7**: 目盛りが 0.1 より粗いスライダーは、矢印キーで 0.1 ずつ動く。0.1 より細かい目盛りはそのまま。画面にその説明を出す。**改訂8**: 同じページに BGM、同時発音、ミキサー、体力・緊張・場面、実験プレイを追加。発行はイベントのまま |
-| `sfx-voice-limit` | 同時発音・重複制御 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-voice-limit.html` | [SPEC](./sfx-voice-limit/SPEC.md) | steal / drop |
-| `sfx-randomize` | SE のランダム化 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-randomize.html` | [SPEC](./sfx-randomize/SPEC.md) | ピッチ/音量 + シャッフルバッグ |
-| `sfx-spatial` | 距離・パン・空間 SE | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-spatial.html` | [SPEC](./sfx-spatial/SPEC.md) | 距離減衰 + ステレオパン |
-| `audio-bus-ducking` | サウンドバスとダッキング | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/audio-bus-ducking.html` | [SPEC](./audio-bus-ducking/SPEC.md) | Master/BGM/SE · ダック |
-| `bgm-loop` | BGM ループ / イントロ＋ループ | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/bgm-loop.html` | [SPEC](./bgm-loop/SPEC.md) | 再生ヘッド · loopStart |
-| `sfx-material` | 材質別・衝突強度と音 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/sfx-material.html` | [SPEC](./sfx-material/SPEC.md) | 材質ペア · 強度スケール |
-| `bgm-quantize` | 量子化（拍・小節） | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/bgm-quantize.html` | [SPEC](./bgm-quantize/SPEC.md) | 即時/次拍/次小節 |
-| `bgm-transition-compare` | BGM 切替方式の比較 | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/bgm-transition-compare.html` | [SPEC](./bgm-transition-compare/SPEC.md) | 即時/クロス/拍同期 |
-| `bgm-interactive` | 拍同期・レイヤー型 BGM | ✅ | **一発** | 0 | 2026-07-28 | `algorithms/bgm-interactive.html` | [SPEC](./bgm-interactive/SPEC.md) | 層 gain · 次小節 |
+| `sfx-events` | イベントと効果音 | ✅ | **調整** | 9 | 2026-11-21 | `algorithms/sfx-events.html` | [SPEC](./sfx-events/SPEC.md) | Emit → Web Audio。**改訂2**: 調整課題のための観測性改善（速度・軌跡・障害物など）。**改訂3**: 演習カード（予想→操作→確認）を追加（入門コース改善計画 P0-1）。**改訂4**: 「このデモで学ぶこと」節を追加し、「前段: イベントシステム」を補足（コース外）扱いに変更（入門コース改善計画 P1-4）。**改訂5**: 用語注を追加（5 語。点線の語にホバー・フォーカス・タップで説明）。**改訂6**: 提出課題と提出票を追加（`?course=intro` のとき。入門コース 提出課題の計画書）。**改訂7**: 目盛りが 0.1 より粗いスライダーは、矢印キーで 0.1 ずつ動く。0.1 より細かい目盛りはそのまま。画面にその説明を出す。**改訂8**: 同じページに BGM、同時発音、ミキサー、体力・緊張・場面、実験プレイを追加。発行はイベントのまま。**改訂9**: 入門ページは発行・購読・OneShot・BGM の重ね・実験プレイの発行に限る。評価は新しいイベントへ音を割り当てること |
+| `sfx-voice-limit` | 同時発音・重複制御 | ✅ | **一発** | 1 | 2026-11-21 | `algorithms/sfx-voice-limit.html` | [SPEC](./sfx-voice-limit/SPEC.md) | Reject / Oldest / Quietest。学生の pickStop をテスト |
+| `sfx-randomize` | SE のランダム化 | ✅ | **一発** | 1 | 2026-11-21 | `algorithms/sfx-randomize.html` | [SPEC](./sfx-randomize/SPEC.md) | 揺らぎとバッグに加え、学生の vary をテスト |
+| `sfx-spatial` | 距離・パン・空間 SE | ✅ | **一発** | 1 | 2026-11-21 | `algorithms/sfx-spatial.html` | [SPEC](./sfx-spatial/SPEC.md) | 距離減衰。警告の音量と周期は学生の関数 |
+| `audio-bus-ducking` | サウンドバスとダッキング | ✅ | **一発** | 1 | 2026-11-21 | `algorithms/audio-bus-ducking.html` | [SPEC](./audio-bus-ducking/SPEC.md) | バス、コンプレッサー、Float の Peak / RMS、ダック包絡 |
+| `bgm-loop` | BGM ループ / イントロ＋ループ | ✅ | **一発** | 1 | 2026-11-21 | `algorithms/bgm-loop.html` | [SPEC](./bgm-loop/SPEC.md) | 再生位置は AudioContext 時刻。再生速度 |
+| `sfx-material` | 材質別・衝突強度と音 | ✅ | **一発** | 1 | 2026-11-21 | `algorithms/sfx-material.html` | [SPEC](./sfx-material/SPEC.md) | 材質と速度を音へ。学生の impactSound |
+| `bgm-quantize` | 量子化（拍・小節） | ✅ | **一発** | 1 | 2026-11-21 | `algorithms/bgm-quantize.html` | [SPEC](./bgm-quantize/SPEC.md) | 次の拍への予約を学生の nextGrid でテスト |
+| `bgm-transition-compare` | BGM 切替方式の比較 | ✅ | **一発** | 1 | 2026-11-21 | `algorithms/bgm-transition-compare.html` | [SPEC](./bgm-transition-compare/SPEC.md) | 等パワーと、切替途中からの再切替 |
+| `bgm-interactive` | 拍同期・レイヤー型 BGM | ✅ | **一発** | 1 | 2026-11-21 | `algorithms/bgm-interactive.html` | [SPEC](./bgm-interactive/SPEC.md) | 通常・警戒・戦闘。学生の layerGains |
+| `audio-motion` | Motion Audio | ✅ | **一発** | 0 | 2026-11-21 | `algorithms/audio-motion.html` | [SPEC](./audio-motion/SPEC.md) | 足音と速度連動。曲線は共有モジュール |
+| `audio-adaptive-lab` | Adaptive Game Audio | ✅ | **一発** | 0 | 2026-11-21 | `algorithms/audio-adaptive-lab.html` | [SPEC](./audio-adaptive-lab/SPEC.md) | 総合 100 点。結果は JSON |
 
 ---
 
