@@ -5,6 +5,8 @@
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.20.0
 
+**2026-11-21 入門サウンドの課題 9 をレビュー（Codex）** — 新イベントを共有 URL で提出できない点（INTRO-SFX-01）と、コメントだけで実装課題に合格する点（INTRO-SFX-02）をブラウザで再現。いずれも P1、Grok Build 対応待ち。[レビューと再検証手順](docs/reviews/2026-11-21-intro-sfx-events-review.md)
+
 **2026-11-21 サウンドを入門と応用に分ける（Grok）**: 入門のイベントと効果音は、発行、購読、OneShot、周波数・長さ・音量、BGM の重ね、実験プレイの発行に限った。発音数、ランダム化、バスと圧縮、ループ時刻、等パワーの切替、材質、距離の警告は、元の URL の応用トピックへ寄せた。Motion Audio と Adaptive Game Audio を追加し、応用サウンドコースを `courses/audio.html` に置いた。評価は学生が書いた関数の動作テストで、総合演習は 100 点を JSON にする。画面確認では、Hit 880 Hz、Jump 440 Hz、ミュート中の Emit と SE (muted)、初期コードの不合格と書いた関数の合格、1280 と 390 で横にはみ出さないことを見た。ready 110→112。sfx-events は修正 8→9。一発未調整の修正合計は 9（応用サウンド 9 本が修正 1）。リリースは切らない。
 
 **2026-11-20 イベントと効果音に、BGM とバスと状況連動を足す（Grok）**: 同じページの購読側に、BGM（ループ、曲のクロスフェード、同期レイヤー）、OneShot の発音数、バスとコンプレッサー、体力・緊張・場面・ダッキング、イベントだけを出す実験プレイを足した。Jump / Land / Hit / Pickup の Emit、`?ev=Hit&freq=880` の 880 Hz、ミュート中の `Emit` と `SE (muted)` は残している。音源は合成。修正 7→8。リリースは切らない。
