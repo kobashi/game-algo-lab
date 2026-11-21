@@ -20,48 +20,116 @@ function say(lines, ok, message) {
   return ok;
 }
 
+const SOUND_BUILTIN = ["Jump", "Land", "Hit", "Pickup", "UI"];
+const SOUND_NAME = /^[A-Za-z][A-Za-z0-9_]{1,24}$/;
+
 /**
- * @param {(eventId: string) => { freq?: number, dur?: number, gain?: number }} fn
+ * ソースに書かれていない名前を、未登録の呼び出しに使う。
+ * @param {string} eventName
  * @param {string} source
  */
-export function checkSoundFor(fn, source) {
+function unlistedName(eventName, source) {
+  const text = String(source ?? "");
+  const taken = new Set([...SOUND_BUILTIN, eventName]);
+  for (const seed of ["Unlisted", "Spare", "Unused", "OtherEvent"]) {
+    if (!taken.has(seed) && !text.includes(seed)) return seed;
+  }
+  for (let n = 2; n < 50; n++) {
+    const seed = `Other${n}`;
+    if (!taken.has(seed) && !text.includes(seed)) return seed;
+  }
+  return "OtherEvent";
+}
+
+/**
+ * @param {unknown} value
+ * @returns {{ freq: number, dur: number, gain: number } | null}
+ */
+function asTone(value) {
+  if (!value || typeof value !== "object") return null;
+  const tone = /** @type {{ freq?: unknown, dur?: unknown, gain?: unknown }} */ (value);
+  if (!finite(tone.freq) || !finite(tone.dur) || !finite(tone.gain)) return null;
+  return { freq: tone.freq, dur: tone.dur, gain: tone.gain };
+}
+
+/**
+ * @param {unknown} value
+ */
+function toneInRange(value) {
+  const tone = asTone(value);
+  return (
+    !!tone &&
+    tone.freq >= 40 &&
+    tone.freq <= 2000 &&
+    tone.dur >= 0.02 &&
+    tone.dur <= 1 &&
+    tone.gain >= 0 &&
+    tone.gain <= 0.3
+  );
+}
+
+/**
+ * @param {unknown} a
+ * @param {unknown} b
+ */
+function sameTone(a, b) {
+  const left = asTone(a);
+  const right = asTone(b);
+  if (!left || !right) return false;
+  return left.freq === right.freq && left.dur === right.dur && left.gain === right.gain;
+}
+
+/**
+ * @param {Function} fn
+ * @param {string} id
+ */
+function callTone(fn, id) {
+  try {
+    return fn(id);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * 入力されたイベント名を関数へ渡し、未登録の名前と戻り値を比べる。
+ * source は、採点する名前を探すためではなく、未登録の呼び出し名をソースに無いものから選ぶために使う。
+ * @param {(eventId: string) => { freq?: number, dur?: number, gain?: number } | null} fn
+ * @param {string} eventName
+ * @param {string} [source]
+ */
+export function checkSoundFor(fn, eventName, source = "") {
   const lines = [];
   let ok = true;
-  const builtin = ["Jump", "Land", "Hit", "Pickup", "UI"];
-  for (const id of builtin) {
-    const tone = fn(id);
-    const good =
-      !!tone && finite(tone.freq) && finite(tone.dur) && finite(tone.gain);
+  for (const id of SOUND_BUILTIN) {
+    const tone = callTone(fn, id);
+    const good = !!asTone(tone);
     ok = say(lines, good, `${id} は周波数・長さ・音量の数を返します`) && ok;
   }
-  const quoted = [...String(source).matchAll(/["']([A-Za-z][A-Za-z0-9_]{1,24})["']/g)].map(
-    (m) => m[1]
-  );
-  const skip = new Set([...builtin, "freq", "dur", "gain", "return", "eventId"]);
-  const novel = quoted.find((id) => !skip.has(id));
-  if (!novel) {
+  const name = String(eventName ?? "").trim();
+  if (!SOUND_NAME.test(name) || SOUND_BUILTIN.includes(name)) {
     ok = false;
-    lines.push("Jump、Land、Hit、Pickup、UI 以外のイベント名を、文字列で 1 つ定義します");
+    lines.push(
+      "新しいイベント名は、英字から始まる 2〜25 文字の英数字で、Jump、Land、Hit、Pickup、UI 以外にします"
+    );
   } else {
-    const tone = fn(novel);
-    const good =
-      !!tone &&
-      finite(tone.freq) &&
-      tone.freq >= 40 &&
-      tone.freq <= 2000 &&
-      finite(tone.dur) &&
-      tone.dur >= 0.02 &&
-      tone.dur <= 1 &&
-      finite(tone.gain) &&
-      tone.gain >= 0 &&
-      tone.gain <= 0.3;
+    const tone = callTone(fn, name);
+    const good = toneInRange(tone);
     ok =
       say(
         lines,
         good,
-        `${novel} の周波数は 40〜2000、長さは 0.02〜1 秒、音量は 0〜0.3 にします`
+        `${name} の周波数は 40〜2000、長さは 0.02〜1 秒、音量は 0〜0.3 にします`
       ) && ok;
-    if (good) lines.push(`${novel} に効果音を割り当てられました`);
+    const other = callTone(fn, unlistedName(name, source));
+    const distinct = !sameTone(tone, other);
+    ok =
+      say(
+        lines,
+        distinct,
+        `${name} の音は、未登録の名前が返す値と区別します。未登録の名前には音を返さないか、別の音を返します`
+      ) && ok;
+    if (good && distinct) lines.push(`${name} に効果音を割り当てられました`);
   }
   return { ok, lines };
 }

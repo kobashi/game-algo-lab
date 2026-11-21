@@ -16,6 +16,7 @@
  *   discuss    考察に書くことの候補（全部でなくてよい。100〜200 字で「事実」と「説明」）
  *   example    URL の形の例（`…` は自分で決める値）
  *   hint       ゲームに慣れていない受講生向けの補足（数値の答えは書かない）
+ *   implementation  共有 URL とは別に提出する実装（イベント名と関数コード）
  *
  * 文字列は演習カードと同じ軽量 Markdown（`` `code` `` / `**強調**`）。
  */
@@ -33,6 +34,7 @@
  *   example?: string,
  *   hint?: string[],
  *   hintTitle?: string,
+ *   implementation?: { eventLabel: string, codeLabel: string },
  * }} Assignment
  */
 
@@ -210,18 +212,24 @@ export const ASSIGNMENTS = {
   "sfx-events": {
     number: 9,
     title: "新しいイベントに音を割り当てる",
-    question: "新しいイベントを定義し、その出来事に効果音を割り当てられるか。",
+    question: "既存のイベントでは周波数だけを変えて比べ、新しいイベントには購読側の関数で効果音を割り当てられるか。",
+    condition:
+      "URL の A と B は、Jump、Land、Hit、Pickup、UI のどれか同じ 1 つにする。変えるのは周波数だけにする。長さと音量は A と B で同じにする。新しいイベントの名前と soundFor は、実装課題の欄に書く。指定した名前には、周波数 40〜2000、長さ 0.02〜1 秒、音量 0〜0.3 の音を返す。それ以外の未登録の名前には、音を返さないか、その名前とは別の音を返す。Jump、Land、Hit、Pickup、UI は、周波数・長さ・音量の数を返したままにする。",
     personal: null,
     urls: [
-      { id: "A", label: "新しいイベント名を文字列にしたあとの、その音の共有 URL" },
-      { id: "B", label: "同じ発行のまま、購読側の周波数だけを変えた URL" },
+      { id: "A", label: "既存のイベントを 1 つ選んだ共有 URL" },
+      { id: "B", label: "A と同じイベントのまま、周波数だけを変えた共有 URL" },
     ],
-    observe: "新しいイベント名。ログの周波数と長さ。ミュートにしたときのログ。",
+    observe: "A と B のイベント名。A と B のログの周波数。長さと音量が A と B で同じであること。ミュートにしたときのログ。実装課題で指定した新しいイベント名。",
     discuss: [
       "音を変えるのに、イベントを出す側を変えなくてよい理由",
-      "ページの動作テストが、スライダーではなく自分の関数を見ていること",
+      "新しい名前の音を、未登録の名前と分けた理由",
     ],
     example: "`sfx-events.html?ev=Hit&freq=…&dur=…&gain=…`",
+    implementation: {
+      eventLabel: "実装課題の新しいイベント名",
+      codeLabel: "実装課題の soundFor",
+    },
   },
 
   fsm: {

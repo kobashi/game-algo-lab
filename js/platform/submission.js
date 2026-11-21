@@ -68,7 +68,7 @@ export function checkSubmissionUrl(raw, topicId) {
  * LMS に貼る提出用テキスト
  * @param {import("../courses/intro-assignments.js").Assignment} a
  * @param {string} topicId
- * @param {{ d: number | null, urls: Record<string, string>, observe: string, discuss: string }} data
+ * @param {{ d: number | null, urls: Record<string, string>, observe: string, discuss: string, event?: string, code?: string }} data
  */
 export function buildSubmissionText(a, topicId, data) {
   const lines = [`【入門コース 提出課題 ${a.number}: ${topicId} — ${a.title}】`];
@@ -77,6 +77,11 @@ export function buildSubmissionText(a, topicId, data) {
   }
   for (const u of a.urls) {
     lines.push(`URL ${u.id}（${plain(u.label)}）: ${(data.urls[u.id] || "").trim() || "（未入力）"}`);
+  }
+  if (a.implementation) {
+    lines.push(`${plain(a.implementation.eventLabel)}: ${(data.event || "").trim() || "（未入力）"}`);
+    lines.push(`${plain(a.implementation.codeLabel)}:`);
+    lines.push((data.code || "").trim() || "（未入力）");
   }
   lines.push(`観察: ${data.observe.trim() || "（未入力）"}`);
   lines.push(`考察: ${data.discuss.trim() || "（未入力）"}`);
@@ -144,6 +149,12 @@ function sectionHtml(a, topicId) {
         <p class="exercise-label">提出するもの</p>
         <ul class="exercise-list">
           ${a.urls.map((u) => `<li>URL ${u.id}: ${inline(u.label)}</li>`).join("\n          ")}
+          ${
+            a.implementation
+              ? `<li>${inline(a.implementation.eventLabel)}</li>
+          <li>${inline(a.implementation.codeLabel)}</li>`
+              : ""
+          }
           <li>観察: ${inline(a.observe)}</li>
           <li>考察（${DISCUSS_MIN}〜${DISCUSS_MAX} 字）: A と B で何が違ったか（数値で）と、なぜそうなるか</li>
         </ul>
@@ -162,6 +173,19 @@ function sectionHtml(a, topicId) {
             最後に「提出用テキストをコピー」して、LMS の提出欄に貼ってください。
           </p>
           ${urlRows}
+          ${
+            a.implementation
+              ? `<label class="controls-label" for="submit-event">${inline(a.implementation.eventLabel)}</label>
+          <input type="text" id="submit-event" class="submission-input" spellcheck="false" autocomplete="off" maxlength="25" />
+          <p class="submission-warn" id="submit-event-warn" aria-live="polite"></p>
+          <label class="controls-label" for="submit-code">${inline(a.implementation.codeLabel)}</label>
+          <textarea id="submit-code" class="submission-text submission-output" rows="8" spellcheck="false"></textarea>
+          <div class="submission-url-row">
+            <button type="button" class="btn btn-ghost btn-sm" id="submit-take-task">実装課題の入力を入れる</button>
+          </div>
+          <p class="submission-warn" id="submit-task-warn" aria-live="polite"></p>`
+              : ""
+          }
           <label class="controls-label" for="submit-observe">観察</label>
           <textarea id="submit-observe" class="submission-text" rows="3"></textarea>
           <div class="submission-url-row">
@@ -199,7 +223,7 @@ export function mountSubmission(a, topicId, doc = typeof document !== "undefined
 
   const $ = (id) => /** @type {HTMLInputElement | HTMLTextAreaElement | null} */ (doc.getElementById(id));
   const storeKey = STORE_PREFIX + topicId;
-  const draft = load(storeKey, { urls: {}, observe: "", discuss: "" });
+  const draft = load(storeKey, { urls: {}, observe: "", discuss: "", event: "", code: "" });
   const dEl = $("submit-d");
   const condEl = doc.getElementById("submit-cond");
   const observeEl = $("submit-observe");
@@ -212,6 +236,8 @@ export function mountSubmission(a, topicId, doc = typeof document !== "undefined
     urls: Object.fromEntries(a.urls.map((u) => [u.id, $(`submit-url-${u.id}`)?.value ?? ""])),
     observe: observeEl?.value ?? "",
     discuss: discussEl?.value ?? "",
+    event: $("submit-event")?.value ?? "",
+    code: $("submit-code")?.value ?? "",
   });
   const persist = () => save(storeKey, readDraft());
 
@@ -242,6 +268,10 @@ export function mountSubmission(a, topicId, doc = typeof document !== "undefined
   }
   if (observeEl) observeEl.value = draft.observe ?? "";
   if (discussEl) discussEl.value = draft.discuss ?? "";
+  const eventEl = $("submit-event");
+  const codeEl = $("submit-code");
+  if (eventEl) eventEl.value = draft.event ?? "";
+  if (codeEl) codeEl.value = draft.code ?? "";
   if (dEl) {
     const d = load(STORE_D, null);
     if (parseDigit(d) != null) dEl.value = String(d);
@@ -276,6 +306,40 @@ export function mountSubmission(a, topicId, doc = typeof document !== "undefined
       persist();
     });
   }
+  function checkEventName() {
+    const warnEl = doc.getElementById("submit-event-warn");
+    if (!eventEl || !warnEl) return;
+    const name = eventEl.value.trim();
+    if (!name) {
+      warnEl.textContent = "";
+      return;
+    }
+    const builtin = ["Jump", "Land", "Hit", "Pickup", "UI"];
+    warnEl.textContent =
+      /^[A-Za-z][A-Za-z0-9_]{1,24}$/.test(name) && !builtin.includes(name)
+        ? ""
+        : "英字から始まる 2〜25 文字で、Jump、Land、Hit、Pickup、UI 以外にします";
+  }
+  checkEventName();
+  eventEl?.addEventListener("input", () => {
+    checkEventName();
+    persist();
+  });
+  codeEl?.addEventListener("input", persist);
+  doc.getElementById("submit-take-task")?.addEventListener("click", () => {
+    const taskEvent = doc.querySelector("#student-task [data-task-field='event']");
+    const taskCode = doc.querySelector("#student-task [data-task-field='code']");
+    const warnEl = doc.getElementById("submit-task-warn");
+    if (!(taskEvent instanceof HTMLInputElement) || !(taskCode instanceof HTMLTextAreaElement) || !eventEl || !codeEl) {
+      if (warnEl) warnEl.textContent = "このページに実装課題の入力がありません";
+      return;
+    }
+    eventEl.value = taskEvent.value;
+    codeEl.value = taskCode.value;
+    checkEventName();
+    persist();
+    if (warnEl) warnEl.textContent = "実装課題の入力を入れました";
+  });
   observeEl?.addEventListener("input", persist);
   discussEl?.addEventListener("input", () => {
     showCount();
@@ -296,6 +360,10 @@ export function mountSubmission(a, topicId, doc = typeof document !== "undefined
     for (const u of a.urls) {
       const r = checkSubmissionUrl(data.urls[u.id], topicId);
       if (r.warn) warns.push(`URL ${u.id}: ${r.warn}`);
+    }
+    if (a.implementation) {
+      if (!data.event.trim()) warns.push("実装課題のイベント名が未入力");
+      if (!data.code.trim()) warns.push("実装課題の関数が未入力");
     }
     if (!data.observe.trim()) warns.push("観察が未入力");
     if (!data.discuss.trim()) warns.push("考察が未入力");

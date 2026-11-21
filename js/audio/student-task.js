@@ -34,8 +34,14 @@ export function compileFns(source, names) {
  *   starter: string,
  *   names: string[],
  *   design?: boolean,
+ *   eventName?: { label: string, placeholder?: string },
  *   quiz?: { q: string, choices: string[], answer: number, explain: string },
- *   run: (fns: Record<string, Function>, source: string, design: string) => { ok: boolean, lines: string[], json?: object },
+ *   run: (
+ *     fns: Record<string, Function>,
+ *     source: string,
+ *     design: string,
+ *     extra?: { eventName?: string },
+ *   ) => { ok: boolean, lines: string[], json?: object },
  * }} task
  */
 export function mountStudentTask(host, task) {
@@ -56,6 +62,24 @@ export function mountStudentTask(host, task) {
     host.append(renderQuiz(task.quiz));
   }
 
+  /** @type {HTMLInputElement | null} */
+  let eventInput = null;
+  if (task.eventName) {
+    const nameLabel = document.createElement("label");
+    nameLabel.className = "controls-label";
+    nameLabel.textContent = task.eventName.label;
+    eventInput = document.createElement("input");
+    eventInput.type = "text";
+    eventInput.className = "student-event";
+    eventInput.spellcheck = false;
+    eventInput.autocomplete = "off";
+    eventInput.maxLength = 25;
+    eventInput.placeholder = task.eventName.placeholder || "";
+    eventInput.dataset.taskField = "event";
+    nameLabel.appendChild(eventInput);
+    host.append(nameLabel);
+  }
+
   const label = document.createElement("label");
   label.className = "controls-label";
   label.textContent = "設計・実装";
@@ -64,6 +88,7 @@ export function mountStudentTask(host, task) {
   area.rows = 12;
   area.spellcheck = false;
   area.value = task.starter;
+  area.dataset.taskField = "code";
   label.appendChild(area);
 
   /** @type {HTMLTextAreaElement | null} */
@@ -92,12 +117,26 @@ export function mountStudentTask(host, task) {
   saveBtn.type = "button";
   saveBtn.className = "btn btn-ghost";
   saveBtn.textContent = "結果を JSON で保存";
+  /** @type {HTMLButtonElement | null} */
+  let handoffBtn = null;
+  /** @type {HTMLParagraphElement | null} */
+  let handoffNote = null;
   row.append(runBtn, saveBtn);
+  if (eventInput) {
+    handoffBtn = document.createElement("button");
+    handoffBtn.type = "button";
+    handoffBtn.className = "btn btn-ghost";
+    handoffBtn.textContent = "提出票へ入れる";
+    row.append(handoffBtn);
+    handoffNote = document.createElement("p");
+    handoffNote.className = "footer-muted";
+  }
 
   const result = document.createElement("pre");
   result.className = "student-result";
   result.textContent = "まだテストしていません。上の実験で音を聞いたあと、関数を書き換えてからテストします。";
   host.append(row, result);
+  if (handoffNote) host.append(handoffNote);
 
   /** @type {object | null} */
   let lastJson = null;
@@ -105,7 +144,9 @@ export function mountStudentTask(host, task) {
   function execute() {
     try {
       const fns = compileFns(area.value, task.names);
-      const report = task.run(fns, area.value, designArea?.value || "");
+      const report = task.run(fns, area.value, designArea?.value || "", {
+        eventName: eventInput?.value ?? "",
+      });
       lastJson = report.json || {
         v: 1,
         ok: report.ok,
@@ -121,6 +162,20 @@ export function mountStudentTask(host, task) {
   }
 
   runBtn.addEventListener("click", execute);
+  handoffBtn?.addEventListener("click", () => {
+    const nameEl = document.getElementById("submit-event");
+    const codeEl = document.getElementById("submit-code");
+    if (!handoffNote || !eventInput) return;
+    if (!(nameEl instanceof HTMLInputElement) || !(codeEl instanceof HTMLTextAreaElement)) {
+      handoffNote.textContent = "提出票は、入門コースのページ（course=intro）に出ます。";
+      return;
+    }
+    nameEl.value = eventInput.value;
+    codeEl.value = area.value;
+    nameEl.dispatchEvent(new Event("input", { bubbles: true }));
+    codeEl.dispatchEvent(new Event("input", { bubbles: true }));
+    handoffNote.textContent = "提出票の実装課題へ入れました。";
+  });
   saveBtn.addEventListener("click", () => {
     if (!lastJson) execute();
     if (!lastJson) return;
