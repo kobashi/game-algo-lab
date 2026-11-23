@@ -47,16 +47,15 @@ function unlistedName(eventName, source) {
  */
 function asTone(value) {
   if (!value || typeof value !== "object") return null;
-  const tone = /** @type {{ freq?: unknown, dur?: unknown, gain?: unknown }} */ (value);
-  if (!finite(tone.freq) || !finite(tone.dur) || !finite(tone.gain)) return null;
-  return { freq: tone.freq, dur: tone.dur, gain: tone.gain };
+  const { freq, dur, gain } = /** @type {{ freq?: unknown, dur?: unknown, gain?: unknown }} */ (value);
+  if (!finite(freq) || !finite(dur) || !finite(gain)) return null;
+  return { freq, dur, gain };
 }
 
 /**
- * @param {unknown} value
+ * @param {ReturnType<typeof asTone>} tone
  */
-function toneInRange(value) {
-  const tone = asTone(value);
+function toneInRange(tone) {
   return (
     !!tone &&
     tone.freq >= 40 &&
@@ -101,6 +100,7 @@ function callTone(fn, id) {
 export function checkSoundFor(fn, eventName, source = "") {
   const lines = [];
   let ok = true;
+  let preview = null;
   for (const id of SOUND_BUILTIN) {
     const tone = callTone(fn, id);
     const good = !!asTone(tone);
@@ -113,7 +113,7 @@ export function checkSoundFor(fn, eventName, source = "") {
       "新しいイベント名は、英字から始まる 2〜25 文字の英数字で、Jump、Land、Hit、Pickup、UI 以外にします"
     );
   } else {
-    const tone = callTone(fn, name);
+    const tone = asTone(callTone(fn, name));
     const good = toneInRange(tone);
     ok =
       say(
@@ -129,9 +129,12 @@ export function checkSoundFor(fn, eventName, source = "") {
         distinct,
         `${name} の音は、未登録の名前が返す値と区別します。未登録の名前には音を返さないか、別の音を返します`
       ) && ok;
-    if (good && distinct) lines.push(`${name} に効果音を割り当てられました`);
+    if (ok && tone) {
+      lines.push(`${name} に効果音を割り当てられました`);
+      preview = { name, tone };
+    }
   }
-  return { ok, lines };
+  return { ok, lines, preview };
 }
 
 /**

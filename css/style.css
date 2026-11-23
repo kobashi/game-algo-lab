@@ -6254,6 +6254,10 @@ details.ds-block:not([open]) > .ds-title::before {
   border-radius: 8px;
 }
 
+.sfx-walk {
+  touch-action: none;
+}
+
 .sfx-sim {
   display: block;
   width: 100%;

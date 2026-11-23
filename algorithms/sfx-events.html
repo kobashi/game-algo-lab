@@ -43,16 +43,8 @@
 
     <div class="gl-layout" id="sim">
       <section class="gl-main">
-        <h2 class="gl-block-title">ゲームの出来事をまねる</h2>
-        <p class="sfx-lab">Hit を押すと、キャラクターがダメージを受けたという知らせを送ります。</p>
-        <div class="control-row">
-          <button type="button" id="btn-jump" class="btn btn-primary">Jump</button>
-          <button type="button" id="btn-land" class="btn btn-ghost">Land</button>
-          <button type="button" id="btn-hit" class="btn btn-ghost">Hit</button>
-          <button type="button" id="btn-pick" class="btn btn-ghost">Pickup</button>
-        </div>
         <h2 class="gl-block-title">イベント名を直接送る（<span class="term" data-term="emit">Emit</span>）</h2>
-        <p class="sfx-lab">Hit などの名前を送って、受け取った側がどんな音を鳴らすか確かめます。</p>
+        <p class="sfx-lab">ボタンを押して、受け取った側がどんな音を鳴らすか確かめます。</p>
         <div id="sfx-btns" class="control-row"></div>
         <h2 class="gl-block-title">ログ</h2>
         <p class="sfx-lab"><code>Emit</code> は送った知らせの名前です。<code>SE</code> には音を鳴らしたかどうかと、音の設定が出ます。新しい記録は上に出ます。</p>
@@ -69,9 +61,11 @@
         </div>
         <p id="bgm-pos" class="sfx-readout">停止</p>
         <h2 class="gl-block-title">実験プレイ</h2>
-        <p class="sfx-lab">左右とスペースで動き、起きたことはイベントになります。この画面は音を選びません。</p>
+        <p class="sfx-lab">「右へ」を押したまま進み、コインを拾いましょう。コインに触れると <code>Pickup</code> が送られます。ゲーム画面を選んで矢印キーとスペースでも操作できます。</p>
         <canvas id="sim-canvas" class="sfx-sim" width="640" height="180" tabindex="0" aria-label="実験プレイ。左右とジャンプ"></canvas>
         <div class="control-row">
+          <button type="button" id="btn-left" class="btn btn-ghost sfx-walk">左へ</button>
+          <button type="button" id="btn-right" class="btn btn-ghost sfx-walk">右へ</button>
           <button type="button" id="btn-sim-jump" class="btn btn-primary">ジャンプ</button>
           <button type="button" id="btn-sim-reset" class="btn btn-ghost">位置を戻す</button>
         </div>
@@ -115,6 +109,9 @@
     </div>
 
     <section id="student-task"></section>
+
+    <p id="item-preview-status" role="status"></p>
+    <p>音を設定できたら、<a href="#sfx-btns">イベント名を直接送る</a>欄で聞くか、<a href="#sim-canvas">実験プレイ</a>でコインと宝石を拾って比べます。拾い直すには「位置を戻す」を押します。</p>
 
     <section class="code-section">
       <h2>C# の対応</h2>

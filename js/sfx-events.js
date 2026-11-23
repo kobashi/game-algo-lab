@@ -58,8 +58,11 @@ const overrides = {};
 let lastTone = null;
 /** @type {string[]} */
 let logs = [];
-/** @type {Map<string, Set<(p: object) => void>>} */
+/** @type {Map<string | symbol, Set<(p: object) => void>>} */
 const bus = new Map();
+const studentPickupChannel = Symbol("studentPickup");
+/** @type {ReturnType<typeof import("./audio-checks.js").checkSoundFor>["preview"]} */
+let studentPickup = null;
 let urlApplying = false;
 /** @type {ReturnType<typeof setInterval> | null} */
 let mashTimer = null;
@@ -162,17 +165,36 @@ function slidersToOverride() {
   syncOne("sfx-gain");
 }
 
+/**
+ * @param {string | symbol} ev
+ * @param {(payload: object) => void} fn
+ */
 function on(ev, fn) {
   if (!bus.has(ev)) bus.set(ev, new Set());
   bus.get(ev)?.add(fn);
 }
 
-function emit(ev, payload = {}) {
+/**
+ * @param {string} ev
+ * @param {object} [payload]
+ * @param {string | symbol} [channel]
+ */
+function emit(ev, payload = {}, channel = ev) {
   pushLog(`Emit ${ev}`);
-  const set = bus.get(ev);
+  const set = bus.get(channel);
   if (set) for (const fn of set) fn(payload);
   setStatus(`Emit ${ev}`);
 }
+
+function emitStudentPickup() {
+  if (studentPickup) emit(studentPickup.name, {}, studentPickupChannel);
+}
+
+on(studentPickupChannel, () => {
+  if (!studentPickup) return;
+  const { name, tone } = studentPickup;
+  playTone(tone.freq, tone.dur, tone.gain, { eventId: name });
+});
 
 function pushLog(msg) {
   logs.unshift(`${new Date().toLocaleTimeString()} ${msg}`);
@@ -443,10 +465,6 @@ if (btnBox) {
   });
 }
 
-document.getElementById("btn-jump")?.addEventListener("click", () => emit("Jump"));
-document.getElementById("btn-land")?.addEventListener("click", () => emit("Land"));
-document.getElementById("btn-hit")?.addEventListener("click", () => emit("Hit"));
-document.getElementById("btn-pick")?.addEventListener("click", () => emit("Pickup"));
 document.getElementById("btn-explosion")?.addEventListener("click", () => emit("Explosion"));
 document.getElementById("btn-rare")?.addEventListener("click", () => emit("Pickup", { kind: "rare" }));
 document.getElementById("btn-duck")?.addEventListener("click", () => {
@@ -564,7 +582,13 @@ document.getElementById("btn-bgm-scene")?.addEventListener("click", () => {
 });
 
 const simCanvas = /** @type {HTMLCanvasElement} */ (document.getElementById("sim-canvas"));
-const sim = createGameSim(simCanvas, emit, {
+const sim = createGameSim(simCanvas, (event, payload) => {
+  if (studentPickup && event === "Pickup" && /** @type {{ kind?: string } | undefined} */ (payload)?.kind === "rare") {
+    emitStudentPickup();
+  } else {
+    emit(event, payload);
+  }
+}, {
   health: () => num("dyn-health", 100),
   timeScale: () => num("dyn-scale", 1),
   focused: () => document.activeElement === simCanvas,
@@ -582,6 +606,13 @@ function bindHold(id, key) {
   node.addEventListener("pointerup", up);
   node.addEventListener("pointerleave", up);
   node.addEventListener("pointercancel", up);
+  node.addEventListener("keydown", (ev) => {
+    if (ev.key === " " || ev.key === "Enter") down(ev);
+  });
+  node.addEventListener("keyup", (ev) => {
+    if (ev.key === " " || ev.key === "Enter") up();
+  });
+  node.addEventListener("blur", up);
 }
 bindHold("btn-left", "left");
 bindHold("btn-right", "right");
@@ -618,6 +649,11 @@ simCanvas?.addEventListener("keyup", (ev) => {
     ev.preventDefault();
     sim.hold("jump", false);
   }
+});
+simCanvas?.addEventListener("blur", () => {
+  sim.hold("left", false);
+  sim.hold("right", false);
+  sim.hold("jump", false);
 });
 
 document.querySelectorAll(".sfx-tab").forEach((btn) => {
@@ -1000,5 +1036,41 @@ for (const entry of Object.values(urlSpec)) {
 if (urlResult.warning) setStatus(urlResult.warning);
 else setStatus("イベントボタンで Emit → SFX 購読者がトーン再生");
 pushLog("SfxService が Jump/Land/Hit/… を On");
-mountTopicTask("sfx-events");
+mountTopicTask("sfx-events", setupItemPreview());
 requestAnimationFrame(frame);
+
+function setupItemPreview() {
+  const task = document.getElementById("student-task");
+  const status = document.getElementById("item-preview-status");
+  if (!task || !status || !btnBox) return;
+
+  const directButton = document.createElement("button");
+  directButton.type = "button";
+  directButton.className = "btn btn-ghost sfx-btn";
+  directButton.addEventListener("click", emitStudentPickup);
+
+  function clearPreview() {
+    studentPickup = null;
+    directButton.remove();
+    status.textContent = "";
+  }
+
+  task.addEventListener("input", () => {
+    if (!studentPickup) return;
+    clearPreview();
+    status.textContent = "入力が変わりました。もう一度「動作を確認して宝石に使う」を押してください。";
+  });
+  document.getElementById("btn-reset")?.addEventListener("click", clearPreview);
+
+  /** @param {import("./audio/student-task.js").StudentTaskResult | null} report */
+  function applyPreview(report) {
+    clearPreview();
+    if (!report?.ok || !report.preview) return;
+    studentPickup = report.preview;
+    const { name, tone } = studentPickup;
+    directButton.textContent = name;
+    btnBox.append(directButton);
+    status.textContent = `宝石に ${name} を設定しました。${tone.freq} Hz、${tone.dur} 秒、音量 ${tone.gain}。`;
+  }
+  return applyPreview;
+}

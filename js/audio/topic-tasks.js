@@ -26,7 +26,9 @@ export const TOPIC_TASKS = {
     title: "実装課題: 新しいイベントに音を割り当てる",
     goal: "ゲームがイベント名を出すだけで、鳴らす音は購読側の関数が決める。",
     predict: "入力した新しいイベント名だけに音を割り当て、未登録の名前とは戻り値を分けられるか。",
-    look: "動作テストは、下の欄のイベント名を soundFor に渡します。その名前は周波数 40〜2000、長さ 0.02〜1 秒、音量 0〜0.3 の音を返します。未登録の名前には音を返さないか、別の音を返します。Jump、Land、Hit、Pickup、UI は周波数・長さ・音量の数を返したままにします。コメントや、関係のない文字列では合格しません。スライダーの操作だけでは完了しません。入門コースの提出票には、このイベント名と関数を入れます。",
+    look: "ボタンを押すと、新しい名前を soundFor に渡し、その名前の音を定義できたか確認します。周波数は 40〜2000 Hz、長さは 0.02〜1 秒、音量は 0〜0.3 です。未登録の名前には音を返さないか、別の音を返します。Jump、Land、Hit、Pickup、UI は 3 つの数を返したままにします。確認できた音は宝石に使えます。",
+    runLabel: "動作を確認して宝石に使う",
+    saveJson: false,
     eventName: {
       label: "新しいイベント名",
       placeholder: "英字から始まる名前",
@@ -53,22 +55,11 @@ export const TOPIC_TASKS = {
     },
     run(fns, source, _design, extra) {
       const eventName = String(extra?.eventName ?? "").trim();
-      const report = checkSoundFor(
+      return checkSoundFor(
         /** @type {(id: string) => { freq: number, dur: number, gain: number }} */ (fns.soundFor),
         eventName,
         source
       );
-      return {
-        ...report,
-        json: {
-          v: 1,
-          topic: "sfx-events",
-          ok: report.ok,
-          lines: report.lines,
-          event: eventName,
-          source,
-        },
-      };
     },
   },
   "sfx-voice-limit": {
@@ -421,10 +412,11 @@ function layerGains(state) {
 
 /**
  * @param {string} topicId
+ * @param {Parameters<typeof mountStudentTask>[1]["onTest"]} [onTest]
  */
-export function mountTopicTask(topicId) {
+export function mountTopicTask(topicId, onTest) {
   const host = document.getElementById("student-task");
   const task = TOPIC_TASKS[topicId];
   if (!host || !task) return;
-  mountStudentTask(host, task);
+  mountStudentTask(host, { ...task, onTest });
 }

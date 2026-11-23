@@ -7,6 +7,15 @@ const BANNED =
   /`|\b(import|fetch|document|window|globalThis|eval|Function|XMLHttpRequest|localStorage|navigator)\b/;
 
 /**
+ * @typedef {{
+ *   ok: boolean,
+ *   lines: string[],
+ *   json?: object,
+ *   preview?: ReturnType<typeof import("./audio-checks.js").checkSoundFor>["preview"],
+ * }} StudentTaskResult
+ */
+
+/**
  * @param {string} source
  * @param {string[]} names
  */
@@ -35,13 +44,16 @@ export function compileFns(source, names) {
  *   names: string[],
  *   design?: boolean,
  *   eventName?: { label: string, placeholder?: string },
+ *   runLabel?: string,
+ *   saveJson?: boolean,
+ *   onTest?: (report: StudentTaskResult | null) => void,
  *   quiz?: { q: string, choices: string[], answer: number, explain: string },
  *   run: (
  *     fns: Record<string, Function>,
  *     source: string,
  *     design: string,
  *     extra?: { eventName?: string },
- *   ) => { ok: boolean, lines: string[], json?: object },
+ *   ) => StudentTaskResult,
  * }} task
  */
 export function mountStudentTask(host, task) {
@@ -112,16 +124,31 @@ export function mountStudentTask(host, task) {
   const runBtn = document.createElement("button");
   runBtn.type = "button";
   runBtn.className = "btn btn-primary";
-  runBtn.textContent = "動作テスト";
-  const saveBtn = document.createElement("button");
-  saveBtn.type = "button";
-  saveBtn.className = "btn btn-ghost";
-  saveBtn.textContent = "結果を JSON で保存";
+  runBtn.textContent = task.runLabel || "動作テスト";
+  row.append(runBtn);
+  if (task.saveJson !== false) {
+    const saveBtn = document.createElement("button");
+    saveBtn.type = "button";
+    saveBtn.className = "btn btn-ghost";
+    saveBtn.textContent = "結果を JSON で保存";
+    saveBtn.addEventListener("click", () => {
+      const report = execute();
+      if (!report) return;
+      const json = report.json || { v: 1, ok: report.ok, lines: report.lines };
+      const blob = new Blob([JSON.stringify(json, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "audio-task.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+    row.append(saveBtn);
+  }
   /** @type {HTMLButtonElement | null} */
   let handoffBtn = null;
   /** @type {HTMLParagraphElement | null} */
   let handoffNote = null;
-  row.append(runBtn, saveBtn);
   if (eventInput) {
     handoffBtn = document.createElement("button");
     handoffBtn.type = "button";
@@ -134,12 +161,10 @@ export function mountStudentTask(host, task) {
 
   const result = document.createElement("pre");
   result.className = "student-result";
-  result.textContent = "まだテストしていません。上の実験で音を聞いたあと、関数を書き換えてからテストします。";
+  result.setAttribute("role", "status");
+  result.textContent = `関数を書き換えたら「${runBtn.textContent}」を押します。`;
   host.append(row, result);
   if (handoffNote) host.append(handoffNote);
-
-  /** @type {object | null} */
-  let lastJson = null;
 
   function execute() {
     try {
@@ -147,21 +172,20 @@ export function mountStudentTask(host, task) {
       const report = task.run(fns, area.value, designArea?.value || "", {
         eventName: eventInput?.value ?? "",
       });
-      lastJson = report.json || {
-        v: 1,
-        ok: report.ok,
-        lines: report.lines,
-      };
       result.dataset.state = report.ok ? "ok" : "fail";
       result.textContent = report.lines.join("\n");
+      return report;
     } catch (err) {
-      lastJson = null;
       result.dataset.state = "fail";
       result.textContent = err instanceof Error ? err.message : "関数を読めませんでした";
+      return null;
     }
   }
 
-  runBtn.addEventListener("click", execute);
+  runBtn.addEventListener("click", () => {
+    const report = execute();
+    task.onTest?.(report);
+  });
   handoffBtn?.addEventListener("click", () => {
     const nameEl = document.getElementById("submit-event");
     const codeEl = document.getElementById("submit-code");
@@ -175,17 +199,6 @@ export function mountStudentTask(host, task) {
     nameEl.dispatchEvent(new Event("input", { bubbles: true }));
     codeEl.dispatchEvent(new Event("input", { bubbles: true }));
     handoffNote.textContent = "提出票の実装課題へ入れました。";
-  });
-  saveBtn.addEventListener("click", () => {
-    execute();
-    if (!lastJson) return;
-    const blob = new Blob([JSON.stringify(lastJson, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "audio-task.json";
-    a.click();
-    URL.revokeObjectURL(url);
   });
 }
 
