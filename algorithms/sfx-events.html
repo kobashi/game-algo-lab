@@ -116,6 +116,18 @@
 
     <section id="student-task"></section>
 
+    <section class="student-task" aria-labelledby="item-preview-heading">
+      <h2 id="item-preview-heading">コインと宝石の音を聞き比べる</h2>
+      <p>コインは <code>Pickup</code> を送ります。宝石には、上で書いた新しいイベントを使えます。「宝石に新イベントを使う」を押してから、両方の音を比べましょう。</p>
+      <div class="control-row">
+        <button type="button" id="btn-apply-item-sound" class="btn btn-primary">宝石に新イベントを使う</button>
+        <button type="button" id="btn-preview-coin" class="btn btn-ghost">コインを拾う</button>
+        <button type="button" id="btn-preview-gem" class="btn btn-ghost" disabled>宝石を拾う</button>
+      </div>
+      <p id="item-preview-status" role="status"></p>
+      <p>実験プレイでも同じ音を聞けます。拾い直すには「位置を戻す」を押します。<a href="#sfx-log">発行と再生のログを見る</a></p>
+    </section>
+
     <section class="code-section">
       <h2>C# の対応</h2>
       <pre class="code-block" id="csharp-sample"><code>// 読み込み中…</code></pre>

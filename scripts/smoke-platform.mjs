@@ -1016,6 +1016,9 @@ function mockControl(kind, value, extra = {}) {
 `;
   const notedReport = grade(noted, "Dash");
   assert.equal(notedReport.ok, true, "無関係な文字列が先でも、指定名で合格");
+  assert.deepEqual(notedReport.preview, { name: "Dash", tone: { freq: 730, dur: 0.09, gain: 0.12 } });
+  assert.equal(wide.preview, null, "安全な範囲を外れた音は試聴できない");
+  assert.equal(grade(starter, "Dash").preview, null, "名前ごとに音を分けてから試聴できる");
   assert.ok(notedReport.lines.some((line) => line.includes("Dash に効果音を割り当てられました")));
   assert.ok(!notedReport.lines.some((line) => line.startsWith("Note")));
   assert.equal(
