@@ -1021,6 +1021,26 @@ function mockControl(kind, value, extra = {}) {
   assert.equal(grade(starter, "Dash").preview, null, "名前ごとに音を分けてから試聴できる");
   assert.ok(notedReport.lines.some((line) => line.includes("Dash に効果音を割り当てられました")));
   assert.ok(!notedReport.lines.some((line) => line.startsWith("Note")));
+  for (const changedTone of [
+    "freq: 221, dur: 0.1, gain: 0.1",
+    "freq: 220, dur: 0.11, gain: 0.1",
+    "freq: 220, dur: 0.1, gain: 0.11",
+  ]) {
+    const changed = grade(noted.replace("freq: 220, dur: 0.1, gain: 0.1", changedTone), "Dash");
+    assert.equal(changed.ok, false, "既存イベントの周波数・長さ・音量の変更は不合格");
+    assert.equal(changed.preview, null, "既存の音を変更した実装は宝石に適用しない");
+    assert.ok(changed.lines.some((line) => line.startsWith("Hit") && line.includes("初期コード")));
+  }
+  const replacedBranch = starter.replace(
+    'if (eventId === "Hit") return { freq: 220, dur: 0.1, gain: 0.1 };',
+    'if (eventId === "Dash") return { freq: 730, dur: 0.09, gain: 0.12 };'
+  );
+  const replaced = grade(replacedBranch, "Dash");
+  assert.equal(replaced.ok, false, "既存の分岐を新イベントで置き換えると不合格");
+  assert.equal(replaced.preview, null);
+  assert.ok(replaced.lines.some((line) => line.startsWith("Hit")));
+  const reordered = grade(noted.replace("freq: 220, dur: 0.1, gain: 0.1", "gain: .1, dur: .1, freq: 220"), "Dash");
+  assert.equal(reordered.ok, true, "書き方が変わっても既存イベントの音が同じなら合格");
   assert.equal(
     grade(noted.replace("return null;", "return { freq: 200, dur: 0.2, gain: 0.05 };"), "Dash").ok,
     true,
