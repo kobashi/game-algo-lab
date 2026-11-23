@@ -177,7 +177,7 @@ export function mountStudentTask(host, task) {
     handoffNote.textContent = "提出票の実装課題へ入れました。";
   });
   saveBtn.addEventListener("click", () => {
-    if (!lastJson) execute();
+    execute();
     if (!lastJson) return;
     const blob = new Blob([JSON.stringify(lastJson, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);

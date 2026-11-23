@@ -5,9 +5,15 @@
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.20.0
 
+**2026-11-23 入門と応用のサウンド修正を main に載せる（Grok）** — Codex が受け入れた入門課題 9（PR #19）と、再検証済みの総合演習（PR #20）を統合した。保存は押すたびに今の関数を採点する。入門ページの「提出票へ入れる」は、イベント名と soundFor を提出票へ転記した。総合演習は、保存時に足音 25・設計 10 になった。幅 1280 と 390 でページの横スクロールは出なかった。リリースは切らない。[再検証](docs/reviews/2026-11-23-intro-sfx-events-reverification.md)
+
 **2026-11-23 入門課題 9 の修正を受け入れ可と判定（Codex）** — `d56972c` の詳説で、音量とコードの対応、周波数と長さを一つずつ変える聞き比べを再検証。INTRO-SFX-01〜05 は解決。応用ブランチとの統合確認は別途必要。[判定と検証結果](docs/reviews/2026-11-23-intro-sfx-events-reverification.md)
 
 **2026-11-23 入門詳説の音の項目と聞き比べを揃える（Grok）** — INTRO-SFX-04 は、詳説で周波数・長さ・音量の 3 つを説明し、初期コードの Jump の行で `freq` `dur` `gain` の意味を示す。INTRO-SFX-05 は、Land の聞き比べを周波数 400 Hz（長さ 0.10 秒）と、長さ 0.30 秒（周波数 180 Hz）に分けた。Jump は 440 Hz・0.08 秒。`Emit Land` はどちらのページでも同じ。sfx-events は修正 10→11。リリースは切らない。再検証は Codex。[再検証](docs/reviews/2026-11-23-intro-sfx-events-reverification.md)
+
+**2026-11-23 入門と応用サウンドを再検証（Codex）** — Grok 修正の入門 3 件・応用 4 件を対象ブランチで確認。中学生向け詳説では、音量と `soundFor` の対応を説明し、聞き比べで変える項目を 1 つにする必要がある（INTRO-SFX-04・05）。両ブランチの一時統合では引き継ぎとテストの競合を解消するとスモーク全件通過。[入門の再検証と教材の指摘](docs/reviews/2026-11-23-intro-sfx-events-reverification.md) · [応用の再検証](docs/reviews/2026-11-21-audio-adaptive-lab-review.md)
+
+**2026-11-21 応用サウンド総合演習の試聴と保存を採点に合わせる（Grok）** — AUDIO-ADAPT-01 は、地面に触れる直前の垂直速度を着地の関数へ渡す。ジャンプの着地は 275。AUDIO-ADAPT-02 は、上限で選んだ発音をその場で止める。AUDIO-ADAPT-03 は、stepInterval が返す秒が経過するたびに足音を鳴らす。0.5 秒の関数を 1.1 秒歩くと足音は 2 回。AUDIO-TASK-01 は、JSON の保存時に今の関数と設計文を採点する。この保存は共通の学生課題欄で、総合演習以外の修正回数は変えない。audio-adaptive-lab は修正 0→1、成熟度は一発のまま。一発未調整の修正合計は 10。Motion Audio の観察は移動距離の説明のまま。入門の Emit Land もそのまま。リリースは切らない。再検証は Codex。[レビュー](docs/reviews/2026-11-21-audio-adaptive-lab-review.md)
 
 **2026-11-21 入門サウンドの課題 9 に対応（Grok）** — INTRO-SFX-01 は、提出 URL の A と B を既存イベントの周波数比較にし、新しいイベント名と soundFor を提出票と JSON に入れた。INTRO-SFX-02 は、入力したイベント名を関数に渡し、未登録の名前と戻り値を比べる。INTRO-SFX-03 は、2 つの発行列の用途と、両方の Hit を見比べる観察手順をページに載せた。Hit の初期値は 120 Hz、周波数を変えると両方の Hit が 880 Hz、Jump は 440 Hz、ミュート中は Emit Hit と SE (muted)。sfx-events は修正 9→10。リリースは切らない。再検証は Codex。[レビュー](docs/reviews/2026-11-21-intro-sfx-events-review.md)
 
@@ -810,6 +816,8 @@ ready **95**。**Audio / Networking / Graphics（主要）一通り完了。**
 | ブランチ | 状態 | 備考 |
 |----------|------|------|
 | `origin/claude/grok4-5-learning-roadmap-iiihaa` | **不要（保持）** | tip = `main` の `a56ccde`（PR #1/#2 反映後と同一）。`main` に完全包含。2026-07-21 確認 |
+| `origin/grok/sfx-events-review` | **不要（保持）** | PR #19。tip `391afbe` は main に包含。2026-11-23 |
+| `origin/grok/audio-adaptive-review` | **不要（保持）** | PR #20。tip `3bc19c3` は main に包含。2026-11-23 |
 
 ---
 

@@ -359,7 +359,7 @@ export const TOPIC_META = {
   },
   "audio-adaptive-lab": {
     maturity: "oneshot",
-    revisions: 0,
+    revisions: 1,
     updated: "2026-11-21",
   },
   "gfx-postprocess": {

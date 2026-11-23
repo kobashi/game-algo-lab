@@ -344,7 +344,7 @@ function sustainGain(speed) {
     title: "総合課題",
     goal: "移動、着地、敵の距離、同時発音、BGM の状態を、1 つのゲームの音として設計する。",
     predict: "足音・着地・警告・発音数・BGM のうち、スライダーだけで決まるものはどれか。",
-    look: "点数は、下の関数と設計の文章だけから付きます。100 点のうち、足音 25、着地 15、警告 20、発音数 15、BGM 15、設計 10 です。",
+    look: "stepInterval は秒を返します。試聴は、その秒が経過するたびに足音を鳴らします。着地には、地面に触れる直前の垂直速度を渡します。止めた発音は、その場で音を止めます。点数は関数と設計の文章だけから付き、保存するときは今の入力を採点します。100 点のうち、足音 25、着地 15、警告 20、発音数 15、BGM 15、設計 10 です。",
     names: ["stepInterval", "landImpact", "warning", "pickStop", "layerGains"],
     design: true,
     starter: `function stepInterval(speed, grounded) {

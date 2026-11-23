@@ -33,11 +33,13 @@ let ac = null;
 let layers = null;
 /** @type {Record<string, Function> | null} */
 let fns = null;
-let distance = 0;
+let stepElapsed = 0;
 let warnWait = 0;
-let wasGrounded = true;
+let lastImpact = 0;
 /** @type {{ id: number, started: number, level: number }[]} */
 let voices = [];
+/** @type {Map<number, { osc: OscillatorNode, amp: GainNode, endAt: number }>} */
+const liveVoices = new Map();
 let nextVoice = 1;
 
 function pushLog(msg) {
@@ -69,6 +71,34 @@ function ensureAc() {
   return ac;
 }
 
+/**
+ * stop は 1 回だけ呼ぶ。予約済みの終了より前に呼ぶと、その音はそこから鳴らない。
+ * @param {number} id
+ * @param {number} when
+ */
+function release(id, when) {
+  const nodes = liveVoices.get(id);
+  if (!nodes || !ac) return;
+  liveVoices.delete(id);
+  voices = voices.filter((item) => item.id !== id);
+  const t = Math.max(ac.currentTime, when);
+  try {
+    nodes.amp.gain.cancelScheduledValues(ac.currentTime);
+    nodes.amp.gain.setValueAtTime(0.0001, ac.currentTime);
+    nodes.osc.stop(t);
+  } catch {
+    /* already stopped */
+  }
+}
+
+function reapVoices() {
+  if (!ac) return;
+  const t = ac.currentTime;
+  for (const [id, nodes] of liveVoices) {
+    if (t >= nodes.endAt) release(id, nodes.endAt);
+  }
+}
+
 function blip(freq, gain, dur) {
   const ctx = ensureAc();
   if (!ctx || !(gain > 0)) return;
@@ -81,18 +111,23 @@ function blip(freq, gain, dur) {
   const t0 = ctx.currentTime;
   amp.gain.setValueAtTime(Math.min(0.2, gain), t0);
   amp.gain.exponentialRampToValueAtTime(0.001, t0 + Math.max(0.03, dur));
+  const endAt = t0 + Math.max(0.04, dur) + 0.02;
   osc.start(t0);
-  osc.stop(t0 + Math.max(0.04, dur) + 0.02);
   const voice = { id: nextVoice++, started: performance.now(), level: gain };
   voices.push(voice);
+  liveVoices.set(voice.id, { osc, amp, endAt });
   if (fns && voices.length > 4) {
     const stop = fns.pickStop(voices, "oldest");
     if (stop && typeof stop === "object" && "id" in stop) {
-      voices = voices.filter((item) => item.id !== /** @type {{id: number}} */ (stop).id);
-      pushLog(`発音数: #${/** @type {{id: number}} */ (stop).id} を停止`);
+      const id = /** @type {{id: number}} */ (stop).id;
+      if (liveVoices.has(id)) {
+        release(id, ctx.currentTime + 0.02);
+        pushLog(`発音数: #${id} を停止`);
+      }
     }
   }
   osc.onended = () => {
+    liveVoices.delete(voice.id);
     voices = voices.filter((item) => item.id !== voice.id);
     try {
       osc.disconnect();
@@ -117,31 +152,33 @@ function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000);
   last = now;
   sim.tick(dt);
+  reapVoices();
   const state = sim.state();
   const speed = Math.hypot(state.vx, state.vy);
   const enemy = nearestEnemy(state);
+  if (state.landSpeed > 0) lastImpact = state.landSpeed;
   if (readout) {
-    readout.textContent = `水平 ${state.vx.toFixed(0)} / 垂直 ${state.vy.toFixed(0)} / 接地 ${state.onGround ? "あり" : "なし"} / 敵距離 ${enemy.toFixed(0)} / 発音 ${voices.length}`;
+    readout.textContent = `水平 ${state.vx.toFixed(0)} / 垂直 ${state.vy.toFixed(0)} / 着地直前 ${lastImpact > 0 ? lastImpact.toFixed(0) : "—"} / 接地 ${state.onGround ? "あり" : "なし"} / 敵距離 ${enemy.toFixed(0)} / 発音 ${voices.length}`;
   }
   if (fns && ac) {
     const interval = Number(fns.stepInterval(Math.abs(state.vx), state.onGround)) || 0;
-    if (interval <= 0) distance = 0;
+    if (!(interval > 0)) stepElapsed = 0;
     else {
-      distance += Math.abs(state.vx) * dt;
-      if (distance >= Math.max(8, interval * 80)) {
-        distance = 0;
+      stepElapsed += dt;
+      if (stepElapsed >= interval) {
+        stepElapsed -= interval;
+        if (stepElapsed > interval) stepElapsed = 0;
         blip(160, 0.06, 0.05);
         pushLog("足音");
       }
     }
-    if (wasGrounded === false && state.onGround) {
-      const impact = fns.landImpact(Math.abs(state.vy));
+    if (state.landSpeed > 0) {
+      const impact = fns.landImpact(state.landSpeed);
       if (impact && typeof impact === "object") {
         blip(Number(impact.freq) || 200, Number(impact.gain) || 0, 0.12);
-        pushLog("着地");
+        pushLog(`着地 ${Math.round(state.landSpeed)}`);
       }
     }
-    wasGrounded = state.onGround;
     const warn = fns.warning(enemy);
     warnWait -= dt;
     if (warn && Number(warn.gain) > 0 && warnWait <= 0) {
@@ -175,8 +212,8 @@ document.getElementById("btn-hear")?.addEventListener("click", () => {
 });
 document.getElementById("btn-sim-reset")?.addEventListener("click", () => {
   sim.reset();
-  distance = 0;
-  wasGrounded = true;
+  stepElapsed = 0;
+  lastImpact = 0;
 });
 canvas.addEventListener("pointerdown", () => canvas.focus());
 

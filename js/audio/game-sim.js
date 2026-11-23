@@ -24,6 +24,8 @@ export function createGameSim(canvas, emit, read) {
   let jumpEdge = false;
   let over = "";
   let acc = 0;
+  /** この tick で地面に触れた直前の垂直速度。触れていなければ 0。 */
+  let landSpeed = 0;
   /** @type {ReturnType<typeof setTimeout>[]} */
   let timers = [];
 
@@ -47,6 +49,7 @@ export function createGameSim(canvas, emit, read) {
     jumpEdge = false;
     over = "";
     acc = 0;
+    landSpeed = 0;
   }
 
   function clearTimers() {
@@ -60,6 +63,7 @@ export function createGameSim(canvas, emit, read) {
   function step(dt) {
     if (!ctx || over) return;
     const scale = Math.max(0.2, Math.min(2, read.timeScale() || 1));
+    landSpeed = 0;
     acc += dt * scale;
     while (acc >= 1 / 60) {
       acc -= 1 / 60;
@@ -88,7 +92,10 @@ export function createGameSim(canvas, emit, read) {
     if (player.x + player.w > W - 8) player.x = W - 8 - player.w;
     const feet = player.y + player.h;
     if (feet >= ground) {
-      if (wasAir) emit("Land");
+      if (wasAir) {
+        landSpeed = Math.abs(player.vy);
+        emit("Land", { speed: landSpeed });
+      }
       player.y = ground - player.h;
       player.vy = 0;
       player.onGround = true;
@@ -218,6 +225,7 @@ export function createGameSim(canvas, emit, read) {
         y: player.y,
         vx: player.vx,
         vy: player.vy,
+        landSpeed,
         onGround: player.onGround,
         enemies: enemies.map((enemy) => ({ x: enemy.x, y: enemy.y, alive: enemy.alive })),
       };
