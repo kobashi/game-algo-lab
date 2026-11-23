@@ -20,8 +20,6 @@ import { createDirector } from "./audio/audio-director.js";
 import { drawSchematic, drawScope, paintMeter, readLevel } from "./audio/audio-meter.js";
 import { AUDIO_PRESETS, PRESET_LABELS } from "./audio/audio-presets.js";
 import { createGameSim } from "./audio/game-sim.js";
-import { checkSoundFor } from "./audio/audio-checks.js";
-import { compileFns } from "./audio/student-task.js";
 import { mountTopicTask } from "./audio/topic-tasks.js";
 import {
   clamp,
@@ -63,7 +61,7 @@ let logs = [];
 /** @type {Map<string | symbol, Set<(p: object) => void>>} */
 const bus = new Map();
 const studentPickupChannel = Symbol("studentPickup");
-/** @type {ReturnType<typeof checkSoundFor>["preview"]} */
+/** @type {ReturnType<typeof import("./audio-checks.js").checkSoundFor>["preview"]} */
 let studentPickup = null;
 let urlApplying = false;
 /** @type {ReturnType<typeof setInterval> | null} */
@@ -467,10 +465,6 @@ if (btnBox) {
   });
 }
 
-document.getElementById("btn-jump")?.addEventListener("click", () => emit("Jump"));
-document.getElementById("btn-land")?.addEventListener("click", () => emit("Land"));
-document.getElementById("btn-hit")?.addEventListener("click", () => emit("Hit"));
-document.getElementById("btn-pick")?.addEventListener("click", () => emit("Pickup"));
 document.getElementById("btn-explosion")?.addEventListener("click", () => emit("Explosion"));
 document.getElementById("btn-rare")?.addEventListener("click", () => emit("Pickup", { kind: "rare" }));
 document.getElementById("btn-duck")?.addEventListener("click", () => {
@@ -612,6 +606,13 @@ function bindHold(id, key) {
   node.addEventListener("pointerup", up);
   node.addEventListener("pointerleave", up);
   node.addEventListener("pointercancel", up);
+  node.addEventListener("keydown", (ev) => {
+    if (ev.key === " " || ev.key === "Enter") down(ev);
+  });
+  node.addEventListener("keyup", (ev) => {
+    if (ev.key === " " || ev.key === "Enter") up();
+  });
+  node.addEventListener("blur", up);
 }
 bindHold("btn-left", "left");
 bindHold("btn-right", "right");
@@ -648,6 +649,11 @@ simCanvas?.addEventListener("keyup", (ev) => {
     ev.preventDefault();
     sim.hold("jump", false);
   }
+});
+simCanvas?.addEventListener("blur", () => {
+  sim.hold("left", false);
+  sim.hold("right", false);
+  sim.hold("jump", false);
 });
 
 document.querySelectorAll(".sfx-tab").forEach((btn) => {
@@ -1030,17 +1036,13 @@ for (const entry of Object.values(urlSpec)) {
 if (urlResult.warning) setStatus(urlResult.warning);
 else setStatus("イベントボタンで Emit → SFX 購読者がトーン再生");
 pushLog("SfxService が Jump/Land/Hit/… を On");
-mountTopicTask("sfx-events");
-mountItemPreview();
+mountTopicTask("sfx-events", setupItemPreview());
 requestAnimationFrame(frame);
 
-function mountItemPreview() {
-  const nameInput = document.querySelector("#student-task [data-task-field='event']");
-  const codeInput = document.querySelector("#student-task [data-task-field='code']");
-  const gemButton = document.getElementById("btn-preview-gem");
+function setupItemPreview() {
+  const task = document.getElementById("student-task");
   const status = document.getElementById("item-preview-status");
-  if (!(nameInput instanceof HTMLInputElement) || !(codeInput instanceof HTMLTextAreaElement)) return;
-  if (!(gemButton instanceof HTMLButtonElement) || !status || !btnBox) return;
+  if (!task || !status || !btnBox) return;
 
   const directButton = document.createElement("button");
   directButton.type = "button";
@@ -1048,38 +1050,27 @@ function mountItemPreview() {
   directButton.addEventListener("click", emitStudentPickup);
 
   function clearPreview() {
-    if (studentPickup) status.textContent = "入力が変わりました。宝石に新イベントを使うには、もう一度反映してください。";
     studentPickup = null;
-    gemButton.disabled = true;
     directButton.remove();
+    status.textContent = "";
   }
 
-  nameInput.addEventListener("input", clearPreview);
-  codeInput.addEventListener("input", clearPreview);
-  document.getElementById("btn-reset")?.addEventListener("click", () => {
+  task.addEventListener("input", () => {
+    if (!studentPickup) return;
     clearPreview();
-    status.textContent = "";
+    status.textContent = "入力が変わりました。もう一度「動作を確認して宝石に使う」を押してください。";
   });
-  document.getElementById("btn-apply-item-sound")?.addEventListener("click", () => {
+  document.getElementById("btn-reset")?.addEventListener("click", clearPreview);
+
+  /** @param {import("./audio/student-task.js").StudentTaskResult | null} report */
+  function applyPreview(report) {
     clearPreview();
-    try {
-      const source = codeInput.value;
-      const { soundFor } = compileFns(source, ["soundFor"]);
-      const report = checkSoundFor(soundFor, nameInput.value, source);
-      if (!report.preview) {
-        status.textContent = report.lines[0] || "音の設定を確認してください。";
-        return;
-      }
-      studentPickup = report.preview;
-      const { name, tone } = studentPickup;
-      gemButton.disabled = false;
-      directButton.textContent = name;
-      btnBox.append(directButton);
-      status.textContent = `宝石に ${name} を設定しました。${tone.freq} Hz、${tone.dur} 秒、音量 ${tone.gain}。`;
-    } catch (err) {
-      status.textContent = err instanceof Error ? err.message : "関数を読めませんでした。";
-    }
-  });
-  document.getElementById("btn-preview-coin")?.addEventListener("click", () => emit("Pickup"));
-  gemButton.addEventListener("click", emitStudentPickup);
+    if (!report?.ok || !report.preview) return;
+    studentPickup = report.preview;
+    const { name, tone } = studentPickup;
+    directButton.textContent = name;
+    btnBox.append(directButton);
+    status.textContent = `宝石に ${name} を設定しました。${tone.freq} Hz、${tone.dur} 秒、音量 ${tone.gain}。`;
+  }
+  return applyPreview;
 }

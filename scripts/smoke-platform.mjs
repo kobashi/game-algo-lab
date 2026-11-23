@@ -1030,11 +1030,10 @@ function mockControl(kind, value, extra = {}) {
   const cheat = `${starter.slice(0, starter.lastIndexOf("return"))}if (eventId === "Unlisted") return null;\n  return { freq: 440, dur: 0.08, gain: 0.08 };\n}\n`;
   assert.equal(grade(cheat, "Dash").ok, false, "採点用の名前を特別扱いしても、指定名が同じ音なら不合格");
   const fns = compileFns(noted, ["soundFor"]);
-  const packed = task.run(fns, noted, "", { eventName: "Dash" });
-  assert.equal(packed.json.event, "Dash");
-  assert.equal(packed.json.source, noted);
-  assert.equal(packed.json.ok, true);
-  assert.equal(packed.ok, true);
+  const applied = task.run(fns, noted, "", { eventName: "Dash" });
+  assert.deepEqual(applied.preview, notedReport.preview, "入門課題で確認した音を宝石に使う");
+  assert.equal(applied.ok, true);
+  assert.equal(task.saveJson, false, "入門課題は提出票で提出する");
 }
 
 // --- 入門コースの詳説ページ（courses/guide-*.html）: ファイルがあり、リンク先があり、デモ URL のキーが spec にある ---
