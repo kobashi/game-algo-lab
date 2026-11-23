@@ -16,9 +16,20 @@ import {
   checkSustainGain,
   checkWarning,
   checkWrapPlayhead,
+  SOUND_FOR_BUILTINS,
   scoreDesign,
 } from "./audio-checks.js";
 import { mountStudentTask } from "./student-task.js";
+
+const soundForStarter = [
+  "function soundFor(eventId) {",
+  ...Object.entries(SOUND_FOR_BUILTINS).map(([name, { freq, dur, gain }]) =>
+    `  if (eventId === "${name}") return { freq: ${freq}, dur: ${dur}, gain: ${gain} };`
+  ),
+  "  return { freq: 440, dur: 0.08, gain: 0.08 };",
+  "}",
+  "",
+].join("\n");
 
 /** @type {Record<string, Parameters<typeof mountStudentTask>[1]>} */
 export const TOPIC_TASKS = {
@@ -26,7 +37,7 @@ export const TOPIC_TASKS = {
     title: "実装課題: 新しいイベントに音を割り当てる",
     goal: "ゲームがイベント名を出すだけで、鳴らす音は購読側の関数が決める。",
     predict: "入力した新しいイベント名だけに音を割り当て、未登録の名前とは戻り値を分けられるか。",
-    look: "ボタンを押すと、新しい名前を soundFor に渡し、その名前の音を定義できたか確認します。周波数は 40〜2000 Hz、長さは 0.02〜1 秒、音量は 0〜0.3 です。未登録の名前には音を返さないか、別の音を返します。Jump、Land、Hit、Pickup、UI は 3 つの数を返したままにします。確認できた音は宝石に使えます。",
+    look: "ボタンを押すと、新しい名前を soundFor に渡し、その名前の音を定義できたか確認します。周波数は 40〜2000 Hz、長さは 0.02〜1 秒、音量は 0〜0.3 です。未登録の名前には音を返さないか、別の音を返します。Jump、Land、Hit、Pickup、UI の音は、周波数・長さ・音量を初期コードと同じにします。確認できた音は宝石に使えます。",
     runLabel: "動作を確認して宝石に使う",
     saveJson: false,
     eventName: {
@@ -34,15 +45,7 @@ export const TOPIC_TASKS = {
       placeholder: "英字から始まる名前",
     },
     names: ["soundFor"],
-    starter: `function soundFor(eventId) {
-  if (eventId === "Jump") return { freq: 440, dur: 0.08, gain: 0.08 };
-  if (eventId === "Land") return { freq: 180, dur: 0.12, gain: 0.08 };
-  if (eventId === "Hit") return { freq: 220, dur: 0.1, gain: 0.1 };
-  if (eventId === "Pickup") return { freq: 660, dur: 0.05, gain: 0.06 };
-  if (eventId === "UI") return { freq: 880, dur: 0.03, gain: 0.05 };
-  return { freq: 440, dur: 0.08, gain: 0.08 };
-}
-`,
+    starter: soundForStarter,
     quiz: {
       q: "ミュートにすると、ログはどうなりますか。",
       choices: [

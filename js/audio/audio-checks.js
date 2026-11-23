@@ -20,7 +20,14 @@ function say(lines, ok, message) {
   return ok;
 }
 
-const SOUND_BUILTIN = ["Jump", "Land", "Hit", "Pickup", "UI"];
+export const SOUND_FOR_BUILTINS = {
+  Jump: { freq: 440, dur: 0.08, gain: 0.08 },
+  Land: { freq: 180, dur: 0.12, gain: 0.08 },
+  Hit: { freq: 220, dur: 0.1, gain: 0.1 },
+  Pickup: { freq: 660, dur: 0.05, gain: 0.06 },
+  UI: { freq: 880, dur: 0.03, gain: 0.05 },
+};
+const SOUND_BUILTIN_NAMES = Object.keys(SOUND_FOR_BUILTINS);
 const SOUND_NAME = /^[A-Za-z][A-Za-z0-9_]{1,24}$/;
 
 /**
@@ -30,7 +37,7 @@ const SOUND_NAME = /^[A-Za-z][A-Za-z0-9_]{1,24}$/;
  */
 function unlistedName(eventName, source) {
   const text = String(source ?? "");
-  const taken = new Set([...SOUND_BUILTIN, eventName]);
+  const taken = new Set([...SOUND_BUILTIN_NAMES, eventName]);
   for (const seed of ["Unlisted", "Spare", "Unused", "OtherEvent"]) {
     if (!taken.has(seed) && !text.includes(seed)) return seed;
   }
@@ -91,7 +98,7 @@ function callTone(fn, id) {
 }
 
 /**
- * 入力されたイベント名を関数へ渡し、未登録の名前と戻り値を比べる。
+ * 既存の音が初期コードと一致するか、新しい名前の音が未登録時と異なるかを調べる。
  * source は、採点する名前を探すためではなく、未登録の呼び出し名をソースに無いものから選ぶために使う。
  * @param {(eventId: string) => { freq?: number, dur?: number, gain?: number } | null} fn
  * @param {string} eventName
@@ -101,13 +108,12 @@ export function checkSoundFor(fn, eventName, source = "") {
   const lines = [];
   let ok = true;
   let preview = null;
-  for (const id of SOUND_BUILTIN) {
-    const tone = callTone(fn, id);
-    const good = !!asTone(tone);
-    ok = say(lines, good, `${id} は周波数・長さ・音量の数を返します`) && ok;
+  for (const [id, expected] of Object.entries(SOUND_FOR_BUILTINS)) {
+    const unchanged = sameTone(callTone(fn, id), expected);
+    ok = say(lines, unchanged, `${id} の周波数・長さ・音量は、初期コードと同じ値にします`) && ok;
   }
   const name = String(eventName ?? "").trim();
-  if (!SOUND_NAME.test(name) || SOUND_BUILTIN.includes(name)) {
+  if (!SOUND_NAME.test(name) || SOUND_BUILTIN_NAMES.includes(name)) {
     ok = false;
     lines.push(
       "新しいイベント名は、英字から始まる 2〜25 文字の英数字で、Jump、Land、Hit、Pickup、UI 以外にします"
