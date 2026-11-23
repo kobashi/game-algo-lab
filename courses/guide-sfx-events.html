@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="イベントと効果音のくわしい解説（中学生向け）。発行（Emit）と購読、放送室のたとえ、効果音の周波数と長さ、ミュートしてもイベントは流れること、AudioContext を図で説明する。" />
+  <meta name="description" content="イベントと効果音のくわしい解説（中学生向け）。発行（Emit）と購読、放送室のたとえ、効果音の周波数・長さ・音量、soundFor、ミュートしてもイベントは流れること、AudioContext を図で説明する。" />
   <title>イベントと効果音のくわしい解説 — Game Algo Lab</title>
   <link rel="stylesheet" href="../css/style.css" />
 </head>
@@ -123,12 +123,15 @@
 
     <!-- 4 -->
     <section class="guide-section" id="s4" aria-labelledby="s4-h">
-      <h2 id="s4-h">4. 効果音の高さと長さ</h2>
+      <h2 id="s4-h">4. 効果音の高さ、長さ、大きさ</h2>
       <p>
-        <span class="term" data-term="sfx">SFX（効果音）</span>は、短い音を組み立てて作ります。デモでは、
-        <strong>周波数</strong>（1 秒間に音が何回振動するか。単位 Hz）と<strong>長さ</strong>（何秒鳴らすか）の 2 つの数字で音を決めています。
-        周波数が高いほど高い音に、長さが長いほど長く響く音に聞こえます。
+        <span class="term" data-term="sfx">SFX（効果音）</span>は、短い音を組み立てて作ります。デモでは、次の 3 つの数字で音を決めています。
       </p>
+      <ul>
+        <li><strong>周波数</strong>は音の高さです。1 秒間に何回振動するかで、単位は Hz です。数字が大きいほど高い音に聞こえます。</li>
+        <li><strong>長さ</strong>は鳴る時間です。単位は秒です。数字が大きいほど長く響きます。</li>
+        <li><strong>音量</strong>は音の大きさです。デモの音量スライダーと、関数が返す <code>gain</code> がこの大きさです。</li>
+      </ul>
       <figure class="guide-figure">
         <svg viewBox="0 0 640 300" role="img" aria-label="音の高さと長さの模式図。上段はJumpとLandの波を同じ幅の時間で比べたもので、Jumpの方が細かく振動している。下段は長さを表す棒で、Jumpは0.08秒、Landは0.1秒で少し長い">
           <text x="10" y="22" font-size="15" fill="#e8eef6">音の高さ（同じ長さの時間に何回振動するか）</text>
@@ -151,15 +154,16 @@
       </figure>
       <div class="guide-table-wrap">
         <table class="guide-table">
-          <thead><tr><th></th><th>低い・短い</th><th>高い・長い</th></tr></thead>
+          <thead><tr><th></th><th>小さくすると</th><th>大きくすると</th></tr></thead>
           <tbody>
             <tr><td>周波数を変えると</td><td>低くこもった音</td><td>高く鋭い音</td></tr>
             <tr><td>長さを変えると</td><td>歯切れがよい、軽い音</td><td>響く、重い音</td></tr>
+            <tr><td>音量を変えると</td><td>小さい音</td><td>大きい音</td></tr>
           </tbody>
         </table>
       </div>
       <div class="guide-note">
-        <strong>考えてみよう:</strong> Jump や Land の周波数・長さのスライダーを少しずつ動かして、音の印象がどう変わるか聞き比べてみましょう。
+        <strong>考えてみよう:</strong> Jump や Land で、周波数、長さ、音量のうち一つだけを動かして、音の印象がどう変わるか聞き比べてみましょう。
       </div>
     </section>
 
@@ -232,12 +236,22 @@
       <ul>
         <li>イベントは「起きたこと」の知らせ。発行（Emit）する側と、購読して受け取る側に分かれる</li>
         <li>発行側は、誰が聞いているかを知らなくてよい。音を変えても発行側のコードは変えずに済み、購読者はあとから足せる</li>
-        <li>効果音は周波数（高さ）と長さの 2 つの数字で決まる</li>
+        <li>効果音は、周波数（高さ）、長さ（鳴る時間）、音量（大きさ）の 3 つの数字で決まる</li>
+        <li><code>soundFor</code> はイベント名を受け取り、周波数・長さ・音量を返す関数</li>
         <li>ミュートは購読側の「鳴らさない」という判断。イベント自体はミュートでも流れ続け、ログで確認できる</li>
         <li>AudioContext は、最初のクリックまで音を出せない（ブラウザの決まり）</li>
       </ul>
       <div class="guide-note">
-        <strong>考えてみよう（提出課題 9）:</strong> 新しいイベントの名前を 1 つ足して、その出来事の効果音を自分で割り当てられるでしょうか。発行する側のボタンを増やさなくても、購読する側で音を決められます。
+        <p>
+          <code>soundFor</code> は、イベント名を受け取って音の設定を返す関数です。
+          <code>soundFor</code> に <code>"Jump"</code> を渡すと、Jump の行が選ばれます。
+          初期コードの <code>if (eventId === "Jump") return { freq: 440, dur: 0.08, gain: 0.08 };</code> では、
+          <code>freq</code> は周波数（Hz）、<code>dur</code> は長さ（秒）、<code>gain</code> はデモの音量です。
+          新しいイベントの数値は、自分で考えます。
+        </p>
+        <p>
+          <strong>考えてみよう（提出課題 9）:</strong> 既存のイベントを 1 つ選び、共有 URL の A と B では周波数だけを変えます。新しい名前の音は、デモの実装課題にイベント名と soundFor を書き、提出票へ入れます。その名前には安全な範囲の音を返し、未登録の名前には音を返さないか、別の音を返します。発行側のボタンは増やしません。
+        </p>
       </div>
     </section>
 
@@ -245,8 +259,9 @@
       <h2 id="try-h">やってみよう</h2>
       <ol>
         <li><a href="../algorithms/sfx-events.html?course=intro">デモ</a>を開き、Jump・Land・Hit・Pickup のボタンを押して、ログと波形（青＝波形、黄＝包絡線）を見る。ミュートにチェックを入れても Emit のログが出ることを確かめる。</li>
-        <li><a href="../algorithms/sfx-events.html?course=intro&amp;ev=Land&amp;freq=400&amp;dur=0.3#sim">Land の音を周波数 400 Hz・長さ 0.3 秒に変えて</a>再生する。Jump の音は変わらないままか確かめる（発行側は変えていないから）。</li>
-        <li><a href="../algorithms/sfx-events.html?course=intro&amp;ev=Jump&amp;freq=1200&amp;dur=0.02#sim">Jump の音を周波数 1200 Hz・長さ 0.02 秒に変えて</a>再生し、既定の音（440 Hz・0.08 秒）と聞き比べる。</li>
+        <li><a href="../algorithms/sfx-events.html?course=intro&amp;ev=Land&amp;freq=400#sim">Land の周波数だけを 400 Hz にして</a>再生する。既定の Land は 180 Hz・0.10 秒です。このページでは周波数が 400 Hz、長さは 0.10 秒です。ログの <code>Emit Land</code> は同じです。Jump を押すと 440 Hz・0.08 秒です。変えたのは、知らせを受け取った側の Land の音の設定です。Jump の設定は変えていません。</li>
+        <li>設定を戻すため、<a href="../algorithms/sfx-events.html?course=intro&amp;ev=Land&amp;dur=0.3#sim">Land の長さだけを 0.30 秒にして</a>開き直します。周波数は 180 Hz、長さは 0.30 秒です。<code>Emit Land</code> は同じです。Jump は 440 Hz・0.08 秒です。</li>
+        <li><a href="../algorithms/sfx-events.html?course=intro">入門の演習</a>で、両方の Hit を押して比べます。提出では、同じイベントのまま周波数だけを変えた URL を A と B にします。</li>
       </ol>
       <div class="guide-check">
         <p><strong>確かめよう</strong></p>

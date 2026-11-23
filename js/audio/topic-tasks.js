@@ -25,8 +25,12 @@ export const TOPIC_TASKS = {
   "sfx-events": {
     title: "実装課題: 新しいイベントに音を割り当てる",
     goal: "ゲームがイベント名を出すだけで、鳴らす音は購読側の関数が決める。",
-    predict: "イベント名を 1 つ足したとき、発行側のボタンを増やさなくても、その名前の音を決められるか。",
-    look: "動作テストは、既存の 5 イベントが数を返し、それ以外の名前に安全な周波数・長さ・音量が付くかを見ます。スライダーの操作だけでは完了しません。",
+    predict: "入力した新しいイベント名だけに音を割り当て、未登録の名前とは戻り値を分けられるか。",
+    look: "動作テストは、下の欄のイベント名を soundFor に渡します。その名前は周波数 40〜2000、長さ 0.02〜1 秒、音量 0〜0.3 の音を返します。未登録の名前には音を返さないか、別の音を返します。Jump、Land、Hit、Pickup、UI は周波数・長さ・音量の数を返したままにします。コメントや、関係のない文字列では合格しません。スライダーの操作だけでは完了しません。入門コースの提出票には、このイベント名と関数を入れます。",
+    eventName: {
+      label: "新しいイベント名",
+      placeholder: "英字から始まる名前",
+    },
     names: ["soundFor"],
     starter: `function soundFor(eventId) {
   if (eventId === "Jump") return { freq: 440, dur: 0.08, gain: 0.08 };
@@ -47,9 +51,24 @@ export const TOPIC_TASKS = {
       answer: 1,
       explain: "発行は続きます。止めるのは購読側の再生です。",
     },
-    run(fns, source) {
-      const report = checkSoundFor(/** @type {(id: string) => { freq: number, dur: number, gain: number }} */ (fns.soundFor), source);
-      return { ...report, json: { v: 1, topic: "sfx-events", ok: report.ok, lines: report.lines } };
+    run(fns, source, _design, extra) {
+      const eventName = String(extra?.eventName ?? "").trim();
+      const report = checkSoundFor(
+        /** @type {(id: string) => { freq: number, dur: number, gain: number }} */ (fns.soundFor),
+        eventName,
+        source
+      );
+      return {
+        ...report,
+        json: {
+          v: 1,
+          topic: "sfx-events",
+          ok: report.ok,
+          lines: report.lines,
+          event: eventName,
+          source,
+        },
+      };
     },
   },
   "sfx-voice-limit": {

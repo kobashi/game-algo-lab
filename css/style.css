@@ -6290,6 +6290,25 @@ details.ds-block:not([open]) > .ds-title::before {
   max-width: 100%;
 }
 
+.student-task .student-event {
+  display: block;
+  width: min(16rem, 100%);
+  max-width: 100%;
+  margin-top: 0.25rem;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.submission-form > .submission-input {
+  flex: none;
+  width: min(16rem, 100%);
+}
+
 .student-result {
   white-space: pre-wrap;
   margin: 0.75rem 0 0;

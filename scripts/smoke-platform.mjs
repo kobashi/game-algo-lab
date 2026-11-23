@@ -41,6 +41,9 @@ import { GUIDES } from "../js/courses/intro-guides.js";
 import { CS_GUIDES } from "../js/courses/intro-csharp.js";
 import { buildSubmissionText, checkSubmissionUrl, parseDigit } from "../js/platform/submission.js";
 import { exerciseSectionHtml } from "../js/platform/exercises.js";
+import { compileFns } from "../js/audio/student-task.js";
+import { checkSoundFor } from "../js/audio/audio-checks.js";
+import { TOPIC_TASKS } from "../js/audio/topic-tasks.js";
 
 // --- rng ---
 const r1 = mulberry32(42);
@@ -951,6 +954,82 @@ function mockControl(kind, value, extra = {}) {
   });
   assert.ok(text.includes("提出課題 1: game-loop") && text.includes("d=3 → 人工遅延 L = 65 ms") && text.includes("URL B（") && text.includes("（未入力）"), "提出用テキストの形");
   assert.ok(!/`|\*\*/.test(text), "提出用テキストに記号が残らない");
+  const sfxAssignment = ASSIGNMENTS["sfx-events"];
+  assert.equal(sfxAssignment.urls[0].label.includes("既存のイベント"), true);
+  assert.ok(sfxAssignment.implementation, "sfx-events はイベント名と関数を提出する");
+  const sfxSlip = buildSubmissionText(sfxAssignment, "sfx-events", {
+    d: null,
+    urls: {
+      A: `${base}sfx-events.html?ev=Hit&freq=880&dur=0.12&gain=0.08&course=intro`,
+      B: `${base}sfx-events.html?ev=Hit&freq=440&dur=0.12&gain=0.08&course=intro`,
+    },
+    observe: "Hit の周波数",
+    discuss: "購読側で変わる",
+    event: "Dash",
+    code: "function soundFor(eventId) {\n  return null;\n}",
+  });
+  assert.ok(sfxSlip.includes("実装課題の新しいイベント名: Dash"), "提出票にイベント名が入る");
+  assert.ok(sfxSlip.includes("function soundFor(eventId)"), "提出票に関数が入る");
+  assert.ok(sfxSlip.includes("既存のイベントを 1 つ選んだ共有 URL"), "URL A は既存イベント");
+}
+
+// --- 入門課題 9: soundFor は入力したイベント名で採点する（INTRO-SFX-02） ---
+{
+  const task = TOPIC_TASKS["sfx-events"];
+  const starter = task.starter;
+  const keep = `function soundFor(eventId) {
+  if (eventId === "Jump") return { freq: 440, dur: 0.08, gain: 0.08 };
+  if (eventId === "Land") return { freq: 180, dur: 0.12, gain: 0.08 };
+  if (eventId === "Hit") return { freq: 220, dur: 0.1, gain: 0.1 };
+  if (eventId === "Pickup") return { freq: 660, dur: 0.05, gain: 0.06 };
+  if (eventId === "UI") return { freq: 880, dur: 0.03, gain: 0.05 };
+  if (eventId === "Dash") return { freq: 730, dur: 0.09, gain: 0.12 };
+  return null;
+}
+`;
+  const grade = (source, eventName) => {
+    const fns = compileFns(source, ["soundFor"]);
+    return checkSoundFor(fns.soundFor, eventName, source);
+  };
+  assert.equal(grade(starter, "").ok, false, "初期コードは不合格");
+  assert.equal(grade(`${starter}\n// "Dash"\n`, "Dash").ok, false, "コメントだけでは不合格");
+  assert.equal(
+    grade(`function soundFor(eventId) {\n  return { freq: 500, dur: 0.1, gain: 0.1 };\n}\n`, "Dash").ok,
+    false,
+    "すべてのイベントで同じ音は不合格"
+  );
+  const wide = grade(keep.replace("freq: 730", "freq: 10"), "Dash");
+  assert.equal(wide.ok, false, "範囲外は不合格");
+  assert.ok(wide.lines.some((line) => line.includes("40〜2000")), "範囲の規則を返す");
+  const noted = `function soundFor(eventId) {
+  const label = "Note";
+  if (eventId === "Dash") return { freq: 730, dur: 0.09, gain: 0.12 };
+  if (eventId === "Jump") return { freq: 440, dur: 0.08, gain: 0.08 };
+  if (eventId === "Land") return { freq: 180, dur: 0.12, gain: 0.08 };
+  if (eventId === "Hit") return { freq: 220, dur: 0.1, gain: 0.1 };
+  if (eventId === "Pickup") return { freq: 660, dur: 0.05, gain: 0.06 };
+  if (eventId === "UI") return { freq: 880, dur: 0.03, gain: 0.05 };
+  return null;
+}
+`;
+  const notedReport = grade(noted, "Dash");
+  assert.equal(notedReport.ok, true, "無関係な文字列が先でも、指定名で合格");
+  assert.ok(notedReport.lines.some((line) => line.includes("Dash に効果音を割り当てられました")));
+  assert.ok(!notedReport.lines.some((line) => line.startsWith("Note")));
+  assert.equal(
+    grade(noted.replace("return null;", "return { freq: 200, dur: 0.2, gain: 0.05 };"), "Dash").ok,
+    true,
+    "未登録の名前へ別の音を返しても合格"
+  );
+  assert.equal(grade(keep, "Hit").ok, false, "既存名は新しいイベントにできない");
+  const cheat = `${starter.slice(0, starter.lastIndexOf("return"))}if (eventId === "Unlisted") return null;\n  return { freq: 440, dur: 0.08, gain: 0.08 };\n}\n`;
+  assert.equal(grade(cheat, "Dash").ok, false, "採点用の名前を特別扱いしても、指定名が同じ音なら不合格");
+  const fns = compileFns(noted, ["soundFor"]);
+  const packed = task.run(fns, noted, "", { eventName: "Dash" });
+  assert.equal(packed.json.event, "Dash");
+  assert.equal(packed.json.source, noted);
+  assert.equal(packed.json.ok, true);
+  assert.equal(packed.ok, true);
 }
 
 // --- 入門コースの詳説ページ（courses/guide-*.html）: ファイルがあり、リンク先があり、デモ URL のキーが spec にある ---
