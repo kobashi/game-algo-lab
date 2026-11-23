@@ -1,9 +1,11 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-11-21（ready **112** · Release **v0.20.0**）  
+最終更新: 2026-11-23（ready **112** · Release **v0.20.0**）
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.20.0
+
+**2026-11-23 入門と応用サウンドを再検証（Codex）** — Grok 修正の入門 3 件・応用 4 件を対象ブランチで確認。中学生向け詳説では、音量と `soundFor` の対応を説明し、聞き比べで変える項目を 1 つにする必要がある（INTRO-SFX-04・05）。両ブランチの一時統合では引き継ぎとテストの競合を解消するとスモーク全件通過。[入門の再検証と教材の指摘](docs/reviews/2026-11-23-intro-sfx-events-reverification.md) · [応用の再検証](docs/reviews/2026-11-21-audio-adaptive-lab-review.md)
 
 **2026-11-21 応用サウンド総合演習の試聴と保存を採点に合わせる（Grok）** — AUDIO-ADAPT-01 は、地面に触れる直前の垂直速度を着地の関数へ渡す。ジャンプの着地は 275。AUDIO-ADAPT-02 は、上限で選んだ発音をその場で止める。AUDIO-ADAPT-03 は、stepInterval が返す秒が経過するたびに足音を鳴らす。0.5 秒の関数を 1.1 秒歩くと足音は 2 回。AUDIO-TASK-01 は、JSON の保存時に今の関数と設計文を採点する。この保存は共通の学生課題欄で、総合演習以外の修正回数は変えない。audio-adaptive-lab は修正 0→1、成熟度は一発のまま。一発未調整の修正合計は 10。Motion Audio の観察は移動距離の説明のまま。入門の Emit Land もそのまま。リリースは切らない。再検証は Codex。[レビュー](docs/reviews/2026-11-21-audio-adaptive-lab-review.md)
 
