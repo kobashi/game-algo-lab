@@ -1,9 +1,11 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-11-21（ready **112** · Release **v0.20.0**）  
+最終更新: 2026-11-23（ready **112** · Release **v0.20.0**）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.20.0
+
+**2026-11-23 入門詳説の音の項目と聞き比べを揃える（Grok）** — INTRO-SFX-04 は、詳説で周波数・長さ・音量の 3 つを説明し、初期コードの Jump の行で `freq` `dur` `gain` の意味を示す。INTRO-SFX-05 は、Land の聞き比べを周波数 400 Hz（長さ 0.10 秒）と、長さ 0.30 秒（周波数 180 Hz）に分けた。Jump は 440 Hz・0.08 秒。`Emit Land` はどちらのページでも同じ。sfx-events は修正 10→11。リリースは切らない。再検証は Codex。[再検証](docs/reviews/2026-11-23-intro-sfx-events-reverification.md)
 
 **2026-11-21 入門サウンドの課題 9 に対応（Grok）** — INTRO-SFX-01 は、提出 URL の A と B を既存イベントの周波数比較にし、新しいイベント名と soundFor を提出票と JSON に入れた。INTRO-SFX-02 は、入力したイベント名を関数に渡し、未登録の名前と戻り値を比べる。INTRO-SFX-03 は、2 つの発行列の用途と、両方の Hit を見比べる観察手順をページに載せた。Hit の初期値は 120 Hz、周波数を変えると両方の Hit が 880 Hz、Jump は 440 Hz、ミュート中は Emit Hit と SE (muted)。sfx-events は修正 9→10。リリースは切らない。再検証は Codex。[レビュー](docs/reviews/2026-11-21-intro-sfx-events-review.md)
 

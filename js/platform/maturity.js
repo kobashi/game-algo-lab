@@ -244,8 +244,8 @@ export const TOPIC_META = {
   },
   "sfx-events": {
     maturity: "revised",
-    revisions: 10,
-    updated: "2026-11-21",
+    revisions: 11,
+    updated: "2026-11-23",
   },
   "accessibility-basics": {
     maturity: "oneshot",
