@@ -180,14 +180,17 @@ export const EXERCISES = {
     number: 10,
     title: "ステートマシン",
     goal: "振る舞いが（状態, イベント）→ 次の状態 の表で決まることを説明できる。",
-    guess: "Dead から Idle に戻る遷移を1本足すと、状態図はどう変わるか。",
+    guess: "Dead から Idle に戻る遷移を1本足すと、Dead で Recover を送ったとき、状態と履歴はどう変わるか。",
     steps: [
-      "既定の状態図で Dead の色を見る。次に `fsm.html?from=Dead&ev=Recover&to=Idle` で開き、状態図と遷移表を見比べる。",
+      "既定の状態図で Dead の色を見る。自動デモを最後まで再生し、Dead になったら Recover を送る。送る前に、状態が変わるかを予想する。",
+      "`fsm.html?from=Dead&ev=Recover&to=Idle` で開き、状態図の Dead の枠と遷移表の Dead 行を見比べる。同じように Dead で Recover を送り、履歴と今の状態を変更前と比べる。",
     ],
     observations: [
-      "既定では Dead は出口の無い状態として赤で示される。遷移を足すと赤ではなくなる。表の1行で振る舞いが変わる。",
+      "既定では Dead は出口の無い状態として赤で示される。Dead の Recover は空欄なので、Recover を送っても Dead のままです。",
+      "Dead から Idle への遷移を足すと、赤い枠ではなくなる。Dead で Recover を送ると Idle に移り、履歴が変更前と分かれます。",
     ],
-    extension: "初期状態を変えると灰色（到達できない状態）がどう増えるか（`?initial=...`）。",
+    extension:
+      "初期状態を変えると灰色（到達できない状態）がどう増えるか（`?initial=...`）。自分に戻す上書き（to を Dead）では、矢印は出ても赤い枠は残る。",
   },
 
   "rng-seed": {

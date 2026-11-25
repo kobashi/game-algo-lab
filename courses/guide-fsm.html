@@ -195,7 +195,9 @@
       <h2 id="s5-h">5. 出口の無い状態と、届かない状態</h2>
       <p>
         遷移表で Dead の行を見ると、すべての列が空欄です。つまり、Dead になったら、どんなイベントを送っても
-        もう他の状態には移れません。このような、出ていく矢印が 1 本もない状態を、<strong>出口の無い状態</strong>と呼びます。
+        もう他の状態には移れません。他の状態へ進む矢印が無い状態を、<strong>出口の無い状態</strong>と呼びます。
+        デモでは赤い枠で示します。自分に戻る矢印だけがあるときも、別の状態へは進めないので、赤い枠は残ります。
+        表の空欄は無視で、矢印はありません。自分に戻るマスには、丸の外を回る矢印があります。
       </p>
       <figure class="guide-figure">
         <svg viewBox="0 0 640 290" role="img" aria-label="IdleとWalkとAttackからDeadへKillの矢印が入ってくるが、Deadから出ていく矢印は無い図。Deadは赤い枠">
@@ -221,7 +223,7 @@
           <text x="498" y="120" font-size="14" fill="#e07a5f">出ていく矢印が無い</text>
           <text x="498" y="140" font-size="14" fill="#9aabbf">（Dead の行は空欄）</text>
         </svg>
-        <figcaption>図 4　出口の無い状態（模式図）。Idle・Walk・Attack から Kill で Dead に入ってくる矢印はありますが、Dead から出ていく矢印はありません。デモの状態図では、この状態を赤い枠で示します。</figcaption>
+        <figcaption>図 4　出口の無い状態（模式図）。Idle・Walk・Attack から Kill で Dead に入ってくる矢印はありますが、Dead から他の状態へ進む矢印はありません。デモの状態図では、この状態を赤い枠で示します。自分に戻る矢印だけを足した場合は、矢印は見えますが、赤い枠は残ります。</figcaption>
       </figure>
       <p>
         もう 1 つ注意したいのが、<strong>初期状態から届かない状態</strong>です。デモでは初期状態を変えられます。
@@ -309,7 +311,7 @@
         <li>イベントはきっかけ。（今の状態, イベント）の組で、次の状態がただ 1 つに決まる（遷移）</li>
         <li>状態図（丸と矢印）と遷移表（行=今の状態、列=イベント）は、同じルールの 2 つの見方。表の空欄は「無視」</li>
         <li>同じイベントでも、今の状態によって結果が違う（遷移する場合も、無視される場合もある）</li>
-        <li>出ていく矢印が無い状態（出口の無い状態）や、初期状態から届かない状態がある</li>
+        <li>他の状態へ進む矢印が無い状態（出口の無い状態）や、初期状態から届かない状態がある。自分に戻る矢印だけでも、出口は無い</li>
         <li>デモでは、遷移表の 1 マスだけを from・event・to で上書きでき、遷移が 1 本変わるだけで振る舞いが変わる</li>
       </ul>
       <div class="guide-note">
@@ -320,8 +322,8 @@
     <section class="guide-try" aria-labelledby="try-h">
       <h2 id="try-h">やってみよう</h2>
       <ol>
-        <li><a href="../algorithms/fsm.html?course=intro">デモ</a>を開き、既定の状態図で Dead の色を見る。自動デモを再生し、状態履歴と遷移表のハイライトを見比べる。</li>
-        <li><a href="../algorithms/fsm.html?course=intro&amp;from=Dead&amp;ev=Recover&amp;to=Idle#sim">from=Dead, event=Recover, to=Idle に上書きして</a>開き、状態図の Dead の枠の色と、遷移表の Dead 行を見比べる。</li>
+        <li><a href="../algorithms/fsm.html?course=intro">デモ</a>を開き、既定の状態図で Dead の色を見る。自動デモを最後まで再生し、Dead になったら Recover を送る。送る前に、状態が変わるかどうかを予想する。</li>
+        <li><a href="../algorithms/fsm.html?course=intro&amp;from=Dead&amp;ev=Recover&amp;to=Idle#sim">from=Dead, event=Recover, to=Idle に上書きして</a>開き、状態図の Dead の枠の色と、遷移表の Dead 行を見比べる。同じように自動デモのあと、Dead で Recover を送る。履歴と今の状態を、変更前と比べる。どちらで状態が変わるかを、送る前に予想する。</li>
         <li><a href="../algorithms/fsm.html?course=intro&amp;initial=Dead#sim">初期状態を Dead にして</a>開き、他の状態がすべて灰色（届かない）になることを確かめる。</li>
       </ol>
       <div class="guide-check">
@@ -336,7 +338,11 @@
         </details>
         <details>
           <summary>問 3. 出口の無い状態とは、どんな状態？</summary>
-          <p>出ていく矢印が 1 本もない状態。遷移表でその状態の行がすべて空欄になっている。</p>
+          <p>他の状態へ進む矢印が無い状態です。その行がすべて空欄なら、イベントは無視され、矢印もありません。自分に戻るマスだけがある場合も、別の状態へは進めないので出口は無く、赤い枠は残ります。そのときは丸の外に、自分へ戻る矢印があります。</p>
+        </details>
+        <details>
+          <summary>問 4. 自動デモのあと、Dead で Recover を送る。上書き前と、Dead の Recover を Idle にしたあとでは、何が違う？</summary>
+          <p>上書き前は、そのマスが空欄なので無視され、Dead のままです。上書き後は Idle に移ります。状態履歴は、Recover を送ったところで分かれます。</p>
         </details>
       </div>
     </section>
