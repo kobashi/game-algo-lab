@@ -100,7 +100,7 @@
           <div class="controls-group-paint gl-params url-share-row">
             <button type="button" id="btn-copy-url" class="btn btn-ghost">この設定のURLをコピー</button>
           </div>
-          <p class="footer-muted">遷移は1本だけ上書きします。初期状態から届かない状態は図で灰色です。</p>
+          <p class="footer-muted">遷移は1本だけ上書きします。他の状態へ進めない状態は赤い枠です。自分に戻る矢印があっても、枠は残ります。初期状態から届かない状態は灰色です。</p>
 
           <div class="fsm-events" role="group" aria-label="イベント">
             <span class="controls-label">イベントを送る</span>
@@ -119,7 +119,7 @@
 
       <section class="fsm-table-block" aria-labelledby="table-heading">
         <h2 id="table-heading" class="fsm-block-title"><span class="term" data-term="transition-table">遷移表</span></h2>
-        <p class="fsm-table-lead">行 = 現在状態、列 = イベント。空欄は「無視（状態維持）」。</p>
+        <p class="fsm-table-lead">行 = 現在状態、列 = イベント。空欄は無視で、矢印はありません。自分と同じ状態のマスは、そのイベントを受けて同じ状態に戻ります。</p>
         <div class="fsm-table-scroll">
           <table class="fsm-table" id="trans-table"></table>
         </div>

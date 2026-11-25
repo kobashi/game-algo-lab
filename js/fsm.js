@@ -105,10 +105,6 @@ function parseScript(raw) {
   return { ok: true, events };
 }
 
-function overrideKey() {
-  return transitionKey(fromEl?.value ?? "", evEl?.value ?? "");
-}
-
 function applyOverrideAndScript() {
   initial = initialEl?.value || FSM_CONFIG.initial;
   if (!FSM_CONFIG.states[initial]) initial = FSM_CONFIG.initial;
@@ -153,8 +149,12 @@ function unreachableIds() {
   return stateIds().filter((id) => !reach.has(id));
 }
 
+/** 他の状態へ進む本数。自分に戻る遷移は出口に数えない。 */
 function outgoingCount(id) {
-  return FSM_CONFIG.events.filter((e) => nextState(id, e.id) !== null).length;
+  return FSM_CONFIG.events.filter((e) => {
+    const nxt = nextState(id, e.id);
+    return nxt !== null && nxt !== id;
+  }).length;
 }
 
 function deadlockIds() {
@@ -234,21 +234,249 @@ function handleEvent(eventId, opts = {}) {
 }
 
 // ----- 描画: 状態図 -----
-function edgePath(x1, y1, x2, y2) {
-  const dx = x2 - x1;
-  const dy = y2 - y1;
+const VIEW_PAD = 6;
+const NODE_GAP = 12;
+
+function fmt(v) {
+  return (Math.round(v * 10) / 10).toString();
+}
+
+function layoutNodes() {
+  return stateIds().map((id) => ({ id, ...FSM_CONFIG.layout[id] }));
+}
+
+function sampleQuad(sx, sy, mx, my, ex, ey, n) {
+  const pts = [];
+  for (let i = 0; i <= n; i++) {
+    const t = i / n;
+    const u = 1 - t;
+    pts.push({
+      x: u * u * sx + 2 * u * t * mx + t * t * ex,
+      y: u * u * sy + 2 * u * t * my + t * t * ey,
+    });
+  }
+  return pts;
+}
+
+function sampleCubic(p0, p1, p2, p3, n) {
+  const pts = [];
+  for (let i = 0; i <= n; i++) {
+    const t = i / n;
+    const u = 1 - t;
+    const uu = u * u;
+    const tt = t * t;
+    pts.push({
+      x: uu * u * p0.x + 3 * uu * t * p1.x + 3 * u * tt * p2.x + tt * t * p3.x,
+      y: uu * u * p0.y + 3 * uu * t * p1.y + 3 * u * tt * p2.y + tt * t * p3.y,
+    });
+  }
+  return pts;
+}
+
+function tangentQuad(sx, sy, mx, my, ex, ey, t) {
+  const u = 1 - t;
+  const dx = 2 * u * (mx - sx) + 2 * t * (ex - mx);
+  const dy = 2 * u * (my - sy) + 2 * t * (ey - my);
+  const len = Math.hypot(dx, dy) || 1;
+  return { x: dx / len, y: dy / len };
+}
+
+function inView(pts) {
+  return pts.every(
+    (p) =>
+      p.x >= VIEW_PAD &&
+      p.x <= 640 - VIEW_PAD &&
+      p.y >= VIEW_PAD &&
+      p.y <= 360 - VIEW_PAD
+  );
+}
+
+function hitsOtherNode(pts, skipIds) {
+  for (const p of pts) {
+    for (const n of layoutNodes()) {
+      if (skipIds.has(n.id)) continue;
+      if (Math.hypot(p.x - n.x, p.y - n.y) < R + NODE_GAP) return true;
+    }
+  }
+  return false;
+}
+
+function labelBoxClear(x, y, text) {
+  const halfW = Math.max(14, text.length * 3.2);
+  const halfH = 7;
+  if (x - halfW < 2 || x + halfW > 638 || y - halfH < 2 || y + halfH > 358) {
+    return false;
+  }
+  return layoutNodes().every((n) => {
+    const cx = Math.max(x - halfW, Math.min(n.x, x + halfW));
+    const cy = Math.max(y - halfH, Math.min(n.y, y + halfH));
+    return Math.hypot(n.x - cx, n.y - cy) >= R + 6;
+  });
+}
+
+function makeSelfLoop(x, y, dir, lift) {
+  const ox = dir.ox;
+  const oy = dir.oy;
+  const tx = -oy;
+  const ty = ox;
+  const a = 0.95;
+  const ca = Math.cos(a);
+  const sa = Math.sin(a);
+  const start = {
+    x: x + R * (ca * ox - sa * tx),
+    y: y + R * (ca * oy - sa * ty),
+  };
+  const end = {
+    x: x + (R + 2) * (ca * ox + sa * tx),
+    y: y + (R + 2) * (ca * oy + sa * ty),
+  };
+  const wide = 26;
+  const reach = R + lift;
+  const c1 = {
+    x: x + reach * ox - wide * tx,
+    y: y + reach * oy - wide * ty,
+  };
+  const c2 = {
+    x: x + reach * ox + wide * tx,
+    y: y + reach * oy + wide * ty,
+  };
+  return {
+    d: `M ${fmt(start.x)} ${fmt(start.y)} C ${fmt(c1.x)} ${fmt(c1.y)} ${fmt(c2.x)} ${fmt(c2.y)} ${fmt(end.x)} ${fmt(end.y)}`,
+    samples: sampleCubic(start, c1, c2, end, 28),
+    label: {
+      x: x + (reach + 12) * ox,
+      y: y + (reach + 12) * oy,
+    },
+  };
+}
+
+function selfLoopGeom(x, y, id, text) {
+  const dirs = [
+    { ox: 0, oy: -1 },
+    { ox: 0, oy: 1 },
+    { ox: -1, oy: 0 },
+    { ox: 1, oy: 0 },
+  ];
+  let best = null;
+  let bestScore = -Infinity;
+  for (const dir of dirs) {
+    for (const lift of [40, 32, 24]) {
+      const geom = makeSelfLoop(x, y, dir, lift);
+      const body = geom.samples.filter(
+        (p) => Math.hypot(p.x - x, p.y - y) >= R + 8
+      );
+      if (body.length < geom.samples.length * 0.6) continue;
+      if (!inView(geom.samples)) continue;
+      if (hitsOtherNode(geom.samples, new Set([id]))) continue;
+      if (!labelBoxClear(geom.label.x, geom.label.y, text)) continue;
+      let score = Infinity;
+      for (const n of layoutNodes()) {
+        if (n.id === id) continue;
+        for (const p of geom.samples) {
+          score = Math.min(score, Math.hypot(p.x - n.x, p.y - n.y) - R);
+        }
+      }
+      score = Math.min(score, geom.label.x, geom.label.y, 640 - geom.label.x, 360 - geom.label.y);
+      if (score > bestScore) {
+        best = geom;
+        bestScore = score;
+      }
+    }
+  }
+  return best ?? makeSelfLoop(x, y, { ox: -1, oy: 0 }, 24);
+}
+
+function spreadLabels(labels) {
+  for (let iter = 0; iter < 14; iter++) {
+    for (let i = 0; i < labels.length; i++) {
+      for (let j = i + 1; j < labels.length; j++) {
+        const a = labels[i];
+        const b = labels[j];
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const dist = Math.hypot(dx, dy) || 0.01;
+        const need = a.halfW + b.halfW + 4;
+        if (dist >= need) continue;
+        const push = Math.min(6, (need - dist) / 2);
+        const ux = dx / dist;
+        const uy = dy / dist;
+        a.x -= ux * push;
+        a.y -= uy * push;
+        b.x += ux * push;
+        b.y += uy * push;
+      }
+    }
+    for (const lb of labels) {
+      lb.x += (lb.homeX - lb.x) * 0.08;
+      lb.y += (lb.homeY - lb.y) * 0.08;
+      for (const n of layoutNodes()) {
+        const dx = lb.x - n.x;
+        const dy = lb.y - n.y;
+        const dist = Math.hypot(dx, dy) || 0.01;
+        const limit = R + 8;
+        if (dist < limit) {
+          lb.x = n.x + (dx / dist) * limit;
+          lb.y = n.y + (dy / dist) * limit;
+        }
+      }
+      lb.x = Math.min(628, Math.max(12, lb.x));
+      lb.y = Math.min(350, Math.max(12, lb.y));
+    }
+  }
+}
+
+function edgeGeom(fromId, toId, ax, ay, bx, by, text) {
+  if (fromId === toId) return selfLoopGeom(ax, ay, fromId, text);
+  const dx = bx - ax;
+  const dy = by - ay;
   const len = Math.hypot(dx, dy) || 1;
   const ux = dx / len;
   const uy = dy / len;
-  // 円周上から円周上へ
-  const sx = x1 + ux * R;
-  const sy = y1 + uy * R;
-  const ex = x2 - ux * (R + 6);
-  const ey = y2 - uy * (R + 6);
-  // 軽い弧
-  const mx = (sx + ex) / 2 - uy * 18;
-  const my = (sy + ey) / 2 + ux * 18;
-  return { d: `M ${sx} ${sy} Q ${mx} ${my} ${ex} ${ey}`, ex, ey, ux, uy };
+  const px = -uy;
+  const py = ux;
+  const sx = ax + ux * R;
+  const sy = ay + uy * R;
+  const ex = bx - ux * (R + 7);
+  const ey = by - uy * (R + 7);
+  const heights = [];
+  for (const sign of [1, -1]) {
+    for (let h = 18; h <= 150; h += 6) heights.push(sign * h);
+  }
+  for (const h of heights) {
+    const mx = (sx + ex) / 2 + px * h;
+    const my = (sy + ey) / 2 + py * h;
+    const samples = sampleQuad(sx, sy, mx, my, ex, ey, 40);
+    if (!inView(samples)) continue;
+    if (hitsOtherNode(samples, new Set([fromId, toId]))) continue;
+    const mid = samples[20];
+    const tan = tangentQuad(sx, sy, mx, my, ex, ey, 0.5);
+    let nx = -tan.y;
+    let ny = tan.x;
+    if (nx * (mx - mid.x) + ny * (my - mid.y) < 0) {
+      nx = -nx;
+      ny = -ny;
+    }
+    let label = null;
+    for (let dist = 14; dist <= 42; dist += 4) {
+      const lx = mid.x + nx * dist;
+      const ly = mid.y + ny * dist;
+      if (labelBoxClear(lx, ly, text)) {
+        label = { x: lx, y: ly };
+        break;
+      }
+    }
+    if (!label) continue;
+    return {
+      d: `M ${fmt(sx)} ${fmt(sy)} Q ${fmt(mx)} ${fmt(my)} ${fmt(ex)} ${fmt(ey)}`,
+      label,
+    };
+  }
+  const mx = (sx + ex) / 2 + px * 18;
+  const my = (sy + ey) / 2 + py * 18;
+  return {
+    d: `M ${fmt(sx)} ${fmt(sy)} Q ${fmt(mx)} ${fmt(my)} ${fmt(ex)} ${fmt(ey)}`,
+    label: { x: (ax + bx) / 2, y: (ay + by) / 2 - 16 },
+  };
 }
 
 function drawDiagram() {
@@ -268,23 +496,30 @@ function drawDiagram() {
     bundled.get(bk).push(ev);
   }
 
+  /** @type {{ x: number, y: number, text: string, on: string, halfW: number }[]} */
+  const labels = [];
   for (const [bk, evs] of bundled) {
     const [from, to] = bk.split("->");
     const a = layout[from];
     const b = layout[to];
     if (!a || !b) continue;
-    const { d, ex, ey, ux, uy } = edgePath(a.x, a.y, b.x, b.y);
-    const active =
-      lastAccepted && lastFrom === from && lastTo === to;
-    const angle = (Math.atan2(uy, ux) * 180) / Math.PI;
-    edges.push(`
-      <path class="fsm-edge${active ? " is-active" : ""}" d="${d}" fill="none" marker-end="url(#arrow)" />
-      <text class="fsm-edge-label${active ? " is-active" : ""}" x="${(a.x + b.x) / 2 - uy * 12}" y="${(a.y + b.y) / 2 + ux * 12}" text-anchor="middle">${evs.join(",")}</text>
-    `);
-    void angle;
-    void ex;
-    void ey;
+    const text = evs.join(",");
+    const { d, label } = edgeGeom(from, to, a.x, a.y, b.x, b.y, text);
+    const active = lastAccepted && lastFrom === from && lastTo === to;
+    edges.push(
+      `<path class="fsm-edge${active ? " is-active" : ""}" d="${d}" fill="none" marker-end="url(#arrow)" />`
+    );
+    labels.push({
+      x: label.x,
+      y: label.y,
+      homeX: label.x,
+      homeY: label.y,
+      text,
+      on: active ? " is-active" : "",
+      halfW: Math.max(12, text.length * 3.4),
+    });
   }
+  spreadLabels(labels);
 
   const nodes = stateIds()
     .map((id) => {
@@ -303,6 +538,7 @@ function drawDiagram() {
     .join("");
 
   svg.innerHTML = `
+    <title id="fsm-svg-title">ステートマシン状態図</title>
     <defs>
       <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
         <path d="M 0 0 L 10 5 L 0 10 z" fill="#6a7d94" />
@@ -310,6 +546,12 @@ function drawDiagram() {
     </defs>
     <g class="fsm-edges">${edges.join("")}</g>
     <g class="fsm-nodes">${nodes}</g>
+    <g class="fsm-edge-labels">${labels
+      .map(
+        (lb) =>
+          `<text class="fsm-edge-label${lb.on}" x="${fmt(lb.x)}" y="${fmt(lb.y)}" text-anchor="middle">${lb.text}</text>`
+      )
+      .join("")}</g>
   `;
 }
 
@@ -336,32 +578,45 @@ function renderHistory() {
     .join("");
 }
 
-function renderEventButtons() {
-  if (!eventButtons) return;
-  const valid = new Set(validEvents(current));
-  eventButtons.innerHTML = FSM_CONFIG.events
-    .map((e) => {
-      const ok = valid.has(e.id);
-      return `<button type="button" class="btn fsm-event-btn${ok ? " is-valid" : " is-invalid"}" data-event="${e.id}" title="${
-        ok ? `${current} → ${nextState(current, e.id)}` : "この状態では無効"
-      }">${e.label}</button>`;
-    })
-    .join("");
+/** @type {Map<string, HTMLButtonElement>} */
+const eventButtonEls = new Map();
 
-  eventButtons.querySelectorAll("[data-event]").forEach((btn) => {
+function ensureEventButtons() {
+  if (!eventButtons || eventButtonEls.size > 0) return;
+  for (const e of FSM_CONFIG.events) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "btn fsm-event-btn";
+    btn.dataset.event = e.id;
+    btn.textContent = e.label;
     btn.addEventListener("click", () => {
       stopAuto();
-      const id = btn.getAttribute("data-event");
-      if (id) handleEvent(id);
+      handleEvent(e.id);
     });
-  });
+    eventButtons.appendChild(btn);
+    eventButtonEls.set(e.id, btn);
+  }
+}
+
+function renderEventButtons() {
+  if (!eventButtons) return;
+  ensureEventButtons();
+  const valid = new Set(validEvents(current));
+  for (const e of FSM_CONFIG.events) {
+    const btn = eventButtonEls.get(e.id);
+    if (!btn) continue;
+    const ok = valid.has(e.id);
+    btn.classList.toggle("is-valid", ok);
+    btn.classList.toggle("is-invalid", !ok);
+    const to = nextState(current, e.id);
+    btn.title = ok ? `${current} → ${to}` : "この状態では無効";
+  }
 }
 
 function renderTable() {
   if (!tableEl) return;
   const events = FSM_CONFIG.events;
   const states = stateIds();
-  const ovKey = overrideKey();
   const reach = reachableFrom(initial);
   let head =
     "<thead><tr><th>状態 \\ イベント</th>" +
@@ -376,7 +631,8 @@ function renderTable() {
       const to = nextState(st, ev.id);
       const active =
         lastAccepted && lastFrom === st && lastEvent === ev.id;
-      const isOv = transitionKey(st, ev.id) === ovKey;
+      const base = FSM_CONFIG.transitions[transitionKey(st, ev.id)] ?? null;
+      const isOv = (to ?? null) !== base;
       body += `<td class="${to ? "has-trans" : "no-trans"}${active ? " is-active-cell" : ""}${isOv ? " is-override-cell" : ""}">${
         to ?? "—"
       }</td>`;
