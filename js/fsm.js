@@ -55,11 +55,13 @@ const R = 36;
 const firstTransKey = Object.keys(FSM_CONFIG.transitions)[0];
 const [DEFAULT_FROM, DEFAULT_EV] = firstTransKey.split("|");
 const DEFAULT_TO = FSM_CONFIG.transitions[firstTransKey];
+const DEFAULT_OVERRIDE = { from: DEFAULT_FROM, ev: DEFAULT_EV, to: DEFAULT_TO };
 const DEFAULT_SCRIPT = FSM_CONFIG.demoScript.join(",");
 const EVENT_IDS = new Set(FSM_CONFIG.events.map((e) => e.id));
 
 /** @type {Record<string, string>} */
 let transitions = { ...FSM_CONFIG.transitions };
+let appliedOverride = DEFAULT_OVERRIDE;
 let initial = FSM_CONFIG.initial;
 /** @type {string[]} */
 let demoScript = [...FSM_CONFIG.demoScript];
@@ -105,13 +107,43 @@ function parseScript(raw) {
   return { ok: true, events };
 }
 
+function readOverrideControls() {
+  return {
+    from: fromEl?.value || DEFAULT_FROM,
+    ev: evEl?.value || DEFAULT_EV,
+    to: toEl?.value || DEFAULT_TO,
+  };
+}
+
+function normalizeOverride(override) {
+  return FSM_CONFIG.transitions[transitionKey(override.from, override.ev)] === override.to
+    ? DEFAULT_OVERRIDE
+    : override;
+}
+
+function updateOverridePreview() {
+  const draft = readOverrideControls();
+  const { from, ev, to } = draft;
+  const base = FSM_CONFIG.transitions[transitionKey(from, ev)];
+  const preview = document.getElementById("fsm-override-preview");
+  if (!preview) return;
+  const candidate = normalizeOverride(draft);
+  const alreadyApplied =
+    candidate.from === appliedOverride.from && candidate.ev === appliedOverride.ev && candidate.to === appliedOverride.to;
+  const change = base === to ? "元の表と同じ" : base ? "行き先を上書き" : "新しい遷移を追加";
+  const detail = `${from} 行 × ${ev} 列　${base ?? "空欄（—）"} → ${to}（${change}）`;
+  const status = alreadyApplied ? (base === to ? "" : "。反映済み") : "。反映待ち";
+  const previous = !alreadyApplied && appliedOverride !== DEFAULT_OVERRIDE
+    ? `。反映すると、適用中の ${appliedOverride.from} 行 × ${appliedOverride.ev} 列の変更に代わります`
+    : "";
+  preview.textContent = `${detail}${status}${previous}。`;
+}
+
 function applyOverrideAndScript() {
   initial = initialEl?.value || FSM_CONFIG.initial;
   if (!FSM_CONFIG.states[initial]) initial = FSM_CONFIG.initial;
   transitions = { ...FSM_CONFIG.transitions };
-  const from = fromEl?.value ?? "";
-  const ev = evEl?.value ?? "";
-  const to = toEl?.value ?? "";
+  const { from, ev, to } = appliedOverride;
   if (from && ev && to && FSM_CONFIG.states[from] && EVENT_IDS.has(ev) && FSM_CONFIG.states[to]) {
     transitions[transitionKey(from, ev)] = to;
   }
@@ -724,9 +756,9 @@ if (scriptEl) scriptEl.value = DEFAULT_SCRIPT;
 
 const urlSpec = {
   initial: { el: initialEl, kind: "select" },
-  from: { el: fromEl, kind: "select" },
-  ev: { el: evEl, kind: "select" },
-  to: { el: toEl, kind: "select" },
+  from: { el: fromEl, kind: "select", getShareValue: () => appliedOverride.from },
+  ev: { el: evEl, kind: "select", getShareValue: () => appliedOverride.ev },
+  to: { el: toEl, kind: "select", getShareValue: () => appliedOverride.to },
   script: { el: scriptEl, kind: "text" },
   speed: { el: speedEl, kind: "range" },
 };
@@ -736,8 +768,10 @@ mountShareLink({
   statusEl: document.getElementById("status"),
 });
 const urlResult = applyParamsToControls(urlSpec);
+appliedOverride = normalizeOverride(readOverrideControls());
 const scriptWarning = applyOverrideAndScript();
 reset();
+updateOverridePreview();
 if (urlResult.warning && scriptWarning) {
   setStatus(`${urlResult.warning} ${scriptWarning}`);
 } else if (urlResult.warning) {
@@ -753,10 +787,25 @@ function onParamChange() {
 }
 
 initialEl?.addEventListener("change", onParamChange);
-fromEl?.addEventListener("change", onParamChange);
-evEl?.addEventListener("change", onParamChange);
-toEl?.addEventListener("change", onParamChange);
+fromEl?.addEventListener("change", updateOverridePreview);
+evEl?.addEventListener("change", updateOverridePreview);
+toEl?.addEventListener("change", updateOverridePreview);
 scriptEl?.addEventListener("change", onParamChange);
+
+document.getElementById("btn-apply-override")?.addEventListener("click", () => {
+  appliedOverride = normalizeOverride(readOverrideControls());
+  onParamChange();
+  updateOverridePreview();
+});
+
+document.getElementById("btn-clear-override")?.addEventListener("click", () => {
+  appliedOverride = DEFAULT_OVERRIDE;
+  if (fromEl) fromEl.value = DEFAULT_FROM;
+  if (evEl) evEl.value = DEFAULT_EV;
+  if (toEl) toEl.value = DEFAULT_TO;
+  onParamChange();
+  updateOverridePreview();
+});
 
 loadTextSample(
   "../samples/FsmExample.cs",

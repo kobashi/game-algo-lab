@@ -263,12 +263,20 @@
     <section class="guide-section" id="s6" aria-labelledby="s6-h">
       <h2 id="s6-h">6. デモの遷移の上書きとイベント列</h2>
       <p>
-        デモでは、遷移表を直接編集することはできませんが、<strong>from・event・to</strong> の 3 つを選んで、
-        遷移表の<strong>1 マスだけ</strong>を上書きできます。たとえば、もともと空欄だった「Dead の行、Recover の列」に
-        Idle を書き込むと（from=Dead, event=Recover, to=Idle）、Dead から Recover で Idle に戻れるようになります。
+        デモの「遷移表の一マスを変える」で、変更するマスと、そこに入れる状態を選びます。
+      </p>
+      <ol>
+        <li>「行を選ぶ（移る前の状態）」で <strong>Dead</strong> を選びます。</li>
+        <li>「列を選ぶ（イベント）」で <strong>Recover</strong> を選びます。</li>
+        <li>「移る先を選ぶ（次の状態）」で <strong>Idle</strong> を選びます。「空欄（—） → Idle」と表示されたら、「表に反映する」を押します。</li>
+      </ol>
+      <p>
+        これで Dead の行・Recover の列に Idle が入り、矢印が一本増えます。元から状態名があるマスでは行き先の<strong>上書き</strong>です。
+        たとえば Idle の行・Move の列では、移る先を変えると、元の Walk から別の状態に置き換わります。
+        反映したマスは黄色い枠で分かります。「リセット」は実行を最初から試す操作で、遷移の変更を消すときは「元の表に戻す」を押します。
       </p>
       <figure class="guide-figure">
-        <svg viewBox="0 0 640 260" role="img" aria-label="上書き前はDeadに出ていく矢印が無く赤い枠。下のfrom Dead ev Recover to Idleを設定した上書き後は、DeadからIdleへRecoverの矢印が1本追加され、赤い枠ではなくなる">
+        <svg viewBox="0 0 640 260" role="img" aria-label="変更前はDeadに出ていく矢印が無く赤い枠。Deadの行・Recoverの列にIdleを加えると、DeadからIdleへ矢印が1本増え、赤い枠ではなくなる">
           <text x="10" y="24" font-size="14" fill="#e8eef6">上書き前</text>
           <circle cx="120" cy="60" r="34" fill="#5b9fd433" stroke="#5b9fd4" stroke-width="2.5" />
           <text x="120" y="66" font-size="14" fill="#e8eef6" text-anchor="middle" font-weight="bold">Idle</text>
@@ -279,7 +287,7 @@
           <text x="500" y="66" font-size="14" fill="#e07a5f">出ていく矢印なし</text>
 
           <line x1="60" y1="115" x2="600" y2="115" stroke="#3d4f66" stroke-dasharray="5 4" />
-          <text x="10" y="150" font-size="14" fill="#e8eef6">上書き後（from=Dead, event=Recover, to=Idle）</text>
+          <text x="10" y="150" font-size="14" fill="#e8eef6">変更後（Dead 行、Recover 列に Idle）</text>
           <circle cx="120" cy="205" r="34" fill="#5b9fd433" stroke="#5b9fd4" stroke-width="2.5" />
           <text x="120" y="211" font-size="14" fill="#e8eef6" text-anchor="middle" font-weight="bold">Idle</text>
           <circle cx="420" cy="205" r="34" fill="#2a2f38" stroke="#9aabbf" stroke-width="2.5" />
@@ -312,7 +320,7 @@
         <li>状態図（丸と矢印）と遷移表（行=今の状態、列=イベント）は、同じルールの 2 つの見方。表の空欄は「無視」</li>
         <li>同じイベントでも、今の状態によって結果が違う（遷移する場合も、無視される場合もある）</li>
         <li>他の状態へ進む矢印が無い状態（出口の無い状態）や、初期状態から届かない状態がある。自分に戻る矢印だけでも、出口は無い</li>
-        <li>デモでは、遷移表の 1 マスだけを from・event・to で上書きでき、遷移が 1 本変わるだけで振る舞いが変わる</li>
+        <li>行・列・移る先を選んで表に反映すると、一マスの変更でキャラの振る舞いが変わる</li>
       </ul>
       <div class="guide-note">
         <strong>考えてみよう（提出課題 10）:</strong> 遷移表の 1 マスだけを変えて、キャラに新しい振る舞いをさせられるでしょうか。
@@ -323,7 +331,7 @@
       <h2 id="try-h">やってみよう</h2>
       <ol>
         <li><a href="../algorithms/fsm.html?course=intro">デモ</a>を開き、既定の状態図で Dead の色を見る。自動デモを最後まで再生し、Dead になったら Recover を送る。送る前に、状態が変わるかどうかを予想する。</li>
-        <li><a href="../algorithms/fsm.html?course=intro&amp;from=Dead&amp;ev=Recover&amp;to=Idle#sim">from=Dead, event=Recover, to=Idle に上書きして</a>開き、状態図の Dead の枠の色と、遷移表の Dead 行を見比べる。同じように自動デモのあと、Dead で Recover を送る。履歴と今の状態を、変更前と比べる。どちらで状態が変わるかを、送る前に予想する。</li>
+        <li>行を Dead、列を Recover、移る先を Idle にして「表に反映する」を押します。黄色い枠と増えた矢印を探し、自動デモのあとに Recover を送って履歴を比べます。<a href="../algorithms/fsm.html?course=intro&amp;from=Dead&amp;ev=Recover&amp;to=Idle#sim">反映済みの例を開く</a>こともできます。</li>
         <li><a href="../algorithms/fsm.html?course=intro&amp;initial=Dead#sim">初期状態を Dead にして</a>開き、他の状態がすべて灰色（届かない）になることを確かめる。</li>
       </ol>
       <div class="guide-check">

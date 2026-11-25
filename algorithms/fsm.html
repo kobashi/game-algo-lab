@@ -85,13 +85,19 @@
             <select id="fsm-initial" class="fsm-param-select"></select>
           </div>
           <div class="controls-group-paint gl-params fsm-params">
-            <span class="controls-label">遷移の上書き（1本）</span>
-            <label class="controls-label" for="fsm-from">from</label>
+            <span class="controls-label">遷移表の一マスを変える</span>
+            <p class="fsm-event-hint">行と列でマスを選び、移る先を決めます。空欄（—）に入れると矢印が一本増えます。</p>
+            <label class="controls-label" for="fsm-from">1. 行を選ぶ（移る前の状態）</label>
             <select id="fsm-from" class="fsm-param-select"></select>
-            <label class="controls-label" for="fsm-ev">event</label>
+            <label class="controls-label" for="fsm-ev">2. 列を選ぶ（イベント）</label>
             <select id="fsm-ev" class="fsm-param-select"></select>
-            <label class="controls-label" for="fsm-to">to</label>
+            <label class="controls-label" for="fsm-to">3. 移る先を選ぶ（次の状態）</label>
             <select id="fsm-to" class="fsm-param-select"></select>
+            <p id="fsm-override-preview" class="fsm-event-hint" role="status"></p>
+            <div class="control-row">
+              <button type="button" id="btn-apply-override" class="btn btn-primary">表に反映する</button>
+              <button type="button" id="btn-clear-override" class="btn btn-ghost">元の表に戻す</button>
+            </div>
           </div>
           <div class="controls-group-paint gl-params fsm-params">
             <label class="controls-label" for="fsm-script">デモのイベント列（カンマ区切り）</label>
@@ -100,7 +106,7 @@
           <div class="controls-group-paint gl-params url-share-row">
             <button type="button" id="btn-copy-url" class="btn btn-ghost">この設定のURLをコピー</button>
           </div>
-          <p class="footer-muted">遷移は1本だけ上書きします。他の状態へ進めない状態は赤い枠です。自分に戻る矢印があっても、枠は残ります。初期状態から届かない状態は灰色です。</p>
+          <p class="footer-muted">反映したマスには黄色い枠が付き、共有 URL にも入ります。他の状態へ進めない状態は赤い枠、初期状態から届かない状態は灰色です。</p>
 
           <div class="fsm-events" role="group" aria-label="イベント">
             <span class="controls-label">イベントを送る</span>
