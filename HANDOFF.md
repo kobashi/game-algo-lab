@@ -1,9 +1,11 @@
 # Game Algo Lab — セッション引き継ぎ
 
-最終更新: 2026-11-25（ready **112** · Release **v0.20.0**）  
+最終更新: 2026-11-26（ready **112** · Release **v0.20.0**）  
 パス: `~/Project`（`/Users/nagoyabunridaigakujouhoumediagakuka/Project`）  
 Pages: https://kobashi.github.io/game-algo-lab/  
 Release: https://github.com/kobashi/game-algo-lab/releases/tag/v0.20.0
+
+**2026-11-26 入門課題 10 の遷移表をマスから変える（Codex）** — ドラフト PR #24 を確認して main に載せた。変えたいマスを押すと、表の下で行と列が選ばれる。移る先を選んで「表に反映する」まで、表・状態図・共有 URL は変わらない。空欄は矢印の追加、状態名があるマスは行き先の上書き。Dead 行・Recover 列の空欄を Idle にすると矢印が増え、赤い枠は外れる。Idle 行・Move 列を Attack にすると、矢印のラベルは Move,Attack になる。同じ初期状態・同じイベント列で開き直すと、上書きは最初の Move で履歴が分かれ、追加は自動デモのあと Recover を送ったところで分かれる。幅 1280 と 390 で「表に反映する」「元の表に戻す」は 1 行で、ページの横スクロールは出なかった。図 6 と問 4 は、空欄への追加を上書きと書いている。fsm は修正 6→7。リリースは切らない。
 
 **2026-11-25 入門課題 10 を main に載せる（Grok）** — Codex が INTRO-FSM-01〜04 を受け入れた。自分に戻る遷移は丸の外の矢印で、他の状態へ進めないときは赤い枠が残る。提出は、同じ初期状態・同じイベント列で、履歴が分かれた箇所を記録する。fsm は修正 6。リリースは切らない。[レビュー](docs/reviews/2026-11-25-intro-fsm-review.md)
 
