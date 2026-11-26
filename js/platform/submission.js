@@ -128,6 +128,7 @@ function sectionHtml(a, topicId) {
       <p class="section-lead section-lead-compact exercise-title">課題 ${a.number}. ${escapeHtml(a.title)}</p>
       <div class="exercise-card">
         <p class="exercise-line"><strong>問い:</strong> ${inline(a.question)}</p>
+        ${a.operationLink ? `<p class="exercise-line"><a href="#${escapeHtml(a.operationLink.targetId)}">${escapeHtml(a.operationLink.label)}</a></p>` : ""}
         ${
           a.hint?.length
             ? `<div class="guide-note submission-hint">
@@ -169,7 +170,7 @@ function sectionHtml(a, topicId) {
         <div class="submission-form">
           <p class="exercise-label">提出票</p>
           <p class="section-lead section-lead-compact">
-            上のデモで条件を決めたら「今の設定を入れる」。書いた内容はこのブラウザにだけ保存され、外には送られません。
+            デモで条件を決めたら「今の設定を入れる」。書いた内容はこのブラウザにだけ保存され、外には送られません。
             最後に「提出用テキストをコピー」して、LMS の提出欄に貼ってください。
           </p>
           ${urlRows}

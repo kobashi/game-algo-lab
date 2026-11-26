@@ -26,7 +26,7 @@ const actorState = document.getElementById("actor-state");
 const actorBlurb = document.getElementById("actor-blurb");
 const actorFigure = document.getElementById("actor-figure");
 const historyEl = document.getElementById("history");
-const tableEl = document.getElementById("trans-table");
+const tableEl = /** @type {HTMLTableElement | null} */ (document.getElementById("trans-table"));
 const btnPlay = document.getElementById("btn-play");
 const btnStep = document.getElementById("btn-step");
 const btnReset = document.getElementById("btn-reset");
@@ -47,6 +47,9 @@ const scriptEl = /** @type {HTMLInputElement | null} */ (
   document.getElementById("fsm-script")
 );
 const csharpSample = document.getElementById("csharp-sample");
+const applyOverrideButton = /** @type {HTMLButtonElement | null} */ (
+  document.getElementById("btn-apply-override")
+);
 
 const setStatus = createStatus(document.getElementById("status"));
 
@@ -58,6 +61,7 @@ const DEFAULT_TO = FSM_CONFIG.transitions[firstTransKey];
 const DEFAULT_OVERRIDE = { from: DEFAULT_FROM, ev: DEFAULT_EV, to: DEFAULT_TO };
 const DEFAULT_SCRIPT = FSM_CONFIG.demoScript.join(",");
 const EVENT_IDS = new Set(FSM_CONFIG.events.map((e) => e.id));
+let tableCursor = firstTransKey;
 
 /** @type {Record<string, string>} */
 let transitions = { ...FSM_CONFIG.transitions };
@@ -111,7 +115,7 @@ function readOverrideControls() {
   return {
     from: fromEl?.value || DEFAULT_FROM,
     ev: evEl?.value || DEFAULT_EV,
-    to: toEl?.value || DEFAULT_TO,
+    to: toEl?.value ?? DEFAULT_TO,
   };
 }
 
@@ -126,7 +130,12 @@ function updateOverridePreview() {
   const { from, ev, to } = draft;
   const base = FSM_CONFIG.transitions[transitionKey(from, ev)];
   const preview = document.getElementById("fsm-override-preview");
+  if (applyOverrideButton) applyOverrideButton.disabled = !to;
   if (!preview) return;
+  if (!to) {
+    preview.textContent = `${from} 行 × ${ev} 列は空欄（—）です。「移る先を選ぶ」で入れる状態を選びます。`;
+    return;
+  }
   const candidate = normalizeOverride(draft);
   const alreadyApplied =
     candidate.from === appliedOverride.from && candidate.ev === appliedOverride.ev && candidate.to === appliedOverride.to;
@@ -647,6 +656,7 @@ function renderEventButtons() {
 
 function renderTable() {
   if (!tableEl) return;
+  const restoreFocus = tableEl.contains(document.activeElement);
   const events = FSM_CONFIG.events;
   const states = stateIds();
   const reach = reachableFrom(initial);
@@ -660,20 +670,69 @@ function renderTable() {
     const unreach = !reach.has(st);
     body += `<tr class="${isRow ? "is-current-row" : ""}${unreach ? " is-unreachable-row" : ""}"><th scope="row">${st}</th>`;
     for (const ev of events) {
+      const key = transitionKey(st, ev.id);
       const to = nextState(st, ev.id);
       const active =
         lastAccepted && lastFrom === st && lastEvent === ev.id;
-      const base = FSM_CONFIG.transitions[transitionKey(st, ev.id)] ?? null;
+      const base = FSM_CONFIG.transitions[key] ?? null;
       const isOv = (to ?? null) !== base;
-      body += `<td class="${to ? "has-trans" : "no-trans"}${active ? " is-active-cell" : ""}${isOv ? " is-override-cell" : ""}">${
-        to ?? "—"
-      }</td>`;
+      const cellClass = `${to ? "has-trans" : "no-trans"}${active ? " is-active-cell" : ""}${isOv ? " is-override-cell" : ""}`;
+      body += `<td class="${cellClass}"><button type="button" class="fsm-edit-cell" data-from="${st}" data-ev="${ev.id}"
+        tabindex="${key === tableCursor ? 0 : -1}" aria-label="${st} 行、${ev.label} 列、${to ?? "空欄"}を編集">${to ?? "—"}</button></td>`;
     }
     body += "</tr>";
   }
   body += "</tbody>";
   tableEl.innerHTML = head + body;
+  if (restoreFocus) {
+    const button = tableEl.querySelector(".fsm-edit-cell[tabindex='0']");
+    if (button instanceof HTMLButtonElement) button.focus({ preventScroll: true });
+  }
 }
+
+/** @param {HTMLButtonElement} button */
+function setTableCursor(button) {
+  const { from, ev } = button.dataset;
+  if (!from || !ev) return;
+  tableEl?.querySelector(".fsm-edit-cell[tabindex='0']")?.setAttribute("tabindex", "-1");
+  button.tabIndex = 0;
+  tableCursor = transitionKey(from, ev);
+}
+
+tableEl?.addEventListener("click", (event) => {
+  const button = event.target instanceof HTMLElement ? event.target.closest(".fsm-edit-cell") : null;
+  if (!(button instanceof HTMLButtonElement) || !fromEl || !evEl || !toEl) return;
+  const { from, ev } = button.dataset;
+  if (!from || !ev) return;
+  stopAuto();
+  setTableCursor(button);
+  fromEl.value = from;
+  evEl.value = ev;
+  toEl.value = nextState(from, ev) ?? "";
+  updateOverridePreview();
+  toEl.focus();
+});
+
+tableEl?.addEventListener("keydown", (event) => {
+  const offset = {
+    ArrowLeft: [0, -1],
+    ArrowRight: [0, 1],
+    ArrowUp: [-1, 0],
+    ArrowDown: [1, 0],
+  }[event.key];
+  if (!offset || !(event.target instanceof HTMLButtonElement)) return;
+  const cell = event.target.closest("td");
+  const row = cell?.closest("tr");
+  if (!cell || !row) return;
+  event.preventDefault();
+  const [dy, dx] = offset;
+  const next = tableEl.tBodies[0]?.rows[row.sectionRowIndex + dy]?.cells[cell.cellIndex + dx]
+    ?.querySelector(".fsm-edit-cell");
+  if (next instanceof HTMLButtonElement) {
+    setTableCursor(next);
+    next.focus();
+  }
+});
 
 function renderAll() {
   drawDiagram();
@@ -792,8 +851,10 @@ evEl?.addEventListener("change", updateOverridePreview);
 toEl?.addEventListener("change", updateOverridePreview);
 scriptEl?.addEventListener("change", onParamChange);
 
-document.getElementById("btn-apply-override")?.addEventListener("click", () => {
-  appliedOverride = normalizeOverride(readOverrideControls());
+applyOverrideButton?.addEventListener("click", () => {
+  const draft = readOverrideControls();
+  if (!draft.to) return;
+  appliedOverride = normalizeOverride(draft);
   onParamChange();
   updateOverridePreview();
 });

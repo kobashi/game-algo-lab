@@ -44,7 +44,7 @@ export const FSM_CONFIG = {
     Attack: {
       id: "Attack",
       label: "Attack",
-      color: "#e07a5f",
+      color: "#54c7d3",
       blurb: "攻撃モーション中。終了で Idle。",
     },
     Hurt: {

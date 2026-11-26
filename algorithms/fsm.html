@@ -43,12 +43,18 @@
 
       <div class="fsm-layout">
         <section class="fsm-main-block" aria-labelledby="diagram-heading">
-          <h2 id="diagram-heading" class="fsm-block-title"><span class="term" data-term="state-diagram">状態図</span></h2>
+          <h2 id="diagram-heading" class="fsm-block-title" tabindex="-1"><span class="term" data-term="state-diagram">状態図</span></h2>
+          <div class="fsm-events" role="group" aria-label="イベントを送る">
+            <span class="controls-label">イベントを送る</span>
+            <div id="event-buttons" class="fsm-event-row"></div>
+            <p class="fsm-event-hint">緑の枠は、今の状態で受け付けるイベントです。</p>
+          </div>
           <div class="fsm-diagram-wrap">
             <svg id="fsm-svg" class="fsm-svg" viewBox="0 0 640 360" role="img" aria-labelledby="fsm-svg-title">
               <title id="fsm-svg-title">ステートマシン状態図</title>
             </svg>
           </div>
+          <p class="fsm-event-hint">赤い枠は他の状態へ進めない状態、灰色は初期状態から届かない状態です。</p>
 
           <div class="fsm-actor" id="fsm-actor" aria-live="polite">
             <div class="fsm-actor-figure" id="actor-figure">
@@ -85,35 +91,12 @@
             <select id="fsm-initial" class="fsm-param-select"></select>
           </div>
           <div class="controls-group-paint gl-params fsm-params">
-            <span class="controls-label">遷移表の一マスを変える</span>
-            <p class="fsm-event-hint">行と列でマスを選び、移る先を決めます。空欄（—）に入れると矢印が一本増えます。</p>
-            <label class="controls-label" for="fsm-from">1. 行を選ぶ（移る前の状態）</label>
-            <select id="fsm-from" class="fsm-param-select"></select>
-            <label class="controls-label" for="fsm-ev">2. 列を選ぶ（イベント）</label>
-            <select id="fsm-ev" class="fsm-param-select"></select>
-            <label class="controls-label" for="fsm-to">3. 移る先を選ぶ（次の状態）</label>
-            <select id="fsm-to" class="fsm-param-select"></select>
-            <p id="fsm-override-preview" class="fsm-event-hint" role="status"></p>
-            <div class="control-row">
-              <button type="button" id="btn-apply-override" class="btn btn-primary">表に反映する</button>
-              <button type="button" id="btn-clear-override" class="btn btn-ghost">元の表に戻す</button>
-            </div>
-          </div>
-          <div class="controls-group-paint gl-params fsm-params">
             <label class="controls-label" for="fsm-script">デモのイベント列（カンマ区切り）</label>
             <input type="text" id="fsm-script" class="fsm-param-input" autocomplete="off" spellcheck="false" />
           </div>
           <div class="controls-group-paint gl-params url-share-row">
             <button type="button" id="btn-copy-url" class="btn btn-ghost">この設定のURLをコピー</button>
           </div>
-          <p class="footer-muted">反映したマスには黄色い枠が付き、共有 URL にも入ります。他の状態へ進めない状態は赤い枠、初期状態から届かない状態は灰色です。</p>
-
-          <div class="fsm-events" role="group" aria-label="イベント">
-            <span class="controls-label">イベントを送る</span>
-            <div id="event-buttons" class="fsm-event-row"></div>
-            <p class="fsm-event-hint">緑枠 = 今の状態から遷移できる入力</p>
-          </div>
-
           <div id="status" class="status-log" role="status">準備完了</div>
 
           <div class="fsm-history-block">
@@ -123,11 +106,27 @@
         </aside>
       </div>
 
-      <section class="fsm-table-block" aria-labelledby="table-heading">
+      <section class="fsm-table-block" id="fsm-transition-table" aria-labelledby="table-heading" tabindex="-1">
         <h2 id="table-heading" class="fsm-block-title"><span class="term" data-term="transition-table">遷移表</span></h2>
-        <p class="fsm-table-lead">行 = 現在状態、列 = イベント。空欄は無視で、矢印はありません。自分と同じ状態のマスは、そのイベントを受けて同じ状態に戻ります。</p>
+        <p class="fsm-table-lead">状態の行とイベントの列が交わるマスを押すと、下の編集欄で行と列が選ばれます。たとえば、<strong>Dead 行・Recover 列の「—」</strong>を押して、移る先に Idle を選びます。キーボードでは矢印キーでマスを移動し、Enter で選びます。</p>
         <div class="fsm-table-scroll">
           <table class="fsm-table" id="trans-table"></table>
+        </div>
+        <div class="controls-group-paint gl-params fsm-params fsm-transition-editor">
+          <h3 class="fsm-subhead">遷移表の一マスを変える</h3>
+          <p class="fsm-event-hint">マスを押すか、下の欄で行と列を選びます。空欄（—）なら矢印の追加、状態名があれば行き先の上書きです。</p>
+          <label class="controls-label" for="fsm-from">行を選ぶ（移る前の状態）</label>
+          <select id="fsm-from" class="fsm-param-select"></select>
+          <label class="controls-label" for="fsm-ev">列を選ぶ（イベント）</label>
+          <select id="fsm-ev" class="fsm-param-select"></select>
+          <label class="controls-label" for="fsm-to">移る先を選ぶ（次の状態）</label>
+          <select id="fsm-to" class="fsm-param-select"></select>
+          <p id="fsm-override-preview" class="fsm-event-hint" role="status"></p>
+          <div class="control-row">
+            <button type="button" id="btn-apply-override" class="btn btn-primary">表に反映する</button>
+            <button type="button" id="btn-clear-override" class="btn btn-ghost">元の表に戻す</button>
+          </div>
+          <p class="fsm-event-hint">反映したマスには黄色い枠が付き、共有 URL にも入ります。<a href="#diagram-heading">状態図とイベントボタンに戻る</a></p>
         </div>
       </section>
     </div>

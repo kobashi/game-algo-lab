@@ -263,12 +263,12 @@
     <section class="guide-section" id="s6" aria-labelledby="s6-h">
       <h2 id="s6-h">6. デモの遷移の上書きとイベント列</h2>
       <p>
-        デモの「遷移表の一マスを変える」で、変更するマスと、そこに入れる状態を選びます。
+        デモの遷移表で変えたいマスを押します。その下の編集欄で移る先を選びます。
       </p>
       <ol>
-        <li>「行を選ぶ（移る前の状態）」で <strong>Dead</strong> を選びます。</li>
-        <li>「列を選ぶ（イベント）」で <strong>Recover</strong> を選びます。</li>
+        <li><strong>Dead</strong> 行と <strong>Recover</strong> 列が交わる「—」を押します。</li>
         <li>「移る先を選ぶ（次の状態）」で <strong>Idle</strong> を選びます。「空欄（—） → Idle」と表示されたら、「表に反映する」を押します。</li>
+        <li>表に Idle が入ったことを確かめ、「状態図とイベントボタンに戻る」で増えた矢印を見ます。</li>
       </ol>
       <p>
         これで Dead の行・Recover の列に Idle が入り、矢印が一本増えます。元から状態名があるマスでは行き先の<strong>上書き</strong>です。
@@ -331,7 +331,7 @@
       <h2 id="try-h">やってみよう</h2>
       <ol>
         <li><a href="../algorithms/fsm.html?course=intro">デモ</a>を開き、既定の状態図で Dead の色を見る。自動デモを最後まで再生し、Dead になったら Recover を送る。送る前に、状態が変わるかどうかを予想する。</li>
-        <li>行を Dead、列を Recover、移る先を Idle にして「表に反映する」を押します。黄色い枠と増えた矢印を探し、自動デモのあとに Recover を送って履歴を比べます。<a href="../algorithms/fsm.html?course=intro&amp;from=Dead&amp;ev=Recover&amp;to=Idle#sim">反映済みの例を開く</a>こともできます。</li>
+        <li>Dead 行と Recover 列が交わる「—」を押します。表の下で移る先を Idle にし、「表に反映する」を押します。黄色い枠と増えた矢印を探し、自動デモのあとに Recover を送って履歴を比べます。<a href="../algorithms/fsm.html?course=intro&amp;from=Dead&amp;ev=Recover&amp;to=Idle#sim">反映済みの例を開く</a>こともできます。</li>
         <li><a href="../algorithms/fsm.html?course=intro&amp;initial=Dead#sim">初期状態を Dead にして</a>開き、他の状態がすべて灰色（届かない）になることを確かめる。</li>
       </ol>
       <div class="guide-check">

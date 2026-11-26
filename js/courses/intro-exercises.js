@@ -181,9 +181,10 @@ export const EXERCISES = {
     title: "ステートマシン",
     goal: "振る舞いが（状態, イベント）→ 次の状態 の表で決まることを説明できる。",
     guess: "Dead から Idle に戻る遷移を1本足すと、Dead で Recover を送ったとき、状態と履歴はどう変わるか。",
+    operationLink: { targetId: "fsm-transition-table", label: "実際に遷移表のマスを選ぶ" },
     steps: [
       "「元の表に戻す」を押し、既定の状態図で Dead の色を見ます。自動デモを最後まで再生し、Dead になったら Recover を送ります。送る前に、状態が変わるかを予想します。",
-      "「遷移表の一マスを変える」で、行に Dead、列に Recover、移る先に Idle を選びます。「空欄（—） → Idle」と表示されたら「表に反映する」を押します。",
+      "遷移表で Dead 行と Recover 列が交わる「—」を押します。表のすぐ下で「移る先」を Idle にし、「表に反映する」を押します。",
       "遷移表の黄色い枠と、状態図に増えた矢印を見ます。再び自動デモを最後まで再生し、Dead で Recover を送って、履歴を変更前と比べます。",
     ],
     observations: [

@@ -3591,6 +3591,15 @@ details.ds-block:not([open]) > .ds-title::before {
   margin-top: 1rem;
 }
 
+#fsm-transition-table,
+#diagram-heading {
+  scroll-margin-top: 7rem;
+}
+
+.fsm-transition-editor {
+  max-width: 32rem;
+}
+
 .fsm-table-lead {
   margin: 0 0 0.5rem;
   font-size: 0.82rem;
@@ -3617,6 +3626,28 @@ details.ds-block:not([open]) > .ds-title::before {
   padding: 0.3rem 0.4rem;
   text-align: center;
   white-space: nowrap;
+}
+
+.fsm-table td {
+  padding: 0;
+}
+
+.fsm-edit-cell {
+  width: 100%;
+  min-height: 2rem;
+  padding: 0.3rem 0.45rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.fsm-edit-cell:hover,
+.fsm-edit-cell:focus-visible {
+  background: rgba(91, 159, 212, 0.18);
+  outline: 2px solid #5b9fd4;
+  outline-offset: -2px;
 }
 
 .fsm-table thead th {
