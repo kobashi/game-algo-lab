@@ -17,7 +17,7 @@ const CHECKBOX_FALSE = new Set(["0", "false", "off"]);
 
 /**
  * @typedef {"number" | "range" | "checkbox" | "select" | "text"} ParamKind
- * @typedef {{ el: HTMLElement | null, kind: ParamKind }} ParamEntry
+ * @typedef {{ el: HTMLElement | null, kind: ParamKind, getShareValue?: () => string }} ParamEntry
  * @typedef {Record<string, ParamEntry>} ParamSpec
  * @typedef {{ key: string, value: string, reason: string, min?: number | null, max?: number | null, step?: number | null }} RejectedParam
  */
@@ -94,6 +94,7 @@ function fitsStep(n, base, step) {
 function serializeControl(entry) {
   const el = entry.el;
   if (!el) return null;
+  if (entry.getShareValue) return entry.getShareValue();
   if (entry.kind === "checkbox") {
     return /** @type {HTMLInputElement} */ (el).checked ? "1" : "0";
   }

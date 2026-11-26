@@ -34,6 +34,7 @@
  *   example?: string,
  *   hint?: string[],
  *   hintTitle?: string,
+ *   operationLink?: { targetId: string, label: string },
  *   implementation?: { eventLabel: string, codeLabel: string },
  * }} Assignment
  */
@@ -235,9 +236,16 @@ export const ASSIGNMENTS = {
   fsm: {
     number: 10,
     title: "遷移 1 本で新しい振る舞いを作る",
-    question: "遷移表の 1 マスだけを変えて、キャラに新しい振る舞いをさせられるか。",
+    question: "遷移表で変えたいマスを押し、表の下で移る先を選んで「表に反映する」を押します。どのイベントでキャラの動きが変わるか、変更前と比べましょう。",
+    operationLink: { targetId: "fsm-transition-table", label: "遷移表を開いてマスを選ぶ" },
     condition:
       "A と B は、初期状態とイベント列を同じにします。B は遷移表の 1 マスだけを変えます。",
+    hintTitle: "A と B の作り方",
+    hint: [
+      "A を作るときは「元の表に戻す」を押し、初期状態とイベント列を決めて、A の「今の設定を入れる」を押します。",
+      "B は、変えたいマスを押して、表の下で移る先を選びます。「表に反映する」を押してから B の「今の設定を入れる」を押します。",
+      "両方の URL を開き直して同じイベント列を試します。途中で出発し直すには「リセット」を使います。",
+    ],
     personal: null,
     urls: [
       { id: "A", label: "変更前（初期状態もイベント列も B と同じ。遷移の上書きなし）" },

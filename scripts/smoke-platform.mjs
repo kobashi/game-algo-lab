@@ -288,6 +288,21 @@ function mockControl(kind, value, extra = {}) {
 }
 
 {
+  const target = mockControl("select", "Walk");
+  let appliedTarget = "Walk";
+  const spec = { to: { el: target, kind: "select", getShareValue: () => appliedTarget } };
+  const defaults = captureParamDefaults(spec);
+  const base = "http://localhost:8080/algorithms/fsm.html?course=intro";
+
+  target.value = "Idle";
+  assert.equal(buildShareUrl(spec, base, defaults), base, "反映前の候補は共有 URL に含めない");
+  appliedTarget = target.value;
+  assert.equal(new URL(buildShareUrl(spec, base, defaults)).searchParams.get("to"), "Idle");
+  target.value = "Jump";
+  assert.equal(new URL(buildShareUrl(spec, base, defaults)).searchParams.get("to"), "Idle", "反映済みの値を共有する");
+}
+
+{
   const vx = mockControl("range", "120", { min: "-240", max: "240", step: "5" });
   const vy = mockControl("range", "-40", { min: "-240", max: "240", step: "5" });
   const dt = mockControl("range", "16.7", { min: "5", max: "50", step: "0.5" });

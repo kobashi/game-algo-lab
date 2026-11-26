@@ -34,6 +34,7 @@ import { readCourseParam, COURSE_ID } from "./course-nav.js";
  *   goal: string,
  *   guess: string,
  *   stepsIntro?: string,
+ *   operationLink?: { targetId: string, label: string },
  *   steps: string[],
  *   observations: string[],
  *   extension?: string,
@@ -141,6 +142,7 @@ export function exerciseSectionHtml(
       <div class="exercise-card">
         <p class="exercise-line"><strong>目標:</strong> ${renderInline(card.goal, courseSuffix)}</p>
         <p class="exercise-line"><strong>予想:</strong> ${renderInline(card.guess, courseSuffix)}</p>
+        ${card.operationLink ? `<p class="exercise-line"><a href="#${escapeHtml(card.operationLink.targetId)}">${escapeHtml(card.operationLink.label)}</a></p>` : ""}
         <div class="exercise-steps">
           <p class="exercise-label">手順</p>${
             card.stepsIntro

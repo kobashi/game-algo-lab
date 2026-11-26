@@ -181,16 +181,18 @@ export const EXERCISES = {
     title: "ステートマシン",
     goal: "振る舞いが（状態, イベント）→ 次の状態 の表で決まることを説明できる。",
     guess: "Dead から Idle に戻る遷移を1本足すと、Dead で Recover を送ったとき、状態と履歴はどう変わるか。",
+    operationLink: { targetId: "fsm-transition-table", label: "実際に遷移表のマスを選ぶ" },
     steps: [
-      "既定の状態図で Dead の色を見る。自動デモを最後まで再生し、Dead になったら Recover を送る。送る前に、状態が変わるかを予想する。",
-      "`fsm.html?from=Dead&ev=Recover&to=Idle` で開き、状態図の Dead の枠と遷移表の Dead 行を見比べる。同じように Dead で Recover を送り、履歴と今の状態を変更前と比べる。",
+      "「元の表に戻す」を押し、既定の状態図で Dead の色を見ます。自動デモを最後まで再生し、Dead になったら Recover を送ります。送る前に、状態が変わるかを予想します。",
+      "遷移表で Dead 行と Recover 列が交わる「—」を押します。表のすぐ下で「移る先」を Idle にし、「表に反映する」を押します。",
+      "遷移表の黄色い枠と、状態図に増えた矢印を見ます。再び自動デモを最後まで再生し、Dead で Recover を送って、履歴を変更前と比べます。",
     ],
     observations: [
       "既定では Dead は出口の無い状態として赤で示される。Dead の Recover は空欄なので、Recover を送っても Dead のままです。",
       "Dead から Idle への遷移を足すと、赤い枠ではなくなる。Dead で Recover を送ると Idle に移り、履歴が変更前と分かれます。",
     ],
     extension:
-      "初期状態を変えると灰色（到達できない状態）がどう増えるか（`?initial=...`）。自分に戻す上書き（to を Dead）では、矢印は出ても赤い枠は残る。",
+      "同じ行と列で、移る先を Dead に変えて反映するとどうなるでしょうか。初期状態を変えて、灰色の状態（そこから届かない状態）がどう変わるかも確かめます。",
   },
 
   "rng-seed": {
