@@ -927,7 +927,7 @@ function mockControl(kind, value, extra = {}) {
     const a = ASSIGNMENTS[id];
     assert.ok(a.title && a.question && a.observe && a.discuss.length, `assignment ${id}: 題・問い・観察・考察の候補がある`);
     if (id === "fsm") {
-      assert.deepEqual(a.urls.map((u) => u.id), ["B"], "課題 10 の提出 URL は変更後の B だけ");
+      assert.deepEqual(a.urls.map((u) => u.id), ["A"], "課題 10 の提出 URL は変更後の A だけ");
     } else {
       assert.ok(a.urls.length >= 2, `assignment ${id}: URL は 2 本以上`);
     }
@@ -978,13 +978,13 @@ function mockControl(kind, value, extra = {}) {
   const fsmUrl = `${base}fsm.html?from=Dead&ev=Recover&to=Idle&script=Kill%2CRecover&course=intro`;
   const fsmSlip = buildSubmissionText(ASSIGNMENTS.fsm, "fsm", {
     d: null,
-    urls: { A: `${base}fsm.html?script=Kill%2CRecover&course=intro`, B: fsmUrl },
+    urls: { A: fsmUrl },
     observe: "Recover で、元の表では Dead のまま。変更後は Idle。",
     discuss: "行き先を Idle にしたため。",
   });
   assert.deepEqual(
     fsmSlip.split("\n").filter((line) => line.startsWith("URL ")),
-    [`URL B（遷移表を 1 マス変更した後の共有 URL）: ${fsmUrl}`],
+    [`URL A（遷移表を 1 マス変更した後の共有 URL）: ${fsmUrl}`],
   );
   const sfxAssignment = ASSIGNMENTS["sfx-events"];
   assert.equal(sfxAssignment.urls[0].label.includes("既存のイベント"), true);
