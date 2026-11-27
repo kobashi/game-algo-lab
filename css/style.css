@@ -5187,6 +5187,23 @@ details.ds-block:not([open]) > .ds-title::before {
   font-size: 0.85rem;
 }
 
+.rng-enemies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.55rem;
+}
+
+.rng-enemy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.rng-enemy-name {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
 .rng-lcg-panel {
   margin: 0.35rem 0;
   padding: 0.45rem 0 0.15rem;

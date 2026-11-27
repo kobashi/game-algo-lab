@@ -144,7 +144,7 @@ function measureXorShiftPeriod(seed, sa, sb, sc, maxSteps = 1 << 20) {
     if (x === x0) {
       return {
         period: i,
-        note: `初期状態に ${i} ステップで復帰（周期 ${i}）。`,
+        note: `初期状態に戻り、繰り返す部分の長さは ${i}。`,
       };
     }
     if (i < 65536) seen.set(x, i);
@@ -198,7 +198,8 @@ function mulMod(a, x, m) {
 }
 
 /**
- * LCG の周期: 初期状態に戻るまでの長さ（m が小さいとき）
+ * LCG の周期: 繰り返す部分の 1 周の長さ（同じ状態が再び出るまでの差）。
+ * 最初の状態が輪の外にあるときは、初期状態に戻るまでの長さとは別。
  * @param {number} seed
  * @param {number} a
  * @param {number} c
@@ -209,7 +210,7 @@ function measureLcgPeriod(seed, a, c, m) {
   if (m > C.periodScanMaxM) {
     return {
       period: null,
-      note: `m=${m} は大きすぎるため周期を全列挙しません（理論上 ≤ m）。短いサンプルのヒストグラムで様子を見てください。`,
+      note: `m=${m} は大きすぎるため周期を全列挙しません（理論上 ≤ m）。ヒストグラムは、このサンプル数での出現回数です。`,
     };
   }
   if (m < 2) {
@@ -238,12 +239,13 @@ function measureLcgPeriod(seed, a, c, m) {
       const first = /** @type {number} */ (seen.get(x));
       const period = i - first;
       const full = period === m || (c === 0 && period === m - 1);
-      return {
-        period,
-        note: full
-          ? `計測周期 = ${period}（状態空間のほぼ最大: m=${m}${c === 0 ? " のとき最大 m-1" : ""}）`
-          : `計測周期 = ${period}（m=${m} より短い。パラメータがフル周期条件を満たしていない可能性）`,
-      };
+      const note =
+        first === 0
+          ? full
+            ? `計測周期 = ${period}（繰り返す部分の 1 周。状態空間のほぼ最大: m=${m}${c === 0 ? " のとき最大 m-1" : ""}）`
+            : `計測周期 = ${period}（繰り返す部分の 1 周。m=${m} より短い。パラメータがフル周期条件を満たしていない可能性）`
+          : `計測周期 = ${period}（繰り返す部分の 1 周。最初の ${first} 個は輪の外で、そこは周期に入りません）`;
+      return { period, note };
     }
     seen.set(x, i);
   }
@@ -556,7 +558,7 @@ function draw() {
   ctx.font = "11px sans-serif";
   ctx.textAlign = "left";
   ctx.fillText(
-    `ヒストグラム N=${samples.length} · ${readAlgo()} · seed=${readSeed()}`,
+    `ヒストグラム（出現回数） N=${samples.length} · ${readAlgo()} · seed=${readSeed()}`,
     8,
     14
   );
@@ -578,6 +580,8 @@ function draw() {
   }
 }
 
+const DICE_ENEMIES = ["", "スライム", "コウモリ", "ゴブリン", "オーク", "ゴーレム", "ドラゴン"];
+
 function renderList() {
   if (!listEl || !samples.length) return;
   const dice = samples.map((x) => {
@@ -593,7 +597,7 @@ function renderList() {
     .join("");
   const diceHtml = dice
     .slice(0, 48)
-    .map((d) => `<span class="rng-die">${d}</span>`)
+    .map((d) => `<span class="rng-enemy"><span class="rng-die">${d}</span><span class="rng-enemy-name">${DICE_ENEMIES[d]}</span></span>`)
     .join("");
   const more =
     samples.length > 48
@@ -606,8 +610,9 @@ function renderList() {
       ${more}
     </div>
     <div class="rng-block">
-      <div class="rng-block-title">1〜6 ダイス</div>
-      <div class="rng-dice">${diceHtml}</div>
+      <div class="rng-block-title">1〜6 の出目（出現する敵）</div>
+      <p class="coord-side-note">1 スライム · 2 コウモリ · 3 ゴブリン · 4 オーク · 5 ゴーレム · 6 ドラゴン。同じシードと同じ設定なら、この並びはもう一度同じになります。</p>
+      <div class="rng-enemies">${diceHtml}</div>
     </div>`;
 }
 
@@ -708,19 +713,22 @@ applyLcgPreset(LCG_PRESETS[0].id, { setSeed: false });
 applyXsPreset("xs-marsaglia", { setSeed: false });
 syncParamPanels();
 
-// preset / xspreset を a,c,m / xa,xb,xc より先に置く（select が個別値を上書きするため）
+// preset / xspreset を a,c,m / xa,xb,xc より先に置く（select が個別値を上書きするため）。
+// その上書きで消える値は、ページ初期値と同じでも共有 URL に残す。
+const shareLcg = () => readAlgo() === "lcg";
+const shareXs = () => readAlgo() === "xorshift32";
 const urlSpec = {
   algo: { el: algoEl, kind: "select" },
   preset: { el: lcgPresetEl, kind: "select" },
   xspreset: { el: xsPresetEl, kind: "select" },
-  seed: { el: seedEl, kind: "number" },
-  n: { el: countEl, kind: "range" },
-  a: { el: lcgAEl, kind: "number" },
-  c: { el: lcgCEl, kind: "number" },
-  m: { el: lcgMEl, kind: "number" },
-  xa: { el: xsAEl, kind: "number" },
-  xb: { el: xsBEl, kind: "number" },
-  xc: { el: xsCEl, kind: "number" },
+  seed: { el: seedEl, kind: "number", shareAlways: () => shareLcg() || shareXs() },
+  n: { el: countEl, kind: "range", shareAlways: () => shareLcg() || shareXs() },
+  a: { el: lcgAEl, kind: "number", shareAlways: shareLcg },
+  c: { el: lcgCEl, kind: "number", shareAlways: shareLcg },
+  m: { el: lcgMEl, kind: "number", shareAlways: shareLcg },
+  xa: { el: xsAEl, kind: "number", shareAlways: shareXs },
+  xb: { el: xsBEl, kind: "number", shareAlways: shareXs },
+  xc: { el: xsCEl, kind: "number", shareAlways: shareXs },
 };
 mountShareLink({
   spec: urlSpec,

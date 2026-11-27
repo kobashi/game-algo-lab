@@ -18,6 +18,7 @@
  *   example    URL の形の例（`…` は自分で決める値）
  *   hint       ゲームに慣れていない受講生向けの補足（数値の答えは書かない）
  *   implementation  共有 URL とは別に提出する実装（イベント名と関数コード）
+ *   urlWarnings    提出 URL 同士の注意（正しい数値は文に出さない）
  *
  * 文字列は演習カードと同じ軽量 Markdown（`` `code` `` / `**強調**`）。
  */
@@ -38,8 +39,80 @@
  *   hintTitle?: string,
  *   operationLink?: { targetId: string, label: string },
  *   implementation?: { eventLabel: string, codeLabel: string },
+ *   urlWarnings?: (data: { d: number | null, urls: Record<string, string> }) => { id: string, warn: string }[],
  * }} Assignment
  */
+
+/**
+ * 課題 11 の提出 URL。注意文に、正しい a・c や割り当てられた法の数値は出さない。
+ * @param {{ d: number | null, urls: Record<string, string> }} data
+ * @returns {{ id: string, warn: string }[]}
+ */
+export function rngSeedUrlWarnings(data) {
+  const assigned = data.d == null ? null : 2 ** (6 + ((data.d + 1) % 4));
+  /** @type {Record<string, URLSearchParams | null>} */
+  const params = {};
+  /** @type {{ id: string, warn: string }[]} */
+  const out = [];
+  for (const id of ["A", "B"]) {
+    const raw = String(data.urls?.[id] ?? "").trim();
+    if (!raw) {
+      params[id] = null;
+      continue;
+    }
+    let url;
+    try {
+      url = new URL(raw);
+    } catch {
+      params[id] = null;
+      continue;
+    }
+    if (!url.pathname.endsWith("/rng-seed.html")) {
+      params[id] = null;
+      continue;
+    }
+    const p = url.searchParams;
+    params[id] = p;
+    if (p.get("algo") !== "lcg") {
+      out.push({ id, warn: "アルゴリズムが LCG ではありません" });
+      continue;
+    }
+    if (p.get("m") == null || p.get("m") === "") {
+      out.push({ id, warn: "法 m が URL にありません" });
+      continue;
+    }
+    if (assigned != null && Number(p.get("m")) !== assigned) {
+      out.push({ id, warn: "割り当てられた法と違います" });
+    }
+  }
+  const pa = params.A;
+  const pb = params.B;
+  if (pa && pb && pa.get("algo") === "lcg" && pb.get("algo") === "lcg") {
+    const keys = ["seed", "n", "a", "c", "m"];
+    const ready = keys.every((k) => pa.get(k) != null && pa.get(k) !== "" && pb.get(k) != null && pb.get(k) !== "");
+    if (ready) {
+      const same = keys.every((k) => Number(pa.get(k)) === Number(pb.get(k)));
+      if (same) {
+        out.push({ id: "A", warn: "URL A と URL B が同じ設定です" });
+        out.push({ id: "B", warn: "URL A と URL B が同じ設定です" });
+      } else {
+        if (Number(pa.get("seed")) !== Number(pb.get("seed"))) {
+          out.push({ id: "A", warn: "シードが A と B で違います" });
+          out.push({ id: "B", warn: "シードが A と B で違います" });
+        }
+        if (Number(pa.get("n")) !== Number(pb.get("n"))) {
+          out.push({ id: "A", warn: "サンプル数が A と B で違います" });
+          out.push({ id: "B", warn: "サンプル数が A と B で違います" });
+        }
+        if (Number(pa.get("a")) !== Number(pb.get("a")) && Number(pa.get("c")) !== Number(pb.get("c"))) {
+          out.push({ id: "A", warn: "a と c の両方が変わっています" });
+          out.push({ id: "B", warn: "a と c の両方が変わっています" });
+        }
+      }
+    }
+  }
+  return out;
+}
 
 /** @type {Record<string, Assignment>} */
 export const ASSIGNMENTS = {
@@ -265,19 +338,24 @@ export const ASSIGNMENTS = {
   "rng-seed": {
     number: 11,
     title: "周期が最大になる LCG",
-    question: "法 m の LCG で、周期がちょうど m になる a・c の組はどんな組か。",
+    question: "割り当てられた法 m の LCG で、a か c の片方だけを変えると、周期がちょうど m になる組と、m より短くなる組はどう違うか。",
+    condition:
+      "A と B で、法 m・シード・サンプル数を同じにする。変えるのは a か c の片方だけ。変える前に、どちらが短くなるかを予想してから測る。",
     personal: (d) => `法 m = ${2 ** (6 + ((d + 1) % 4))}`,
     urls: [
-      { id: "A", label: "周期が m になる a・c" },
-      { id: "B", label: "周期が m より短くなる a・c" },
+      { id: "A", label: "周期が m になる a・c（m・シード・サンプル数は B と同じ）" },
+      { id: "B", label: "周期が m より短くなる a・c（m・シード・サンプル数は A と同じ）" },
     ],
-    observe: "A と B の周期の表示と、ヒストグラムの様子。",
+    observe:
+      "周期パネルの周期。予想で短くなるとした方と、測った方。ヒストグラムは、同じサンプル数での出現回数（順番は棒に出ない）。",
+    discussPrompt: "変える前の予想と、測った周期がそうなった理由",
     discuss: [
       "周期が m を超えない理由",
-      "周期が m になる組に共通すること（予想でよい）",
-      "周期が短いと何が困るか",
+      "a か c の片方だけを動かしたとき、周期が変わった理由（予想でよい）",
+      "周期が短いと、敵の出現のような並びがどう困るか",
     ],
-    example: "`rng-seed.html?algo=lcg&a=…&c=…&m=…`",
+    example: "`rng-seed.html?algo=lcg&a=…&c=…&m=…&seed=…&n=…`",
+    urlWarnings: rngSeedUrlWarnings,
   },
 
   minimax: {

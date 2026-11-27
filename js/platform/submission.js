@@ -253,7 +253,18 @@ export function mountSubmission(a, topicId, doc = typeof document !== "undefined
     const warnEl = doc.getElementById(`submit-url-${id}-warn`);
     if (!el || !warnEl) return;
     const v = el.value.trim();
-    warnEl.textContent = v ? checkSubmissionUrl(v, topicId).warn ?? "" : "";
+    const generic = v ? checkSubmissionUrl(v, topicId).warn ?? "" : "";
+    const extra = [];
+    if (v && typeof a.urlWarnings === "function") {
+      const rows = a.urlWarnings({ d: parseDigit(dEl?.value), urls: readDraft().urls });
+      for (const w of Array.isArray(rows) ? rows : []) {
+        if (w && w.id === id && w.warn) extra.push(w.warn);
+      }
+    }
+    warnEl.textContent = [generic, ...extra].filter(Boolean).join(" ");
+  }
+  function checkAllUrls() {
+    for (const u of a.urls) checkUrl(u.id);
   }
   function showCount() {
     if (!countEl || !discussEl) return;
@@ -265,7 +276,6 @@ export function mountSubmission(a, topicId, doc = typeof document !== "undefined
   for (const u of a.urls) {
     const el = $(`submit-url-${u.id}`);
     if (el) el.value = draft.urls?.[u.id] ?? "";
-    checkUrl(u.id);
   }
   if (observeEl) observeEl.value = draft.observe ?? "";
   if (discussEl) discussEl.value = draft.discuss ?? "";
@@ -280,9 +290,11 @@ export function mountSubmission(a, topicId, doc = typeof document !== "undefined
       const v = parseDigit(dEl.value);
       if (v != null) save(STORE_D, v);
       showCond();
+      checkAllUrls();
     });
   }
   showCond();
+  checkAllUrls();
   showCount();
 
   doc.querySelectorAll(".submission-take").forEach((btn) => {
@@ -297,13 +309,13 @@ export function mountSubmission(a, topicId, doc = typeof document !== "undefined
         return;
       }
       el.value = url;
-      checkUrl(id);
+      checkAllUrls();
       persist();
     });
   });
   for (const u of a.urls) {
     $(`submit-url-${u.id}`)?.addEventListener("input", () => {
-      checkUrl(u.id);
+      checkAllUrls();
       persist();
     });
   }
@@ -361,6 +373,11 @@ export function mountSubmission(a, topicId, doc = typeof document !== "undefined
     for (const u of a.urls) {
       const r = checkSubmissionUrl(data.urls[u.id], topicId);
       if (r.warn) warns.push(`URL ${u.id}: ${r.warn}`);
+    }
+    if (typeof a.urlWarnings === "function") {
+      for (const w of a.urlWarnings({ d: data.d, urls: data.urls }) || []) {
+        if (w?.warn) warns.push(`URL ${w.id}: ${w.warn}`);
+      }
     }
     if (a.implementation) {
       if (!data.event.trim()) warns.push("実装課題のイベント名が未入力");

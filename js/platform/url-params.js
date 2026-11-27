@@ -17,7 +17,7 @@ const CHECKBOX_FALSE = new Set(["0", "false", "off"]);
 
 /**
  * @typedef {"number" | "range" | "checkbox" | "select" | "text"} ParamKind
- * @typedef {{ el: HTMLElement | null, kind: ParamKind, getShareValue?: () => string }} ParamEntry
+ * @typedef {{ el: HTMLElement | null, kind: ParamKind, getShareValue?: () => string, shareAlways?: boolean | (() => boolean) }} ParamEntry
  * @typedef {Record<string, ParamEntry>} ParamSpec
  * @typedef {{ key: string, value: string, reason: string, min?: number | null, max?: number | null, step?: number | null }} RejectedParam
  */
@@ -322,8 +322,9 @@ export function buildShareUrl(
     if (!entry?.el) continue;
     const current = serializeControl(entry);
     if (current == null) continue;
+    const always = typeof entry.shareAlways === "function" ? entry.shareAlways() : entry.shareAlways;
     const def = defaults[key];
-    if (def != null && sameParamValue(entry.kind, current, def)) continue;
+    if (!always && def != null && sameParamValue(entry.kind, current, def)) continue;
     url.searchParams.set(key, current);
   }
   if (course) url.searchParams.set("course", course);

@@ -75,7 +75,7 @@ public sealed class Lcg : IUnitRng
         return _x / (double)_m;
     }
 
-    /// <summary>初期状態に戻るまでの長さ（教材用・m が小さいとき）</summary>
+    /// <summary>繰り返す部分の 1 周の長さ（同じ状態の 2 回目までの差。教材用・m が小さいとき）</summary>
     public static int MeasurePeriod(ulong seed, ulong a, ulong c, ulong m, int maxScan)
     {
         ulong x0 = seed % m;

@@ -29,8 +29,9 @@
       <div class="lesson-box lesson-box-nested">
         <ul>
           <li><strong>同じ<span class="term" data-term="seed">シード</span> → 同じ系列</strong>（<span class="term" data-term="reproducibility">再現性</span>）。アルゴリズムが違えば系列も違う</li>
-          <li><strong><span class="term" data-term="lcg">LCG</span></strong>: <code>X' = (a·X + c) <span class="term" data-term="modulus">mod m</span></code>。状態は高々 m 通り → <span class="term" data-term="period">周期</span> ≤ m</li>
-          <li>質の悪い例（極小 m・悪い a）ではすぐループし、<span class="term" data-term="histogram">ヒストグラム</span>も偏る</li>
+          <li>1〜6 の出目は、出現する敵の種類として読める。同じシードと同じ設定なら並びは同じ</li>
+          <li><strong><span class="term" data-term="lcg">LCG</span></strong>: <code>X' = (a·X + c) <span class="term" data-term="modulus">mod m</span></code>。状態は高々 m 通り。<span class="term" data-term="period">周期</span>は繰り返す部分の 1 周で、m 以下</li>
+          <li>質の悪い例（極小 m・悪い a）ではすぐループする。<span class="term" data-term="histogram">ヒストグラム</span>は出現回数で、周期パネルとは別に読む</li>
           <li>許容・実用寄りの例では m が大きく、短いサンプルでは一様に見えやすい</li>
           <li><strong><span class="term" data-term="xorshift">XorShift32</span></strong>: ビット演算のみ。シフト (a,b,c) の良し悪しで偏りが変わる。シード 0 は<span class="term" data-term="degenerate-seed">退化</span></li>
         </ul>

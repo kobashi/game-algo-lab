@@ -36,7 +36,8 @@ import { STAGES, getCourseOrder } from "../js/courses/intro-stages.js";
 import { EXERCISES } from "../js/courses/intro-exercises.js";
 import { INTRO_QUIZ } from "../js/courses/intro-quiz.js";
 import { GLOSSARY } from "../js/platform/glossary-terms.js";
-import { ASSIGNMENTS } from "../js/courses/intro-assignments.js";
+import { ASSIGNMENTS, rngSeedUrlWarnings } from "../js/courses/intro-assignments.js";
+import { LCG_PRESETS } from "../js/maps/rng-seed-config.js";
 import { GUIDES } from "../js/courses/intro-guides.js";
 import { CS_GUIDES } from "../js/courses/intro-csharp.js";
 import { buildSubmissionText, checkSubmissionUrl, parseDigit } from "../js/platform/submission.js";
@@ -285,6 +286,31 @@ function mockControl(kind, value, extra = {}) {
   assert.equal(parsed.searchParams.get("coyote"), "0");
   assert.equal(parsed.searchParams.get("ms"), "200");
   assert.equal(parsed.searchParams.has("utm"), false);
+}
+
+{
+  const algo = mockControl("select", "mulberry32", { options: ["mulberry32", "lcg", "xorshift32"] });
+  const seed = mockControl("number", "42");
+  const n = mockControl("range", "48");
+  const a = mockControl("number", "5");
+  const spec = {
+    algo: { el: algo, kind: "select" },
+    seed: { el: seed, kind: "number", shareAlways: () => algo.value === "lcg" },
+    n: { el: n, kind: "range", shareAlways: () => algo.value === "lcg" },
+    a: { el: a, kind: "number", shareAlways: () => algo.value === "lcg" },
+  };
+  const defaults = captureParamDefaults(spec);
+  const base = "http://localhost/algorithms/rng-seed.html?course=intro";
+  const mul = new URL(buildShareUrl(spec, base, defaults));
+  assert.equal(mul.searchParams.has("seed"), false, "Mulberry32 の既定シードは省く");
+  assert.equal(mul.searchParams.has("a"), false);
+  assert.equal(mul.searchParams.get("course"), "intro");
+  algo.value = "lcg";
+  const lcg = new URL(buildShareUrl(spec, base, defaults));
+  assert.equal(lcg.searchParams.get("algo"), "lcg");
+  assert.equal(lcg.searchParams.get("seed"), "42", "LCG はページ初期値のシードも残す");
+  assert.equal(lcg.searchParams.get("n"), "48");
+  assert.equal(lcg.searchParams.get("a"), "5");
 }
 
 {
@@ -556,6 +582,15 @@ function mockControl(kind, value, extra = {}) {
     return null;
   }
   assert.equal(lcgPeriod(0, 13, 5, 24), 24);
+  assert.equal(lcgPeriod(1, 3, 0, 31), 30, "short-ok は周期 30");
+  assert.equal(lcgPeriod(7, 2, 0, 256), 1, "bad-a シード 7 は周期 1");
+  const shortOk = LCG_PRESETS.find((p) => p.id === "short-ok");
+  assert.equal(shortOk.a, 3);
+  assert.equal(shortOk.c, 0);
+  assert.equal(shortOk.m, 31);
+  assert.equal(shortOk.defaultSeed, 1);
+  assert.match(shortOk.label, /周期 30/);
+  assert.match(shortOk.blurb, /30/);
 }
 
 {
@@ -1003,6 +1038,29 @@ function mockControl(kind, value, extra = {}) {
   assert.ok(sfxSlip.includes("実装課題の新しいイベント名: Dash"), "提出票にイベント名が入る");
   assert.ok(sfxSlip.includes("function soundFor(eventId)"), "提出票に関数が入る");
   assert.ok(sfxSlip.includes("既存のイベントを 1 つ選んだ共有 URL"), "URL A は既存イベント");
+  const rngBase = `${base}rng-seed.html`;
+  const sameBad = `${rngBase}?algo=lcg&a=1&c=1&m=16&seed=1&n=48`;
+  const mismatch = rngSeedUrlWarnings({ d: 0, urls: { A: sameBad, B: sameBad } });
+  assert.ok(mismatch.some((w) => w.warn === "割り当てられた法と違います"));
+  assert.ok(mismatch.some((w) => w.warn === "URL A と URL B が同じ設定です"));
+  assert.ok(mismatch.every((w) => !/\d/.test(w.warn)), "課題11の注意文に数値を出さない");
+  const paired = rngSeedUrlWarnings({
+    d: 0,
+    urls: {
+      A: `${rngBase}?algo=lcg&a=4&c=2&m=128&seed=3&n=16`,
+      B: `${rngBase}?algo=lcg&a=4&c=6&m=128&seed=3&n=16`,
+    },
+  });
+  assert.deepEqual(paired, [], "法・シード・サンプル数が揃い、c だけ違うときは注意しない");
+  const seedSplit = rngSeedUrlWarnings({
+    d: 0,
+    urls: {
+      A: `${rngBase}?algo=lcg&a=4&c=2&m=128&seed=3&n=16`,
+      B: `${rngBase}?algo=lcg&a=4&c=2&m=128&seed=9&n=16`,
+    },
+  });
+  assert.ok(seedSplit.some((w) => w.warn === "シードが A と B で違います"));
+  assert.ok(!seedSplit.some((w) => w.warn.includes("同じ設定")));
 }
 
 // --- 入門課題 9: soundFor は入力したイベント名で採点する（INTRO-SFX-02） ---
