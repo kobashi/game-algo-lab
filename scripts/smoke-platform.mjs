@@ -926,7 +926,11 @@ function mockControl(kind, value, extra = {}) {
   for (const id of order) {
     const a = ASSIGNMENTS[id];
     assert.ok(a.title && a.question && a.observe && a.discuss.length, `assignment ${id}: 題・問い・観察・考察の候補がある`);
-    assert.ok(a.urls.length >= 2, `assignment ${id}: URL は 2 本以上`);
+    if (id === "fsm") {
+      assert.deepEqual(a.urls.map((u) => u.id), ["B"], "課題 10 の提出 URL は変更後の B だけ");
+    } else {
+      assert.ok(a.urls.length >= 2, `assignment ${id}: URL は 2 本以上`);
+    }
     assert.equal(new Set(a.urls.map((u) => u.id)).size, a.urls.length, `assignment ${id}: URL の id が重複しない`);
     if (a.personal) {
       for (let d = 0; d <= 9; d++) assert.ok(typeof a.personal(d) === "string" && a.personal(d).length > 0, `assignment ${id}: d=${d} の個人条件`);
@@ -971,6 +975,17 @@ function mockControl(kind, value, extra = {}) {
   });
   assert.ok(text.includes("提出課題 1: game-loop") && text.includes("d=3 → 人工遅延 L = 65 ms") && text.includes("URL B（") && text.includes("（未入力）"), "提出用テキストの形");
   assert.ok(!/`|\*\*/.test(text), "提出用テキストに記号が残らない");
+  const fsmUrl = `${base}fsm.html?from=Dead&ev=Recover&to=Idle&script=Kill%2CRecover&course=intro`;
+  const fsmSlip = buildSubmissionText(ASSIGNMENTS.fsm, "fsm", {
+    d: null,
+    urls: { A: `${base}fsm.html?script=Kill%2CRecover&course=intro`, B: fsmUrl },
+    observe: "Recover で、元の表では Dead のまま。変更後は Idle。",
+    discuss: "行き先を Idle にしたため。",
+  });
+  assert.deepEqual(
+    fsmSlip.split("\n").filter((line) => line.startsWith("URL ")),
+    [`URL B（遷移表を 1 マス変更した後の共有 URL）: ${fsmUrl}`],
+  );
   const sfxAssignment = ASSIGNMENTS["sfx-events"];
   assert.equal(sfxAssignment.urls[0].label.includes("既存のイベント"), true);
   assert.ok(sfxAssignment.implementation, "sfx-events はイベント名と関数を提出する");

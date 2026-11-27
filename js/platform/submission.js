@@ -157,7 +157,7 @@ function sectionHtml(a, topicId) {
               : ""
           }
           <li>観察: ${inline(a.observe)}</li>
-          <li>考察（${DISCUSS_MIN}〜${DISCUSS_MAX} 字）: A と B で何が違ったか（数値で）と、なぜそうなるか</li>
+          <li>考察（${DISCUSS_MIN}〜${DISCUSS_MAX} 字）: ${inline(a.discussPrompt ?? "A と B で何が違ったか（数値で）と、なぜそうなるか")}</li>
         </ul>
         ${a.example ? `<p class="exercise-line">URL の形の例: ${inline(a.example)}（「…」は自分で決める値）</p>` : ""}
         <details class="lesson-details exercise-details">
