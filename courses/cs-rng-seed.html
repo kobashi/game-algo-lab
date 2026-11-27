@@ -43,7 +43,7 @@
         <li><code>IUnitRng</code>: 「<code>NextDouble()</code> を持つ」という約束（インターフェース）。</li>
         <li><code>Mulberry32</code>: サイトのデモが標準で使っている PRNG。</li>
         <li><code>XorShift32</code>: ビットシフトと XOR だけで作る PRNG。</li>
-        <li><code>Lcg</code>: 線形合同法。教材用に、周期（同じ状態に戻るまでの長さ）を測る <code>MeasurePeriod</code> も持っています。</li>
+        <li><code>Lcg</code>: 線形合同法。教材用に、周期（繰り返す部分の 1 周の長さ）を測る <code>MeasurePeriod</code> も持っています。</li>
       </ul>
       <p>
         3 つのクラスはどれも <code>IUnitRng</code> を実装しているので、呼び出す側は中身のアルゴリズムを気にせず、同じ <code>NextDouble()</code> で使えます。
@@ -267,7 +267,10 @@ for (int i = 1; i &lt;= maxScan; i++)
 return -1;</code></pre>
       <p>
         「何回目にその状態が出たか」を <code>Dictionary&lt;ulong, int&gt;</code> に記録しながら、LCG の式を <code>maxScan</code> 回まで進めます。
-        以前に見た状態ともう一度出会ったら、そのときの回数の差が周期です。<code>maxScan</code> 回進めても出会わなければ <code>-1</code> を返します
+        以前に見た状態ともう一度出会ったら、そのときの回数の差 <code>i - first</code> が周期です。これは繰り返す部分の 1 周の長さです。
+        最初の数がまだ輪の外にあるときは、最初の状態に戻るまでの長さとは違います。
+        たとえば a=2, c=0, m=256, シード 7 は、7, 14, 28, 56, 112, 224, 192, 128 と進んで 0 に入り、0 のままです。計測周期は 1 です。
+        <code>maxScan</code> 回進めても出会わなければ <code>-1</code> を返します
         （m がとても大きいと現実的な回数では出会えないので、教材用の小さな m でだけ使う関数です）。
       </p>
       <div class="guide-note">

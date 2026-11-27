@@ -123,8 +123,11 @@
         <figcaption>図 2　デモ（Mulberry32）で実際に測った値。シード 42 は 2 回とも同じ列（先頭 4 個）になり、シード 43 にすると別の列になります。</figcaption>
       </figure>
       <div class="guide-note">
-        <strong>再現性が役に立つ場面:</strong> 同じシードを保存しておけば、ゲームの展開をもう一度そのまま作り直せます。
-        リプレイ（もう一度同じ動きを見せる機能）や、バグが起きたときにもう一度同じ状況を再現するのに使われます。
+        <strong>再現性が役に立つ場面:</strong> 同じ初期状態、同じ処理、同じ入力の順で乱数を使うと、ゲームの展開をもう一度作れます。
+        デモの 1〜6 の出目は、出現する敵の種類として読めます。1 スライム、2 コウモリ、3 ゴブリン、4 オーク、5 ゴーレム、6 ドラゴン。
+        シード 42 の Mulberry32 では、先頭は 4 オーク、3 ゴブリン、6 ドラゴン、5 ゴーレムです。シードを変えると、この並びが変わります。
+        対話の分岐を含むリプレイでは、入力の列も同じにします。
+        考え方は<a href="../algorithms/replay-determinism.html">リプレイと決定性</a>のページでも見られます。
       </div>
     </section>
 
@@ -172,7 +175,25 @@
           <text x="345" y="42" font-size="15" fill="#f2cc8f" text-anchor="middle">(2 × 2 ＋ 1) mod 5 ＝ 0 ＝ X0</text>
           <text x="345" y="64" font-size="14" fill="#9aabbf" text-anchor="middle">また出発点と同じ数に戻った</text>
         </svg>
-        <figcaption>図 3　a=2, c=1, m=5, シード 0 の場合。X0 → X1 → X2 → X3 と計算していくと、4 回目の計算でまた X0（0）に戻ります。ここから先は、まったく同じ並びをくり返します。</figcaption>
+        <figcaption>図 3　a=2, c=1, m=5, シード 0 の場合。この例は最初から輪の中にいます。0→1→3→2→0 の 1 周は 4 で、周期は 4 です。</figcaption>
+      </figure>
+      <p>
+        <strong>a を 1 に固定した 8 マス。</strong>
+        m=8 で a=1 にすると、1 歩の大きさは c です。最初の数回を手で予想してから、デモで確認します。
+      </p>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 210" role="img" aria-label="a=1、m=8。c=1 では 0 から 7 まで全部を通り周期 8。c=2 では偶数だけ、または奇数だけの 4 マスで周期 4">
+          <text x="20" y="28" font-size="15" fill="#e8eef6">c=1（1 歩ずつ）</text>
+          <text x="250" y="28" font-size="15" fill="#6bcb8f">0→1→2→3→4→5→6→7→0</text>
+          <text x="560" y="28" font-size="15" fill="#f2cc8f">周期 8</text>
+          <text x="20" y="92" font-size="15" fill="#e8eef6">c=2（2 歩ずつ）</text>
+          <text x="250" y="78" font-size="15" fill="#e07a5f">0→2→4→6→0</text>
+          <text x="250" y="108" font-size="15" fill="#e07a5f">1→3→5→7→1</text>
+          <text x="560" y="92" font-size="15" fill="#f2cc8f">周期 4</text>
+          <text x="20" y="156" font-size="14" fill="#9aabbf">奇数歩は 8 マス全部を 1 周します。</text>
+          <text x="20" y="184" font-size="14" fill="#9aabbf">偶数歩は、偶数だけ、または奇数だけの輪になります。</text>
+        </svg>
+        <figcaption>図 4　a=1, m=8。c=1 は周期 8。c=2 は、出発点が 0 でも 1 でも周期 4。シード 0 で確かめるリンクは、下の「やってみよう」にあります。</figcaption>
       </figure>
     </section>
 
@@ -185,8 +206,11 @@
         計算をずっと続けていくと、有限個の状態しかないのですから、いつか<strong>前に一度出てきた数ともう一度出会います</strong>。
       </p>
       <p>
-        次の数は「今の数」だけで決まるので、同じ数に戻れば、そこから先はまったく同じ計算をくり返し、まったく同じ並びが出てきます。
-        この、繰り返しが始まるまでの長さを<span class="term" data-term="period">周期</span>といいます。
+        次の数は「今の数」だけで決まるので、同じ数にもう一度出会うと、そこから先はまったく同じ計算をくり返し、まったく同じ並びが出てきます。
+        <span class="term" data-term="period">周期</span>は、その繰り返す部分の 1 周の長さです。同じ状態がもう一度出るまでの差を数えます。
+      </p>
+      <p>
+        出発点がまだ輪の外にある列もあります。そのとき、輪に入るまでの個数は周期に入りません。
       </p>
       <figure class="guide-figure">
         <svg viewBox="0 0 640 300" role="img" aria-label="状態は0,1,2,3,4の5通りだけ。0→1→3→2→0という4個の輪と、4は計算しても4のままという1個だけの輪に分かれる図">
@@ -213,11 +237,40 @@
 
           <text x="320" y="295" font-size="14" fill="#9aabbf" text-anchor="middle">0→1→3→2→0 の輪（周期 4）と、4 だけの輪（周期 1）</text>
         </svg>
-        <figcaption>図 4　同じ a=2, c=1, m=5 の場合。状態は 0〜4 の 5 通りしかありません。実際に計算すると、0→1→3→2→0 という長さ 4 の輪と、4 が自分自身に戻るだけの長さ 1 の輪に分かれます。</figcaption>
+        <figcaption>図 5　同じ a=2, c=1, m=5 の場合。状態は 0〜4 の 5 通りしかありません。0→1→3→2→0 は周期 4、4 だけの輪は周期 1。どちらも最初から輪の中です。</figcaption>
+      </figure>
+      <figure class="guide-figure">
+        <svg viewBox="0 0 640 180" role="img" aria-label="7、14、28 から 128 まで進み、そのあと 0 に入って 0 のまま。周期は 1">
+          <defs>
+            <marker id="rs4b-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#9aabbf" /></marker>
+          </defs>
+          <g fill="#5b9fd4">
+            <circle cx="50" cy="70" r="22" /><circle cx="140" cy="70" r="22" /><circle cx="230" cy="70" r="22" /><circle cx="340" cy="70" r="22" />
+          </g>
+          <g font-size="15" fill="#0a0e14" text-anchor="middle" font-weight="bold">
+            <text x="50" y="75">7</text><text x="140" y="75">14</text><text x="230" y="75">28</text><text x="340" y="75">128</text>
+          </g>
+          <text x="285" y="40" font-size="14" fill="#9aabbf" text-anchor="middle">56 → 112 → 224 → 192</text>
+          <g stroke="#9aabbf" stroke-width="2" fill="none">
+            <line x1="72" y1="70" x2="118" y2="70" marker-end="url(#rs4b-arrow)" />
+            <line x1="162" y1="70" x2="208" y2="70" marker-end="url(#rs4b-arrow)" />
+            <line x1="252" y1="70" x2="318" y2="70" marker-end="url(#rs4b-arrow)" />
+            <line x1="362" y1="70" x2="430" y2="70" marker-end="url(#rs4b-arrow)" />
+          </g>
+          <circle cx="470" cy="70" r="26" fill="#e07a5f" />
+          <text x="470" y="76" font-size="18" fill="#0a0e14" text-anchor="middle" font-weight="bold">0</text>
+          <path d="M452 48 C 430 28 430 8 455 8 C 478 8 490 28 484 46" fill="none" stroke="#e07a5f" stroke-width="2" marker-end="url(#rs4b-arrow)" />
+          <text x="470" y="130" font-size="14" fill="#e07a5f" text-anchor="middle">0 だけが 1 周</text>
+          <text x="180" y="160" font-size="14" fill="#9aabbf" text-anchor="middle">ここまでは輪の外</text>
+        </svg>
+        <figcaption>図 6　a=2, c=0, m=256, シード 7。並びは 7, 14, 28, 56, 112, 224, 192, 128, 0, 0, …。繰り返す部分は 0 だけなので、周期は 1 です。デモのプリセット「a が悪い (m=256)」で、周期パネルと同じ数になります。</figcaption>
       </figure>
       <div class="guide-note">
-        <strong>考えてみよう:</strong> 法 m の LCG で、周期がちょうど m になる a・c の組はどんな組でしょうか。
-        デモで a・c・m をいろいろ変えて、周期の表示を見ながら考えてみましょう（提出課題 11 のテーマです）。
+        <strong>提出課題 11 の進め方:</strong> 割り当てられた法 m と、シードと、サンプル数を、A と B で同じにします。動かすのは a か c の片方だけです。
+        動かす前に、短くなる方を予想してから周期パネルで測り、予想と測った理由を書きます。
+        m が 2 の累乗のときの判定は、発展としてデモの「Hull–Dobell 目安」と
+        <a href="https://dspace.library.uvic.ca/items/d6e64ce3-16eb-4f26-b544-0cb22ef0647b">Hull・Dobell の原論文</a>
+        に置けます。課題では、その名前の前に、片方だけ動かして測ります。
       </div>
     </section>
 
@@ -230,12 +283,20 @@
         <span class="term" data-term="histogram">ヒストグラム</span>といいます。
       </p>
       <p>
-        質の良い PRNG なら、どの区間にもだいたい同じくらいの数が入り、棒の高さがそろいます。
-        質の悪い PRNG だと、まったく数が入らない区間や、逆にたくさん入ってしまう区間ができ、棒の高さがばらばらになります。
+        棒が表すのは、その区間に入った個数です。同じ個数なら、並び順が違っても棒は同じです。
+        周期は周期パネルで読みます。偏りの手掛かりは、同じサンプル数のヒストグラムで見ます。
+      </p>
+      <p>
+        デモの生成数は最初 48、最大 128 です。法が 256 や 512 のとき、最大周期の 1 周分はヒストグラムに入りきりません。
+        周期パネルはサンプルとは別に状態をたどるので、生成数を増やさなくても周期は測れます。
+      </p>
+      <p>
+        小さい m では、全部の状態を決まった順に通る列もあります。a=1, c=1, m=8, シード 0 は、状態が 0→1→2→3→4→5→6→7→0 で、周期は 8 です。
+        同じ 8 個を別の順に並べても、1 周の出現回数が同じなら棒は同じです。周期、出現回数、順番は、別々に読みます。
       </p>
       <figure class="guide-figure">
         <svg viewBox="0 0 640 270" role="img" aria-label="そろった分布の棒グラフと、偏った分布の棒グラフを並べた図。そろった例はどの棒も同じくらいの高さ、偏った例は0の棒とすごく高い棒が混ざっている">
-          <text x="158" y="20" font-size="15" fill="#e8eef6" text-anchor="middle">そろった分布（良い例）</text>
+          <text x="158" y="20" font-size="15" fill="#e8eef6" text-anchor="middle">出現回数がそろった例</text>
           <line x1="40" y1="220" x2="276" y2="220" stroke="#5a6a80" />
           <g fill="#5b9fd4">
             <rect x="40" y="130" width="20" height="90" /><rect x="64" y="112" width="20" height="108" /><rect x="88" y="130" width="20" height="90" />
@@ -245,7 +306,7 @@
           <text x="40" y="236" font-size="14" fill="#9aabbf">0.0</text>
           <text x="256" y="236" font-size="14" fill="#9aabbf" text-anchor="end">1.0</text>
 
-          <text x="498" y="20" font-size="15" fill="#e8eef6" text-anchor="middle">偏った分布（悪い例）</text>
+          <text x="498" y="20" font-size="15" fill="#e8eef6" text-anchor="middle">出現回数が偏った例</text>
           <line x1="380" y1="220" x2="616" y2="220" stroke="#5a6a80" />
           <g>
             <rect x="380" y="108" width="20" height="112" fill="#e07a5f" />
@@ -263,7 +324,7 @@
           <text x="596" y="236" font-size="14" fill="#9aabbf" text-anchor="end">1.0</text>
           <text x="498" y="260" font-size="14" fill="#9aabbf" text-anchor="middle">空の区間と、多すぎる区間が混ざる</text>
         </svg>
-        <figcaption>図 5　ヒストグラムの読み方（模式図。説明のために作った例）。良い例はどの棒もそろった高さ、悪い例は 0 の区間と極端に高い区間が混ざります。デモの画面でも、偏った区間は赤で目立たせます。</figcaption>
+        <figcaption>図 7　ヒストグラムの読み方（模式図。説明のために作った例）。棒は出現回数です。高さがそろっていても、出た順番までは分かりません。空の区間と、多すぎる区間が混ざると、偏りの手掛かりになります。デモの画面でも、偏った区間は赤で目立たせます。</figcaption>
       </figure>
     </section>
 
@@ -303,7 +364,7 @@
           </g>
           <text x="446" y="182" font-size="15" fill="#9aabbf">x ^= x&lt;&lt;1</text>
         </svg>
-        <figcaption>図 6　XorShift の考え方（模式図・4 ビットの簡略例）。ビットをずらしたものと元の数を XOR で混ぜます。実際は 32 ビットの数を使い、これを 3 回（シフトの向きと量を変えて）くり返します。</figcaption>
+        <figcaption>図 8　XorShift の考え方（模式図・4 ビットの簡略例）。ビットをずらしたものと元の数を XOR で混ぜます。実際は 32 ビットの数を使い、これを 3 回（シフトの向きと量を変えて）くり返します。</figcaption>
       </figure>
       <p>
         1 つだけ注意があります。<span class="term" data-term="degenerate-seed">シード 0 は退化</span>してしまい、
@@ -317,9 +378,9 @@
       <h2 id="s7-h">7. まとめ</h2>
       <ul>
         <li>コンピュータの乱数は「疑似乱数」。決まった式で、見た目だけでたらめな数の列を作る</li>
-        <li>出発点の数をシードという。同じシードなら必ず同じ列になる（再現性）。リプレイやバグの再現に使える</li>
-        <li>LCG は「次 ＝ (a × 今 ＋ c) を m で割った余り」。余りは m 通りしかないので、いつか同じ数に戻り、そこから同じ列を繰り返す（周期）</li>
-        <li>ヒストグラムで、数が 0〜1 にまんべんなく散らばっているかを確かめられる</li>
+        <li>出発点の数をシードという。同じ初期状態、同じ処理、同じ入力の順なら、同じ列になる。1〜6 の出目は敵の種類として読める。対話のリプレイでは入力の列も要る</li>
+        <li>LCG は「次 ＝ (a × 今 ＋ c) を m で割った余り」。周期は、繰り返す部分の 1 周の長さ。状態は m 通りまでなので、周期は m 以下</li>
+        <li>ヒストグラムの棒は出現回数。周期は周期パネル、偏りは同じサンプル数のヒストグラム、順番は別</li>
         <li>XorShift はビットのシフトと XOR だけで作る。シード 0 は 0 のまま変わらないので、実装ではずらして使う</li>
       </ul>
     </section>
@@ -327,9 +388,11 @@
     <section class="guide-try" aria-labelledby="try-h">
       <h2 id="try-h">やってみよう</h2>
       <ol>
-        <li><a href="../algorithms/rng-seed.html?course=intro&amp;seed=42#sim">シード 42 で生成</a>し、「同じ設定で再生成」を押して、まったく同じ列になることを確かめる。</li>
-        <li><a href="../algorithms/rng-seed.html?course=intro&amp;algo=lcg&amp;preset=tiny-bad#sim">質が悪い LCG（m=16）</a>で生成し、ヒストグラムの棒の高さと、周期の表示を見る。</li>
-        <li><a href="../algorithms/rng-seed.html?course=intro&amp;algo=xorshift32&amp;seed=0#sim">XorShift のシードを 0 に</a>して生成し、周期の表示を読む。</li>
+        <li><a href="../algorithms/rng-seed.html?course=intro&amp;seed=42#sim">シード 42 で生成</a>し、1〜6 の出目を敵の種類として読む。「同じ設定で再生成」で、先頭の並びが同じことを確かめる。</li>
+        <li><a href="../algorithms/rng-seed.html?course=intro&amp;seed=43#sim">シード 43 で生成</a>し、先頭の敵の並びが変わることを見る。</li>
+        <li>a=1, m=8, シード 0 で、c=1 と c=2 の周期を予想してから開く。<a href="../algorithms/rng-seed.html?course=intro&amp;algo=lcg&amp;a=1&amp;c=1&amp;m=8&amp;seed=0&amp;n=8#sim">c=1</a> と <a href="../algorithms/rng-seed.html?course=intro&amp;algo=lcg&amp;a=1&amp;c=2&amp;m=8&amp;seed=0&amp;n=8#sim">c=2</a>。</li>
+        <li><a href="../algorithms/rng-seed.html?course=intro&amp;algo=lcg&amp;preset=tiny-bad#sim">質が悪い LCG（m=16）</a>で、周期パネルの周期と、同じサンプル数のヒストグラムを分けて見る。</li>
+        <li><a href="../algorithms/rng-seed.html?course=intro&amp;algo=lcg&amp;preset=bad-a#sim">a が悪い（m=256）</a>で、輪の外の数と、周期 1 を見分ける。</li>
       </ol>
       <div class="guide-check">
         <p><strong>確かめよう</strong></p>
@@ -344,6 +407,14 @@
         <details>
           <summary>問 3. XorShift でシードを 0 にすると、どうなる？</summary>
           <p>計算しても 0 のまま変わりません（退化）。実装では、0 を別の数にずらしてから使います。</p>
+        </details>
+        <details>
+          <summary>問 4. ヒストグラムの棒が同じなら、出た順番も同じですか？</summary>
+          <p>棒は出現回数です。同じ個数なら、順番が違っても棒は同じです。周期は周期パネルで読みます。</p>
+        </details>
+        <details>
+          <summary>問 5. a=2, c=0, m=256, シード 7 の周期は？</summary>
+          <p>0 に入ったあとの 1 周なので、周期は 1 です。7 から 128 までは輪の外です。</p>
         </details>
       </div>
     </section>

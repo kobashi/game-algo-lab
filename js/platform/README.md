@@ -137,7 +137,7 @@ applyParamsToControls(spec);
 
 - `kind` は `"number" | "range" | "checkbox" | "select" | "text"`。範囲外・不明値は clamp せず却下し、`#status` に日本語警告を出す。`text` は値をそのまま入れる（内容の検査はトピック側）。
 - `number` / `range` は `step` 属性が正の数値のとき、min（無ければ 0）からの刻みに合わない値も却下する（ブラウザのスナップで黙って化けないように）。
-- 共有 URL はコピーボタン押下時だけ生成する（`history.replaceState` しない）。既定値と同じキーは付けない。
+- 共有 URL はコピーボタン押下時だけ生成する（`history.replaceState` しない）。既定値と同じキーは付けない。`shareAlways` が真の項目は、既定と同じときも残す。
 - HTML のボタン id は `btn-copy-url`。
 - `course`（例: `?course=intro`）は spec に含めない。`buildShareUrl` は現在の URL に `course` があればそのまま共有 URL にも残す（コース外なら付けない）。
 

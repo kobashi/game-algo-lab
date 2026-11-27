@@ -58,20 +58,17 @@ export const LCG_PRESETS = [
   },
   {
     id: "short-ok",
-    label: "【教材用】小フル周期 m=31 (Hull–Dobell)",
+    label: "【教材用】乗算合同 m=31（周期 30）",
     quality: "ok",
     blurb:
-      "m=31 素数、c=0 でない乗算合同。条件を満たすと周期 31（フル）。小さいので周期を数え切れる。",
+      "a=3, c=0, m=31、シード 1。c=0 の乗算合同法で、測る周期は 30（最大は m−1）。小さいので周期を数え切れる。",
     a: 3,
     c: 0,
     m: 31,
     defaultSeed: 1,
   },
   {
-    // multiplicative LCG full period on prime field needs careful choice
-    // For c=0, period divides m-1. a=3, m=31: period of 1 under x->3x mod 31
-    // order of 3 mod 31: 3^5=243=26, ... actually 3 is primitive root mod 31? 
-    // 3^15 mod 31 = ... Let's use c!=0 for full period m when gcd(c,m)=1, a-1 divisible by all prime factors of m
+    // c=0 の周期は m−1 の約数。a=3, m=31, シード 1 の計測は 30。
     id: "m64-ok",
     label: "【許容】m=64 フル周期に近い教材例",
     quality: "ok",

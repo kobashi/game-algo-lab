@@ -181,7 +181,7 @@ export const TOPICS = [
     id: "rng-seed",
     title: "乱数とシード",
     description:
-      "Mulberry32 / XorShift32 / LCG。XorShift はシフト組、LCG は a,c,m と周期。",
+      "Mulberry32 / XorShift32 / LCG。出目は敵の種類。LCG は a,c,m と周期。",
     href: "algorithms/rng-seed.html",
     badge: "基礎実行",
     category: "基礎実行モデル",
